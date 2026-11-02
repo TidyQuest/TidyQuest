@@ -245,6 +245,7 @@ See `.env.example` for all options. Key variables:
 | `PORT` | No | Server port (default: 3000) |
 | `TRUST_PROXY` | Behind a reverse proxy | Addresses of the proxy in front (e.g. `loopback, 172.16.0.0/12` for nginx or Nginx Proxy Manager on the same host or in Docker), or a hop count such as `1`. The login limit then counts each visitor's own address instead of the proxy's. Leave it unset without a proxy: the `X-Forwarded-For` header is ignored, since anyone can send it |
 | `ADMIN_RESET_PASSWORD` | No | One-shot admin password recovery. Set, restart, then remove. |
+| `SOURCE_URL` | If you changed the code | Where the **Source code** link (login page and Settings → General) points. By default it's this repository at the tag (or `:main` commit) you run. If you run code you changed, set it to where people can get your copy: the AGPL asks for that |
 
 ### Hosted mode (`HOSTED=1`)
 
@@ -254,6 +255,18 @@ families you host.
 It runs many families on one server, each with its own database and folder, with sign-up, email sign-in for parents
 and an operator page at `/operator`. Billing is optional: with no `PAYMENT_KEY` there's no billing and families never
 expire. The code is in `server/src/hosted/`. To run TidyQuest for your own family, leave `HOSTED` unset.
+
+Hosted mode sends emails (confirm an address, reset a password, change the sign-in email) through any SMTP server.
+Without `SMTP_HOST` they go to the server log, links and all, which is fine for testing only. The log says at startup
+whether the mail server accepted the login.
+
+| Variable | Description |
+|----------|-------------|
+| `SMTP_HOST` | The mail server, e.g. your mailbox host or Postmark, Amazon SES or Resend |
+| `SMTP_PORT` | Default `465` (TLS from the start). Other ports such as `587` must offer STARTTLS before a password is sent |
+| `SMTP_USER`, `SMTP_PASS` | The login, often the mailbox's full address and its password |
+| `EMAIL_FROM` | The sender, e.g. `TidyQuest <noreply@example.org>` (no quotes needed). Default: TidyQuest at `SMTP_USER` |
+| `EMAIL_REPLY_TO` | Optional: where replies go, e.g. a support mailbox |
 
 ### Notifications (Optional)
 

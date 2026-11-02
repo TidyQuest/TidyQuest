@@ -368,6 +368,7 @@ export const GUIDE_ES: GuideSection[] = [
         'Pon JWT_SECRET con una cadena larga y aleatoria. La zona horaria de la familia se elige en la app (Ajustes → General → Zona horaria); una instalación nueva la toma del dispositivo del primer padre o madre. TZ en el servidor solo se usa hasta que se elige una.',
         'Las versiones llevan etiqueta (por ejemplo 0.9.0). Fija ese número en docker-compose.yml y ejecuta "docker compose pull && docker compose up -d". La imagen ":main" es el código más reciente, para probar cosas antes.',
         'Ajustes → General muestra la versión en uso. Para volver atrás, vuelve a poner el número de la versión anterior y arráncalo de nuevo (haz antes una copia de seguridad: la base de datos solo avanza).',
+        'Bajo la versión, Código fuente abre el código de esa versión exacta: TidyQuest es software libre (AGPL-3.0). ¿Usas código que has cambiado? Pon en SOURCE_URL la dirección donde se puede obtener tu copia; la licencia lo pide.',
         'Las notificaciones al móvil desde la propia app y su instalación como app necesitan una dirección segura (https://); hasta entonces usa ntfy o Telegram.',
       ] },
     ],
@@ -504,7 +505,7 @@ export const GUIDE_ES: GuideSection[] = [
           'Los niños escriben su usuario, no un correo. Los padres pueden usar su correo o el código de familia con su usuario.',
         ] },
         { q: 'No llegó el correo de confirmación o de contraseña', a: [
-          'Mira en la carpeta de spam. Ajustes → ✉️ Correo de inicio de sesión → Enviarlo de nuevo manda un enlace de confirmación nuevo (el anterior deja de funcionar).',
+          'Llega desde noreply@tidyquest.org: mira también en la carpeta de spam y márcalo como no spam. Ajustes → ✉️ Correo de inicio de sesión → Enviarlo de nuevo manda un enlace de confirmación nuevo (el anterior deja de funcionar).',
           'Un enlace de contraseña funciona una hora y una sola vez; pide otro con ¿Olvidaste la contraseña? en la pantalla de inicio de sesión.',
           '¿Escribiste mal la dirección? Ajustes → ✉️ Correo de inicio de sesión → Cambiar correo.',
         ] },

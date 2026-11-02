@@ -368,6 +368,7 @@ export const GUIDE_NL: GuideSection[] = [
         'Zet JWT_SECRET op een lange willekeurige tekst. De tijdzone van het gezin kies je in de app (Instellingen → Algemeen → Tijdzone); een nieuwe installatie neemt die over van het apparaat van de eerste ouder. TZ op de server geldt alleen tot er een gekozen is.',
         'Releases krijgen een tag (bijvoorbeeld 0.9.0). Zet dat nummer vast in docker-compose.yml en voer dan "docker compose pull && docker compose up -d" uit. De ":main"-image is de nieuwste code, om dingen eerst uit te proberen.',
         'Instellingen → Algemeen toont de versie die draait. Om terug te gaan zet je het vorige versienummer terug en start je opnieuw (maak eerst een back-up: de database gaat alleen vooruit).',
+        'Onder de versie opent Broncode de code van precies die versie: TidyQuest is vrije software (AGPL-3.0). Draai je code die je zelf hebt aangepast? Zet in SOURCE_URL het adres waar mensen jouw versie kunnen krijgen; de licentie vraagt dat.',
         'Telefoonmeldingen vanuit de app zelf en de app installeren vereisen een beveiligd adres (https://); gebruik tot die tijd ntfy of Telegram.',
       ] },
     ],
@@ -504,7 +505,7 @@ export const GUIDE_NL: GuideSection[] = [
           'Kinderen typen hun gebruikersnaam, geen e-mail. Ouders kunnen hun e-mail gebruiken, of de gezinscode met hun gebruikersnaam.',
         ] },
         { q: 'De bevestigings- of wachtwoordmail kwam niet aan', a: [
-          'Kijk in je spammap. Instellingen → ✉️ Inlogmail → Opnieuw sturen stuurt een nieuwe bevestigingslink (de oude werkt dan niet meer).',
+          'Hij komt van noreply@tidyquest.org: kijk ook in je spammap en markeer hem als geen spam. Instellingen → ✉️ Inlogmail → Opnieuw sturen stuurt een nieuwe bevestigingslink (de oude werkt dan niet meer).',
           'Een wachtwoordlink werkt een uur lang en maar één keer; vraag een nieuwe aan met Wachtwoord vergeten? op het inlogscherm.',
           'Adres verkeerd getypt? Instellingen → ✉️ Inlogmail → E-mail wijzigen.',
         ] },

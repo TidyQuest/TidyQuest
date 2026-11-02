@@ -368,6 +368,7 @@ export const GUIDE_IT: GuideSection[] = [
         'Imposta JWT_SECRET su una lunga stringa casuale. Il fuso orario della famiglia si sceglie nell’app (Impostazioni → Generale → Fuso orario); una nuova installazione lo prende dal dispositivo del primo genitore. TZ sul server si usa solo finché non ne viene scelto uno.',
         'Le versioni sono etichettate (per esempio 0.9.0). Fissa quel numero in docker-compose.yml, poi esegui "docker compose pull && docker compose up -d". L’immagine ":main" è il codice più recente, per provare le novità prima.',
         'Impostazioni → Generale mostra la versione in uso. Per tornare indietro, rimetti il numero della versione precedente e riavvia (fai prima un backup: il database va solo avanti).',
+        'Sotto la versione, Codice sorgente apre il codice di quella versione esatta: TidyQuest è software libero (AGPL-3.0). Usi codice che hai modificato? Imposta in SOURCE_URL l’indirizzo dove si può avere la tua copia; la licenza lo chiede.',
         'Le notifiche sul telefono dall’app stessa e l’installazione come app richiedono un indirizzo sicuro (https://); fino ad allora usa ntfy o Telegram.',
       ] },
     ],
@@ -504,7 +505,7 @@ export const GUIDE_IT: GuideSection[] = [
           'I bambini scrivono il loro username, non un’email. I genitori possono usare la loro email o il codice famiglia con il loro username.',
         ] },
         { q: 'L’email di conferma o della password non è arrivata', a: [
-          'Guarda nella cartella spam. Impostazioni → ✉️ Email di accesso → Invia di nuovo manda un nuovo link di conferma (quello vecchio smette di funzionare).',
+          'Arriva da noreply@tidyquest.org: guarda anche nella cartella spam e segnalala come non spam. Impostazioni → ✉️ Email di accesso → Invia di nuovo manda un nuovo link di conferma (quello vecchio smette di funzionare).',
           'Un link per la password funziona per un’ora e una sola volta; chiedine un altro con Password dimenticata? nella schermata di accesso.',
           'Indirizzo scritto male? Impostazioni → ✉️ Email di accesso → Cambia email.',
         ] },

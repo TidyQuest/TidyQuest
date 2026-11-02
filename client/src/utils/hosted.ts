@@ -2,14 +2,31 @@ import { useEffect, useState } from 'react';
 
 // Hosted mode (tidyquest.org): the server says so in /api/version. Self-hosted installs never show the
 // sign-up page, the family code or the email cards.
-let hostedPromise: Promise<boolean> | null = null;
+interface VersionInfo { hosted?: boolean; source?: string }
+let versionPromise: Promise<VersionInfo> | null = null;
+
+function fetchVersion(): Promise<VersionInfo> {
+  versionPromise ??= fetch('/api/version')
+    .then((r) => r.json() as Promise<VersionInfo>)
+    .catch(() => ({}));
+  return versionPromise;
+}
 
 export function fetchHosted(): Promise<boolean> {
-  hostedPromise ??= fetch('/api/version')
-    .then((r) => r.json())
-    .then((v: { hosted?: boolean }) => v.hosted === true)
-    .catch(() => false);
-  return hostedPromise;
+  return fetchVersion().then((v) => v.hosted === true);
+}
+
+const SOURCE_REPO = 'https://github.com/TidyQuest/TidyQuest';
+
+/** The link to this version's code (NEW-20, the AGPL's source offer); null until the server answers. */
+export function useSourceUrl(): string | null {
+  const [url, setUrl] = useState<string | null>(null);
+  useEffect(() => {
+    let live = true;
+    void fetchVersion().then((v) => { if (live) setUrl(v.source || SOURCE_REPO); });
+    return () => { live = false; };
+  }, []);
+  return url;
 }
 
 /** Whether the server is hosted; null until it answers. */

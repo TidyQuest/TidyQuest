@@ -31,7 +31,7 @@ import { weekdayName } from '../../utils/schedule';
 import { useWeekStart } from '../../utils/week';
 import { TimeZonePicker } from '../shared/TimeZonePicker';
 import { FamilyCodeCard, SignInEmailCard } from '../shared/HostedAccount';
-import { limitError, useHosted, type HostedAccount } from '../../utils/hosted';
+import { limitError, useHosted, useSourceUrl, type HostedAccount } from '../../utils/hosted';
 import { dateStr, endOfHomeDay } from '../../utils/clock';
 
 interface FamilyUser {
@@ -159,6 +159,7 @@ export function Settings({
   const isAdmin = user.role === 'admin';
   // Hosted mode only sends to ntfy.sh and Telegram
   const hosted = useHosted();
+  const sourceUrl = useSourceUrl();
   const [showAddMember, setShowAddMember] = useState(false);
   const [addMemberError, setAddMemberError] = useState('');
   const [newMemberName, setNewMemberName] = useState('');
@@ -989,6 +990,13 @@ export function Settings({
               </svg>
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--warm-text)' }}>{t('settings.version')}</div>
+                {/* NEW-20: the AGPL's offer of this version's code */}
+                <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--warm-text-light)', marginTop: 2 }}>
+                  {sourceUrl
+                    ? <a href={sourceUrl} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--warm-accent)', fontWeight: 700 }}>{t('about.sourceCode')}</a>
+                    : t('about.sourceCode')}
+                  {' · AGPL-3.0'}
+                </div>
               </div>
               <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--warm-text-muted)', textAlign: 'right' }}>
                 v{__APP_VERSION__}{__APP_BUILD__ && <span style={{ display: 'block', fontSize: 11, color: 'var(--warm-text-light)' }}>{__APP_BUILD__}</span>}

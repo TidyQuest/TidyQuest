@@ -368,6 +368,7 @@ export const GUIDE_FR: GuideSection[] = [
         'Définis JWT_SECRET avec une longue chaîne aléatoire. Le fuseau horaire de la famille se choisit dans l’app (Paramètres → Général → Fuseau horaire) ; une nouvelle installation le prend sur l’appareil du premier parent. TZ sur le serveur ne sert que tant qu’aucun n’est choisi.',
         'Les versions sont étiquetées (par exemple 0.9.0). Fixe ce numéro dans docker-compose.yml, puis lance "docker compose pull && docker compose up -d". L’image ":main" est le code le plus récent, pour essayer d’abord.',
         'Paramètres → Général montre la version en cours. Pour revenir en arrière, remets le numéro de la version précédente et redémarre (fais d’abord une sauvegarde : la base de données ne va que vers l’avant).',
+        'Sous la version, Code source ouvre le code de cette version précise : TidyQuest est un logiciel libre (AGPL-3.0). Tu fais tourner du code modifié ? Mets dans SOURCE_URL l’adresse où l’on peut obtenir ta copie ; la licence le demande.',
         'Les notifications du téléphone par l’appli elle-même et son installation comme appli demandent une adresse sécurisée (https://) ; en attendant, utilise ntfy ou Telegram.',
       ] },
     ],
@@ -504,7 +505,7 @@ export const GUIDE_FR: GuideSection[] = [
           'Les enfants tapent leur nom d’utilisateur, pas un e-mail. Les parents peuvent utiliser leur e-mail ou le code de la famille avec leur nom d’utilisateur.',
         ] },
         { q: 'L’e-mail de confirmation ou de mot de passe n’est pas arrivé', a: [
-          'Regardez dans les spams. Paramètres → ✉️ E-mail de connexion → Renvoyer envoie un nouveau lien de confirmation (l’ancien ne marche plus).',
+          'Il vient de noreply@tidyquest.org : regardez aussi dans les spams, et marquez-le comme non spam. Paramètres → ✉️ E-mail de connexion → Renvoyer envoie un nouveau lien de confirmation (l’ancien ne marche plus).',
           'Un lien de mot de passe fonctionne une heure et une seule fois ; demandez-en un nouveau avec Mot de passe oublié ? sur l’écran de connexion.',
           'Adresse mal tapée ? Paramètres → ✉️ E-mail de connexion → Changer d’e-mail.',
         ] },

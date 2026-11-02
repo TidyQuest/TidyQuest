@@ -368,6 +368,7 @@ export const GUIDE_DE: GuideSection[] = [
         'Setze JWT_SECRET auf eine lange Zufallszeichenfolge. Die Zeitzone der Familie wählt ihr in der App (Einstellungen → Allgemein → Zeitzone); eine neue Installation übernimmt sie vom Gerät des ersten Elternteils. TZ auf dem Server gilt nur, bis eine gewählt ist.',
         'Releases sind getaggt (zum Beispiel 0.9.0). Lege diese Nummer in docker-compose.yml fest und führe dann „docker compose pull && docker compose up -d“ aus. Das Image „:main“ ist der neueste Code, zum vorherigen Ausprobieren.',
         'Einstellungen → Allgemein zeigt die laufende Version. Um zurückzugehen, trage die vorherige Versionsnummer wieder ein und starte es erneut (mach vorher ein Backup: Die Datenbank geht nur vorwärts).',
+        'Unter der Version öffnet Quellcode den Code genau dieser Version: TidyQuest ist freie Software (AGPL-3.0). Läuft bei dir geänderter Code? Setze SOURCE_URL auf die Adresse, unter der man deine Fassung bekommt; die Lizenz verlangt das.',
         'Handy-Benachrichtigungen aus der App selbst und das Installieren als App brauchen eine sichere Adresse (https://); bis dahin nutze ntfy oder Telegram.',
       ] },
     ],
@@ -504,7 +505,7 @@ export const GUIDE_DE: GuideSection[] = [
           'Kinder tippen ihren Benutzernamen, keine E-Mail. Eltern können ihre E-Mail oder den Familiencode mit ihrem Benutzernamen nutzen.',
         ] },
         { q: 'Die Bestätigungs- oder Passwort-E-Mail kam nicht an', a: [
-          'Schau im Spam-Ordner nach. Einstellungen → ✉️ Anmelde-E-Mail → Erneut senden schickt einen neuen Bestätigungslink (der alte funktioniert dann nicht mehr).',
+          'Sie kommt von noreply@tidyquest.org: Schau auch im Spam-Ordner nach und markiere sie als kein Spam. Einstellungen → ✉️ Anmelde-E-Mail → Erneut senden schickt einen neuen Bestätigungslink (der alte funktioniert dann nicht mehr).',
           'Ein Passwort-Link funktioniert eine Stunde lang und nur einmal; fordere mit Passwort vergessen? auf dem Anmeldebildschirm einen neuen an.',
           'Adresse falsch eingegeben? Einstellungen → ✉️ Anmelde-E-Mail → E-Mail ändern.',
         ] },

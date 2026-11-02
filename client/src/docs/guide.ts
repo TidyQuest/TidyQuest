@@ -392,6 +392,7 @@ export const GUIDE_EN: GuideSection[] = [
         'Set JWT_SECRET to a long random string. The family’s time zone is picked in the app (Settings → General → Time zone); a new install takes it from the first parent’s device. TZ on the server is only used until one is picked.',
         'Releases are tagged (for example 0.9.0). Pin that number in docker-compose.yml, then run "docker compose pull && docker compose up -d". The ":main" image is the newest code, for trying things out first.',
         'Settings → General shows the version running. To roll back, put the previous version number back and start it again (take a backup first: the database only moves forward).',
+        'Under the version, Source code opens the code of that exact version: TidyQuest is free software (AGPL-3.0). Running code you changed? Set SOURCE_URL to where people can get your copy; the license asks for that.',
         'Phone notifications from the app itself and installing it as an app need a secure (https://) address; until then use ntfy or Telegram.',
       ] },
     ],
@@ -528,7 +529,7 @@ export const GUIDE_EN: GuideSection[] = [
           'Kids type their username, not an email. Parents can use either their email or the family code with their username.',
         ] },
         { q: 'The confirmation or password email didn’t arrive', a: [
-          'Look in the spam folder. Settings → ✉️ Sign-in email → Send it again sends a new confirmation link (the older one stops working).',
+          'It comes from noreply@tidyquest.org: look in the spam folder too, and mark it as not spam. Settings → ✉️ Sign-in email → Send it again sends a new confirmation link (the older one stops working).',
           'A password link works for one hour and only once; ask for a new one with Forgot password? on the login screen.',
           'Typed the address wrong? Settings → ✉️ Sign-in email → Change email.',
         ] },

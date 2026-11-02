@@ -5,6 +5,7 @@ import type { User } from '../../hooks/useAuth';
 import { useTranslation } from '../../hooks/useTranslation';
 import { deviceZone } from '../../utils/clock';
 import { authLanguage, hostedError } from '../../utils/hosted';
+import { SourceFooter } from '../shared/SourceLink';
 import { AuthCard, AuthField } from '../shared/AuthCard';
 import { authError, authLink } from '../shared/authStyles';
 
@@ -181,6 +182,7 @@ export function SignUp({ onSignedIn }: { onSignedIn: (token: string, user: User)
         </button>
       </form>
       {toLogin}
+      <SourceFooter language={language} />
     </AuthCard>
   );
 }
