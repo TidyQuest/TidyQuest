@@ -4,6 +4,7 @@ import { runInFamily } from './context';
 import { sendEmail, writeEmail } from './email';
 import { billingOn, deleteFamily, openFamily } from './families';
 import { mainDb } from './mainDb';
+import { recordOperatorAction } from './operatorHistory';
 
 // Expired trials (HOSTED.md decision 9): a family whose trial ended and who never paid is deleted 60 days
 // later, at least a week after its parents were warned by email. It goes to deleted/ like any other.
@@ -36,7 +37,10 @@ export async function endExpiredTrials(now = new Date()): Promise<number> {
   for (const family of families) {
     try {
       if (!family.trialWarnedAt) await warnParents(family, base, now);
-      else if (deleteOn(family, new Date(family.trialWarnedAt)) <= now && deleteFamily(family.id, now)) deleted++;
+      else if (deleteOn(family, new Date(family.trialWarnedAt)) <= now && deleteFamily(family.id, now)) {
+        recordOperatorAction({ action: 'trial-delete', family }, now);
+        deleted++;
+      }
     } catch (err) {
       console.error(`[hosted] Ending family ${family.id}'s trial failed:`, err);
     }

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { api } from '../../hooks/useApi';
+import { api, type HostedConfig } from '../../hooks/useApi';
 import type { User } from '../../hooks/useAuth';
 import { useTranslation } from '../../hooks/useTranslation';
 import { deviceZone } from '../../utils/clock';
@@ -55,43 +55,56 @@ function withLinks(text: string, links: Record<string, { href: string; label: st
   });
 }
 
+const NO_CONFIG: HostedConfig = { turnstileSiteKey: null, termsUrl: null, privacyUrl: null, signupsOpen: true };
+
 // Sign-up (hosted mode): a new family, with this parent as its admin. Everyone else is added in Settings.
+// While the operator has new sign-ups closed (NEW-30) it's the waitlist form instead, listed on the operator page.
 export function SignUp({ onSignedIn }: { onSignedIn: (token: string, user: User) => void }) {
   const navigate = useNavigate();
   const [language] = useState(authLanguage);
   const { t } = useTranslation(language);
-  const [config, setConfig] = useState<{ turnstileSiteKey: string | null; termsUrl: string | null; privacyUrl: string | null } | null>(null);
+  const [config, setConfig] = useState<HostedConfig | null>(null);
   const [familyName, setFamilyName] = useState('');
   const [parentName, setParentName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [note, setNote] = useState('');
   const [agreed, setAgreed] = useState(false);
   const [captchaToken, setCaptchaToken] = useState('');
   // A CAPTCHA answer works once, so a failed try gets a fresh check
   const [captchaRound, setCaptchaRound] = useState(0);
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
+  const [joined, setJoined] = useState(''); // the email that went on the waitlist
   const zone = deviceZone();
 
   useEffect(() => {
-    api.hostedConfig().then(setConfig).catch(() => setConfig({ turnstileSiteKey: null, termsUrl: null, privacyUrl: null }));
+    api.hostedConfig().then(setConfig).catch(() => setConfig(NO_CONFIG));
   }, []);
 
-  const needsTerms = !!(config?.termsUrl || config?.privacyUrl);
+  const closed = config?.signupsOpen === false;
+  const needsTerms = !closed && !!(config?.termsUrl || config?.privacyUrl);
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     if (config?.turnstileSiteKey && !captchaToken) return setError(t('hosted.captchaNeeded'));
     setBusy(true);
     try {
+      const details = { familyName: familyName.trim(), parentName: parentName.trim(), email: email.trim(), language, captchaToken: captchaToken || undefined };
+      if (closed) {
+        await api.joinWaitlist({ ...details, note: note.trim() });
+        setJoined(details.email);
+        return;
+      }
       const { token, user } = await api.signUp({
-        familyName: familyName.trim(), parentName: parentName.trim(), email: email.trim(), password,
-        timeZone: zone, language, captchaToken: captchaToken || undefined, ...(needsTerms && { acceptTerms: agreed }),
+        ...details, password, timeZone: zone, ...(needsTerms && { acceptTerms: agreed }),
       });
       onSignedIn(token, user);
       navigate('/', { replace: true });
     } catch (err) {
-      setError(hostedError(err, t, (err as Error)?.message || t('hosted.signupFailed')));
+      // Closed while this page was open: what they typed stays, on the waitlist form
+      if ((err as { body?: { code?: string } })?.body?.code === 'signups-closed') setConfig((c) => ({ ...(c ?? NO_CONFIG), signupsOpen: false }));
+      setError(hostedError(err, t, (err as Error)?.message || t(closed ? 'hosted.waitlistFailed' : 'hosted.signupFailed')));
       setCaptchaToken('');
       setCaptchaRound((n) => n + 1);
     } finally {
@@ -99,8 +112,25 @@ export function SignUp({ onSignedIn }: { onSignedIn: (token: string, user: User)
     }
   };
 
+  const toLogin = (
+    <div style={{ textAlign: 'center', marginTop: 18 }}>
+      <button type="button" style={authLink} onClick={() => navigate('/login')}>{t('hosted.haveFamily')}</button>
+    </div>
+  );
+
+  if (joined) {
+    return (
+      <AuthCard title={t('hosted.waitlistTitle')}>
+        <p role="status" style={{ margin: 0, color: 'var(--warm-text)', fontWeight: 700, textAlign: 'center', overflowWrap: 'anywhere' }}>
+          {t('hosted.waitlistThanks').replace('{email}', joined)}
+        </p>
+        {toLogin}
+      </AuthCard>
+    );
+  }
+
   return (
-    <AuthCard title={t('hosted.signupTitle')} subtitle={t('hosted.signupSubtitle')}>
+    <AuthCard title={t(closed ? 'hosted.waitlistTitle' : 'hosted.signupTitle')} subtitle={t(closed ? 'hosted.waitlistSubtitle' : 'hosted.signupSubtitle')}>
       <form onSubmit={submit}>
         <AuthField label={t('hosted.familyName')}>
           <input className="tq-input" value={familyName} onChange={(e) => setFamilyName(e.target.value)} maxLength={60} required
@@ -114,13 +144,22 @@ export function SignUp({ onSignedIn }: { onSignedIn: (token: string, user: User)
           <input className="tq-input" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required
             placeholder={t('hosted.emailPlaceholder')} autoComplete="email" />
         </AuthField>
-        <AuthField label={t('auth.password')} hint={t('hosted.passwordMin8')}>
-          <input className="tq-input" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={8}
-            autoComplete="new-password" />
-        </AuthField>
-        <p style={{ fontSize: 11, fontWeight: 600, color: 'var(--warm-text-light)', margin: '0 0 14px' }}>
-          {t('hosted.timeZoneNote').replace('{zone}', zone.replace(/_/g, ' '))}
-        </p>
+        {closed ? (
+          <AuthField label={t('hosted.waitlistNote')}>
+            <textarea className="tq-input" value={note} onChange={(e) => setNote(e.target.value)} maxLength={500} rows={3}
+              placeholder={t('hosted.waitlistNotePlaceholder')} style={{ resize: 'vertical' }} />
+          </AuthField>
+        ) : (
+          <>
+            <AuthField label={t('auth.password')} hint={t('hosted.passwordMin8')}>
+              <input className="tq-input" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={8}
+                autoComplete="new-password" />
+            </AuthField>
+            <p style={{ fontSize: 11, fontWeight: 600, color: 'var(--warm-text-light)', margin: '0 0 14px' }}>
+              {t('hosted.timeZoneNote').replace('{zone}', zone.replace(/_/g, ' '))}
+            </p>
+          </>
+        )}
         {/* Room for the terms, privacy policy and COPPA consent the lawyer settles in Phase 3: they show once the server has the links */}
         {needsTerms && (
           <label style={{ display: 'flex', gap: 8, alignItems: 'flex-start', fontSize: 12, fontWeight: 600, color: 'var(--warm-text-secondary)', marginBottom: 14 }}>
@@ -136,12 +175,12 @@ export function SignUp({ onSignedIn }: { onSignedIn: (token: string, user: User)
         )}
         {error && <div role="alert" style={authError}>{error}</div>}
         <button type="submit" className="tq-btn tq-btn-primary tq-btn-lg" disabled={busy || !config} style={{ width: '100%', justifyContent: 'center' }}>
-          {busy ? t('hosted.creating') : t('hosted.createFamilyAction')}
+          {closed
+            ? (busy ? t('hosted.waitlistSending') : t('hosted.waitlistAction'))
+            : (busy ? t('hosted.creating') : t('hosted.createFamilyAction'))}
         </button>
       </form>
-      <div style={{ textAlign: 'center', marginTop: 18 }}>
-        <button type="button" style={authLink} onClick={() => navigate('/login')}>{t('hosted.haveFamily')}</button>
-      </div>
+      {toLogin}
     </AuthCard>
   );
 }

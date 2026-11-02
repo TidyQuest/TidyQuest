@@ -117,6 +117,7 @@ export const GUIDE_EN: GuideSection[] = [
         'At sign-up we email a link to confirm your address. A family that hasn’t confirmed a parent’s email within 30 days can only confirm it or download its data until it does.',
         'Forgot password? on the login screen emails a parent a link that works once, for one hour. Kids and teens ask a parent to set a new one in Settings → Family Members.',
       ] },
+      { p: 'When new sign-ups on tidyquest.org are closed, the sign-up page is a waitlist form instead. Another family can leave their details there, and we email them when there’s room. Families already signed up aren’t affected.' },
       { h: 'On tidyquest.org: limits' },
       { ul: [
         'A family can have up to 15 people.',

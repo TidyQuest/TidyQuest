@@ -93,6 +93,7 @@ export const GUIDE_IT: GuideSection[] = [
         'All’iscrizione inviamo un link per confermare il tuo indirizzo. Una famiglia che non conferma l’email di un genitore entro 30 giorni può solo confermarla o scaricare i suoi dati finché non lo fa.',
         'Password dimenticata? nella schermata di accesso invia a un genitore un link che funziona una volta, per un’ora. Bambini e ragazzi chiedono a un genitore di impostarne una nuova in Impostazioni → Membri della famiglia.',
       ] },
+      { p: 'Quando le nuove iscrizioni su tidyquest.org sono chiuse, la pagina di iscrizione diventa un modulo per la lista d’attesa. Un’altra famiglia può lasciarvi i suoi dati, e le scriviamo quando c’è posto. Le famiglie già iscritte non sono toccate.' },
       { h: 'Su tidyquest.org: limiti' },
       { ul: [
         'Una famiglia può avere fino a 15 persone.',

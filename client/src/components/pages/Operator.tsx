@@ -4,11 +4,13 @@ import { AuthCard, AuthField } from '../shared/AuthCard';
 import { authError, authLink } from '../shared/authStyles';
 
 // The operator page (/operator, hosted mode only, NEW-13): the families on this server, with suspend,
-// resume, delete and resend. It has its own sign-in and token, kept apart from a family login in the same
-// browser. English only: families never see it.
+// resume, delete and resend, the History of what was done (NEW-24), and the switch that opens or closes new
+// sign-ups with the waitlist families join while it's closed (NEW-30). It has its own sign-in and token,
+// kept apart from a family login in the same browser. English only: families never see it.
 
 const TOKEN_KEY = 'tidyquest_operator_token';
 const PAGE = 50;
+const CARD_PAGE = 10; // a family's history on its card
 const MIN_PASSWORD = 12;
 const DAY = 24 * 60 * 60 * 1000;
 const MB = 1024 * 1024;
@@ -27,6 +29,21 @@ interface FamilyList {
   keepDeletedDays: number;
   families: Family[];
 }
+type Action = 'suspend' | 'resume' | 'delete' | 'resend-confirmation' | 'trial-delete'
+  | 'sign-in' | 'wrong-password' | 'password' | 'sign-out' | 'env-account' | 'env-password'
+  | 'signups-open' | 'signups-closed' | 'waitlist-remove';
+interface Entry {
+  id: number; at: string; operatorEmail: string | null; action: Action;
+  familyId: string | null; familyName: string | null; detail: string | null; ip: string | null;
+}
+interface EntryList { found: number; entries: Entry[] }
+type Kind = 'families' | 'sign-ins' | 'sign-ups';
+interface SignUps { open: boolean; waiting: number }
+interface Waiting {
+  id: number; at: string; familyName: string; parentName: string; email: string; language: string; note: string | null;
+  hasFamily: boolean;
+}
+interface WaitingList { found: number; entries: Waiting[] }
 
 function savedToken(): string | null {
   try { return localStorage.getItem(TOKEN_KEY); } catch { return null; }
@@ -69,6 +86,34 @@ function ago(iso: string, now: number): string {
 }
 const size = (bytes: number) => (bytes >= MB ? `${(bytes / MB).toFixed(bytes >= 10 * MB ? 0 : 1)} MB` : `${Math.ceil(bytes / 1024)} KB`);
 const message = (err: unknown) => (err instanceof Error ? err.message : 'Request failed');
+const when = (iso: string) => {
+  const d = new Date(iso);
+  const year = d.getFullYear() === new Date().getFullYear() ? undefined : 'numeric';
+  return d.toLocaleString('en-US', { month: 'short', day: 'numeric', year, hour: 'numeric', minute: '2-digit' });
+};
+const address = (ip: string) => ip.replace(/^::ffff:/, ''); // an IPv4 address can come as ::ffff:1.2.3.4
+
+/** What a History entry says happened. On a family's own card it leaves out which family. */
+function happened(e: Entry, onCard: boolean): string {
+  const family = onCard ? '' : ` ${e.familyName}`;
+  switch (e.action) {
+    case 'suspend': return `Paused${family}`;
+    case 'resume': return `Resumed${family}`;
+    case 'delete': return `Deleted${family}`;
+    case 'trial-delete': return `Deleted${family} after the trial ended`;
+    case 'resend-confirmation': return `Resent the confirmation email to ${e.detail}${onCard ? '' : ` (${e.familyName})`}`;
+    case 'sign-in': return 'Signed in';
+    case 'wrong-password': return 'Sign-in refused: wrong password';
+    case 'password': return 'Changed the password';
+    case 'sign-out': return 'Signed out everywhere';
+    case 'env-account': return 'Account made from OPERATOR_EMAIL in the compose file';
+    case 'env-password': return 'Password set from OPERATOR_PASSWORD in the compose file';
+    case 'signups-open': return 'Opened new sign-ups';
+    case 'signups-closed': return 'Closed new sign-ups';
+    case 'waitlist-remove': return `Took ${e.detail} off the waitlist`;
+    default: return e.action;
+  }
+}
 
 const muted: React.CSSProperties = { fontSize: 12, fontWeight: 600, color: 'var(--warm-text-light)' };
 const line: React.CSSProperties = { fontSize: 13, fontWeight: 600, color: 'var(--warm-text-secondary)', marginTop: 6 };
@@ -148,6 +193,8 @@ function Families({ token, onToken, onSignedOut }: { token: string; onToken: (to
   const [error, setError] = useState('');
   const [result, setResult] = useState<CardResult | null>(null);
   const [changingPassword, setChangingPassword] = useState(false);
+  const [view, setView] = useState<'families' | 'history' | 'waitlist'>('families');
+  const [signups, setSignups] = useState<SignUps | null>(null);
 
   const failed = (err: unknown) => {
     if (err instanceof SignedOut) onSignedOut();
@@ -157,6 +204,18 @@ function Families({ token, onToken, onSignedOut }: { token: string; onToken: (to
   useEffect(() => {
     call<{ email: string }>('/me', token).then((r) => setMe(r.email), failed);
   }, [token]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // The sign-up switch and how many wait, again after each change here or on the waitlist
+  const [signupsVersion, setSignupsVersion] = useState(0);
+  useEffect(() => {
+    let current = true;
+    call<SignUps>('/signups', token).then((r) => { if (current) setSignups(r); }, failed);
+    return () => { current = false; };
+  }, [token, signupsVersion]); // eslint-disable-line react-hooks/exhaustive-deps
+  const setOpen = (open: boolean) => {
+    setError('');
+    call<{ open: boolean }>('/signups', token, { open }).then(() => setSignupsVersion((n) => n + 1), failed);
+  };
 
   // Search as you type, once typing stops for a moment
   useEffect(() => {
@@ -212,7 +271,7 @@ function Families({ token, onToken, onSignedOut }: { token: string; onToken: (to
   const departed = list && result && !result.failed && !list.families.some((f) => f.id === result.id) ? result : null;
   const cards = list ? list.families.map((f, i) => (
     <FamilyCard key={f.id} family={f} list={list} result={result?.id === f.id ? result : null}
-      onAct={(path, body, done) => act(f, i, path, body, done)} />
+      onAct={(path, body, done) => act(f, i, path, body, done)} token={token} version={reload} onFailed={failed} />
   )) : [];
   if (departed) {
     cards.splice(Math.min(departed.index, cards.length), 0, (
@@ -222,6 +281,12 @@ function Families({ token, onToken, onSignedOut }: { token: string; onToken: (to
       </div>
     ));
   }
+
+  const show = (next: typeof view) => {
+    setView(next);
+    setNotice('');
+    setError('');
+  };
 
   const signOutEverywhere = () => {
     call('/logout', token, {}).catch(() => {}).finally(onSignedOut);
@@ -237,12 +302,17 @@ function Families({ token, onToken, onSignedOut }: { token: string; onToken: (to
     <div style={{ minHeight: '100vh', backgroundColor: 'var(--warm-bg)' }}>
       <div style={{ maxWidth: 760, margin: '0 auto', padding: '20px 16px 40px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-          <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ flex: '1 1 200px', minWidth: 0 }}>
             <h1 style={{ fontSize: 20, fontWeight: 900, color: 'var(--warm-text)', margin: 0 }}>TidyQuest operator</h1>
             <div style={{ ...muted, overflowWrap: 'anywhere' }}>{me}</div>
           </div>
-          <button type="button" className="tq-btn tq-btn-secondary tq-btn-sm" onClick={() => setChangingPassword((v) => !v)}>Password</button>
-          <button type="button" className="tq-btn tq-btn-secondary tq-btn-sm" onClick={signOutEverywhere} title="Signs out every device">Sign out</button>
+          <div style={{ display: 'flex', gap: 8 }}>
+            <button type="button" className="tq-btn tq-btn-secondary tq-btn-sm" onClick={() => show(view === 'families' ? 'history' : 'families')}>
+              {view === 'families' ? 'History' : 'Families'}
+            </button>
+            <button type="button" className="tq-btn tq-btn-secondary tq-btn-sm" onClick={() => setChangingPassword((v) => !v)}>Password</button>
+            <button type="button" className="tq-btn tq-btn-secondary tq-btn-sm" onClick={signOutEverywhere} title="Signs out every device">Sign out</button>
+          </div>
         </div>
 
         {changingPassword && (
@@ -253,35 +323,50 @@ function Families({ token, onToken, onSignedOut }: { token: string; onToken: (to
           }} />
         )}
 
-        {list && (
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 16, alignItems: 'center' }}>
-            {chips.map((c) => (
-              <button key={c.label} type="button" className={`tq-btn tq-btn-sm ${status === c.status ? 'tq-btn-primary' : 'tq-btn-secondary'}`} onClick={() => pick(c.status)}>
-                {c.label} {c.count}
-              </button>
-            ))}
-            <span style={{ ...muted, marginLeft: 4 }}>New this week: {list.totals.newThisWeek}</span>
-          </div>
-        )}
-
-        <input className="tq-input" type="search" value={query} onChange={(e) => { setQuery(e.target.value); restart(); }}
-          placeholder="Search: family name, family code or email" aria-label="Search families" style={{ marginTop: 12 }} />
-
-        {notice && <div role="status" style={{ ...okLine, marginTop: 12 }}>{notice}</div>}
-        {error && <div role="alert" style={{ ...failedLine, marginTop: 12 }}>{error}</div>}
-
-        {list && (
+        {view === 'history' ? (
           <>
-            <div style={{ ...muted, margin: '14px 0 8px' }}>
-              {list.found === 0 ? 'No families found.' : `Showing ${list.families.length} of ${list.found}`}
-            </div>
-            <div style={{ display: 'grid', gap: 10 }}>
-              {cards}
-            </div>
-            {list.families.length < list.found && (
-              <div style={{ textAlign: 'center', marginTop: 14 }}>
-                <button type="button" className="tq-btn tq-btn-secondary tq-btn-md" onClick={showMore}>Show more</button>
+            {error && <div role="alert" style={{ ...failedLine, marginTop: 12 }}>{error}</div>}
+            <History token={token} onFailed={failed} />
+          </>
+        ) : view === 'waitlist' ? (
+          <>
+            {error && <div role="alert" style={{ ...failedLine, marginTop: 12 }}>{error}</div>}
+            <Waitlist token={token} onChanged={() => setSignupsVersion((n) => n + 1)} onFailed={failed} />
+          </>
+        ) : (
+          <>
+            {signups && <SignUpsCard signups={signups} onOpen={setOpen} onWaitlist={() => show('waitlist')} />}
+            {list && (
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 16, alignItems: 'center' }}>
+                {chips.map((c) => (
+                  <button key={c.label} type="button" className={`tq-btn tq-btn-sm ${status === c.status ? 'tq-btn-primary' : 'tq-btn-secondary'}`} onClick={() => pick(c.status)}>
+                    {c.label} {c.count}
+                  </button>
+                ))}
+                <span style={{ ...muted, marginLeft: 4 }}>New this week: {list.totals.newThisWeek}</span>
               </div>
+            )}
+
+            <input className="tq-input" type="search" value={query} onChange={(e) => { setQuery(e.target.value); restart(); }}
+              placeholder="Search: family name, family code or email" aria-label="Search families" style={{ marginTop: 12 }} />
+
+            {notice && <div role="status" style={{ ...okLine, marginTop: 12 }}>{notice}</div>}
+            {error && <div role="alert" style={{ ...failedLine, marginTop: 12 }}>{error}</div>}
+
+            {list && (
+              <>
+                <div style={{ ...muted, margin: '14px 0 8px' }}>
+                  {list.found === 0 ? 'No families found.' : `Showing ${list.families.length} of ${list.found}`}
+                </div>
+                <div style={{ display: 'grid', gap: 10 }}>
+                  {cards}
+                </div>
+                {list.families.length < list.found && (
+                  <div style={{ textAlign: 'center', marginTop: 14 }}>
+                    <button type="button" className="tq-btn tq-btn-secondary tq-btn-md" onClick={showMore}>Show more</button>
+                  </div>
+                )}
+              </>
             )}
           </>
         )}
@@ -290,13 +375,17 @@ function Families({ token, onToken, onSignedOut }: { token: string; onToken: (to
   );
 }
 
-function FamilyCard({ family: f, list, result, onAct }: {
+function FamilyCard({ family: f, list, result, onAct, token, version, onFailed }: {
   family: Family;
   list: FamilyList & { now: number };
   result: CardResult | null;
   onAct: Act;
+  token: string;
+  version: number;
+  onFailed: (err: unknown) => void;
 }) {
   const [deleting, setDeleting] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
   const [typed, setTyped] = useState('');
   const base = `/families/${f.id}`;
   const nameMatches = typed.trim().toLowerCase() === f.name.trim().toLowerCase();
@@ -353,12 +442,19 @@ function FamilyCard({ family: f, list, result, onAct }: {
         </div>
       )}
 
-      {f.status !== 'deleted' && !deleting && (
+      {!deleting && (
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 12 }}>
-          {f.status === 'suspended'
-            ? <button type="button" className="tq-btn tq-btn-secondary tq-btn-sm" onClick={() => void onAct(`${base}/resume`, {}, `Resumed ${f.name}.`)}>Resume</button>
-            : <button type="button" className="tq-btn tq-btn-secondary tq-btn-sm" onClick={suspend}>Suspend</button>}
-          <button type="button" className="tq-btn tq-btn-secondary tq-btn-sm" style={{ color: 'var(--warm-danger)' }} onClick={() => setDeleting(true)}>Delete</button>
+          {f.status !== 'deleted' && (
+            <>
+              {f.status === 'suspended'
+                ? <button type="button" className="tq-btn tq-btn-secondary tq-btn-sm" onClick={() => void onAct(`${base}/resume`, {}, `Resumed ${f.name}.`)}>Resume</button>
+                : <button type="button" className="tq-btn tq-btn-secondary tq-btn-sm" onClick={suspend}>Suspend</button>}
+              <button type="button" className="tq-btn tq-btn-secondary tq-btn-sm" style={{ color: 'var(--warm-danger)' }} onClick={() => setDeleting(true)}>Delete</button>
+            </>
+          )}
+          <button type="button" className="tq-btn tq-btn-secondary tq-btn-sm" aria-expanded={showHistory} onClick={() => setShowHistory((v) => !v)}>
+            {showHistory ? 'Hide history' : 'History'}
+          </button>
         </div>
       )}
       {deleting && (
@@ -381,7 +477,192 @@ function FamilyCard({ family: f, list, result, onAct }: {
         </div>
       )}
       {result && <div style={result.failed ? failedLine : okLine}>{result.text}</div>}
+      {showHistory && <History token={token} familyId={f.id} version={version} onFailed={onFailed} />}
     </div>
+  );
+}
+
+/** New sign-ups, Open or Closed (NEW-30), and the way to the waitlist families join while it's closed. */
+function SignUpsCard({ signups, onOpen, onWaitlist }: { signups: SignUps; onOpen: (open: boolean) => void; onWaitlist: () => void }) {
+  const choice = (open: boolean) => (
+    <button type="button" className={`tq-btn tq-btn-sm ${signups.open === open ? 'tq-btn-primary' : 'tq-btn-secondary'}`}
+      aria-pressed={signups.open === open} onClick={() => { if (signups.open !== open) onOpen(open); }}>
+      {open ? 'Open' : 'Closed'}
+    </button>
+  );
+  return (
+    <div className="tq-card" style={{ padding: 14, marginTop: 16 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+        <div style={{ flex: '1 1 140px', fontSize: 15, fontWeight: 800, color: 'var(--warm-text)' }}>New sign-ups</div>
+        <div role="group" aria-label="New sign-ups" style={{ display: 'flex', gap: 6 }}>{choice(true)}{choice(false)}</div>
+      </div>
+      <div style={line}>
+        {signups.open ? 'Anyone can create a family.' : 'The sign-up page is the waitlist form. Families already here carry on as usual.'}
+      </div>
+      <div style={{ ...line, display: 'flex', flexWrap: 'wrap', alignItems: 'center', columnGap: 8 }}>
+        <span>Waitlist: {signups.waiting} waiting</span>
+        <button type="button" style={{ ...authLink, fontSize: 13, padding: 0 }} onClick={onWaitlist}>Show the waitlist</button>
+      </div>
+    </div>
+  );
+}
+
+/** The waitlist (NEW-30), first come first. Nothing is emailed: write to them from hello@, then take them off. */
+function Waitlist({ token, onChanged, onFailed }: { token: string; onChanged: () => void; onFailed: (err: unknown) => void }) {
+  const [list, setList] = useState<WaitingList | null>(null);
+  const [version, setVersion] = useState(0);
+  const [removing, setRemoving] = useState<number | null>(null);
+  const [notice, setNotice] = useState('');
+
+  const entries = (offset: number, limit: number) => call<WaitingList>(`/waitlist?offset=${offset}&limit=${limit}`, token);
+  // After a removal, everything shown so far comes again
+  const [shown, setShown] = useState(PAGE);
+  useEffect(() => {
+    let current = true;
+    entries(0, shown).then((r) => { if (current) setList(r); }, onFailed);
+    return () => { current = false; };
+  }, [token, version]); // eslint-disable-line react-hooks/exhaustive-deps
+  const showMore = () => {
+    if (!list) return;
+    entries(list.entries.length, PAGE).then((more) => {
+      setList({ ...more, entries: [...list.entries, ...more.entries] });
+      setShown(list.entries.length + more.entries.length);
+    }, onFailed);
+  };
+  const remove = (w: Waiting) => {
+    setNotice('');
+    call(`/waitlist/${w.id}/remove`, token, {}).then(() => {
+      setNotice(`Took ${w.familyName} (${w.email}) off the waitlist.`);
+      setRemoving(null);
+      setVersion((n) => n + 1);
+      onChanged();
+    }, onFailed);
+  };
+
+  return (
+    <>
+      <h2 style={{ fontSize: 16, fontWeight: 900, color: 'var(--warm-text)', margin: '18px 0 0' }}>Waitlist</h2>
+      <div style={line}>First come first. Nothing is emailed: write to them from hello@, then take them off.</div>
+      {notice && <div role="status" style={{ ...okLine, marginTop: 12 }}>{notice}</div>}
+      {list && (
+        <>
+          <div style={{ ...muted, margin: '14px 0 8px' }}>
+            {list.found === 0 ? 'Nobody is waiting.' : `Showing ${list.entries.length} of ${list.found}`}
+          </div>
+          <div style={{ display: 'grid', gap: 10 }}>
+            {list.entries.map((w, i) => (
+              <div key={w.id} className="tq-card" style={{ padding: 14 }}>
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
+                  <div style={{ flex: 1, minWidth: 0, fontSize: 15, fontWeight: 800, color: 'var(--warm-text)', overflowWrap: 'anywhere' }}>
+                    {i + 1}. {w.familyName}
+                  </div>
+                  {w.hasFamily && (
+                    <span style={{ ...PILLS.active, fontSize: 11, fontWeight: 800, borderRadius: 999, padding: '3px 9px', whiteSpace: 'nowrap' }}>Has a family now</span>
+                  )}
+                </div>
+                <div style={{ ...line, display: 'flex', flexWrap: 'wrap', columnGap: 8 }}>
+                  <span style={{ overflowWrap: 'anywhere' }}>{w.parentName}</span>
+                  <a href={`mailto:${w.email}`} style={{ color: 'var(--warm-accent)', fontWeight: 700, overflowWrap: 'anywhere' }}>{w.email}</a>
+                </div>
+                <div style={muted}>Joined {when(w.at)} · {w.language}</div>
+                {w.note && <div style={{ ...line, whiteSpace: 'pre-wrap', overflowWrap: 'anywhere' }}>“{w.note}”</div>}
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 12 }}>
+                  {removing === w.id ? (
+                    <>
+                      <button type="button" className="tq-btn tq-btn-primary tq-btn-sm" onClick={() => remove(w)}
+                        style={{ background: 'var(--warm-danger)', borderColor: 'var(--warm-danger)' }}>Take off the waitlist</button>
+                      <button type="button" className="tq-btn tq-btn-secondary tq-btn-sm" onClick={() => setRemoving(null)}>Cancel</button>
+                    </>
+                  ) : (
+                    <button type="button" className="tq-btn tq-btn-secondary tq-btn-sm" onClick={() => setRemoving(w.id)}>Remove</button>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+          {list.entries.length < list.found && (
+            <div style={{ textAlign: 'center', marginTop: 14 }}>
+              <button type="button" className="tq-btn tq-btn-secondary tq-btn-md" onClick={showMore}>Show more</button>
+            </div>
+          )}
+        </>
+      )}
+    </>
+  );
+}
+
+const KINDS: { kind: Kind | null; label: string }[] = [
+  { kind: null, label: 'All' }, { kind: 'families', label: 'Family actions' }, { kind: 'sign-ins', label: 'Sign-ins' },
+  { kind: 'sign-ups', label: 'Sign-ups' },
+];
+
+/** The History (NEW-24), newest first: everything, with a filter, or one family's on its card. */
+function History({ token, familyId, version = 0, onFailed }: {
+  token: string;
+  familyId?: string;
+  version?: number; // changes after each action, so an open card shows it
+  onFailed: (err: unknown) => void;
+}) {
+  const [kind, setKind] = useState<Kind | null>(null);
+  const [list, setList] = useState<EntryList | null>(null);
+
+  const entries = (before?: number) => {
+    const params = new URLSearchParams({ limit: String(familyId ? CARD_PAGE : PAGE) });
+    if (familyId) params.set('family', familyId);
+    else if (kind) params.set('kind', kind);
+    if (before) params.set('before', String(before));
+    return call<EntryList>(`/history?${params}`, token);
+  };
+  useEffect(() => {
+    let current = true;
+    entries().then((r) => { if (current) setList(r); }, onFailed);
+    return () => { current = false; };
+  }, [token, familyId, kind, version]); // eslint-disable-line react-hooks/exhaustive-deps
+  const showMore = () => {
+    if (!list?.entries.length) return;
+    entries(list.entries[list.entries.length - 1].id).then((more) => setList({ ...more, entries: [...list.entries, ...more.entries] }), onFailed);
+  };
+
+  const more = !!list && list.entries.length < list.found;
+  const rows = list?.entries.map((e, i) => (
+    <div key={e.id} style={{ padding: '8px 0', borderTop: i ? '1px solid var(--warm-border)' : undefined }}>
+      <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--warm-text)', overflowWrap: 'anywhere' }}>{happened(e, !!familyId)}</div>
+      <div style={{ ...muted, overflowWrap: 'anywhere' }}>{e.operatorEmail ?? 'The server'} · {when(e.at)}{e.ip && ` · ${address(e.ip)}`}</div>
+    </div>
+  ));
+
+  if (familyId) {
+    return (
+      <div style={{ marginTop: 10, borderTop: '1.5px solid var(--warm-border)' }}>
+        {list && (list.entries.length ? rows : <div style={line}>Nothing recorded yet.</div>)}
+        {more && <button type="button" style={{ ...authLink, fontSize: 12, padding: '4px 0' }} onClick={showMore}>Show more</button>}
+      </div>
+    );
+  }
+  return (
+    <>
+      <h2 style={{ fontSize: 16, fontWeight: 900, color: 'var(--warm-text)', margin: '18px 0 0' }}>History</h2>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 10 }}>
+        {KINDS.map((k) => (
+          <button key={k.label} type="button" className={`tq-btn tq-btn-sm ${kind === k.kind ? 'tq-btn-primary' : 'tq-btn-secondary'}`} onClick={() => setKind(k.kind)}>
+            {k.label}
+          </button>
+        ))}
+      </div>
+      {list && (
+        <>
+          <div style={{ ...muted, margin: '14px 0 8px' }}>
+            {list.found === 0 ? 'Nothing recorded yet.' : `Showing ${list.entries.length} of ${list.found}`}
+          </div>
+          {list.entries.length > 0 && <div className="tq-card" style={{ padding: '4px 14px' }}>{rows}</div>}
+          {more && (
+            <div style={{ textAlign: 'center', marginTop: 14 }}>
+              <button type="button" className="tq-btn tq-btn-secondary tq-btn-md" onClick={showMore}>Show more</button>
+            </div>
+          )}
+        </>
+      )}
+    </>
   );
 }
 

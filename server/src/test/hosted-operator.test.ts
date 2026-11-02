@@ -4,12 +4,15 @@ import path from 'path';
 import supertest from 'supertest';
 import { setHosted } from '../hosted/context';
 import { setEmailTransport, type Email } from '../hosted/email';
+import { purgeDeletedFamilies } from '../hosted/families';
 import { dataDir, mainDb } from '../hosted/mainDb';
 import { operatorFromEnv } from '../hosted/operator';
 import { HOSTED_RUN, addTestFamily, createAdmin, createTestApp, createUser } from './setup';
 
-// Hosted step 7 (NEW-13): the operator page's accounts, its own tokens, the family list and its actions.
+// Hosted step 7 (NEW-13): the operator page's accounts, its own tokens, the family list and its actions;
+// the History of those actions (NEW-24).
 const auth = (token: string) => ({ Authorization: `Bearer ${token}` });
+const DAY = 24 * 60 * 60 * 1000;
 const OP_EMAIL = 'op@tidyquest.example';
 const OP_PASSWORD = 'operator-password-1';
 
@@ -34,6 +37,8 @@ async function operatorToken(email = OP_EMAIL, password = OP_PASSWORD): Promise<
 
 const families = async (token: string, query = '') => (await agent.get(`/api/operator/families${query}`).set(auth(token))).body;
 const familyOf = async (token: string, id: string, query = '') => (await families(token, query)).families.find((f: any) => f.id === id);
+const history = async (token: string, query = '') => (await agent.get(`/api/operator/history${query}`).set(auth(token))).body;
+const actions = (list: { entries: { action: string }[] }) => list.entries.map((e) => e.action);
 
 beforeEach(async () => {
   const t = createTestApp({ hosted: true });
@@ -94,6 +99,7 @@ describe('Operator login and tokens', () => {
     const op = await operatorToken();
     expect((await agent.get('/api/operator/families').set(auth(adminA.token))).status).toBe(401);
     expect((await agent.post(`/api/operator/families/${B}/suspend`).set(auth(adminA.token))).status).toBe(401);
+    expect((await agent.get('/api/operator/history').set(auth(adminA.token))).status).toBe(401);
     expect((await agent.get('/api/operator/families')).status).toBe(401);
     for (const url of ['/api/auth/me', '/api/hosted/account', '/api/dashboard', '/api/export']) {
       expect((await agent.get(url).set(auth(op))).status).toBe(401);
@@ -188,6 +194,86 @@ describe('The family list', () => {
     mainDb().prepare("UPDATE accounts SET emailConfirmedAt = '2026-10-29T00:00:00Z' WHERE email = ?").run(email);
     expect((await agent.post(`/api/operator/families/${A}/resend-confirmation`).set(auth(op)).send({ email })).status).toBe(400);
     expect(sent).toHaveLength(1);
+  });
+});
+
+describe('The History', () => {
+  let op: string;
+  beforeEach(async () => {
+    makeOperator();
+    op = await operatorToken();
+  });
+
+  it("keeps each family action with who, which family and when, newest first, and each family's own", async () => {
+    const email = `admin@${A}.example`;
+    await agent.post(`/api/operator/families/${B}/suspend`).set(auth(op));
+    await agent.post(`/api/operator/families/${B}/resume`).set(auth(op));
+    await agent.post(`/api/operator/families/${A}/resend-confirmation`).set(auth(op)).send({ email });
+    await agent.post(`/api/operator/families/${B}/delete`).set(auth(op)).send({ name: 'The Bakers' });
+    expect((await agent.post(`/api/operator/families/${A}/delete`).set(auth(op)).send({ name: 'wrong' })).status).toBe(400); // not kept
+
+    const all = await history(op, '?kind=families');
+    expect(all.found).toBe(4);
+    expect(all.entries.map((e: any) => [e.action, e.familyName])).toEqual([
+      ['delete', 'The Bakers'], ['resend-confirmation', 'Family A'], ['resume', 'The Bakers'], ['suspend', 'The Bakers'],
+    ]);
+    expect(all.entries[1]).toMatchObject({ operatorEmail: OP_EMAIL, familyId: A, detail: email });
+    expect(all.entries[0].ip).toBeTruthy();
+    expect(Date.now() - Date.parse(all.entries[0].at)).toBeLessThan(60_000);
+
+    // A deleted family's too
+    expect(actions(await history(op, `?family=${B}`))).toEqual(['delete', 'resume', 'suspend']);
+    expect(actions(await history(op, `?family=${A}`))).toEqual(['resend-confirmation']);
+  });
+
+  it('pages from before an entry, and counts all that match', async () => {
+    for (let i = 0; i < 3; i++) {
+      await agent.post(`/api/operator/families/${B}/suspend`).set(auth(op));
+      await agent.post(`/api/operator/families/${B}/resume`).set(auth(op));
+    }
+    const first = await history(op, `?family=${B}&limit=4`);
+    expect(first.found).toBe(6);
+    expect(actions(first)).toEqual(['resume', 'suspend', 'resume', 'suspend']);
+    const rest = await history(op, `?family=${B}&limit=4&before=${first.entries[3].id}`);
+    expect(actions(rest)).toEqual(['resume', 'suspend']);
+    expect(rest.found).toBe(6);
+  });
+
+  it("keeps sign-ins, an operator's wrong passwords, a new password and Sign out, apart from the families", async () => {
+    await agent.post('/api/operator/login').send({ email: OP_EMAIL, password: 'nope' });
+    await agent.post('/api/operator/login').send({ email: 'who@example.com', password: OP_PASSWORD }); // no such operator: not kept
+    const changed = await agent.post('/api/operator/password').set(auth(op)).send({ current: OP_PASSWORD, password: 'another-long-password' });
+    await agent.post(`/api/operator/families/${B}/suspend`).set(auth(changed.body.token));
+    await agent.post('/api/operator/logout').set(auth(changed.body.token));
+    const again = await operatorToken(OP_EMAIL, 'another-long-password');
+
+    const signIns = await history(again, '?kind=sign-ins');
+    expect(actions(signIns)).toEqual(['sign-in', 'sign-out', 'password', 'wrong-password', 'sign-in', 'env-account']);
+    expect(signIns.entries.every((e: any) => e.operatorEmail === OP_EMAIL && e.familyId === null)).toBe(true);
+    expect(actions(await history(again, '?kind=families'))).toEqual(['suspend']);
+    expect((await history(again)).found).toBe(7);
+  });
+
+  it('keeps an account or password that came from the compose file', async () => {
+    makeOperator(OP_EMAIL, 'a-new-compose-password'); // the way back in after a forgotten password
+    makeOperator('second@tidyquest.example', 'second-password-1');
+    makeOperator('second@tidyquest.example', 'second-password-1'); // unchanged: nothing new
+    const second = await operatorToken('second@tidyquest.example', 'second-password-1');
+    expect((await history(second)).entries.map((e: any) => [e.action, e.operatorEmail])).toEqual([
+      ['sign-in', 'second@tidyquest.example'], ['env-account', 'second@tidyquest.example'],
+      ['env-password', OP_EMAIL], ['sign-in', OP_EMAIL], ['env-account', OP_EMAIL],
+    ]);
+  });
+
+  it("keeps a family's entries, its name and emails too, after the family is removed for good", async () => {
+    const email = `admin@${A}.example`;
+    await agent.post(`/api/operator/families/${A}/resend-confirmation`).set(auth(op)).send({ email });
+    await agent.post(`/api/operator/families/${A}/delete`).set(auth(op)).send({ name: 'Family A' });
+    expect(purgeDeletedFamilies(new Date(Date.now() + 31 * DAY))).toBe(1);
+    expect(mainDb().prepare('SELECT 1 FROM families WHERE id = ?').get(A)).toBeUndefined();
+    expect((await history(op, `?family=${A}`)).entries.map((e: any) => [e.action, e.familyName, e.detail])).toEqual([
+      ['delete', 'Family A', null], ['resend-confirmation', 'Family A', email],
+    ]);
   });
 });
 

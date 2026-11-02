@@ -9,6 +9,21 @@ upstream TidyQuest's: see [RELEASE-NOTES.md](RELEASE-NOTES.md).
 
 ## Unreleased
 
+### Added
+
+- Hosted mode: the operator page has a History. It keeps every pause, resume, delete and resent confirmation
+  email (who did it, to which family, when, and from which address), plus operator sign-ins, wrong passwords,
+  password changes, Sign out, and accounts or passwords set from the compose file. A History button at the top
+  lists everything, newest first, with All, Family actions and Sign-ins filters, and each family's card has a
+  History button for that family's own. Entries stay after a family is removed for good. Families never see
+  any of this, and self-hosted installs have no operator page.
+- Hosted mode: new sign-ups can be closed. The operator page has a "New sign-ups: Open / Closed" switch that
+  works at once, with no restart. While closed, the sign-up page becomes a waitlist form (family name, your
+  name, email and an optional note), and a page that was already open switches to it, keeping what was typed.
+  The operator page lists the waitlist, oldest first, with each family's email as a link to write to them and a
+  Remove button. Nothing is emailed. Families already signed up aren't affected. Each change of the switch and
+  each removal goes in the History, under a new Sign-ups filter. It's open by default.
+
 ### Changed
 
 - In hosted mode the "Allow new registrations" setting is hidden. Hosted families add people from Settings →

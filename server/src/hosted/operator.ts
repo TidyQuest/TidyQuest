@@ -13,12 +13,15 @@ import { KEEP_DELETED_DAYS, deleteFamily, familyDir, familyStatus, openFamily, t
 import { filesBytes } from './files';
 import { limits } from './limits';
 import { mainDb } from './mainDb';
+import { SIGN_IN_ACTIONS, SIGN_UP_ACTIONS, recordOperatorAction } from './operatorHistory';
+import { removeFromWaitlist, setSignupsOpen, signupsOpen, waitlist, waitlistCount } from './signupGate';
 import { sendConfirmation } from './routes';
 
 // The operator page (/operator, NEW-13): the people running the server see each family's name, dates,
-// size, status and plan, and can suspend, resume or delete a family, or resend a confirmation email. It
-// never shows what's inside a family and can't sign in as one (decision 6). English only: families never
-// see it.
+// size, status and plan, and can suspend, resume or delete a family, or resend a confirmation email. The
+// History (NEW-24) keeps every action and sign-in. It also opens or closes new sign-ups and lists the
+// waitlist families join while they're closed (NEW-30). It never shows what's inside a family and can't
+// sign in as one (decision 6). English only: families never see it.
 const router = Router();
 
 const MIN_PASSWORD = 12;
@@ -60,9 +63,11 @@ export function operatorFromEnv(now = new Date()): void {
   const row = operatorByEmail(email);
   if (!row) {
     mainDb().prepare('INSERT INTO operators (email, passwordHash, createdAt) VALUES (?, ?, ?)').run(email, hashPassword(password), now.toISOString());
+    recordOperatorAction({ action: 'env-account', operatorEmail: email }, now);
     console.log(`[operator] Made the operator account ${email}. Sign in at /operator, then take OPERATOR_PASSWORD out of the settings.`);
   } else if (!bcrypt.compareSync(password, row.passwordHash)) {
     mainDb().prepare('UPDATE operators SET passwordHash = ?, tokenVersion = tokenVersion + 1 WHERE id = ?').run(hashPassword(password), row.id);
+    recordOperatorAction({ action: 'env-password', operatorEmail: row.email }, now);
     console.log(`[operator] OPERATOR_PASSWORD gave ${email} a new password. Take it out of the settings after signing in.`);
   } else {
     console.warn('[operator] OPERATOR_PASSWORD is still set: take it out of the settings.');
@@ -87,10 +92,13 @@ router.post('/login', (req: OperatorRequest, res: Response) => {
   if (!bcrypt.compareSync(password, row?.passwordHash ?? (dummyHash ??= hashPassword('no one has this password'))) || !row) {
     addFailure(ipKey);
     addFailure(userKey);
+    // Only a real operator's: made-up emails would fill the History
+    if (row) recordOperatorAction({ action: 'wrong-password', operatorEmail: row.email, ip: clientIp(req) });
     console.warn(`[operator] failed login for ${JSON.stringify(email)} from ${clientIp(req)}`);
     return res.status(401).json({ error: 'Wrong email or password' });
   }
   clearFailures(userKey);
+  recordOperatorAction({ action: 'sign-in', operatorEmail: row.email, ip: clientIp(req) });
   console.log(`[operator] ${row.email} signed in from ${clientIp(req)}`);
   res.json({ token: signOperatorToken({ op: row.id, v: row.tokenVersion }), email: row.email });
 });
@@ -118,6 +126,7 @@ router.get('/me', (req: OperatorRequest, res: Response) => {
 /** Signs this operator out on every device. */
 router.post('/logout', (req: OperatorRequest, res: Response) => {
   signOutEverywhere(req.operatorId!);
+  recordOperatorAction({ action: 'sign-out', operatorEmail: req.operatorEmail, ip: clientIp(req) });
   res.json({ ok: true });
 });
 
@@ -129,9 +138,13 @@ router.post('/password', (req: OperatorRequest, res: Response) => {
   if (!bcrypt.compareSync(current, row.passwordHash)) return res.status(400).json({ error: 'Your current password is wrong' });
   if (password.length < MIN_PASSWORD) return res.status(400).json({ error: `Passwords need at least ${MIN_PASSWORD} characters` });
   mainDb().prepare('UPDATE operators SET passwordHash = ?, tokenVersion = tokenVersion + 1 WHERE id = ?').run(hashPassword(password), row.id);
+  recordOperatorAction({ action: 'password', operatorEmail: row.email, ip: clientIp(req) });
   console.log(`[operator] ${row.email} changed their password`);
   res.json({ token: signOperatorToken({ op: row.id, v: row.tokenVersion + 1 }) });
 });
+
+/** `limit` from the query: 50 when it's missing. */
+const limitOf = (req: Request) => Math.min(500, Math.max(1, Math.floor(Number(req.query.limit)) || PAGE));
 
 const fileSize = (file: string) => fs.statSync(file, { throwIfNoEntry: false })?.size ?? 0;
 
@@ -178,7 +191,7 @@ router.get('/families', (req: OperatorRequest, res: Response) => {
     .sort((a, b) => (b.deletedAt ?? b.lastActiveAt ?? b.createdAt).localeCompare(a.deletedAt ?? a.lastActiveAt ?? a.createdAt));
   const offset = Math.max(0, Math.floor(Number(req.query.offset)) || 0);
   // After an action the page asks again for all it has shown, which can be more than one page
-  const limit = Math.min(500, Math.max(1, Math.floor(Number(req.query.limit)) || PAGE));
+  const limit = limitOf(req);
 
   res.json({
     totals,
@@ -194,10 +207,35 @@ router.get('/families', (req: OperatorRequest, res: Response) => {
   });
 });
 
+/**
+ * The History (NEW-24), newest first: 50 entries (or `limit`) from before the entry `before`. `family` is one
+ * family's, deleted ones too; without it, `kind` picks families (every family's), sign-ins (the operators'
+ * own accounts) or sign-ups (the sign-up switch and the waitlist). `found` counts all that match.
+ */
+router.get('/history', (req: OperatorRequest, res: Response) => {
+  const family = text(req.query.family);
+  const where = family ? 'familyId = ?'
+    : req.query.kind === 'families' ? 'familyId IS NOT NULL'
+    : req.query.kind === 'sign-ins' ? `action IN (${SIGN_IN_ACTIONS.map(() => '?').join(', ')})`
+    : req.query.kind === 'sign-ups' ? `action IN (${SIGN_UP_ACTIONS.map(() => '?').join(', ')})` : '1';
+  const args = family ? [family] : req.query.kind === 'sign-ins' ? SIGN_IN_ACTIONS : req.query.kind === 'sign-ups' ? SIGN_UP_ACTIONS : [];
+  const before = Math.floor(Number(req.query.before)) || Number.MAX_SAFE_INTEGER;
+  const main = mainDb();
+  const { found } = main.prepare(`SELECT COUNT(*) AS found FROM operator_history WHERE ${where}`).get(...args) as { found: number };
+  const entries = main.prepare(
+    `SELECT id, at, operatorEmail, action, familyId, familyName, detail, ip FROM operator_history WHERE ${where} AND id < ? ORDER BY id DESC LIMIT ?`,
+  ).all(...args, before, limitOf(req));
+  res.json({ found, entries });
+});
+
 const liveFamily = (id: unknown) =>
   mainDb().prepare('SELECT id, name, status, plan FROM families WHERE id = ? AND deletedAt IS NULL').get(String(id)) as Pick<FamilyRow, 'id' | 'name' | 'status' | 'plan'> | undefined;
-const logAction = (req: OperatorRequest, what: string, family: { id: string; name: string }) =>
-  console.log(`[operator] ${req.operatorEmail} ${what} family ${family.id} (${JSON.stringify(family.name)})`);
+const DID = { suspend: 'suspended', resume: 'resumed', delete: 'deleted', 'resend-confirmation': 'resent the confirmation email in' };
+/** To the server log and the History. */
+function logAction(req: OperatorRequest, action: keyof typeof DID, family: { id: string; name: string }, detail?: string) {
+  console.log(`[operator] ${req.operatorEmail} ${DID[action]} family ${family.id} (${JSON.stringify(family.name)})${detail ? `: ${detail}` : ''}`);
+  recordOperatorAction({ action, operatorEmail: req.operatorEmail, family, detail, ip: clientIp(req) });
+}
 
 /** The family sees the paused page (it can still sign in and export), and its background jobs stop. */
 router.post('/families/:id/suspend', (req: OperatorRequest, res: Response) => {
@@ -205,7 +243,7 @@ router.post('/families/:id/suspend', (req: OperatorRequest, res: Response) => {
   if (!family) return res.status(404).json(NOT_FOUND);
   if (family.status === 'suspended') return res.status(400).json({ error: 'This family is already paused' });
   mainDb().prepare("UPDATE families SET status = 'suspended' WHERE id = ?").run(family.id);
-  logAction(req, 'suspended', family);
+  logAction(req, 'suspend', family);
   res.json({ ok: true });
 });
 
@@ -215,7 +253,7 @@ router.post('/families/:id/resume', (req: OperatorRequest, res: Response) => {
   if (!family) return res.status(404).json(NOT_FOUND);
   if (family.status !== 'suspended') return res.status(400).json({ error: "This family isn't paused" });
   mainDb().prepare('UPDATE families SET status = ? WHERE id = ?').run(family.plan ? 'active' : 'trial', family.id);
-  logAction(req, 'resumed', family);
+  logAction(req, 'resume', family);
   res.json({ ok: true });
 });
 
@@ -227,7 +265,7 @@ router.post('/families/:id/delete', (req: OperatorRequest, res: Response) => {
     return res.status(400).json({ error: "Type the family's name to delete it" });
   }
   deleteFamily(family.id);
-  logAction(req, 'deleted', family);
+  logAction(req, 'delete', family);
   res.json({ ok: true });
 });
 
@@ -245,8 +283,42 @@ router.post('/families/:id/resend-confirmation', (req: OperatorRequest, res: Res
   const user = open && runInFamily(open, () => db.prepare('SELECT displayName, language FROM users WHERE id = ?').get(account.userId) as { displayName: string; language: string } | undefined);
   if (!user) return res.status(404).json({ error: "That email isn't one of this family's parents" });
   sendConfirmation(req, { familyId: family.id, userId: account.userId, email: account.email, name: user.displayName, language: user.language });
-  logAction(req, `resent the confirmation email to ${account.email} in`, family);
+  logAction(req, 'resend-confirmation', family, account.email);
   res.json({ ok: true, email: account.email });
+});
+
+/** New sign-ups (NEW-30): whether they're open, and how many families wait. */
+router.get('/signups', (_req: OperatorRequest, res: Response) => {
+  res.json({ open: signupsOpen(), waiting: waitlistCount() });
+});
+
+/** Opens or closes new sign-ups at once, for the whole server. Closed, the sign-up page is the waitlist form. */
+router.post('/signups', (req: OperatorRequest, res: Response) => {
+  const { open } = req.body;
+  if (typeof open !== 'boolean') return res.status(400).json({ error: 'open must be true or false' });
+  if (open !== signupsOpen()) {
+    setSignupsOpen(open);
+    console.log(`[operator] ${req.operatorEmail} ${open ? 'opened' : 'closed'} new sign-ups`);
+    recordOperatorAction({ action: open ? 'signups-open' : 'signups-closed', operatorEmail: req.operatorEmail, ip: clientIp(req) });
+  }
+  res.json({ open });
+});
+
+/** The waitlist, first come first: 50 entries (or `limit`) after the first `offset`. */
+router.get('/waitlist', (req: OperatorRequest, res: Response) => {
+  const offset = Math.max(0, Math.floor(Number(req.query.offset)) || 0);
+  res.json(waitlist(offset, limitOf(req)));
+});
+
+/** Takes a family off the waitlist (once they've been written to, or let in). */
+router.post('/waitlist/:id/remove', (req: OperatorRequest, res: Response) => {
+  const id = Number(req.params.id);
+  const entry = Number.isInteger(id) ? removeFromWaitlist(id) : undefined;
+  if (!entry) return res.status(404).json({ error: "That family isn't on the waitlist any more" });
+  const detail = `${entry.familyName} (${entry.email})`;
+  console.log(`[operator] ${req.operatorEmail} took ${detail} off the waitlist`);
+  recordOperatorAction({ action: 'waitlist-remove', operatorEmail: req.operatorEmail, detail, ip: clientIp(req) });
+  res.json({ ok: true });
 });
 
 export default router;

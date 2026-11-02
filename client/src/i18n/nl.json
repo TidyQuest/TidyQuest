@@ -1999,7 +1999,16 @@
       "suspendedText": "TidyQuest heeft het account van je gezin gepauzeerd, dus de app is nu niet te gebruiken. Klusjes en geschiedenis staan er nog allemaal, en een ouder kan ze downloaden.",
       "expiredTitle": "De gratis proefperiode is voorbij",
       "expiredParent": "Om TidyQuest te blijven gebruiken, heeft je gezin een abonnement nodig. Klusjes en geschiedenis blijven voorlopig bewaard, en je kunt ze downloaden.",
-      "expiredOther": "De gratis proefperiode van je gezin is voorbij. Vraag een ouder een abonnement te kiezen. Je klusjes en munten staan er nog allemaal."
+      "expiredOther": "De gratis proefperiode van je gezin is voorbij. Vraag een ouder een abonnement te kiezen. Je klusjes en munten staan er nog allemaal.",
+      "waitlistTitle": "Op de wachtlijst",
+      "waitlistSubtitle": "Nieuwe aanmeldingen zijn nu gesloten. Laat je gegevens achter, dan mailen we je zodra er plek is.",
+      "waitlistNote": "Wil je ons nog iets vertellen? (optioneel)",
+      "waitlistNotePlaceholder": "Hoeveel kinderen, hoe oud, waar je op hoopt…",
+      "waitlistAction": "Op de wachtlijst",
+      "waitlistSending": "Versturen…",
+      "waitlistThanks": "Bedankt! Je staat op de wachtlijst. We mailen {email} zodra er plek is.",
+      "waitlistFailed": "Dat is niet gelukt. Probeer het opnieuw.",
+      "errSignupsClosed": "Nieuwe aanmeldingen zijn net gesloten, maar je kunt op de wachtlijst."
     },
     "limits": {
       "people": "Een gezin kan maximaal {n} personen hebben.",

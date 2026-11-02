@@ -4,6 +4,14 @@ import { AVATAR_PHOTO, PROOF_PHOTO, shrinkPhoto } from '../utils/photos';
 import type { User } from './useAuth';
 const API_BASE = '/api';
 
+/** What the hosted sign-up page needs before it's filled in. signupsOpen false: it's the waitlist form (NEW-30). */
+export interface HostedConfig {
+  turnstileSiteKey: string | null;
+  termsUrl: string | null;
+  privacyUrl: string | null;
+  signupsOpen: boolean;
+}
+
 export interface RewardPot {
   saved: number;
   target: number;
@@ -344,10 +352,11 @@ export const api = {
   login: (data: LoginDetails) =>
     apiFetch<{ token: string; user: any }>('/auth/login', { method: 'POST', body: JSON.stringify(data) }),
   // Hosted mode (tidyquest.org)
-  hostedConfig: () =>
-    apiFetch<{ turnstileSiteKey: string | null; termsUrl: string | null; privacyUrl: string | null }>('/hosted/config'),
+  hostedConfig: () => apiFetch<HostedConfig>('/hosted/config'),
   signUp: (data: { familyName: string; parentName: string; email: string; password: string; timeZone: string; language: string; captchaToken?: string; acceptTerms?: boolean }) =>
     apiFetch<{ token: string; user: User }>('/hosted/signup', { method: 'POST', body: JSON.stringify(data) }),
+  joinWaitlist: (data: { familyName: string; parentName: string; email: string; note: string; language: string; captchaToken?: string }) =>
+    apiFetch<{ ok: boolean }>('/hosted/waitlist', { method: 'POST', body: JSON.stringify(data) }),
   forgotPassword: (email: string) =>
     apiFetch<{ ok: boolean }>('/hosted/forgot-password', { method: 'POST', body: JSON.stringify({ email }) }),
   resetPassword: (token: string, password: string) =>

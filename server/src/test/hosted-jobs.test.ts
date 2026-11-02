@@ -218,6 +218,10 @@ describe('Hosted mode: expired trials', () => {
     expect(emails).toHaveLength(1); // warned once
     expect(await endExpiredTrials(daysAfterTrial(60))).toBe(1);
     expect(isLiveFamily(A)).toBe(false);
+    // In the operator page's History, by no operator
+    expect(mainDb().prepare('SELECT at, operatorEmail, action, familyId, familyName FROM operator_history').all()).toEqual([
+      { at: daysAfterTrial(60).toISOString(), operatorEmail: null, action: 'trial-delete', familyId: A, familyName: 'Family A' },
+    ]);
     expect(isLiveFamily(B)).toBe(true);
   });
 

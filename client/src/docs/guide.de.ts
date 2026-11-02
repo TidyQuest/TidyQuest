@@ -93,6 +93,7 @@ export const GUIDE_DE: GuideSection[] = [
         'Bei der Anmeldung schicken wir einen Link, um deine Adresse zu bestätigen. Eine Familie, die die E-Mail eines Elternteils nicht innerhalb von 30 Tagen bestätigt, kann bis dahin nur noch bestätigen oder ihre Daten herunterladen.',
         'Passwort vergessen? auf dem Anmeldebildschirm schickt einem Elternteil einen Link, der einmal und eine Stunde lang funktioniert. Kinder und Teens bitten ein Elternteil, in Einstellungen → Familienmitglieder ein neues festzulegen.',
       ] },
+      { p: 'Wenn neue Anmeldungen auf tidyquest.org geschlossen sind, ist die Anmeldeseite stattdessen ein Formular für die Warteliste. Eine andere Familie kann dort ihre Daten hinterlassen, und wir schreiben ihr, sobald Platz frei ist. Bereits angemeldete Familien betrifft das nicht.' },
       { h: 'Auf tidyquest.org: Grenzen' },
       { ul: [
         'Eine Familie kann bis zu 15 Personen haben.',
