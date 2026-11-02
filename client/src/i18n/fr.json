@@ -1875,7 +1875,11 @@
       "prev_custom": "les {n} jours d'avant",
       "sofar_custom": "les {n} jours d'avant, au même stade",
       "weeksTo": "{n} semaines jusqu'au {date}.",
-      "onlyPeople": "Seulement les tâches de {names} : faites en retard par ces personnes, ou à faire par elles."
+      "onlyPeople": "Seulement les tâches de {names} : faites en retard par ces personnes, ou à faire par elles.",
+      "boughtTap": "Touchez une récompense pour voir qui l’a achetée.",
+      "whoBought": "Qui a acheté {name}",
+      "recentRewards": "Récompenses récentes",
+      "waiting": "en attente"
     },
     "late": {
       "button": "Fait plus tôt…",

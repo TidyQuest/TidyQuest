@@ -334,7 +334,7 @@ export const GUIDE_NL: GuideSection[] = [
         'Drukke en rustige momenten: de weekdagen per tijd van de dag, gemiddeld over de laatste 4 of 12 weken. In de sterkste kleuren wordt het meest gedaan; vage vakjes zijn slechte momenten om klusjes te vragen. Cijfers tonen zet de gemiddelden in de vakjes. Te laat ingevulde klusjes tellen hier niet mee, omdat de tijd niet bekend is.',
         'Wie doet hoeveel: ieders deel van de periode en het verschil met de periode ervoor (bij een lopende periode tot hetzelfde moment, zoals vorige week tot nu).',
         'Overgeslagen en te laat (per klusje, of samengevat per kamer): klusjes die vaak na hun dag gedaan worden en hoeveel dagen te laat; klusjes die aan het eind van een dag nog te laat waren (elke nacht bijgehouden sinds deze versie is geïnstalleerd); en Wie-het-eerst-komt-klusjes die niemand pakte, met hoe lang ze wachtten en welke nu nog wachten.',
-        'Munten erin en eruit (laatste 8 of 26 weken): munten erin boven de lijn (klusjes, bonussen) en eruit eronder (beloningen, bijdragen, Mascottewinkel, reeksschilden, afgetrokken munten), het saldo aan het eind van elke week, en het weekdoel als streepje over de staaf (het telt alleen munten van klusjes). Met één persoon zichtbaar zie je het doel; met meer toont een tabel ieders totalen. Daaronder: de vaakst gekochte beloningen, en de nooit gekochte.',
+        'Munten erin en eruit (laatste 8 of 26 weken): munten erin boven de lijn (klusjes, bonussen) en eruit eronder (beloningen, bijdragen, Mascottewinkel, reeksschilden, afgetrokken munten), het saldo aan het eind van elke week, en het weekdoel als streepje over de staaf (het telt alleen munten van klusjes). Met één persoon zichtbaar zie je het doel; met meer toont een tabel ieders totalen. Daaronder: de vaakst gekochte beloningen (tik op een beloning om te zien wie hem kocht, hoe vaak en voor hoeveel munten), Recente beloningen (elke uit die weken, de nieuwste eerst, met de dag en wie betaalde; bij een gedeelde beloning staat iedereen die meebetaalde erbij, met zijn deel, en ⏳ wacht betekent dat een ouder hem nog niet heeft goedgekeurd), en de nooit gekochte. Terugbetaalde, geannuleerde en afgewezen beloningen tellen niet mee.',
         'De namen onder de filters bepalen wie op elke kaart te zien is: tik op een naam om diens gegevens te verbergen of te tonen, bijvoorbeeld om alleen twee kinderen te vergelijken. Een verborgen naam blijft grijs, zodat je hem weer kunt aantikken; Iedereen toont weer iedereen. De namen in de legenda en de rijen van Wie doet hoeveel doen hetzelfde. Iedereen houdt zijn eigen kleur, en totalen, aandelen en de as tellen alleen wie zichtbaar is. De klusjes van ouders tellen mee.',
       ] },
       { tip: 'Met de spelfuncties uit werken de Inzichten nog steeds; alleen de maat Munten en ‘Munten erin en eruit’ verdwijnen.' },
@@ -539,6 +539,10 @@ export const GUIDE_NL: GuideSection[] = [
         { q: 'Ik heb per ongeluk iets verwijderd', a: [
           'Via Instellingen → Onlangs verwijderd kun je klusjes en beloningen 30 dagen lang terughalen, met hun historie. Bij een klusje waarvan de kamer is verwijderd wordt gevraagd in welke kamer het moet.',
           'Een klusje dat per ongeluk op klaar is gezet kun je ongedaan maken via Activiteit, of met ↩️ Ongedaan in de kamer (ouders).',
+        ] },
+        { q: 'Een verwijderde beloning staat nog in Inzichten', a: [
+          'Dat is expres: wat eerder gekocht is, telt nog mee, zodat eerdere weken kloppen. Hij staat niet meer bij Beloningen of in de Beloningen Winkel, en niet bij Nooit gekocht.',
+          'Toch terug? Instellingen → Onlangs verwijderd haalt hem 30 dagen lang terug.',
         ] },
         { q: 'Is de app up-to-date?', a: [
           'Instellingen → Algemeen toont de versie. Zie "Installeren en updaten" om te updaten of terug te gaan.',

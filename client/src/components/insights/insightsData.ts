@@ -314,19 +314,45 @@ export function coinWeeks(data: InsightsCoins, people: People): CoinWeeks {
   return { inCats, outCats, up, down, earned, spent, choreCoins: up.map((v) => (ci >= 0 ? v[ci] : 0)), goals, balance };
 }
 
-/** Rewards bought most (times, coins) and the active ones never bought in the window. */
+export interface RewardPayer { id: number; name: string; color: string; coins: number }
+export interface RewardBuyer extends RewardPayer { times: number }
+/** One reward handed out (or waiting to be): who paid and how much. A shared pot lists everyone who chipped in. */
+export interface RecentReward { id: number; at: string; name: string; coins: number; waiting: boolean; payers: RewardPayer[] }
+
+/**
+ * Rewards bought most (times, coins, and who bought each: times and coins per person), every purchase newest
+ * first, and the active rewards never bought in the window. All of it counts only the people shown, so a shared
+ * pot counts the shares of those shown.
+ */
 export function rewardStats(data: InsightsCoins, people: People) {
   const rows = data.bought.filter((b) => shows(people, b[1]));
-  const by = new Map<number, { ids: Set<number>; coins: number }>();
-  for (const [rewardId, , redemptionId, coins] of rows) {
-    const it = by.get(rewardId) ?? { ids: new Set<number>(), coins: 0 };
-    it.ids.add(redemptionId); it.coins += coins;
-    by.set(rewardId, it);
-  }
+  const person = new Map(data.people.map((p) => [p.id, p]));
+  const payer = (id: number, coins: number): RewardPayer => ({ id, name: person.get(id)?.name ?? '?', color: person.get(id)?.color ?? 'var(--warm-text-muted)', coins });
   const title = new Map(data.rewards.map((r) => [r.id, r.title]));
+  const by = new Map<number, { ids: Set<number>; coins: number; buyers: Map<number, { ids: Set<number>; coins: number }> }>();
+  const recent = new Map<number, RecentReward>();
+  for (const [rewardId, userId, redemptionId, coins, at, waiting] of rows) {
+    const it = by.get(rewardId) ?? { ids: new Set<number>(), coins: 0, buyers: new Map() };
+    it.ids.add(redemptionId); it.coins += coins;
+    const buyer = it.buyers.get(userId) ?? { ids: new Set<number>(), coins: 0 };
+    buyer.ids.add(redemptionId); buyer.coins += coins;
+    it.buyers.set(userId, buyer);
+    by.set(rewardId, it);
+    const r = recent.get(redemptionId) ?? { id: redemptionId, at, name: title.get(rewardId) ?? '?', coins: 0, waiting: !!waiting, payers: [] };
+    r.coins += coins;
+    r.payers.push(payer(userId, coins));
+    recent.set(redemptionId, r);
+  }
   const most = [...by.entries()]
-    .map(([id, v]) => ({ key: `w${id}`, name: title.get(id) ?? '?', times: v.ids.size, coins: v.coins }))
+    .map(([id, v]) => ({
+      key: `w${id}`, id, name: title.get(id) ?? '?', times: v.ids.size, coins: v.coins,
+      buyers: [...v.buyers.entries()]
+        .map(([u, b]): RewardBuyer => ({ ...payer(u, b.coins), times: b.ids.size }))
+        .sort((a, b) => b.times - a.times || b.coins - a.coins || a.name.localeCompare(b.name)),
+    }))
     .sort((a, b) => b.times - a.times || b.coins - a.coins || a.name.localeCompare(b.name));
+  for (const r of recent.values()) r.payers.sort((a, b) => b.coins - a.coins || a.name.localeCompare(b.name));
+  const newest = [...recent.values()].sort((a, b) => b.at.localeCompare(a.at) || b.id - a.id);
   const never = data.rewards.filter((r) => r.isActive && !r.deleted && !by.has(r.id)).map((r) => r.title);
-  return { most, never };
+  return { most, recent: newest, never };
 }

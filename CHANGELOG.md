@@ -25,6 +25,11 @@ upstream TidyQuest's: see [RELEASE-NOTES.md](RELEASE-NOTES.md).
   each removal goes in the History, under a new Sign-ups filter. It's open by default.
 - Tapping a proof photo in Activity or in Waiting for approval opens it full size inside the app, instead of in
   a new browser tab. Tap anywhere (or press Esc) to close it.
+- Insights: see who bought which reward, and when. Under Coins in and out, tap a reward in Rewards bought most
+  to see who bought it, how many times and for how many coins. A new Recent rewards list shows every reward in
+  the weeks shown, newest first, with the day and who paid (for a shared reward, everyone who chipped in, with
+  their share); ones a parent hasn't approved yet are marked ⏳ waiting. The first 8 show, with Show all for the
+  rest. Both follow the name chips.
 
 ### Changed
 
