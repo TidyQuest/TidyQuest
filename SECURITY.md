@@ -1,183 +1,112 @@
-# Security Policy
+# Security policy
 
-## 🔒 Supported Versions
+## Reporting a vulnerability
 
-| Version | Supported          |
-| ------- | ------------------ |
-| 0.5.x   | :white_check_mark: (beta) |
-| 0.4.x   | :white_check_mark: |
-| < 0.4   | :x:                |
+Please report security problems privately, not in a public issue:
 
----
+- **On GitHub:** the repository's **Security** tab → **Report a vulnerability**
+  ([direct link](https://github.com/TidyQuest/TidyQuest/security/advisories/new)), or
+- **By email:** hello@tidyquest.org, with "Security" in the subject.
 
-## 🛡️ Security Best Practices
+Include what you found, the steps to reproduce it, the version you run (Settings → General shows it), and what
+someone could do with it. A suggested fix is welcome but not needed.
 
-### Before Deploying to Production
+TidyQuest is maintained in spare time. You'll get a reply **within 7 days**; serious problems are fixed first and
+released as soon as they're ready. Once a fix is out, the report can be published with credit to you, if you'd like.
 
-#### 1. **Set a Strong JWT Secret**
+This covers the app in this repository and the hosted service at tidyquest.org.
 
-**⚠️ CRITICAL**: The JWT secret is used to sign authentication tokens. A weak or default secret compromises all user sessions.
+## Supported versions
+
+Only the **latest release** gets security fixes ([releases](https://github.com/TidyQuest/TidyQuest/releases)).
+Please check that a problem still happens on it before reporting. Coming from `mellowfox/tidyquest` (0.6.3)? See
+the README, *Moving from mellowfox/tidyquest*.
+
+## Running it safely
+
+### 1. Set a strong JWT secret
+
+The JWT secret signs every login. A weak or default secret lets anyone sign in as anyone.
 
 ```bash
-# Generate a secure random secret
 openssl rand -base64 32
 ```
 
-**In docker-compose.yml:**
 ```yaml
 environment:
   - JWT_SECRET=<your-generated-secret>
 ```
 
-**Never commit secrets to version control.**
+Never commit secrets to version control.
 
----
+### 2. Use HTTPS with a reverse proxy
 
-#### 2. **Set Your Timezone**
+Don't expose TidyQuest to the internet over plain HTTP. Put Caddy, Nginx or Traefik in front with a valid
+certificate (Let's Encrypt), and set `TRUST_PROXY` so the login limits see each visitor's real address.
 
-TidyQuest uses the `TZ` environment variable for day/week boundaries and notification scheduling. Without it, everything defaults to UTC.
-
-```yaml
-environment:
-  - TZ=Europe/Paris
-```
-
----
-
-#### 3. **Use HTTPS with a Reverse Proxy**
-
-TidyQuest should **never** be exposed directly to the internet over HTTP.
-
-**Recommended setup:**
-- Use Caddy, Nginx, or Traefik as a reverse proxy
-- Obtain a valid TLS certificate (Let's Encrypt)
-- Forward port 443 → TidyQuest container port 3000
-
-**Example with Caddy:**
 ```
 tidyquest.yourdomain.com {
     reverse_proxy localhost:3020
 }
 ```
 
----
-
-#### 4. **Notification Token Protection**
+### 3. Keep the database private
 
 Telegram bot tokens and ntfy access tokens are stored **unencrypted** in the SQLite database.
 
-**Mitigation:**
-- Restrict file system access to the `./data/` directory
-- Use proper file permissions: `chmod 600 data/tidyquest.db`
-- Never expose the database file publicly
-- Regularly back up and encrypt database backups
-
----
-
-#### 5. **Database Backups**
-
-**Location**: `./data/tidyquest.db`
+- Restrict access to the `./data/` folder (`chmod 600 data/tidyquest.db`).
+- Never serve the database file.
+- Back it up regularly, and encrypt the backups.
 
 ```bash
 # Manual backup
 cp data/tidyquest.db backups/tidyquest-$(date +%Y%m%d).db
 
-# Automated daily backup (crontab)
+# Daily at 3:00 (crontab)
 0 3 * * * cd /path/to/tidyquest && cp data/tidyquest.db backups/tidyquest-$(date +\%Y\%m\%d).db
 ```
 
-**Note**: Data export (Settings → Export) never includes password hashes.
+Settings → Export never includes password hashes.
 
----
+### 4. Limit who can reach it
 
-#### 6. **User Avatar Uploads**
+The default Docker Compose setup publishes port `3020` on every network interface. For access from this machine
+only:
 
-**Current validation:**
-- File extension whitelist: `.jpg`, `.jpeg`, `.png`, `.webp` only
-- MIME type check: only `image/*` allowed
-- File size limit: 2MB
-- Old avatars are automatically deleted when replaced
-
----
-
-#### 7. **Network Exposure**
-
-**Default setup (Docker Compose):**
-- Port `3020:3000` is exposed on all interfaces (`0.0.0.0`)
-
-**For local-only access**, bind to localhost:
 ```yaml
 ports:
   - "127.0.0.1:3020:3000"
 ```
 
----
+### 5. Lost the admin password?
 
-#### 8. **Rate Limiting**
-
-Login and registration endpoints are rate-limited (20 attempts per 15 minutes per IP) to prevent brute-force attacks.
-
----
-
-#### 9. **Admin Password Recovery**
-
-If you lose admin access, set the `ADMIN_RESET_PASSWORD` environment variable and restart. The first admin's password will be reset. The variable is cleared from memory immediately after use.
+Set `ADMIN_RESET_PASSWORD` and restart: the first admin's password is reset and they're signed out everywhere.
+**Remove the variable afterwards.** It's ignored in hosted mode.
 
 ```yaml
 environment:
   - ADMIN_RESET_PASSWORD=new-secure-password
 ```
 
-**Remove the variable after recovery** — it's a one-shot mechanism.
+## Checklist
 
----
-
-## 🚨 Reporting a Vulnerability
-
-If you discover a security vulnerability in TidyQuest, please:
-
-1. **Do NOT open a public GitHub issue**
-2. Email the maintainer directly (see GitHub profile)
-3. Include:
-   - Description of the vulnerability
-   - Steps to reproduce
-   - Potential impact
-   - Suggested fix (if applicable)
-
-**Response time**: We aim to acknowledge reports within 48 hours and provide a fix within 7 days for critical issues.
-
----
-
-## 📋 Security Checklist
-
-- [ ] `JWT_SECRET` set via environment variable (not default)
-- [ ] `TZ` set to your local timezone
-- [ ] HTTPS reverse proxy configured
+- [ ] `JWT_SECRET` set to a random value (not the example)
+- [ ] HTTPS reverse proxy in front, and `TRUST_PROXY` set
 - [ ] Database file permissions restricted (`chmod 600`)
-- [ ] Regular backup strategy in place
-- [ ] Firewall rules configured (only allow necessary ports)
-- [ ] Docker image updated to latest version
-- [ ] Notification tokens kept secret (Telegram / ntfy)
-- [ ] `.env` file in `.gitignore` (verified not committed)
+- [ ] Regular, encrypted backups
+- [ ] Firewall allows only the ports you need
+- [ ] Running the latest release
+- [ ] Notification tokens kept secret (Telegram, ntfy)
+- [ ] `.env` not committed
 
----
+## How sign-in works
 
-## 🔐 Authentication & Session Management
-
-- **Algorithm**: JWT (JSON Web Tokens)
-- **Token expiry**: 30 days
-- **Password hashing**: bcrypt (10 rounds)
-- **Authorization**: Role-based (admin, member, child)
-- **Docker**: Container runs as non-root user (`node`) by default
-
----
-
-## 📚 Additional Resources
-
-- [OWASP Top 10](https://owasp.org/www-project-top-ten/)
-- [Docker Security Best Practices](https://docs.docker.com/engine/security/)
-- [SQLite Security Considerations](https://www.sqlite.org/security.html)
-
----
-
-**Last updated**: 2026-03-16
+- **Logins:** JWT, valid for 30 days. Profile → **Log out everywhere else** ends your other logins, a parent can
+  sign anyone out from Settings → Family Members (**Log out of all devices**), and a new password signs the
+  person out everywhere too.
+- **Passwords:** bcrypt (10 rounds).
+- **Limits:** registrations and failed logins, 20 per 15 minutes per address.
+- **Roles:** admin, member and child.
+- **Uploads:** pictures only (`.jpg`, `.jpeg`, `.png`, `.webp`), checked by type and size; an old avatar is deleted
+  when it's replaced.
+- **Docker:** the container runs as the non-root user `node`.

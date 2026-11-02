@@ -19,6 +19,9 @@ What changed in each release, in plain language, newest first. Releases up to v0
   log. Self-hosted installs don't send email and need none of this.
 
 ### Changed
+- The security policy (`SECURITY.md`) is rewritten and up to date: report problems privately through GitHub's
+  **Report a vulnerability** or by email to hello@tidyquest.org, with a reply within 7 days. GitHub's Security tab
+  shows it directly (its old link led to a "page not found").
 - Updated the tools used to build and test TidyQuest, for security fixes in them (Vite, Vitest, ESLint and
   others). None of them ship inside the app, so nothing changes in how it works.
 
