@@ -505,7 +505,7 @@ export const GUIDE_NL: GuideSection[] = [
           'Kinderen typen hun gebruikersnaam, geen e-mail. Ouders kunnen hun e-mail gebruiken, of de gezinscode met hun gebruikersnaam.',
         ] },
         { q: 'De bevestigings- of wachtwoordmail kwam niet aan', a: [
-          'Kijk in je spammap. Instellingen → ✉️ Inlogmail → Opnieuw sturen stuurt een nieuwe bevestigingslink (de oude werkt dan niet meer).',
+          'Hij komt van noreply@tidyquest.org: kijk ook in je spammap en markeer hem als geen spam. Instellingen → ✉️ Inlogmail → Opnieuw sturen stuurt een nieuwe bevestigingslink (de oude werkt dan niet meer).',
           'Een wachtwoordlink werkt een uur lang en maar één keer; vraag een nieuwe aan met Wachtwoord vergeten? op het inlogscherm.',
           'Adres verkeerd getypt? Instellingen → ✉️ Inlogmail → E-mail wijzigen.',
         ] },

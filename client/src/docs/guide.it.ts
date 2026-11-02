@@ -505,7 +505,7 @@ export const GUIDE_IT: GuideSection[] = [
           'I bambini scrivono il loro username, non un’email. I genitori possono usare la loro email o il codice famiglia con il loro username.',
         ] },
         { q: 'L’email di conferma o della password non è arrivata', a: [
-          'Guarda nella cartella spam. Impostazioni → ✉️ Email di accesso → Invia di nuovo manda un nuovo link di conferma (quello vecchio smette di funzionare).',
+          'Arriva da noreply@tidyquest.org: guarda anche nella cartella spam e segnalala come non spam. Impostazioni → ✉️ Email di accesso → Invia di nuovo manda un nuovo link di conferma (quello vecchio smette di funzionare).',
           'Un link per la password funziona per un’ora e una sola volta; chiedine un altro con Password dimenticata? nella schermata di accesso.',
           'Indirizzo scritto male? Impostazioni → ✉️ Email di accesso → Cambia email.',
         ] },

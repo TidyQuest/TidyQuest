@@ -505,7 +505,7 @@ export const GUIDE_DE: GuideSection[] = [
           'Kinder tippen ihren Benutzernamen, keine E-Mail. Eltern können ihre E-Mail oder den Familiencode mit ihrem Benutzernamen nutzen.',
         ] },
         { q: 'Die Bestätigungs- oder Passwort-E-Mail kam nicht an', a: [
-          'Schau im Spam-Ordner nach. Einstellungen → ✉️ Anmelde-E-Mail → Erneut senden schickt einen neuen Bestätigungslink (der alte funktioniert dann nicht mehr).',
+          'Sie kommt von noreply@tidyquest.org: Schau auch im Spam-Ordner nach und markiere sie als kein Spam. Einstellungen → ✉️ Anmelde-E-Mail → Erneut senden schickt einen neuen Bestätigungslink (der alte funktioniert dann nicht mehr).',
           'Ein Passwort-Link funktioniert eine Stunde lang und nur einmal; fordere mit Passwort vergessen? auf dem Anmeldebildschirm einen neuen an.',
           'Adresse falsch eingegeben? Einstellungen → ✉️ Anmelde-E-Mail → E-Mail ändern.',
         ] },

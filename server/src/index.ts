@@ -42,6 +42,7 @@ import { startJobs, type Job } from './hosted/jobs';
 import { filesRouter, proofsRouter } from './hosted/files';
 import hostedRoutes from './hosted/routes';
 import operatorRoutes, { operatorFromEnv } from './hosted/operator';
+import { startEmail } from './hosted/email';
 import { hostedCorsOrigin, securityHeaders } from './hosted/headers';
 import { limits } from './hosted/limits';
 
@@ -149,6 +150,7 @@ if (require.main === module || !process.env.VITEST) {
   if (isHosted()) {
     startHosted();
     operatorFromEnv();
+    startEmail();
   } else initDatabase();
   const app = createApp();
 

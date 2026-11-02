@@ -505,7 +505,7 @@ export const GUIDE_ES: GuideSection[] = [
           'Los niños escriben su usuario, no un correo. Los padres pueden usar su correo o el código de familia con su usuario.',
         ] },
         { q: 'No llegó el correo de confirmación o de contraseña', a: [
-          'Mira en la carpeta de spam. Ajustes → ✉️ Correo de inicio de sesión → Enviarlo de nuevo manda un enlace de confirmación nuevo (el anterior deja de funcionar).',
+          'Llega desde noreply@tidyquest.org: mira también en la carpeta de spam y márcalo como no spam. Ajustes → ✉️ Correo de inicio de sesión → Enviarlo de nuevo manda un enlace de confirmación nuevo (el anterior deja de funcionar).',
           'Un enlace de contraseña funciona una hora y una sola vez; pide otro con ¿Olvidaste la contraseña? en la pantalla de inicio de sesión.',
           '¿Escribiste mal la dirección? Ajustes → ✉️ Correo de inicio de sesión → Cambiar correo.',
         ] },

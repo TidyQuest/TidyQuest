@@ -529,7 +529,7 @@ export const GUIDE_EN: GuideSection[] = [
           'Kids type their username, not an email. Parents can use either their email or the family code with their username.',
         ] },
         { q: 'The confirmation or password email didn’t arrive', a: [
-          'Look in the spam folder. Settings → ✉️ Sign-in email → Send it again sends a new confirmation link (the older one stops working).',
+          'It comes from noreply@tidyquest.org: look in the spam folder too, and mark it as not spam. Settings → ✉️ Sign-in email → Send it again sends a new confirmation link (the older one stops working).',
           'A password link works for one hour and only once; ask for a new one with Forgot password? on the login screen.',
           'Typed the address wrong? Settings → ✉️ Sign-in email → Change email.',
         ] },

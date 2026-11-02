@@ -256,6 +256,18 @@ It runs many families on one server, each with its own database and folder, with
 and an operator page at `/operator`. Billing is optional: with no `PAYMENT_KEY` there's no billing and families never
 expire. The code is in `server/src/hosted/`. To run TidyQuest for your own family, leave `HOSTED` unset.
 
+Hosted mode sends emails (confirm an address, reset a password, change the sign-in email) through any SMTP server.
+Without `SMTP_HOST` they go to the server log, links and all, which is fine for testing only. The log says at startup
+whether the mail server accepted the login.
+
+| Variable | Description |
+|----------|-------------|
+| `SMTP_HOST` | The mail server, e.g. your mailbox host or Postmark, Amazon SES or Resend |
+| `SMTP_PORT` | Default `465` (TLS from the start). Other ports such as `587` must offer STARTTLS before a password is sent |
+| `SMTP_USER`, `SMTP_PASS` | The login, often the mailbox's full address and its password |
+| `EMAIL_FROM` | The sender, e.g. `TidyQuest <noreply@example.org>` (no quotes needed). Default: TidyQuest at `SMTP_USER` |
+| `EMAIL_REPLY_TO` | Optional: where replies go, e.g. a support mailbox |
+
 ### Notifications (Optional)
 
 TidyQuest supports two notification providers (configure in Settings, admin only):
