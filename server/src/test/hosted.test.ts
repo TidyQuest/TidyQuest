@@ -23,7 +23,6 @@ let agent: supertest.Agent;
 let app: Express;
 let A: string;
 let B: string;
-let dbB: InstanceType<typeof Database>;
 let adminA: { user: any; token: string };
 let adminB: { user: any; token: string };
 
@@ -32,7 +31,7 @@ beforeEach(async () => {
   agent = t.agent;
   app = t.app;
   A = t.familyId!;
-  ({ familyId: B, db: dbB } = addTestFamily());
+  ({ familyId: B } = addTestFamily());
   // The same username in both families
   adminA = await createAdmin(agent, 'admin', 'admin123', 'Admin A', A);
   adminB = await createAdmin(agent, 'admin', 'admin123', 'Admin B', B);
@@ -83,24 +82,7 @@ describe('Hosted mode: which family a request belongs to', () => {
   });
 });
 
-describe("Hosted mode: one family never reaches another's data", () => {
-  it("keeps B's people, rooms and chores out of A's pages, and A's changes out of B", async () => {
-    await createUser(agent, adminB.token, { username: 'kid', displayName: 'MARKER-B kid', password: 'pass123', familyId: B });
-    const roomB = (await agent.post('/api/rooms').set(auth(adminB.token)).send({ name: 'MARKER-B room', roomType: 'other' })).body.id;
-    await agent.post(`/api/rooms/${roomB}/tasks`).set(auth(adminB.token)).send({ name: 'MARKER-B chore', effort: 1 });
-    await agent.post('/api/rewards').set(auth(adminB.token)).send({ title: 'MARKER-B reward', costCoins: 5 });
-
-    for (const page of ['/api/users', '/api/rooms', '/api/dashboard', '/api/leaderboard', '/api/history', '/api/rewards', `/api/auth/avatars?family=${A}`]) {
-      const res = await agent.get(page).set(auth(adminA.token));
-      expect(res.status, page).toBe(200);
-      expect(JSON.stringify(res.body), page).not.toContain('MARKER-B');
-    }
-    // A works on its own database: B's room is untouched whatever A does with that id
-    await agent.put(`/api/rooms/${roomB}`).set(auth(adminA.token)).send({ name: 'Renamed by A' });
-    await agent.delete(`/api/rooms/${roomB}`).set(auth(adminA.token));
-    expect(dbB.prepare('SELECT name FROM rooms WHERE id = ?').get(roomB)).toEqual({ name: 'MARKER-B room' });
-  });
-});
+// The isolation sweep (every table, every route) is in hosted-isolation.test.ts.
 
 describe('Hosted mode: avatars and proof photos', () => {
   it("saves an avatar in the family's folder and serves it only from the family's link", async () => {

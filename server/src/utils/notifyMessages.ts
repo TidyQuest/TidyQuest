@@ -1,4 +1,4 @@
-import db from '../database';
+import db, { prepared } from '../database';
 import { tr } from './i18n';
 import { notifyPeople, type Audience } from './notify';
 import { rotationTurnFor } from './schedule';
@@ -13,13 +13,13 @@ const nameOf = (userId: number | null | undefined) =>
 
 /** Who a task is for: whose turn it is, its people, the room's owner, or everyone. */
 export function taskAudience(task: { id: number; roomId: number; assignmentMode?: string | null; rotationPeriod?: string | null; rotationCurrentUserId?: number | null }): Audience {
-  const ids = (db.prepare('SELECT userId FROM task_assignees WHERE taskId = ?').all(task.id) as Array<{ userId: number }>).map((a) => a.userId);
+  const ids = (prepared('SELECT userId FROM task_assignees WHERE taskId = ?').all(task.id) as Array<{ userId: number }>).map((a) => a.userId);
   if (task.assignmentMode === 'rotating' && ids.length > 0) {
     const turn = rotationTurnFor(task, ids);
     if (turn) return [turn];
   }
   if (ids.length > 0) return ids;
-  const owner = (db.prepare('SELECT assignedUserId FROM rooms WHERE id = ?').get(task.roomId) as { assignedUserId: number | null } | undefined)?.assignedUserId;
+  const owner = (prepared('SELECT assignedUserId FROM rooms WHERE id = ?').get(task.roomId) as { assignedUserId: number | null } | undefined)?.assignedUserId;
   return owner ? [owner] : 'everyone';
 }
 

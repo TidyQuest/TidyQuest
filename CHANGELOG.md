@@ -14,11 +14,18 @@ upstream TidyQuest's: see [RELEASE-NOTES.md](RELEASE-NOTES.md).
 - In hosted mode the "Allow new registrations" setting is hidden. Hosted families add people from Settings →
   Family Members, and the public sign-up page is always off there, so the toggle did nothing. Self-hosted installs
   still have it, unchanged.
+- The timed notifications (the morning summary, the evening nudge and chore reminders) are checked once a minute
+  instead of every 30 seconds, and do far less work each time. What gets sent, and when, stays the same.
+- In hosted mode, requests no longer wait while the background jobs go through every family: the jobs let them
+  through after each family.
+- The README says what hosted mode (`HOSTED=1`) is: how tidyquest.org runs, allowed for others but not supported.
 
 ### Fixed
 
 - The side navigation now scrolls when the window is short, so you can always reach every menu item and your
   profile. Before, the lower items and the profile could be cut off with no way to scroll to them.
+- Un-pinning or un-snoozing a chore that no longer exists now answers "not found", as pinning and snoozing
+  already did, instead of saying it worked.
 
 ## v0.14.2 (2026-10-30)
 

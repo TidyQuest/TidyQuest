@@ -1,4 +1,4 @@
-import db from '../database';
+import db, { prepared } from '../database';
 import { isSeasonalNow, nextDueAt, type ScheduledTask } from './schedule';
 import { dateStr, wall } from './clock';
 import { perFamily } from '../hosted/context';
@@ -38,7 +38,7 @@ export interface NotificationTypeSettings {
 export const NOTIFICATION_KINDS: Array<keyof NotificationTypeSettings> = ['taskDue', 'rewardRequest', 'achievementUnlocked', 'choreApproval', 'coinBoost', 'outcome', 'summary', 'nudge', 'reminder', 'rescue', 'cheer', 'teamup'];
 
 function getSetting(key: string): string {
-  const row = db.prepare('SELECT value FROM app_settings WHERE key = ?').get(key) as { value?: string } | undefined;
+  const row = prepared('SELECT value FROM app_settings WHERE key = ?').get(key) as { value?: string } | undefined;
   return row?.value || '';
 }
 

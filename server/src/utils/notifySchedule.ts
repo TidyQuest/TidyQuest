@@ -1,4 +1,4 @@
-import db from '../database';
+import db, { currentDatabase, prepared } from '../database';
 import { tr } from './i18n';
 import { flushNotificationQueue, notificationsOn, notifyPeople } from './notify';
 import { taskAudience } from './notifyMessages';
@@ -20,29 +20,33 @@ const WINDOW_MIN = 90;
 export const SCHEDULE_DEFAULTS = { morningTime: '07:00', eveningTime: '19:00', recapDay: '0', recapTime: '18:00' };
 
 const setting = (key: keyof typeof SCHEDULE_DEFAULTS) =>
-  (db.prepare('SELECT value FROM app_settings WHERE key = ?').get(key) as { value: string } | undefined)?.value || SCHEDULE_DEFAULTS[key];
+  (prepared('SELECT value FROM app_settings WHERE key = ?').get(key) as { value: string } | undefined)?.value || SCHEDULE_DEFAULTS[key];
 const minutes = (hm: string) => { const m = /^(\d\d):(\d\d)$/.exec(hm); return m ? Number(m[1]) * 60 + Number(m[2]) : -1; };
 const nowMinutes = (now: Date) => minuteOfDay(now);
-/** Within [time + offset, time + offset + window) today */
-const inWindow = (now: Date, hm: string, offset = 0, window = WINDOW_MIN) => {
+/** Within [time + offset, time + offset + window) today, `current` being now's minute of the day */
+const inWindow = (current: number, hm: string, offset = 0, window = WINDOW_MIN) => {
   const start = minutes(hm) + offset;
-  return start >= 0 && nowMinutes(now) >= start && nowMinutes(now) < start + window;
+  return start >= 0 && current >= start && current < start + window;
 };
 
 interface TaskRow { id: number; name: string; roomId: number; onDemand: number; isSeasonal: number; frequencyDays: number; lastCompletedAt: string | null;
   scheduleWeekdays: number | null; seasonStartMonth: number | null; seasonEndMonth: number | null; assignmentMode: string | null;
   rotationPeriod: string | null; rotationCurrentUserId: number | null; reminderTime: string | null; reminderDayBefore: number }
 
-const scheduledTasks = (now: Date) => (db.prepare('SELECT * FROM tasks WHERE onDemand = 0 AND archivedAt IS NULL AND deletedAt IS NULL AND pausedAt IS NULL').all() as TaskRow[]).filter((t) => !isSeasonalNow(t, now));
+const scheduledTasks = (now: Date, only = '') => (prepared(`SELECT * FROM tasks WHERE onDemand = 0 AND archivedAt IS NULL AND deletedAt IS NULL AND pausedAt IS NULL ${only}`).all() as TaskRow[]).filter((t) => !isSeasonalNow(t, now));
 /** Not done and due by the end of `by` */
 const dueBy = (t: TaskRow, by: Date, now: Date) => (nextDueAt(t, now)?.getTime() ?? now.getTime()) <= by.getTime();
 
-/** A person's own chores still due today (not ones open to anyone). */
-export function choresDueFor(userId: number, now: Date = new Date()): string[] {
-  return scheduledTasks(now)
-    .filter((t) => { const a = taskAudience(t); return Array.isArray(a) && a.includes(userId); })
-    .filter((t) => dueBy(t, endOfDay(now), now))
-    .map((t) => t.name);
+/** Each person's own chores still due today (not ones open to anyone), worked out once for everyone. */
+function choresDue(now: Date): Map<number, string[]> {
+  const due = new Map<number, string[]>();
+  const by = endOfDay(now);
+  for (const t of scheduledTasks(now)) {
+    const audience = taskAudience(t);
+    if (!Array.isArray(audience) || !dueBy(t, by, now)) continue;
+    for (const id of audience) due.set(id, [...(due.get(id) ?? []), t.name]);
+  }
+  return due;
 }
 
 function list(lang: string, names: string[]) {
@@ -53,10 +57,11 @@ function list(lang: string, names: string[]) {
 const kids = () => db.prepare("SELECT id, displayName, currentStreak, lastActiveDate FROM users WHERE role != 'admin'").all() as Array<{ id: number; displayName: string; currentStreak: number; lastActiveDate: string | null }>;
 
 async function morningSummaries(now: Date) {
-  if (!notificationsOn('summary') || !inWindow(now, setting('morningTime'))) return;
+  if (!notificationsOn('summary') || !inWindow(nowMinutes(now), setting('morningTime'))) return;
   const day = localDateStr(now);
+  const due = choresDue(now);
   for (const kid of kids()) {
-    const chores = choresDueFor(kid.id, now);
+    const chores = due.get(kid.id) ?? [];
     if (chores.length === 0) continue;
     await notifyPeople([kid.id], 'summary', (lang) => tr(lang, 'notify.morning', { name: kid.displayName, list: list(lang, chores) }), { now, dedupeKey: `morning:${day}` });
   }
@@ -64,7 +69,7 @@ async function morningSummaries(now: Date) {
 
 /** The day's Rescue Mission, at the morning time, to the people who can do it. */
 async function rescueAnnouncement(now: Date) {
-  if (!notificationsOn('rescue') || !inWindow(now, setting('morningTime'))) return;
+  if (!notificationsOn('rescue') || !inWindow(nowMinutes(now), setting('morningTime'))) return;
   const mission = todaysMission(now);
   if (!mission || mission.completedBy || !mission.taskId) return;
   const task = db.prepare('SELECT * FROM tasks WHERE id = ?').get(mission.taskId) as TaskRow | undefined;
@@ -74,10 +79,11 @@ async function rescueAnnouncement(now: Date) {
 }
 
 async function eveningNudges(now: Date) {
-  if (!notificationsOn('nudge') || !inWindow(now, setting('eveningTime'))) return;
+  if (!notificationsOn('nudge') || !inWindow(nowMinutes(now), setting('eveningTime'))) return;
   const day = localDateStr(now);
+  const due = choresDue(now);
   for (const kid of kids()) {
-    const chores = choresDueFor(kid.id, now);
+    const chores = due.get(kid.id) ?? [];
     const streakAtRisk = kid.currentStreak >= 2 && kid.lastActiveDate !== day;
     // This week's goal, if it's close (a quarter or less to go)
     const goal = db.prepare(
@@ -101,7 +107,7 @@ async function eveningNudges(now: Date) {
 
 async function weeklyRecap(now: Date) {
   const today = wall(now).weekday;
-  if (!notificationsOn('summary') || String(today) !== setting('recapDay') || !inWindow(now, setting('recapTime'))) return;
+  if (!notificationsOn('summary') || String(today) !== setting('recapDay') || !inWindow(nowMinutes(now), setting('recapTime'))) return;
   // On the week's first day (Sunday by default for Sunday-first families) this week has barely begun: recap the one that ended
   const lastWeek = today === weekStartDay();
   const board = buildBoard(lastWeek ? 'lastWeek' : 'week', 'coins', now);
@@ -119,11 +125,12 @@ async function weeklyRecap(now: Date) {
  */
 async function taskReminders(now: Date) {
   if (!notificationsOn('reminder')) return;
-  for (const t of scheduledTasks(now).filter((x) => x.reminderTime)) {
+  const current = nowMinutes(now);
+  for (const t of scheduledTasks(now, "AND reminderTime IS NOT NULL AND reminderTime != ''")) {
     const target = endOfDay(now, t.reminderDayBefore ? 1 : 0);
     const day = localDateStr(target);
     for (const stage of [1, 2, 3] as const) {
-      if (!inWindow(now, t.reminderTime!, (stage - 1) * 120, 60)) continue;
+      if (!inWindow(current, t.reminderTime!, (stage - 1) * 120, 60)) continue;
       if (!dueBy(t, target, now)) continue;
       const audience = taskAudience(t);
       const key = `reminder:${t.id}:${day}:${stage}`;
@@ -141,8 +148,16 @@ async function taskReminders(now: Date) {
 }
 
 let running = false;
+// The jobs run every 30 seconds and these are checked once a minute, so each database keeps the last minute checked
+const checkedMinute = new WeakMap<object, string>();
 export async function runScheduledNotifications(now: Date = new Date()): Promise<void> {
   if (running) return; // a slow send mustn't overlap the next minute's check
+  const instance = currentDatabase();
+  const minute = `${localDateStr(now)} ${minuteOfDay(now)}`;
+  if (instance) {
+    if (checkedMinute.get(instance) === minute) return;
+    checkedMinute.set(instance, minute);
+  }
   running = true;
   try {
     await flushNotificationQueue(now);

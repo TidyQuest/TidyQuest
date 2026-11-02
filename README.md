@@ -245,6 +245,15 @@ See `.env.example` for all options. Key variables:
 | `TRUST_PROXY` | Behind a reverse proxy | Addresses of the proxy in front (e.g. `loopback, 172.16.0.0/12` for nginx or Nginx Proxy Manager on the same host or in Docker), or a hop count such as `1`. The login limit then counts each visitor's own address instead of the proxy's. Leave it unset without a proxy: the `X-Forwarded-For` header is ignored, since anyone can send it |
 | `ADMIN_RESET_PASSWORD` | No | One-shot admin password recovery. Set, restart, then remove. |
 
+### Hosted mode (`HOSTED=1`)
+
+`HOSTED=1` is how tidyquest.org runs. It works, but it isn't supported, and you're responsible for the data of the
+families you host.
+
+It runs many families on one server, each with its own database and folder, with sign-up, email sign-in for parents
+and an operator page at `/operator`. Billing is optional: with no `PAYMENT_KEY` there's no billing and families never
+expire. The code is in `server/src/hosted/`. To run TidyQuest for your own family, leave `HOSTED` unset.
+
 ### Notifications (Optional)
 
 TidyQuest supports two notification providers (configure in Settings, admin only):
