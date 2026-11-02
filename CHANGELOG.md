@@ -9,6 +9,8 @@ upstream TidyQuest's: see [RELEASE-NOTES.md](RELEASE-NOTES.md).
 
 ## Unreleased
 
+## v0.14.3 (2026-11-02)
+
 ### Added
 
 - Hosted mode: the operator page has a History. It keeps every pause, resume, delete and resent confirmation
