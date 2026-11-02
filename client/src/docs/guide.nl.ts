@@ -93,6 +93,7 @@ export const GUIDE_NL: GuideSection[] = [
         'Bij het aanmelden sturen we een link om je adres te bevestigen. Een gezin dat binnen 30 dagen geen e-mailadres van een ouder bevestigt, kan tot dan alleen nog bevestigen of zijn gegevens downloaden.',
         'Wachtwoord vergeten? op het inlogscherm stuurt een ouder een link die één keer werkt, een uur lang. Kinderen en tieners vragen een ouder om een nieuw wachtwoord in te stellen bij Instellingen → Gezinsleden.',
       ] },
+      { p: 'Als nieuwe aanmeldingen op tidyquest.org gesloten zijn, is de aanmeldpagina een formulier voor de wachtlijst. Een ander gezin kan daar zijn gegevens achterlaten, en we mailen het zodra er plek is. Gezinnen die al zijn aangemeld merken er niets van.' },
       { h: 'Op tidyquest.org: grenzen' },
       { ul: [
         'Een gezin kan maximaal 15 personen hebben.',

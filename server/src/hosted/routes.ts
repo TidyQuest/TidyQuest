@@ -13,6 +13,7 @@ import { createFamily, deleteFamily, familyStatus, openFamily } from './families
 import { newFamilyCode } from './familyCode';
 import { mainDb } from './mainDb';
 import { addParent, captchaPasses, usernameFrom } from './signup';
+import { joinWaitlist, signupsOpen } from './signupGate';
 
 // Hosted mode's own pages (/api/hosted): sign-up, parents' emails and passwords, the family code.
 const router = Router();
@@ -23,14 +24,20 @@ const LINK_EXPIRED = { error: 'This link has expired or was already used. Ask fo
 const BAD_EMAIL = { error: "That email address doesn't look right", code: 'bad-email' };
 const SHORT_PASSWORD = { error: `Passwords need at least ${MIN_PASSWORD} characters`, code: 'short-password' };
 const EMAIL_TAKEN = { error: 'That email already has a family. Sign in, or reset your password.', code: 'email-taken' };
+const CAPTCHA_FAILED = { error: "The check that you're not a robot didn't pass. Please try again.", code: 'captcha' };
+const SIGNUPS_CLOSED = { error: 'New sign-ups are closed right now. You can join the waitlist instead.', code: 'signups-closed' };
 const text = (v: unknown, max: number) => (typeof v === 'string' ? v.trim().slice(0, max) : '');
 
-/** What the sign-up page needs before it's filled in. Terms and privacy links show once the lawyer's are ready (Phase 3). */
+/**
+ * What the sign-up page needs before it's filled in. Terms and privacy links show once the lawyer's are ready
+ * (Phase 3). signupsOpen false: the operator closed new sign-ups, and the page is the waitlist form (NEW-30).
+ */
 router.get('/config', (_req, res: Response) => {
   res.json({
     turnstileSiteKey: process.env.TURNSTILE_SITE_KEY || null,
     termsUrl: process.env.TERMS_URL || null,
     privacyUrl: process.env.PRIVACY_URL || null,
+    signupsOpen: signupsOpen(),
   });
 });
 
@@ -41,6 +48,7 @@ export function sendConfirmation(req: AuthRequest, p: { familyId: string; userId
 
 // Sign-up: a new family (on a 30-day trial), its first parent and family code; then the confirmation email
 router.post('/signup', async (req: AuthRequest, res: Response) => {
+  if (!signupsOpen()) return res.status(403).json(SIGNUPS_CLOSED);
   const familyName = text(req.body.familyName, 60);
   const parentName = text(req.body.parentName, 40);
   const email = cleanEmail(req.body.email);
@@ -58,7 +66,7 @@ router.post('/signup', async (req: AuthRequest, res: Response) => {
     return res.status(429).json({ error: 'Too many sign-ups from here. Please try again later.' });
   }
   if (!(await captchaPasses(req.body.captchaToken, clientIp(req)))) {
-    return res.status(400).json({ error: "The check that you're not a robot didn't pass. Please try again.", code: 'captcha' });
+    return res.status(400).json(CAPTCHA_FAILED);
   }
   if (accountByEmail(email)) {
     return res.status(409).json(EMAIL_TAKEN);
@@ -82,6 +90,23 @@ router.post('/signup', async (req: AuthRequest, res: Response) => {
     console.error('[signup] failed:', err);
     res.status(500).json({ error: 'Sign-up failed. Please try again.' });
   }
+});
+
+// The waitlist (NEW-30): while new sign-ups are closed, the sign-up page sends these instead. They're listed
+// on the operator page and nothing is emailed. The answer is the same for an email that's already waiting.
+router.post('/waitlist', async (req: AuthRequest, res: Response) => {
+  const familyName = text(req.body.familyName, 60);
+  const parentName = text(req.body.parentName, 40);
+  const email = cleanEmail(req.body.email);
+  if (!familyName || !parentName) return res.status(400).json({ error: 'Family name and your name are required' });
+  if (!email) return res.status(400).json(BAD_EMAIL);
+  if (!checkRateLimit(`waitlist:${clientIp(req)}`, 5)) {
+    return res.status(429).json({ error: 'Too many requests from here. Please try again later.' });
+  }
+  if (!(await captchaPasses(req.body.captchaToken, clientIp(req)))) return res.status(400).json(CAPTCHA_FAILED);
+  joinWaitlist({ familyName, parentName, email, language: req.body.language, note: text(req.body.note, 500) || null });
+  console.log('[waitlist] a family joined the waitlist');
+  res.json({ ok: true });
 });
 
 // Forgot password (parents): a link that works once, for an hour. The answer is the same whether or not

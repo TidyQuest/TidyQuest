@@ -7,7 +7,13 @@ export type OperatorAction =
   // On a family, by an operator or (trial-delete) by the expired-trial clean-up
   | 'suspend' | 'resume' | 'delete' | 'resend-confirmation' | 'trial-delete'
   // An operator's own account; the env- ones come from OPERATOR_EMAIL and OPERATOR_PASSWORD
-  | 'sign-in' | 'wrong-password' | 'password' | 'sign-out' | 'env-account' | 'env-password';
+  | 'sign-in' | 'wrong-password' | 'password' | 'sign-out' | 'env-account' | 'env-password'
+  // New sign-ups opened or closed, and a family taken off the waitlist (NEW-30)
+  | 'signups-open' | 'signups-closed' | 'waitlist-remove';
+
+/** The History's Sign-ins and Sign-ups filters; Family actions are the entries with a family. */
+export const SIGN_IN_ACTIONS: OperatorAction[] = ['sign-in', 'wrong-password', 'password', 'sign-out', 'env-account', 'env-password'];
+export const SIGN_UP_ACTIONS: OperatorAction[] = ['signups-open', 'signups-closed', 'waitlist-remove'];
 
 export interface HistoryEntry {
   action: OperatorAction;

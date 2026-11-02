@@ -93,6 +93,7 @@ export const GUIDE_FR: GuideSection[] = [
         'À l’inscription, nous envoyons un lien pour confirmer votre adresse. Une famille qui n’a pas confirmé l’e-mail d’un parent en 30 jours peut seulement le confirmer ou télécharger ses données, jusqu’à ce qu’elle le fasse.',
         'Mot de passe oublié ? sur l’écran de connexion envoie à un parent un lien qui fonctionne une fois, pendant une heure. Les enfants et les ados demandent à un parent d’en choisir un nouveau dans Paramètres → Membres de la famille.',
       ] },
+      { p: 'Quand les inscriptions sur tidyquest.org sont fermées, la page d’inscription devient un formulaire de liste d’attente. Une autre famille peut y laisser ses coordonnées, et nous lui écrivons dès qu’une place se libère. Les familles déjà inscrites ne sont pas concernées.' },
       { h: 'Sur tidyquest.org : limites' },
       { ul: [
         'Une famille peut compter jusqu’à 15 personnes.',

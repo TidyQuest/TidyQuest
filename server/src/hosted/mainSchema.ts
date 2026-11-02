@@ -67,6 +67,21 @@ const MAIN_TABLES: string[] = [
     count INTEGER NOT NULL,
     resetAt INTEGER NOT NULL
   )`,
+  // Server-wide settings the operator page changes (NEW-30: signupsOpen, '0' while closed; absent is open)
+  `CREATE TABLE IF NOT EXISTS settings (
+    key TEXT PRIMARY KEY,
+    value TEXT NOT NULL
+  )`,
+  // Families waiting while new sign-ups are closed (NEW-30), listed on the operator page; one entry per email
+  `CREATE TABLE IF NOT EXISTS waitlist (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    at TEXT NOT NULL,
+    familyName TEXT NOT NULL,
+    parentName TEXT NOT NULL,
+    email TEXT UNIQUE NOT NULL COLLATE NOCASE,
+    language TEXT NOT NULL,
+    note TEXT
+  )`,
 ];
 
 const MAIN_COLUMNS: string[] = [

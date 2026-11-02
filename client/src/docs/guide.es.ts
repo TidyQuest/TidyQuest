@@ -93,6 +93,7 @@ export const GUIDE_ES: GuideSection[] = [
         'Al registrarte enviamos un enlace para confirmar tu dirección. Una familia que no confirma el correo de un padre o una madre en 30 días solo puede confirmarlo o descargar sus datos hasta que lo haga.',
         '¿Olvidaste la contraseña? en la pantalla de inicio de sesión envía a un padre o una madre un enlace que funciona una vez, durante una hora. Los niños y adolescentes piden a sus padres que pongan una nueva en Ajustes → Miembros de la familia.',
       ] },
+      { p: 'Cuando las nuevas altas en tidyquest.org están cerradas, la página de alta es un formulario de lista de espera. Otra familia puede dejar sus datos allí, y le escribimos cuando haya sitio. Las familias ya registradas no se ven afectadas.' },
       { h: 'En tidyquest.org: límites' },
       { ul: [
         'Una familia puede tener hasta 15 personas.',

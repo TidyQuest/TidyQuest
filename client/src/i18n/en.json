@@ -1999,7 +1999,16 @@
       "suspendedText": "TidyQuest has paused your family's account, so the app can't be used for now. Your chores and history are all still here, and a parent can download them.",
       "expiredTitle": "Your free trial has ended",
       "expiredParent": "To keep using TidyQuest, your family needs a plan. Your chores and history are kept for now, and you can download them.",
-      "expiredOther": "Your family's free trial has ended. Ask a parent to pick a plan. Your chores and coins are all still here."
+      "expiredOther": "Your family's free trial has ended. Ask a parent to pick a plan. Your chores and coins are all still here.",
+      "waitlistTitle": "Join the waitlist",
+      "waitlistSubtitle": "New sign-ups are closed for now. Leave your details and we'll email you when there's room.",
+      "waitlistNote": "Anything you'd like us to know? (optional)",
+      "waitlistNotePlaceholder": "How many kids, their ages, what you're hoping for…",
+      "waitlistAction": "Join the waitlist",
+      "waitlistSending": "Sending…",
+      "waitlistThanks": "Thanks! You're on the waitlist. We'll email {email} when there's room.",
+      "waitlistFailed": "That didn't go through. Please try again.",
+      "errSignupsClosed": "New sign-ups just closed, but you can join the waitlist."
     },
     "limits": {
       "people": "A family can have up to {n} people.",

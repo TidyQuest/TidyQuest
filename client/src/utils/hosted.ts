@@ -88,6 +88,7 @@ export function hostedError(err: unknown, t: (key: string) => string, fallback: 
     'wrong-password': 'hosted.errWrongPassword',
     'short-password': 'hosted.errShortPassword',
     captcha: 'hosted.captchaNeeded',
+    'signups-closed': 'hosted.errSignupsClosed',
   };
   return code && keys[code] ? t(keys[code]) : fallback;
 }

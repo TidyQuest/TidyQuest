@@ -1999,7 +1999,16 @@
       "suspendedText": "TidyQuest ha messo in pausa l'account della tua famiglia, quindi per ora l'app non si può usare. Faccende e cronologia sono ancora tutte qui, e un genitore può scaricarle.",
       "expiredTitle": "La prova gratuita è finita",
       "expiredParent": "Per continuare a usare TidyQuest, la tua famiglia ha bisogno di un piano. Faccende e cronologia restano conservate per ora, e puoi scaricarle.",
-      "expiredOther": "La prova gratuita della tua famiglia è finita. Chiedi a un genitore di scegliere un piano. Le tue faccende e le tue monete sono ancora tutte qui."
+      "expiredOther": "La prova gratuita della tua famiglia è finita. Chiedi a un genitore di scegliere un piano. Le tue faccende e le tue monete sono ancora tutte qui.",
+      "waitlistTitle": "Entra nella lista d'attesa",
+      "waitlistSubtitle": "Le nuove iscrizioni sono chiuse per ora. Lascia i tuoi dati e ti scriveremo quando ci sarà posto.",
+      "waitlistNote": "Vuoi dirci qualcosa? (facoltativo)",
+      "waitlistNotePlaceholder": "Quanti figli, che età hanno, cosa speri…",
+      "waitlistAction": "Entra nella lista d'attesa",
+      "waitlistSending": "Invio…",
+      "waitlistThanks": "Grazie! Sei nella lista d'attesa. Scriveremo a {email} quando ci sarà posto.",
+      "waitlistFailed": "Invio non riuscito. Riprova.",
+      "errSignupsClosed": "Le nuove iscrizioni sono appena state chiuse, ma puoi entrare nella lista d'attesa."
     },
     "limits": {
       "people": "Una famiglia può avere fino a {n} persone.",

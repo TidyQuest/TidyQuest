@@ -13,13 +13,15 @@ import { KEEP_DELETED_DAYS, deleteFamily, familyDir, familyStatus, openFamily, t
 import { filesBytes } from './files';
 import { limits } from './limits';
 import { mainDb } from './mainDb';
-import { recordOperatorAction } from './operatorHistory';
+import { SIGN_IN_ACTIONS, SIGN_UP_ACTIONS, recordOperatorAction } from './operatorHistory';
+import { removeFromWaitlist, setSignupsOpen, signupsOpen, waitlist, waitlistCount } from './signupGate';
 import { sendConfirmation } from './routes';
 
 // The operator page (/operator, NEW-13): the people running the server see each family's name, dates,
 // size, status and plan, and can suspend, resume or delete a family, or resend a confirmation email. The
-// History (NEW-24) keeps every action and sign-in. It never shows what's inside a family and can't sign in
-// as one (decision 6). English only: families never see it.
+// History (NEW-24) keeps every action and sign-in. It also opens or closes new sign-ups and lists the
+// waitlist families join while they're closed (NEW-30). It never shows what's inside a family and can't
+// sign in as one (decision 6). English only: families never see it.
 const router = Router();
 
 const MIN_PASSWORD = 12;
@@ -207,15 +209,16 @@ router.get('/families', (req: OperatorRequest, res: Response) => {
 
 /**
  * The History (NEW-24), newest first: 50 entries (or `limit`) from before the entry `before`. `family` is one
- * family's, deleted ones too; without it, `kind` picks families (every family's) or sign-ins (the operators'
- * own accounts). `found` counts all that match.
+ * family's, deleted ones too; without it, `kind` picks families (every family's), sign-ins (the operators'
+ * own accounts) or sign-ups (the sign-up switch and the waitlist). `found` counts all that match.
  */
 router.get('/history', (req: OperatorRequest, res: Response) => {
   const family = text(req.query.family);
   const where = family ? 'familyId = ?'
     : req.query.kind === 'families' ? 'familyId IS NOT NULL'
-    : req.query.kind === 'sign-ins' ? 'familyId IS NULL' : '1';
-  const args = family ? [family] : [];
+    : req.query.kind === 'sign-ins' ? `action IN (${SIGN_IN_ACTIONS.map(() => '?').join(', ')})`
+    : req.query.kind === 'sign-ups' ? `action IN (${SIGN_UP_ACTIONS.map(() => '?').join(', ')})` : '1';
+  const args = family ? [family] : req.query.kind === 'sign-ins' ? SIGN_IN_ACTIONS : req.query.kind === 'sign-ups' ? SIGN_UP_ACTIONS : [];
   const before = Math.floor(Number(req.query.before)) || Number.MAX_SAFE_INTEGER;
   const main = mainDb();
   const { found } = main.prepare(`SELECT COUNT(*) AS found FROM operator_history WHERE ${where}`).get(...args) as { found: number };
@@ -282,6 +285,40 @@ router.post('/families/:id/resend-confirmation', (req: OperatorRequest, res: Res
   sendConfirmation(req, { familyId: family.id, userId: account.userId, email: account.email, name: user.displayName, language: user.language });
   logAction(req, 'resend-confirmation', family, account.email);
   res.json({ ok: true, email: account.email });
+});
+
+/** New sign-ups (NEW-30): whether they're open, and how many families wait. */
+router.get('/signups', (_req: OperatorRequest, res: Response) => {
+  res.json({ open: signupsOpen(), waiting: waitlistCount() });
+});
+
+/** Opens or closes new sign-ups at once, for the whole server. Closed, the sign-up page is the waitlist form. */
+router.post('/signups', (req: OperatorRequest, res: Response) => {
+  const { open } = req.body;
+  if (typeof open !== 'boolean') return res.status(400).json({ error: 'open must be true or false' });
+  if (open !== signupsOpen()) {
+    setSignupsOpen(open);
+    console.log(`[operator] ${req.operatorEmail} ${open ? 'opened' : 'closed'} new sign-ups`);
+    recordOperatorAction({ action: open ? 'signups-open' : 'signups-closed', operatorEmail: req.operatorEmail, ip: clientIp(req) });
+  }
+  res.json({ open });
+});
+
+/** The waitlist, first come first: 50 entries (or `limit`) after the first `offset`. */
+router.get('/waitlist', (req: OperatorRequest, res: Response) => {
+  const offset = Math.max(0, Math.floor(Number(req.query.offset)) || 0);
+  res.json(waitlist(offset, limitOf(req)));
+});
+
+/** Takes a family off the waitlist (once they've been written to, or let in). */
+router.post('/waitlist/:id/remove', (req: OperatorRequest, res: Response) => {
+  const id = Number(req.params.id);
+  const entry = Number.isInteger(id) ? removeFromWaitlist(id) : undefined;
+  if (!entry) return res.status(404).json({ error: "That family isn't on the waitlist any more" });
+  const detail = `${entry.familyName} (${entry.email})`;
+  console.log(`[operator] ${req.operatorEmail} took ${detail} off the waitlist`);
+  recordOperatorAction({ action: 'waitlist-remove', operatorEmail: req.operatorEmail, detail, ip: clientIp(req) });
+  res.json({ ok: true });
 });
 
 export default router;
