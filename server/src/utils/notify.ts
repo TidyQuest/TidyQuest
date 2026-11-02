@@ -1,4 +1,4 @@
-import db from '../database';
+import db, { prepared } from '../database';
 import { isHosted } from '../hosted/context';
 import { at, minuteOfDay, wall } from './clock';
 import { getNotificationTypeSettings, getNtfySettings, getTelegramSettings, sendNtfyMessageDetailed, sendTelegramMessageDetailed, sendTimeout, type NotificationTypeSettings } from './notifications';
@@ -38,7 +38,7 @@ export interface Delivery { channel: Channel; target: string; message: string }
 export type Transport = (d: Delivery) => Promise<{ ok: boolean; error?: string }>;
 
 const getSetting = (key: string): string =>
-  (db.prepare('SELECT value FROM app_settings WHERE key = ?').get(key) as { value?: string } | undefined)?.value ?? '';
+  (prepared('SELECT value FROM app_settings WHERE key = ?').get(key) as { value?: string } | undefined)?.value ?? '';
 
 function haSettings() {
   return { url: getSetting('haUrl').replace(/\/+$/, ''), token: getSetting('haToken'), familyService: getSetting('haFamilyService') };
@@ -87,7 +87,7 @@ function parsePrefs(raw: unknown): Partial<Record<NotifyKind, boolean>> {
 }
 
 export function getPeople(): Person[] {
-  return (db.prepare('SELECT id, displayName, role, language, ntfyTopic, telegramChatId, haNotifyService, notifyPrefs FROM users ORDER BY id').all() as any[])
+  return (prepared('SELECT id, displayName, role, language, ntfyTopic, telegramChatId, haNotifyService, notifyPrefs FROM users ORDER BY id').all() as any[])
     .map((u) => ({ ...u, language: u.language || 'en', prefs: parsePrefs(u.notifyPrefs) }));
 }
 
@@ -157,8 +157,8 @@ export function alreadySent(dedupeKey: string, userId: number | null, now: Date 
   const who = userId === null ? 'IS NULL' : '= ?';
   const args = userId === null ? [dedupeKey] : [dedupeKey, userId];
   const recent = new Date(now.getTime() - 30 * 60000).toISOString();
-  return !!db.prepare(`SELECT 1 FROM notification_log WHERE dedupeKey = ? AND userId ${who} AND (ok = 1 OR sentAt > ?) LIMIT 1`).get(...args, recent)
-    || !!db.prepare(`SELECT 1 FROM notification_queue WHERE dedupeKey = ? AND userId ${who} LIMIT 1`).get(...args);
+  return !!prepared(`SELECT 1 FROM notification_log WHERE dedupeKey = ? AND userId ${who} AND (ok = 1 OR sentAt > ?) LIMIT 1`).get(...args, recent)
+    || !!prepared(`SELECT 1 FROM notification_queue WHERE dedupeKey = ? AND userId ${who} LIMIT 1`).get(...args);
 }
 
 async function deliver(userId: number | null, kind: string, message: string, dedupeKey: string | null, now: Date): Promise<boolean> {
@@ -185,7 +185,7 @@ async function sendOrHold(person: Person | null, kind: NotifyKind, message: stri
 
 /** Send what waited out quiet hours (called by the periodic check). */
 export async function flushNotificationQueue(now: Date = new Date()): Promise<void> {
-  const due = db.prepare('SELECT * FROM notification_queue WHERE notBefore <= ? ORDER BY id').all(now.toISOString()) as any[];
+  const due = prepared('SELECT * FROM notification_queue WHERE notBefore <= ? ORDER BY id').all(now.toISOString()) as any[];
   for (const q of due) {
     // Claim it first so an overlapping check can't send it twice
     if (db.prepare('DELETE FROM notification_queue WHERE id = ?').run(q.id).changes === 0) continue;

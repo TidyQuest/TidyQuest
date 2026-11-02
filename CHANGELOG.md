@@ -14,6 +14,10 @@ upstream TidyQuest's: see [RELEASE-NOTES.md](RELEASE-NOTES.md).
 - In hosted mode the "Allow new registrations" setting is hidden. Hosted families add people from Settings →
   Family Members, and the public sign-up page is always off there, so the toggle did nothing. Self-hosted installs
   still have it, unchanged.
+- The timed notifications (the morning summary, the evening nudge and chore reminders) are checked once a minute
+  instead of every 30 seconds, and do far less work each time. What gets sent, and when, stays the same.
+- In hosted mode, requests no longer wait while the background jobs go through every family: the jobs let them
+  through after each family.
 
 ### Fixed
 

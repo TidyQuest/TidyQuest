@@ -37,7 +37,7 @@ import { resumeDuePauses } from './utils/pause';
 import insightsRoutes from './routes/insights';
 import { countRequests, isHosted } from './hosted/context';
 import { startHosted } from './hosted/families';
-import { startJobs } from './hosted/jobs';
+import { startJobs, type Job } from './hosted/jobs';
 import { filesRouter } from './hosted/files';
 import hostedRoutes from './hosted/routes';
 import operatorRoutes, { operatorFromEnv } from './hosted/operator';
@@ -130,6 +130,17 @@ export function createApp() {
   return app;
 }
 
+/** The background jobs: every 30 seconds, for each family (hosted/jobs.ts). */
+export const backgroundJobs: Job[] = [
+  sendDueTaskNotificationsIfNeeded,
+  sendCoinBoostNotificationsIfNeeded,
+  runScheduledNotifications,
+  closeOldTeamups,
+  settleAllStreaks,
+  snapshotOverdueChores,
+  resumeDuePauses,
+];
+
 // Start server only when run directly (not imported by tests)
 if (require.main === module || !process.env.VITEST) {
   const PORT = process.env.PORT || 3000;
@@ -148,15 +159,6 @@ if (require.main === module || !process.env.VITEST) {
 
   app.listen(PORT, () => {
     console.log(`TidyQuest server running on http://localhost:${PORT}${isHosted() ? ' (hosted mode)' : ''}`);
-    // Every 30 seconds, for each family (hosted/jobs.ts)
-    startJobs([
-      sendDueTaskNotificationsIfNeeded,
-      sendCoinBoostNotificationsIfNeeded,
-      runScheduledNotifications,
-      closeOldTeamups,
-      settleAllStreaks,
-      snapshotOverdueChores,
-      resumeDuePauses,
-    ]);
+    startJobs(backgroundJobs);
   });
 }

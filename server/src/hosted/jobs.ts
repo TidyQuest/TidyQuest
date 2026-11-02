@@ -27,6 +27,8 @@ export async function forEachFamily(job: () => unknown): Promise<void> {
     } catch (err) {
       console.error(`[jobs] Family ${id} failed:`, err);
     }
+    // Requests waiting meanwhile go next: the server pauses for one family's jobs at most, not a whole run
+    await new Promise((resolve) => setImmediate(resolve));
   }
 }
 

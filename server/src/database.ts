@@ -35,6 +35,20 @@ export function currentDatabase(): InstanceType<typeof Database> | null {
   return currentFamily()?.db ?? _db;
 }
 
+// Statements the background jobs run thousands of times a minute: each database keeps them prepared
+const kept = new WeakMap<object, Map<string, Database.Statement>>();
+
+/** db.prepare(sql), prepared once per database. Only for SQL with no values written into it. */
+export function prepared(sql: string): Database.Statement {
+  const instance = currentDatabase();
+  if (!instance) return db.prepare(sql); // throws, as the db proxy does outside a family
+  let statements = kept.get(instance);
+  if (!statements) kept.set(instance, (statements = new Map()));
+  let statement = statements.get(sql);
+  if (!statement) statements.set(sql, (statement = instance.prepare(sql)));
+  return statement;
+}
+
 // Proxy so that route files importing `db` always reach the current database: the request's family in
 // hosted mode, else _db. This allows tests to swap the DB via setDatabase() without module mocking.
 const db = new Proxy({} as InstanceType<typeof Database>, {
