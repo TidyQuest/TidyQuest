@@ -299,6 +299,9 @@ const NEW_COLUMNS: string[] = [
   // (middleware/auth.ts). Raised by "Log out everywhere else", a parent's "Log out of all devices"
   // and every password change.
   `ALTER TABLE users ADD COLUMN tokenVersion INTEGER NOT NULL DEFAULT 0`,
+  // Deleting a reward hides it (deletedAt set) but keeps the row, like chores (FIX-22): its purchases keep their
+  // name in Insights, the coins chart and Approvals. The shop, the catalog and reward rules filter deletedAt IS NULL.
+  `ALTER TABLE rewards ADD COLUMN deletedAt TEXT`,
 ];
 
 /** Fork tables included in backup export/import: key in the backup file -> table. */

@@ -272,8 +272,11 @@ describe('insights', () => {
         chores: [7, 10], bonus: [7, 7], adjust: [7, 3], rewards: [7, 20], chipins: [7, 12], mascot: [7, 4], shields: [7, 6],
       });
       expect(res.body.goals).toEqual([[7, kidId, 100], [6, kidId, 90]]);
-      expect(res.body.bought).toEqual(expect.arrayContaining([[movie, kidId, movieId, 20], [pizza, kidId, potId, 12], [pizza, admin.user.id, potId, 18]]));
+      // Who bought what and when (ENH-15): the movie is still waiting to be handed over; the pot was, and lists both payers
+      const when = expect.stringMatching(/^\d{4}-\d\d-\d\dT/);
+      expect(res.body.bought).toEqual(expect.arrayContaining([[movie, kidId, movieId, 20, when, 1], [pizza, kidId, potId, 12, when, 0], [pizza, admin.user.id, potId, 18, when, 0]]));
       expect(res.body.bought).toHaveLength(3);
+      expect(Math.abs(Date.parse(res.body.bought[0][4]) - Date.now())).toBeLessThan(60_000);
       expect(res.body.rewards.map((r: { title: string }) => r.title)).toContain('Never wanted');
       expect(res.body.people.find((p: { id: number }) => p.id === kidId)).toHaveProperty('balance');
 

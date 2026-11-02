@@ -358,7 +358,7 @@ export const GUIDE_EN: GuideSection[] = [
         'Busy and quiet times: weekdays by time of day, averaged over the last 4 or 12 weeks. The strongest colors are when the most gets done; faint squares are bad times to push chores. Show numbers puts the averages in the squares. Chores logged late are left out, because their time of day isn’t known.',
         'Who does how much: each person’s share of the period, and the change from the period before (while a period is still running, up to the same point, like last week by now).',
         'Skipped and late (by chore, or rolled up by room): chores often done after their due day and by how many days; chores left overdue at the end of a day (recorded nightly from the day this version was installed); and First come, first served chores nobody grabbed, with how long they waited and which are waiting now.',
-        'Coins in and out (last 8 or 26 weeks): coins in above the line (chores, bonuses) and out below (rewards, chip-ins, the Mascot shop, streak shields, coins taken off), the balance at the end of each week, and the weekly goal as a mark across the bar (it counts chore coins only). With one person shown you see their goal; with more, a table shows each one’s totals. Underneath: the rewards bought most, and the ones never bought.',
+        'Coins in and out (last 8 or 26 weeks): coins in above the line (chores, bonuses) and out below (rewards, chip-ins, the Mascot shop, streak shields, coins taken off), the balance at the end of each week, and the weekly goal as a mark across the bar (it counts chore coins only). With one person shown you see their goal; with more, a table shows each one’s totals. Underneath: the rewards bought most (tap one to see who bought it, how many times and for how many coins), Recent rewards (each one in those weeks, newest first, with the day and who paid; a shared reward lists everyone who chipped in, with their share, and ⏳ waiting means a parent hasn’t approved it yet), and the ones never bought. Refunded, cancelled and turned-down rewards aren’t counted.',
         'The name chips under the filters pick who’s shown on every card: tap a name to hide or show their data, for example to compare only two kids. A hidden name stays greyed so it can be tapped back on; Everyone shows all again. Names in the legend and the Who does how much rows do the same. Colors stay with each person, and totals, shares and the axis count only who’s shown. Parents’ own chores are included.',
       ] },
       { tip: 'With game features switched off, Insights still works; only the Coins measure and Coins in and out are hidden.' },
@@ -376,6 +376,7 @@ export const GUIDE_EN: GuideSection[] = [
         'Settings → Spreadsheets: download chores or rewards, edit them in any spreadsheet app, and load them back. You see a preview first and nothing is deleted.',
         'To delete a chore, open it with Edit; Delete task is at the bottom of the form. It goes to Settings → Recently deleted for 30 days and can be restored from there. Rewards work the same way.',
         'Deleting never takes coins away or erases what was done: past completions keep showing in Activity, the Board and goals under the chore’s name, even after it leaves Recently deleted.',
+        'A deleted reward keeps its history the same way: what was bought before stays in Insights under its name. A request still waiting stays in Reward requests (under the catalog), so a parent can still approve it or turn it down, which gives the coins back.',
         'Deleting a room (Rooms → 🗑) deletes its chores too, and the room can’t be brought back. Their history and coins stay.',
       ] },
     ],
@@ -562,6 +563,10 @@ export const GUIDE_EN: GuideSection[] = [
         { q: 'I deleted something by mistake', a: [
           'Settings → Recently deleted can bring chores and rewards back for 30 days, with their history. A chore whose room was deleted asks which room to go into.',
           'A chore marked done by mistake can be undone from Activity, or with ↩️ Undo in its room (parents).',
+        ] },
+        { q: 'A reward I deleted still shows in Insights', a: [
+          'That’s on purpose: what was bought before still counts, so past weeks add up. It’s gone from Rewards and the Rewards Catalog, and isn’t listed under Never bought.',
+          'Changed your mind? Settings → Recently deleted brings it back for 30 days.',
         ] },
         { q: 'Is the app up to date?', a: [
           'Settings → General shows the version. See "Installing and updating" to update or roll back.',

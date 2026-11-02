@@ -275,7 +275,7 @@ router.post('/tasks/import', (req: AuthRequest, res: Response) => {
 
 router.get('/rewards', (req: AuthRequest, res: Response) => {
   if (!ensureAdmin(req.userId)) return res.status(403).json({ error: 'Admin only' });
-  const rewards = db.prepare('SELECT * FROM rewards ORDER BY isActive DESC, costCoins ASC, id ASC').all() as any[];
+  const rewards = db.prepare('SELECT * FROM rewards WHERE deletedAt IS NULL ORDER BY isActive DESC, costCoins ASC, id ASC').all() as any[];
   csvFile(res, 'tidyquest-rewards.csv', toCsv(REWARD_COLUMNS, rewards.map((r) => [r.title, r.description ?? '', r.costCoins, yesNo(r.isActive), r.category ?? ''])));
 });
 
@@ -289,7 +289,7 @@ router.post('/rewards/import', (req: AuthRequest, res: Response) => {
   if ('error' in table) return res.status(table.error!.status).json(table.error!.body);
   const { rows, has, cell, unknownColumns } = table;
 
-  const rewards = db.prepare('SELECT * FROM rewards').all() as any[];
+  const rewards = db.prepare('SELECT * FROM rewards WHERE deletedAt IS NULL').all() as any[];
   const seen = new Map<string, number>();
   const results: RewardRow[] = [];
   const ops: RewardOp[] = [];

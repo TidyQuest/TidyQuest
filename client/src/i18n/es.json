@@ -1875,7 +1875,11 @@
       "prev_custom": "los {n} días anteriores",
       "sofar_custom": "los {n} días anteriores, hasta ahora",
       "weeksTo": "{n} semanas hasta el {date}.",
-      "onlyPeople": "Solo las tareas de {names}: las que hicieron tarde o las que les tocan."
+      "onlyPeople": "Solo las tareas de {names}: las que hicieron tarde o las que les tocan.",
+      "boughtTap": "Toca una recompensa para ver quién la compró.",
+      "whoBought": "Quién compró {name}",
+      "recentRewards": "Recompensas recientes",
+      "waiting": "en espera"
     },
     "late": {
       "button": "Hecho antes…",

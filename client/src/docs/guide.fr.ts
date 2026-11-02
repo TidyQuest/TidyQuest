@@ -334,7 +334,7 @@ export const GUIDE_FR: GuideSection[] = [
         'Moments chargés et calmes : les jours de la semaine par moment de la journée, en moyenne sur les 4 ou 12 dernières semaines. Les couleurs les plus fortes montrent quand on en fait le plus ; les cases pâles sont de mauvais moments pour insister. Afficher les chiffres met les moyennes dans les cases. Les tâches notées en retard n’y sont pas, car leur heure n’est pas connue.',
         'Qui fait combien : la part de chacun sur la période, et l’écart avec la période d’avant (pour une période en cours, jusqu’au même moment, comme la semaine dernière à ce stade).',
         'Oubliées et en retard (par tâche, ou regroupées par pièce) : les tâches souvent faites après leur jour prévu et de combien de jours ; les tâches restées en retard à la fin d’une journée (enregistrées chaque nuit depuis l’installation de cette version) ; et les tâches Premier arrivé, premier servi que personne n’a prises, avec leur temps d’attente et celles qui attendent encore.',
-        'Pièces gagnées et dépensées (8 ou 26 dernières semaines) : les pièces gagnées au-dessus de la ligne (tâches, bonus) et dépensées en dessous (récompenses, participations, Boutique de la mascotte, boucliers de série, pièces retirées), le solde à la fin de chaque semaine, et l’objectif de la semaine en trait sur la barre (il ne compte que les pièces des tâches). Avec une seule personne affichée, vous voyez son objectif ; avec plusieurs, un tableau montre les totaux de chacune. En dessous : les récompenses les plus achetées, et celles jamais achetées.',
+        'Pièces gagnées et dépensées (8 ou 26 dernières semaines) : les pièces gagnées au-dessus de la ligne (tâches, bonus) et dépensées en dessous (récompenses, participations, Boutique de la mascotte, boucliers de série, pièces retirées), le solde à la fin de chaque semaine, et l’objectif de la semaine en trait sur la barre (il ne compte que les pièces des tâches). Avec une seule personne affichée, vous voyez son objectif ; avec plusieurs, un tableau montre les totaux de chacune. En dessous : les récompenses les plus achetées (touchez-en une pour voir qui l’a achetée, combien de fois et pour combien de pièces), Récompenses récentes (chacune de ces semaines, de la plus récente à la plus ancienne, avec le jour et qui a payé ; une récompense partagée montre tous ceux qui ont participé, avec leur part, et ⏳ en attente veut dire qu’un parent ne l’a pas encore validée), et celles jamais achetées. Les récompenses remboursées, annulées ou refusées ne comptent pas.',
         'Les noms sous les filtres choisissent qui est affiché sur toutes les cartes : touchez un nom pour masquer ou afficher ses données, par exemple pour comparer seulement deux enfants. Un nom masqué reste grisé pour pouvoir le réactiver ; Tout le monde réaffiche tout. Les noms de la légende et les lignes de Qui fait combien font pareil. Chacun garde sa couleur, et les totaux, les parts et l’axe ne comptent que les personnes affichées. Les tâches des parents sont incluses.',
       ] },
       { tip: 'Avec les fonctions de jeu désactivées, les Statistiques marchent toujours ; seules la mesure Pièces et la carte Pièces gagnées et dépensées sont masquées.' },
@@ -352,6 +352,7 @@ export const GUIDE_FR: GuideSection[] = [
         'Paramètres → Tableurs : télécharge les tâches ou les récompenses, modifie-les dans n’importe quelle appli de tableur, et recharge-les. Tu vois d’abord un aperçu et rien n’est supprimé.',
         'Pour supprimer une tâche, ouvre-la avec Modifier ; Supprimer la tâche est en bas du formulaire. Elle va dans Paramètres → Supprimés récemment pendant 30 jours et peut y être restaurée. Les récompenses fonctionnent de la même façon.',
         'Supprimer ne retire jamais de pièces et n’efface pas ce qui a été fait : les réalisations passées restent visibles dans Activité, le Tableau et les objectifs sous le nom de la tâche, même après qu’elle a quitté Supprimés récemment.',
+        'Une récompense supprimée garde son historique de la même façon : ce qui a été acheté reste dans Statistiques sous son nom. Une demande encore en attente reste dans Demandes de récompenses (sous le catalogue) : un parent peut toujours la valider ou la refuser, ce qui rend les pièces.',
         'Supprimer une pièce (Pièces → 🗑) supprime aussi ses tâches, et la pièce ne peut pas être récupérée. Leur historique et leurs pièces restent.',
       ] },
     ],
@@ -538,6 +539,10 @@ export const GUIDE_FR: GuideSection[] = [
         { q: 'J’ai supprimé quelque chose par erreur', a: [
           'Paramètres → Supprimés récemment peut ramener des tâches et des récompenses pendant 30 jours, avec leur historique. Une tâche dont la pièce a été supprimée demande dans quelle pièce la remettre.',
           'Une tâche marquée comme faite par erreur peut être annulée depuis Activité, ou avec ↩️ Annuler dans sa pièce (parents).',
+        ] },
+        { q: 'Une récompense supprimée apparaît encore dans Statistiques', a: [
+          'C’est voulu : ce qui a été acheté compte toujours, pour que les semaines passées restent justes. Elle n’est plus dans Récompenses ni dans le Catalogue des récompenses, ni dans Jamais achetées.',
+          'Changement d’avis ? Paramètres → Supprimés récemment la ramène pendant 30 jours.',
         ] },
         { q: 'L’appli est-elle à jour ?', a: [
           'Paramètres → Général montre la version. Voir « Installation et mises à jour » pour mettre à jour ou revenir en arrière.',

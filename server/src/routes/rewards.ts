@@ -14,7 +14,7 @@ router.use(authMiddleware);
 
 router.get('/', (req: AuthRequest, res: Response) => {
   const rewards = db.prepare(
-    'SELECT id, title, description, costCoins, isActive, isPreset, createdBy, createdAt, category, sortOrder FROM rewards WHERE isActive = 1 ORDER BY costCoins ASC, id ASC'
+    'SELECT id, title, description, costCoins, isActive, isPreset, createdBy, createdAt, category, sortOrder FROM rewards WHERE isActive = 1 AND deletedAt IS NULL ORDER BY costCoins ASC, id ASC'
   ).all();
   const mine = db.prepare(
     `SELECT rr.id, rr.rewardId, rr.userId, rr.costCoins, rr.redeemedAt, rr.status, r.title,
@@ -32,7 +32,7 @@ router.get('/', (req: AuthRequest, res: Response) => {
 router.get('/admin', (req: AuthRequest, res: Response) => {
   if (!ensureAdmin(req.userId)) return res.status(403).json({ error: 'Admin only' });
   const rewards = db.prepare(
-    'SELECT id, title, description, costCoins, isActive, isPreset, createdBy, createdAt, category, sortOrder FROM rewards ORDER BY isActive DESC, costCoins ASC, id ASC'
+    'SELECT id, title, description, costCoins, isActive, isPreset, createdBy, createdAt, category, sortOrder FROM rewards WHERE deletedAt IS NULL ORDER BY isActive DESC, costCoins ASC, id ASC'
   ).all();
   const redemptions = db.prepare(
     `SELECT rr.id, rr.rewardId, rr.userId, rr.costCoins, rr.redeemedAt, rr.status, r.title, u.displayName
@@ -281,7 +281,7 @@ router.post('/', (req: AuthRequest, res: Response) => {
 router.put('/:id', (req: AuthRequest, res: Response) => {
   if (!ensureAdmin(req.userId)) return res.status(403).json({ error: 'Admin only' });
   const id = parseInt(req.params.id as string, 10);
-  const reward = db.prepare('SELECT id, isActive FROM rewards WHERE id = ?').get(id) as any;
+  const reward = db.prepare('SELECT id, isActive FROM rewards WHERE id = ? AND deletedAt IS NULL').get(id) as any;
   if (!reward) return res.status(404).json({ error: 'Reward not found' });
 
   const { title, description, costCoins, isActive } = req.body as { title?: string; description?: string; costCoins?: number; isActive?: boolean | number };
@@ -305,7 +305,7 @@ router.put('/:id', (req: AuthRequest, res: Response) => {
 router.delete('/:id', (req: AuthRequest, res: Response) => {
   if (!ensureAdmin(req.userId)) return res.status(403).json({ error: 'Admin only' });
   const id = parseInt(req.params.id as string, 10);
-  const reward = db.prepare('SELECT id FROM rewards WHERE id = ?').get(id) as any;
+  const reward = db.prepare('SELECT id FROM rewards WHERE id = ? AND deletedAt IS NULL').get(id) as any;
   if (!reward) return res.status(404).json({ error: 'Reward not found' });
   // Coins already chipped into a shared pot go back first; then it goes to the trash with its
   // redemptions and rules (restorable for 30 days)
@@ -321,7 +321,7 @@ router.post('/:id/redeem', (req: AuthRequest, res: Response) => {
   }
 
   const id = parseInt(req.params.id as string, 10);
-  const reward = db.prepare('SELECT id, title, costCoins, isActive FROM rewards WHERE id = ?').get(id) as any;
+  const reward = db.prepare('SELECT id, title, costCoins, isActive FROM rewards WHERE id = ? AND deletedAt IS NULL').get(id) as any;
   if (!reward || !reward.isActive) return res.status(404).json({ error: 'Reward not available' });
   const rule = getRules(id)!;
   if (rule.isShared) return res.status(400).json({ error: 'shared_reward' });
@@ -354,7 +354,7 @@ router.post('/:id/redeem', (req: AuthRequest, res: Response) => {
 router.put('/:id/category', (req: AuthRequest, res: Response) => {
   if (!ensureAdmin(req.userId)) return res.status(403).json({ error: 'Admin only' });
   const id = parseInt(req.params.id as string, 10);
-  if (!db.prepare('SELECT 1 FROM rewards WHERE id = ?').get(id)) return res.status(404).json({ error: 'Reward not found' });
+  if (!db.prepare('SELECT 1 FROM rewards WHERE id = ? AND deletedAt IS NULL').get(id)) return res.status(404).json({ error: 'Reward not found' });
   const category = typeof req.body?.category === 'string' ? req.body.category.trim().slice(0, 40) : '';
   db.prepare('UPDATE rewards SET category = ? WHERE id = ?').run(category || null, id);
   res.json({ id, category: category || null });
@@ -367,7 +367,7 @@ router.post('/order', (req: AuthRequest, res: Response) => {
   if (!Array.isArray(ids) || ids.length === 0 || ids.length > 1000 || !ids.every((n) => Number.isInteger(n) && n > 0)) {
     return res.status(400).json({ error: 'ids must be a non-empty array of reward ids' });
   }
-  const set = db.prepare('UPDATE rewards SET sortOrder = ? WHERE id = ?');
+  const set = db.prepare('UPDATE rewards SET sortOrder = ? WHERE id = ? AND deletedAt IS NULL');
   db.transaction(() => ids.forEach((id: number, i: number) => set.run(i + 1, id)))();
   res.json({ success: true });
 });

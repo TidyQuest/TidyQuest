@@ -25,6 +25,11 @@ upstream TidyQuest's: see [RELEASE-NOTES.md](RELEASE-NOTES.md).
   each removal goes in the History, under a new Sign-ups filter. It's open by default.
 - Tapping a proof photo in Activity or in Waiting for approval opens it full size inside the app, instead of in
   a new browser tab. Tap anywhere (or press Esc) to close it.
+- Insights: see who bought which reward, and when. Under Coins in and out, tap a reward in Rewards bought most
+  to see who bought it, how many times and for how many coins. A new Recent rewards list shows every reward in
+  the weeks shown, newest first, with the day and who paid (for a shared reward, everyone who chipped in, with
+  their share); ones a parent hasn't approved yet are marked ⏳ waiting. The first 8 show, with Show all for the
+  rest. Both follow the name chips.
 
 ### Changed
 
@@ -45,6 +50,11 @@ upstream TidyQuest's: see [RELEASE-NOTES.md](RELEASE-NOTES.md).
 
 ### Fixed
 
+- Deleting a reward no longer erases what was bought with it. Its past purchases stay in Insights (the coins
+  chart's spending bars and Rewards bought most), so past weeks no longer look like less was spent. A request
+  that was still waiting stays with Reward requests, where a parent can still approve it or turn it down (which
+  gives the coins back); before, it vanished and its coins never came back. Restoring the reward from Recently
+  deleted works as before. Rewards already in Recently deleted get their purchases back too.
 - The side navigation now scrolls when the window is short, so you can always reach every menu item and your
   profile. Before, the lower items and the profile could be cut off with no way to scroll to them.
 - Un-pinning or un-snoozing a chore that no longer exists now answers "not found", as pinning and snoozing

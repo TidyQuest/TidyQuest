@@ -1875,7 +1875,11 @@
       "prev_custom": "de {n} dagen ervoor",
       "sofar_custom": "de {n} dagen ervoor, tot nu",
       "weeksTo": "{n} weken tot {date}.",
-      "onlyPeople": "Alleen klusjes van {names}: door hen te laat gedaan, of voor hen om te doen."
+      "onlyPeople": "Alleen klusjes van {names}: door hen te laat gedaan, of voor hen om te doen.",
+      "boughtTap": "Tik op een beloning om te zien wie hem kocht.",
+      "whoBought": "Wie {name} kocht",
+      "recentRewards": "Recente beloningen",
+      "waiting": "wacht"
     },
     "late": {
       "button": "Eerder gedaan…",

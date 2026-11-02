@@ -329,7 +329,8 @@ export function coinLedger(start: Date, end: Date): LedgerEntry[] {
  * Coins per person and week over the `weeks` weeks ending with the one holding `at` (the family's weeks): flows
  * [week, userId, category, coins], weekly goals [week, userId, goal], everyone's balance now with the net change
  * since the last week ended [userId, net] (end-of-week balances are worked back from them), and rewards bought
- * [rewardId, userId, redemptionId, coins] for "bought most or never".
+ * [rewardId, userId, redemptionId, coins, redeemedAt (ISO), waiting (1 = not handed over yet)] for "bought most or
+ * never", who bought each one and the recent list. A shared pot has one row per person who chipped in.
  */
 export function coinsByWeek(weeks: number, at: Date = new Date(), now: Date = new Date()) {
   const start = startOfDay(startOfLocalWeek(at), -(weeks - 1) * 7);
@@ -361,17 +362,19 @@ export function coinsByWeek(weeks: number, at: Date = new Date(), now: Date = ne
     if (i >= 0) goals[i][2] = g.goalCoins; else goals.push([w, g.userId, g.goalCoins]);
   }
 
-  const bought: number[][] = [];
-  const redemptions = db.prepare(`SELECT id, rewardId, userId, costCoins, redeemedAt FROM reward_redemptions
-    WHERE status NOT IN ${REFUNDED}`).all() as Array<{ id: number; rewardId: number; userId: number; costCoins: number; redeemedAt: string }>;
+  const bought: Array<[number, number, number, number, string, number]> = [];
+  const redemptions = db.prepare(`SELECT id, rewardId, userId, costCoins, redeemedAt, status FROM reward_redemptions
+    WHERE status NOT IN ${REFUNDED}`).all() as Array<{ id: number; rewardId: number; userId: number; costCoins: number; redeemedAt: string; status: string }>;
   const chipIns = db.prepare('SELECT redemptionId, userId, SUM(amount) AS amount FROM reward_contributions WHERE redemptionId IS NOT NULL GROUP BY redemptionId, userId')
     .all() as Array<{ redemptionId: number; userId: number; amount: number }>;
   for (const r of redemptions) {
     const at = parseDbTime(r.redeemedAt);
     if (at < start || at >= end) continue;
     const pot = chipIns.filter((c) => c.redemptionId === r.id);
-    if (pot.length) for (const c of pot) bought.push([r.rewardId, c.userId, r.id, c.amount]);
-    else bought.push([r.rewardId, r.userId, r.id, r.costCoins]);
+    const when = at.toISOString();
+    const waiting = r.status === 'requested' ? 1 : 0;
+    if (pot.length) for (const c of pot) bought.push([r.rewardId, c.userId, r.id, c.amount, when, waiting]);
+    else bought.push([r.rewardId, r.userId, r.id, r.costCoins, when, waiting]);
   }
 
   const after = new Map<number, number>();
@@ -388,7 +391,8 @@ export function coinsByWeek(weeks: number, at: Date = new Date(), now: Date = ne
     people: db.prepare('SELECT id, displayName AS name, avatarColor AS color, coins AS balance FROM users ORDER BY id').all(),
     flows: [...flows.values()],
     goals,
-    rewards: db.prepare('SELECT id, title, costCoins, isActive FROM rewards ORDER BY sortOrder, id').all(),
+    // Deleted rewards stay so their purchases keep a name; they're left out of "never bought"
+    rewards: db.prepare('SELECT id, title, costCoins, isActive, deletedAt IS NOT NULL AS deleted FROM rewards ORDER BY sortOrder, id').all(),
     bought,
   };
 }

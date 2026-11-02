@@ -334,7 +334,7 @@ export const GUIDE_IT: GuideSection[] = [
         'Momenti pieni e tranquilli: i giorni della settimana per ora del giorno, in media sulle ultime 4 o 12 settimane. I colori più intensi sono quando si fa di più; i quadrati pallidi sono momenti sbagliati per insistere. Mostra i numeri scrive le medie nei quadrati. Le faccende segnate in ritardo non ci sono, perché non si sa a che ora sono state fatte.',
         'Chi fa quanto: la quota di ciascuno nel periodo e la differenza rispetto al periodo prima (se il periodo è ancora in corso, fino allo stesso punto, come la settimana scorsa fin qui).',
         'Saltate e in ritardo (per faccenda o raggruppate per stanza): le faccende spesso fatte dopo il giorno previsto e di quanti giorni; quelle rimaste in ritardo a fine giornata (registrate ogni notte da quando è installata questa versione); e le faccende Primo arrivato che nessuno ha preso, con quanto hanno aspettato e quali aspettano ancora.',
-        'Monete in entrata e in uscita (ultime 8 o 26 settimane): le monete in entrata sopra la linea (faccende, bonus) e quelle in uscita sotto (premi, contributi, Negozio della mascotte, scudi della serie, monete tolte), il saldo a fine settimana e l’obiettivo settimanale come segno sulla barra (conta solo le monete delle faccende). Con una sola persona mostrata vedi il suo obiettivo; con più persone, una tabella mostra i totali di ciascuna. Sotto: i premi comprati di più e quelli mai comprati.',
+        'Monete in entrata e in uscita (ultime 8 o 26 settimane): le monete in entrata sopra la linea (faccende, bonus) e quelle in uscita sotto (premi, contributi, Negozio della mascotte, scudi della serie, monete tolte), il saldo a fine settimana e l’obiettivo settimanale come segno sulla barra (conta solo le monete delle faccende). Con una sola persona mostrata vedi il suo obiettivo; con più persone, una tabella mostra i totali di ciascuna. Sotto: i premi comprati di più (tocca un premio per vedere chi l’ha comprato, quante volte e per quante monete), Premi recenti (ognuno di queste settimane, dal più recente, con il giorno e chi ha pagato; un premio condiviso mostra tutti quelli che hanno contribuito, con la loro parte, e ⏳ in attesa vuol dire che un genitore non l’ha ancora approvato) e quelli mai comprati. Quelli rimborsati, annullati o rifiutati non contano.',
         'I nomi sotto i filtri scelgono chi si vede in tutte le schede: tocca un nome per nascondere o mostrare i suoi dati, per esempio per confrontare solo due bambini. Un nome nascosto resta grigio, così si può toccare di nuovo; Tutti mostra di nuovo tutti. I nomi nella legenda e le righe di Chi fa quanto fanno lo stesso. Ognuno tiene il suo colore, e totali, quote e asse contano solo chi si vede. Anche le faccende dei genitori contano.',
       ] },
       { tip: 'Con le funzioni di gioco disattivate le Statistiche funzionano lo stesso; si nascondono solo la misura Monete e «Monete in entrata e in uscita».' },
@@ -352,6 +352,7 @@ export const GUIDE_IT: GuideSection[] = [
         'Impostazioni → Fogli di calcolo: scarica faccende o ricompense, modificale in qualsiasi app di fogli di calcolo e ricaricale. Prima vedi un’anteprima e non viene eliminato nulla.',
         'Per eliminare una faccenda, aprila con Modifica; Elimina attività è in fondo al modulo. Va in Impostazioni → Eliminati di recente per 30 giorni e da lì si può ripristinare. Le ricompense funzionano allo stesso modo.',
         'Eliminare non toglie mai monete né cancella quanto fatto: i completamenti passati continuano a comparire in Attività, nella Classifica e negli obiettivi con il nome della faccenda, anche dopo che esce da Eliminati di recente.',
+        'Una ricompensa eliminata conserva la sua cronologia allo stesso modo: ciò che è stato comprato resta in Statistiche con il suo nome. Una richiesta ancora in attesa resta in Richieste ricompensa (sotto il catalogo), così un genitore può ancora approvarla o rifiutarla; rifiutandola le monete tornano indietro.',
         'Eliminare una stanza (Stanze → 🗑) elimina anche le sue faccende, e la stanza non si può riportare indietro. La loro cronologia e le monete restano.',
       ] },
     ],
@@ -538,6 +539,10 @@ export const GUIDE_IT: GuideSection[] = [
         { q: 'Ho eliminato qualcosa per sbaglio', a: [
           'Impostazioni → Eliminati di recente può riportare indietro faccende e ricompense per 30 giorni, con la loro cronologia. Una faccenda la cui stanza è stata eliminata chiede in quale stanza metterla.',
           'Una faccenda segnata come fatta per sbaglio si può annullare da Attività, oppure con ↩️ Annulla nella sua stanza (genitori).',
+        ] },
+        { q: 'Una ricompensa eliminata compare ancora in Statistiche', a: [
+          'È voluto: ciò che è stato comprato conta ancora, così le settimane passate tornano. Non è più in Ricompense né nel Catalogo ricompense, e non compare tra i mai comprati.',
+          'Ci hai ripensato? Impostazioni → Eliminati di recente la riporta indietro per 30 giorni.',
         ] },
         { q: 'L’app è aggiornata?', a: [
           'Impostazioni → Generale mostra la versione. Vedi "Installazione e aggiornamenti" per aggiornare o tornare indietro.',
