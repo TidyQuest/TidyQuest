@@ -82,7 +82,8 @@ describe('Set weekdays', () => {
     expect(nextDueAt(t)!.getTime()).toBe(new Date(last).getTime() + 3 * 86400000);
     expect(nextDueAt({ ...base })).toBeNull();
     const now = local(2026, 10, 11, 20);
-    expect(taskHealth(t, undefined, now)).toBe(calculateHealth(last, 3, false, null));
+    expect(taskHealth(t, undefined, now)).toBe(calculateHealth(last, 3, false, null, now.getTime()));
+    expect(taskHealth(t, undefined, now)).toBe(50); // 36 hours into a 3-day interval
   });
 
   it('vacation freezes a weekday task\'s health like a rolling one', () => {

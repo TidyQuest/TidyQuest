@@ -217,7 +217,7 @@ export function taskHealth(task: ScheduledTask, vacation: Vacation = NO_VACATION
   if (!rule) {
     // Not done since its start date (which has come): due since then
     if (startDay(task) && fresh) return 0;
-    return calculateHealth(task.lastCompletedAt, task.frequencyDays, vacation.isVacation, vacation.startDate);
+    return calculateHealth(task.lastCompletedAt, task.frequencyDays, vacation.isVacation, vacation.startDate, now.getTime());
   }
   const due = nextDueAt(task, at)!.getTime();
   if (at.getTime() >= due) return 0;
