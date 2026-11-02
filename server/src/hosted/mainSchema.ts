@@ -46,6 +46,21 @@ const MAIN_TABLES: string[] = [
     tokenVersion INTEGER NOT NULL DEFAULT 0,
     createdAt TEXT NOT NULL
   )`,
+  // The operator page's History (NEW-24): what operators did, and what the server did to a family by
+  // itself. operatorEmail is who acted, or whose account it was; none for the server's own jobs. The
+  // family's name and the detail (like the email a confirmation went to) are as they were then and stay
+  // after the family is gone, so familyId isn't a reference.
+  `CREATE TABLE IF NOT EXISTS operator_history (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    at TEXT NOT NULL,
+    operatorEmail TEXT,
+    action TEXT NOT NULL,
+    familyId TEXT,
+    familyName TEXT,
+    detail TEXT,
+    ip TEXT
+  )`,
+  `CREATE INDEX IF NOT EXISTS idx_operator_history_family ON operator_history(familyId, id)`,
   // Login and sign-up throttling that survives restarts (NEW-12). resetAt is in milliseconds.
   `CREATE TABLE IF NOT EXISTS throttle (
     key TEXT PRIMARY KEY,
