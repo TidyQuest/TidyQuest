@@ -352,6 +352,7 @@ export const GUIDE_IT: GuideSection[] = [
         'Impostazioni → Fogli di calcolo: scarica faccende o ricompense, modificale in qualsiasi app di fogli di calcolo e ricaricale. Prima vedi un’anteprima e non viene eliminato nulla.',
         'Per eliminare una faccenda, aprila con Modifica; Elimina attività è in fondo al modulo. Va in Impostazioni → Eliminati di recente per 30 giorni e da lì si può ripristinare. Le ricompense funzionano allo stesso modo.',
         'Eliminare non toglie mai monete né cancella quanto fatto: i completamenti passati continuano a comparire in Attività, nella Classifica e negli obiettivi con il nome della faccenda, anche dopo che esce da Eliminati di recente.',
+        'Una ricompensa eliminata conserva la sua cronologia allo stesso modo: ciò che è stato comprato resta in Statistiche con il suo nome. Una richiesta ancora in attesa resta in Richieste ricompensa (sotto il catalogo), così un genitore può ancora approvarla o rifiutarla; rifiutandola le monete tornano indietro.',
         'Eliminare una stanza (Stanze → 🗑) elimina anche le sue faccende, e la stanza non si può riportare indietro. La loro cronologia e le monete restano.',
       ] },
     ],

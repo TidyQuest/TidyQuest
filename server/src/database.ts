@@ -4,6 +4,7 @@ import fs from 'fs';
 import bcrypt from 'bcryptjs';
 import { suggestTaskIcon } from './utils/taskIcons';
 import { applyForkSchema } from './forkSchema';
+import { keepTrashedRewardHistory } from './utils/trash';
 import { registerClockFunctions } from './utils/clock';
 import { currentFamily, isHosted } from './hosted/context';
 
@@ -253,6 +254,8 @@ export function initDatabase() {
   db.exec(`CREATE INDEX IF NOT EXISTS idx_task_completions_status ON task_completions(status);`);
 
   applyForkSchema(db);
+  // Rewards deleted before FIX-22 come back as deleted rows, with their purchases
+  keepTrashedRewardHistory();
 
   // One-time migration: set isParticipant = 0 for existing admins (opt-in for pre-existing installs)
   const participantMigrated = db.prepare("SELECT value FROM app_settings WHERE key = 'adminParticipantMigrated_v1'").get() as any;

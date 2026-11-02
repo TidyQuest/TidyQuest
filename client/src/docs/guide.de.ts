@@ -352,6 +352,7 @@ export const GUIDE_DE: GuideSection[] = [
         'Einstellungen → Tabellen: Lade Aufgaben oder Belohnungen herunter, bearbeite sie in einer beliebigen Tabellenkalkulation und lade sie wieder hoch. Du siehst vorher eine Vorschau, und nichts wird gelöscht.',
         'Um eine Aufgabe zu löschen, öffne sie mit Bearbeiten; Aufgabe löschen steht unten im Formular. Sie landet 30 Tage lang unter Einstellungen → Zuletzt gelöscht und kann von dort wiederhergestellt werden. Belohnungen funktionieren genauso.',
         'Löschen nimmt nie Münzen weg und löscht nicht, was erledigt wurde: Frühere Erledigungen erscheinen weiter unter Aktivität, auf dem Board und in Zielen unter dem Namen der Aufgabe, auch nachdem sie aus Zuletzt gelöscht verschwunden ist.',
+        'Eine gelöschte Belohnung behält ihren Verlauf genauso: Was schon gekauft wurde, bleibt unter ihrem Namen in der Auswertung. Eine noch offene Anfrage bleibt in Belohnungsanfragen (unter dem Katalog), sodass ein Elternteil sie noch freigeben oder ablehnen kann; beim Ablehnen gibt es die Münzen zurück.',
         'Das Löschen eines Raums (Räume → 🗑) löscht auch seine Aufgaben, und der Raum lässt sich nicht zurückholen. Ihr Verlauf und die Münzen bleiben.',
       ] },
     ],

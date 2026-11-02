@@ -376,6 +376,7 @@ export const GUIDE_EN: GuideSection[] = [
         'Settings → Spreadsheets: download chores or rewards, edit them in any spreadsheet app, and load them back. You see a preview first and nothing is deleted.',
         'To delete a chore, open it with Edit; Delete task is at the bottom of the form. It goes to Settings → Recently deleted for 30 days and can be restored from there. Rewards work the same way.',
         'Deleting never takes coins away or erases what was done: past completions keep showing in Activity, the Board and goals under the chore’s name, even after it leaves Recently deleted.',
+        'A deleted reward keeps its history the same way: what was bought before stays in Insights under its name. A request still waiting stays in Reward requests (under the catalog), so a parent can still approve it or turn it down, which gives the coins back.',
         'Deleting a room (Rooms → 🗑) deletes its chores too, and the room can’t be brought back. Their history and coins stay.',
       ] },
     ],

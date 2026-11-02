@@ -352,6 +352,7 @@ export const GUIDE_NL: GuideSection[] = [
         'Instellingen → Spreadsheets: download klusjes of beloningen, bewerk ze in een spreadsheetprogramma en laad ze weer terug. Je ziet eerst een voorbeeld en er wordt niets verwijderd.',
         'Om een klusje te verwijderen open je het met Bewerken; Klusje verwijderen staat onderaan het formulier. Het gaat 30 dagen naar Instellingen → Onlangs verwijderd en kan daar worden teruggezet. Beloningen werken hetzelfde.',
         'Verwijderen haalt nooit munten weg en wist niet wat gedaan is: eerdere voltooiingen blijven onder de naam van het klusje zichtbaar in Activiteit, het Scorebord en de doelen, ook nadat het uit Onlangs verwijderd is.',
+        'Een verwijderde beloning houdt zijn historie op dezelfde manier: wat eerder gekocht is, blijft onder zijn naam in Inzichten. Een aanvraag die nog wacht, blijft in Aangevraagde beloningen (onder de winkel), zodat een ouder hem nog kan goedkeuren of afwijzen; bij afwijzen komen de munten terug.',
         'Een kamer verwijderen (Kamers → 🗑) verwijdert ook de klusjes en de kamer kan niet worden teruggehaald. Hun historie en munten blijven.',
       ] },
     ],

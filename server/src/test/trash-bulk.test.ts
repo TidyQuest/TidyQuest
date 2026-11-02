@@ -112,11 +112,11 @@ describe('Trash', () => {
     await agent.post(`/api/rewards/${other}/contribute`).set(auth(kid.token)).send({ amount: 30 }).expect(200);
     expect(coins(kid.user.id)).toBe(30);
 
-    // The pot goes back to the kid; the redeemed reward's history stays in the snapshot
+    // The pot goes back to the kid; the redeemed reward keeps its row and history (FIX-22)
     await agent.delete(`/api/rewards/${other}`).set(auth(admin.token)).expect(200);
     expect(coins(kid.user.id)).toBe(60);
     const trashId = (await agent.delete(`/api/rewards/${reward}`).set(auth(admin.token)).expect(200)).body.trashId;
-    expect(db.prepare('SELECT COUNT(*) AS n FROM reward_redemptions WHERE rewardId = ?').get(reward)).toEqual({ n: 0 });
+    expect(db.prepare('SELECT COUNT(*) AS n FROM reward_redemptions WHERE rewardId = ?').get(reward)).toEqual({ n: 1 });
     await agent.post(`/api/trash/${trashId}/restore`).set(auth(admin.token)).expect(200);
     const admin2 = (await agent.get('/api/rewards/admin').set(auth(admin.token))).body;
     expect(admin2.rewards.find((r: any) => r.id === reward)).toMatchObject({ visibleTo: [kid.user.id], prices: { [kid.user.id]: 40 } });

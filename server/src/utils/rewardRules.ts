@@ -42,11 +42,11 @@ const RULE_COLUMNS = 'id, title, costCoins, isActive, limitCount, limitPeriod, l
 export const DEFAULT_ROTATING_PER_WEEK = 3;
 
 export function getRules(rewardId: number): RewardRules | undefined {
-  return db.prepare(`SELECT ${RULE_COLUMNS} FROM rewards WHERE id = ?`).get(rewardId) as RewardRules | undefined;
+  return db.prepare(`SELECT ${RULE_COLUMNS} FROM rewards WHERE id = ? AND deletedAt IS NULL`).get(rewardId) as RewardRules | undefined;
 }
 
 function allRules(): Map<number, RewardRules> {
-  const rows = db.prepare(`SELECT ${RULE_COLUMNS} FROM rewards`).all() as RewardRules[];
+  const rows = db.prepare(`SELECT ${RULE_COLUMNS} FROM rewards WHERE deletedAt IS NULL`).all() as RewardRules[];
   return new Map(rows.map((r) => [r.id, r]));
 }
 
@@ -139,7 +139,7 @@ export function rotatingThisWeek(now = new Date()): Set<number> {
   const midweek = startOfDay(weekStart, (3 - wall(weekStart).weekday + 7) % 7);
   const { year, week } = isoWeek(midweek);
   const today = localDateStr(now);
-  const pool = (db.prepare(`SELECT ${RULE_COLUMNS} FROM rewards WHERE isActive = 1 AND isRotating = 1`).all() as RewardRules[])
+  const pool = (db.prepare(`SELECT ${RULE_COLUMNS} FROM rewards WHERE isActive = 1 AND isRotating = 1 AND deletedAt IS NULL`).all() as RewardRules[])
     .filter((r) => inWindow(r, today))
     .map((r) => ({ id: r.id, score: hash32(`${year}-W${week}:${r.id}`) }))
     .sort((a, b) => a.score - b.score || a.id - b.id);

@@ -110,7 +110,8 @@ export interface InsightsCoins {
   flows: Array<[number, number, CoinCategory, number]>;
   /** Repeating weekly goals: [week, userId, goal coins] */
   goals: Array<[number, number, number]>;
-  rewards: Array<{ id: number; title: string; costCoins: number; isActive: number }>;
+  /** Every reward, deleted ones too (deleted = 1) so their purchases keep a name */
+  rewards: Array<{ id: number; title: string; costCoins: number; isActive: number; deleted: number }>;
   /** [rewardId, userId, redemptionId, coins]; a shared pot has one row per person who chipped in */
   bought: Array<[number, number, number, number]>;
 }

@@ -327,6 +327,6 @@ export function rewardStats(data: InsightsCoins, people: People) {
   const most = [...by.entries()]
     .map(([id, v]) => ({ key: `w${id}`, name: title.get(id) ?? '?', times: v.ids.size, coins: v.coins }))
     .sort((a, b) => b.times - a.times || b.coins - a.coins || a.name.localeCompare(b.name));
-  const never = data.rewards.filter((r) => r.isActive && !by.has(r.id)).map((r) => r.title);
+  const never = data.rewards.filter((r) => r.isActive && !r.deleted && !by.has(r.id)).map((r) => r.title);
   return { most, never };
 }

@@ -352,6 +352,7 @@ export const GUIDE_FR: GuideSection[] = [
         'Paramètres → Tableurs : télécharge les tâches ou les récompenses, modifie-les dans n’importe quelle appli de tableur, et recharge-les. Tu vois d’abord un aperçu et rien n’est supprimé.',
         'Pour supprimer une tâche, ouvre-la avec Modifier ; Supprimer la tâche est en bas du formulaire. Elle va dans Paramètres → Supprimés récemment pendant 30 jours et peut y être restaurée. Les récompenses fonctionnent de la même façon.',
         'Supprimer ne retire jamais de pièces et n’efface pas ce qui a été fait : les réalisations passées restent visibles dans Activité, le Tableau et les objectifs sous le nom de la tâche, même après qu’elle a quitté Supprimés récemment.',
+        'Une récompense supprimée garde son historique de la même façon : ce qui a été acheté reste dans Statistiques sous son nom. Une demande encore en attente reste dans Demandes de récompenses (sous le catalogue) : un parent peut toujours la valider ou la refuser, ce qui rend les pièces.',
         'Supprimer une pièce (Pièces → 🗑) supprime aussi ses tâches, et la pièce ne peut pas être récupérée. Leur historique et leurs pièces restent.',
       ] },
     ],

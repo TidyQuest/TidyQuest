@@ -1,10 +1,10 @@
 import db from '../database';
 
 /**
- * Trash for deleted tasks and rewards. A deleted task keeps its row (deletedAt set), so its history
- * stays in Activity, the Board and goals; the trash entry is what lets it be restored, and expiring it
- * only takes it off the list. Rewards are copied with everything hanging off them into a JSON snapshot
- * and then deleted. Coins are never touched: deleting doesn't change anyone's balance.
+ * Trash for deleted tasks and rewards. A deleted task or reward keeps its row (deletedAt set), so its
+ * history stays in Activity, the Board, goals and Insights; the trash entry is what lets it be restored,
+ * and expiring it only takes it off the list. Coins are never touched: deleting doesn't change anyone's
+ * balance.
  */
 
 export const TRASH_DAYS = 30;
@@ -50,27 +50,63 @@ export function softDeleteTasks(where: string, ...params: unknown[]) {
 }
 
 /**
- * Copy a reward (with its redemptions, who can see it, per-person prices and the pot contributions
- * that were spent) into the trash, then delete it. An open shared pot must be refunded first.
+ * Hide a reward (keeping its row, so its purchases stay in Insights and a waiting request stays in
+ * Approvals) and list it in the trash. An open shared pot must be refunded first.
  */
 export function trashReward(rewardId: number, deletedBy: number | undefined): number | null {
-  const reward = db.prepare('SELECT * FROM rewards WHERE id = ?').get(rewardId) as any;
+  const reward = db.prepare('SELECT * FROM rewards WHERE id = ? AND deletedAt IS NULL').get(rewardId) as any;
   if (!reward) return null;
-  const snapshot = {
-    reward,
-    redemptions: db.prepare('SELECT * FROM reward_redemptions WHERE rewardId = ?').all(rewardId),
-    visibility: db.prepare('SELECT * FROM reward_visibility WHERE rewardId = ?').all(rewardId),
-    prices: db.prepare('SELECT * FROM reward_prices WHERE rewardId = ?').all(rewardId),
-    contributions: db.prepare('SELECT * FROM reward_contributions WHERE rewardId = ?').all(rewardId),
-  };
   return db.transaction(() => {
     purgeOldTrash();
     const id = Number(db.prepare(
       'INSERT INTO trash (kind, itemId, title, snapshot, deletedBy) VALUES (?, ?, ?, ?, ?)'
-    ).run('reward', rewardId, reward.title, JSON.stringify(snapshot), deletedBy ?? null).lastInsertRowid);
-    db.prepare('DELETE FROM rewards WHERE id = ?').run(rewardId);
+    ).run('reward', rewardId, reward.title, JSON.stringify({ soft: true, reward }), deletedBy ?? null).lastInsertRowid);
+    db.prepare("UPDATE rewards SET deletedAt = datetime('now') WHERE id = ?").run(rewardId);
     return id;
   })();
+}
+
+/**
+ * Rebuild a reward deleted before FIX-22 from its trash snapshot, with its redemptions, who can see it,
+ * per-person prices and the pot contributions that were spent. People who are gone are skipped.
+ * Returns the reward's id (its old one when still free).
+ */
+function rebuildReward(snapshot: any, deletedAt: string | null): number {
+  const rewardId = insertSnapshotRow('rewards', { ...snapshot.reward, deletedAt });
+  const redemptionIds = new Map<number, number>();
+  for (const r of snapshot.redemptions || []) {
+    if (userExists(r.userId)) redemptionIds.set(r.id, insertSnapshotRow('reward_redemptions', { ...r, rewardId }));
+  }
+  for (const v of snapshot.visibility || []) {
+    if (userExists(v.userId)) insertSnapshotRow('reward_visibility', { ...v, rewardId });
+  }
+  for (const pr of snapshot.prices || []) {
+    if (userExists(pr.userId)) insertSnapshotRow('reward_prices', { ...pr, rewardId });
+  }
+  for (const c of snapshot.contributions || []) {
+    if (userExists(c.userId)) insertSnapshotRow('reward_contributions', { ...c, rewardId, redemptionId: c.redemptionId == null ? null : redemptionIds.get(c.redemptionId) ?? null });
+  }
+  return rewardId;
+}
+
+/**
+ * Rewards deleted before FIX-22 lost their row (and their purchases with it). On startup, put each one
+ * still in the trash back as a deleted row, so its purchases return to Insights; the trash entry then
+ * restores it like any other. Coins are not touched.
+ */
+export function keepTrashedRewardHistory() {
+  const old = (db.prepare("SELECT id, snapshot, deletedAt FROM trash WHERE kind = 'reward'").all() as { id: number; snapshot: string; deletedAt: string }[])
+    .map((t) => ({ ...t, snapshot: JSON.parse(t.snapshot) }))
+    .filter((t) => !t.snapshot.soft && t.snapshot.reward);
+  if (old.length === 0) return 0;
+  db.transaction(() => {
+    for (const t of old) {
+      const rewardId = rebuildReward(t.snapshot, t.deletedAt);
+      const reward = db.prepare('SELECT * FROM rewards WHERE id = ?').get(rewardId);
+      db.prepare('UPDATE trash SET itemId = ?, snapshot = ? WHERE id = ?').run(rewardId, JSON.stringify({ soft: true, reward }), t.id);
+    }
+  })();
+  return old.length;
 }
 
 /**
@@ -138,19 +174,14 @@ export function restoreFromTrash(trashId: number, options: { roomId?: number } =
       }
       restored = { kind: 'task', id: taskId, roomId };
     } else if (item.kind === 'reward') {
-      const rewardId = insertSnapshotRow('rewards', snapshot.reward);
-      const redemptionIds = new Map<number, number>();
-      for (const r of snapshot.redemptions || []) {
-        if (userExists(r.userId)) redemptionIds.set(r.id, insertSnapshotRow('reward_redemptions', { ...r, rewardId }));
-      }
-      for (const v of snapshot.visibility || []) {
-        if (userExists(v.userId)) insertSnapshotRow('reward_visibility', { ...v, rewardId });
-      }
-      for (const pr of snapshot.prices || []) {
-        if (userExists(pr.userId)) insertSnapshotRow('reward_prices', { ...pr, rewardId });
-      }
-      for (const c of snapshot.contributions || []) {
-        if (userExists(c.userId)) insertSnapshotRow('reward_contributions', { ...c, rewardId, redemptionId: c.redemptionId == null ? null : redemptionIds.get(c.redemptionId) ?? null });
+      let rewardId: number;
+      if (snapshot.soft && db.prepare('SELECT 1 FROM rewards WHERE id = ? AND deletedAt IS NOT NULL').get(item.itemId)) {
+        // Kept row: its purchases, rules and prices never left
+        db.prepare('UPDATE rewards SET deletedAt = NULL WHERE id = ?').run(item.itemId);
+        rewardId = item.itemId;
+      } else {
+        // Older trash entries deleted the row: rebuild it from the snapshot
+        rewardId = rebuildReward(snapshot, null);
       }
       restored = { kind: 'reward', id: rewardId };
     } else {

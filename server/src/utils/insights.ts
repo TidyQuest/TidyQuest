@@ -388,7 +388,8 @@ export function coinsByWeek(weeks: number, at: Date = new Date(), now: Date = ne
     people: db.prepare('SELECT id, displayName AS name, avatarColor AS color, coins AS balance FROM users ORDER BY id').all(),
     flows: [...flows.values()],
     goals,
-    rewards: db.prepare('SELECT id, title, costCoins, isActive FROM rewards ORDER BY sortOrder, id').all(),
+    // Deleted rewards stay so their purchases keep a name; they're left out of "never bought"
+    rewards: db.prepare('SELECT id, title, costCoins, isActive, deletedAt IS NOT NULL AS deleted FROM rewards ORDER BY sortOrder, id').all(),
     bought,
   };
 }

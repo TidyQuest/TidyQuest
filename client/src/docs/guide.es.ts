@@ -352,6 +352,7 @@ export const GUIDE_ES: GuideSection[] = [
         'Ajustes → Hojas de cálculo: descarga tareas o recompensas, edítalas en cualquier aplicación de hojas de cálculo y vuelve a cargarlas. Primero ves una vista previa y no se elimina nada.',
         'Para eliminar una tarea, ábrela con Editar; Eliminar tarea está al final del formulario. Va a Ajustes → Eliminados recientemente durante 30 días y se puede restaurar desde ahí. Las recompensas funcionan igual.',
         'Eliminar nunca quita monedas ni borra lo que se hizo: las veces que se completó siguen apareciendo en Actividad, el Tablero y los objetivos con el nombre de la tarea, incluso cuando ya no está en Eliminados recientemente.',
+        'Una recompensa eliminada conserva su historial igual: lo que se compró sigue en Estadísticas con su nombre. Una solicitud que aún espera sigue en Solicitudes de recompensas (bajo el catálogo), así que un padre o una madre todavía puede aprobarla o rechazarla, y al rechazarla se devuelven las monedas.',
         'Eliminar una habitación (Habitaciones → 🗑) elimina también sus tareas, y la habitación no se puede recuperar. Su historial y sus monedas se quedan.',
       ] },
     ],
