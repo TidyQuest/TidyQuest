@@ -9,6 +9,8 @@ What changed in each release, in plain language, newest first. Releases up to v0
 
 ## Unreleased
 
+## v0.15.1 (2026-11-02)
+
 ### Fixed
 - Security updates for parts the app is built on: the code that reads a visitor's address behind a reverse proxy
   (`proxy-addr`, critical when `TRUST_PROXY` is set), the photo upload handler (`multer`), request parsing
