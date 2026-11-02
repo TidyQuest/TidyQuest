@@ -368,6 +368,7 @@ export const GUIDE_FR: GuideSection[] = [
         'Définis JWT_SECRET avec une longue chaîne aléatoire. Le fuseau horaire de la famille se choisit dans l’app (Paramètres → Général → Fuseau horaire) ; une nouvelle installation le prend sur l’appareil du premier parent. TZ sur le serveur ne sert que tant qu’aucun n’est choisi.',
         'Les versions sont étiquetées (par exemple 0.9.0). Fixe ce numéro dans docker-compose.yml, puis lance "docker compose pull && docker compose up -d". L’image ":main" est le code le plus récent, pour essayer d’abord.',
         'Paramètres → Général montre la version en cours. Pour revenir en arrière, remets le numéro de la version précédente et redémarre (fais d’abord une sauvegarde : la base de données ne va que vers l’avant).',
+        'Sous la version, Code source ouvre le code de cette version précise : TidyQuest est un logiciel libre (AGPL-3.0). Tu fais tourner du code modifié ? Mets dans SOURCE_URL l’adresse où l’on peut obtenir ta copie ; la licence le demande.',
         'Les notifications du téléphone par l’appli elle-même et son installation comme appli demandent une adresse sécurisée (https://) ; en attendant, utilise ntfy ou Telegram.',
       ] },
     ],

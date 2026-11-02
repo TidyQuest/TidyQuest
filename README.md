@@ -245,6 +245,7 @@ See `.env.example` for all options. Key variables:
 | `PORT` | No | Server port (default: 3000) |
 | `TRUST_PROXY` | Behind a reverse proxy | Addresses of the proxy in front (e.g. `loopback, 172.16.0.0/12` for nginx or Nginx Proxy Manager on the same host or in Docker), or a hop count such as `1`. The login limit then counts each visitor's own address instead of the proxy's. Leave it unset without a proxy: the `X-Forwarded-For` header is ignored, since anyone can send it |
 | `ADMIN_RESET_PASSWORD` | No | One-shot admin password recovery. Set, restart, then remove. |
+| `SOURCE_URL` | If you changed the code | Where the **Source code** link (login page and Settings → General) points. By default it's this repository at the tag (or `:main` commit) you run. If you run code you changed, set it to where people can get your copy: the AGPL asks for that |
 
 ### Hosted mode (`HOSTED=1`)
 

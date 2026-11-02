@@ -30,6 +30,7 @@ import boostsRoutes from './routes/boosts';
 import csvRoutes from './routes/csv';
 import trashRoutes from './routes/trash';
 import { proxyHint, trustProxySetting } from './utils/proxy';
+import { sourceUrl } from './utils/source';
 import { closeOldTeamups } from './utils/teamups';
 import { settleAllStreaks } from './utils/streaks';
 import { snapshotOverdueChores } from './utils/insights';
@@ -66,13 +67,14 @@ export function createApp() {
     next();
   });
 
-  // Which version is running (no login needed): {"version":"0.7.0","build":"main · 7e18930"}
+  // Which version is running (no login needed): {"version":"0.7.0","build":"main · 7e18930"}, and the link
+  // to its code (utils/source.ts)
   app.get('/api/version', (_req, res) => {
     let version: string | null = null;
     try {
       version = JSON.parse(fs.readFileSync(path.join(__dirname, '..', '..', 'package.json'), 'utf-8')).version ?? null;
     } catch { /* not there in some setups */ }
-    res.json({ version, build: process.env.APP_BUILD || null, hosted: isHosted() });
+    res.json({ version, build: process.env.APP_BUILD || null, hosted: isHosted(), source: sourceUrl(version) });
   });
 
   if (isHosted()) {

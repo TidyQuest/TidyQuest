@@ -4,6 +4,7 @@ import { useTranslation } from '../../hooks/useTranslation';
 import { api, type LoginDetails } from '../../hooks/useApi';
 import UserAvatar from '../shared/UserAvatar';
 import { authLanguage, rememberFamily, rememberedFamily } from '../../utils/hosted';
+import { SourceFooter } from '../shared/SourceLink';
 
 // The README's steps for resetting the first parent's password (ADMIN_RESET_PASSWORD)
 const RECOVERY_URL = 'https://github.com/TidyQuest/TidyQuest#admin-password-recovery';
@@ -332,6 +333,8 @@ export function Login({ onLogin, onSwitchToRegister, hosted = false, onSignUp }:
             </button>
           </div>
         )}
+
+        <SourceFooter language={language} />
       </div>
     </div>
   );

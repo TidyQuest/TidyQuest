@@ -2018,6 +2018,9 @@
       "people": "Une famille peut compter jusqu'à {n} personnes.",
       "tooLarge": "Ce fichier est trop gros : {n} Mo au maximum.",
       "storageFull": "L'espace photos de votre famille est plein ({n} Mo)."
+    },
+    "about": {
+      "sourceCode": "Code source"
     }
   }
 }

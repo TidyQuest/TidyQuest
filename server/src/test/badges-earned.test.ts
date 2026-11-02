@@ -4,6 +4,7 @@ import type supertest from 'supertest';
 import type Database from 'better-sqlite3';
 import { tr } from '../utils/i18n';
 import { localDateStr } from '../utils/dateHelpers';
+import { sourceUrl } from '../utils/source';
 
 let agent: supertest.Agent;
 let db: InstanceType<typeof Database>;
@@ -91,5 +92,16 @@ describe('Version', () => {
     const res = (await agent.get('/api/version').expect(200)).body;
     expect(res.version).toMatch(/^\d+\.\d+\.\d+$/);
     expect(res).toHaveProperty('build');
+    expect(res.source).toMatch(/^https:\/\/github\.com\/TidyQuest\/TidyQuest/);
+  });
+
+  it('links to the source of the running version (NEW-20)', () => {
+    // A release (APP_BUILD empty): its tag. A :main build: its commit.
+    expect(sourceUrl('0.15.1', '', undefined)).toBe('https://github.com/TidyQuest/TidyQuest/tree/v0.15.1');
+    expect(sourceUrl('0.15.1', 'main · 7e18930', undefined)).toBe('https://github.com/TidyQuest/TidyQuest/tree/7e18930');
+    expect(sourceUrl(null, undefined, undefined)).toBe('https://github.com/TidyQuest/TidyQuest');
+    // SOURCE_URL: a changed copy points at its own code; only web addresses count
+    expect(sourceUrl('0.15.1', '', ' https://example.com/my-fork ')).toBe('https://example.com/my-fork');
+    expect(sourceUrl('0.15.1', '', 'javascript:alert(1)')).toBe('https://github.com/TidyQuest/TidyQuest/tree/v0.15.1');
   });
 });

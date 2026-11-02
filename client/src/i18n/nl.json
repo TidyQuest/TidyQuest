@@ -2018,6 +2018,9 @@
       "people": "Een gezin kan maximaal {n} personen hebben.",
       "tooLarge": "Dat bestand is te groot: maximaal {n} MB.",
       "storageFull": "De ruimte voor foto's van je gezin is vol ({n} MB)."
+    },
+    "about": {
+      "sourceCode": "Broncode"
     }
   }
 }
