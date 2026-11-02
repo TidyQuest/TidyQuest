@@ -1,14 +1,19 @@
 import fs from 'fs';
 import path from 'path';
-import { Router, type RequestHandler } from 'express';
+import { Router, type RequestHandler, type Response } from 'express';
 import multer from 'multer';
-import { currentFamily, isHosted, keepFamily } from './context';
+import { currentFamily, isHosted, keepFamily, runInFamily } from './context';
 import { dataDir } from './mainDb';
-import { familyDir, isLiveFamily } from './families';
+import { familyDir, openFamily } from './families';
+import db from '../database';
+import { filesViewer, shutOutCode, type FilesViewer } from '../middleware/auth';
 
 // Avatars and proof photos. Self-hosted they sit in data/avatars and data/proofs, served at /api/avatars
 // and /api/proofs. In hosted mode each family keeps its own in its folder, served at
-// /api/files/<familyId>/<kind>/<name>. Names are random either way, so links load without a login.
+// /api/files/<familyId>/<kind>/<name>. Names are random either way.
+// Who may load them (NEW-29): proof photos need the photos cookie (middleware/auth.ts) of a parent, the person
+// who did the chore or their partner on it; hosted avatars need anyone's in the family. Self-hosted avatars
+// stay open, because the login screen shows them before anyone signs in.
 export type FileKind = 'avatars' | 'proofs';
 
 function familyOf(familyId?: string): string {
@@ -63,17 +68,60 @@ export function removeFile(kind: FileKind, url: string | null | undefined): void
   if (FILE_NAME.test(name)) fs.rmSync(path.join(uploadDir(kind), name), { force: true });
 }
 
-/** Hosted mode: /api/files/<familyId>/<avatars|proofs>/<name>. */
+/** Whether this person may see the file at this link, inside its family's database. */
+function mayView(viewer: FilesViewer, kind: FileKind, url: string): boolean {
+  // Removed people, and cookies from before "log out everywhere" or a password change, see nothing
+  const user = db.prepare('SELECT role, tokenVersion FROM users WHERE id = ?').get(viewer.userId) as
+    { role: string; tokenVersion: number } | undefined;
+  if (!user || (viewer.v ?? 0) !== user.tokenVersion) return false;
+  if (kind === 'avatars' || user.role === 'admin') return true;
+  // A proof: the person who did it, or a partner on it (the same rule as History)
+  const proof = db.prepare(`
+    SELECT tc.userId, tc.teamupId, tc.taskId, tc.completedAt, t.assignmentMode
+    FROM task_completions tc LEFT JOIN tasks t ON t.id = tc.taskId WHERE tc.photoUrl = ?
+  `).get(url) as { userId: number; teamupId: number | null; taskId: number; completedAt: string; assignmentMode: string | null } | undefined;
+  if (!proof) return false;
+  if (proof.userId === viewer.userId) return true;
+  if (proof.teamupId) {
+    return !!db.prepare('SELECT 1 FROM task_completions WHERE teamupId = ? AND userId = ?').get(proof.teamupId, viewer.userId);
+  }
+  return proof.assignmentMode === 'shared' && !!db.prepare(
+    'SELECT 1 FROM task_completions WHERE taskId = ? AND substr(completedAt, 1, 10) = ? AND teamupId IS NULL AND userId = ?'
+  ).get(proof.taskId, proof.completedAt.slice(0, 10), viewer.userId);
+}
+
+/** Sends a photo, asking the browser to check back each time so a signed-out device can't show its copy. */
+function sendPhoto(res: Response, dir: string, name: string): void {
+  res.setHeader('Cache-Control', 'private, no-cache');
+  res.setHeader('X-Robots-Tag', 'noindex');
+  res.sendFile(name, { root: dir }, (err) => {
+    if (err && !res.headersSent) res.status(404).json({ error: 'Not found' });
+  });
+}
+
+// Every refusal is the same 404, so a link never tells whether the photo is there
+const notFound = (res: Response) => res.status(404).json({ error: 'Not found' });
+
+/** Hosted mode: /api/files/<familyId>/<avatars|proofs>/<name>, for the family's own people while it's open. */
 export const filesRouter = Router();
 
 filesRouter.get('/:familyId/:kind/:name', (req, res) => {
   const { familyId, kind, name } = req.params;
-  if ((kind !== 'avatars' && kind !== 'proofs') || !FILE_NAME.test(name) || !isLiveFamily(familyId)) {
-    return res.status(404).json({ error: 'Not found' });
-  }
-  res.setHeader('Cache-Control', 'private, max-age=86400');
-  res.setHeader('X-Robots-Tag', 'noindex');
-  res.sendFile(name, { root: path.join(familyDir(familyId), kind) }, (err) => {
-    if (err && !res.headersSent) res.status(404).json({ error: 'Not found' });
-  });
+  if ((kind !== 'avatars' && kind !== 'proofs') || !FILE_NAME.test(name)) return notFound(res);
+  const viewer = filesViewer(req);
+  if (!viewer || viewer.fid !== familyId) return notFound(res);
+  const family = openFamily(familyId);
+  if (!family || shutOutCode(familyId)) return notFound(res);
+  if (!runInFamily(family, () => mayView(viewer, kind, fileUrl(kind, name, familyId)))) return notFound(res);
+  sendPhoto(res, path.join(familyDir(familyId), kind), name);
+});
+
+/** Self-hosted: /api/proofs/<name>. */
+export const proofsRouter = Router();
+
+proofsRouter.get('/:name', (req, res) => {
+  const { name } = req.params;
+  const viewer = filesViewer(req);
+  if (!FILE_NAME.test(name) || !viewer || !mayView(viewer, 'proofs', fileUrl('proofs', name))) return notFound(res);
+  sendPhoto(res, uploadDir('proofs'), name);
 });

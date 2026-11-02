@@ -149,7 +149,8 @@ function routesOf(server: Express): { method: string; path: string }[] {
   return out;
 }
 
-// Photo links load without a login until NEW-29 gates them; A's pages never show B's (B's family id is checked).
+// Photo links read the photos cookie, not the login header (NEW-29); hosted.test.ts and photo-access.test.ts
+// check that another family's cookie, or none, gets a 404.
 const NOT_SWEPT = ['/api/files/:familyId/:kind/:name'];
 // Changes that answer something else than 404 for an id A doesn't have, and why
 const NOT_404: Record<string, number> = {

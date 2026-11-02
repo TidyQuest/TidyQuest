@@ -2,7 +2,7 @@ import { Router, Response } from 'express';
 import { parseHomeLayout } from '../utils/homeLayout';
 import bcrypt from 'bcryptjs';
 import db from '../database';
-import { AuthRequest, authMiddleware, generateToken, revokeTokens } from '../middleware/auth';
+import { AuthRequest, authMiddleware, clearFilesCookie, loginToken, revokeTokens, setFilesCookie } from '../middleware/auth';
 import { canonicalZone } from '../utils/clock';
 import { isHosted, runInFamily } from '../hosted/context';
 import { openFamily } from '../hosted/families';
@@ -55,7 +55,7 @@ router.post('/register', (req: AuthRequest, res: Response) => {
   const zone = canonicalZone(timeZone);
   if (role === 'admin' && zone) db.prepare("INSERT OR IGNORE INTO app_settings (key, value) VALUES ('timeZone', ?)").run(zone);
 
-  const token = generateToken(result.lastInsertRowid as number);
+  const token = loginToken(res, result.lastInsertRowid as number);
   const user = db.prepare('SELECT id, username, displayName, role, avatarColor, avatarType, avatarPreset, avatarPhotoUrl, coins, currentStreak, streakShields, goalCoins, goalStartAt, goalEndAt, language FROM users WHERE id = ?')
     .get(result.lastInsertRowid) as any;
   user.points = 0;
@@ -130,7 +130,7 @@ router.post('/login', (req: AuthRequest, res: Response) => {
 
 /** The answer to a login (and a sign-up or password reset): a token and the person, with their points. */
 export function sendLogin(res: Response, user: any) {
-  const token = generateToken(user.id);
+  const token = loginToken(res, user.id);
   const { passwordHash, ...safeUser } = user;
   
   const pointsRow = db.prepare(
@@ -153,13 +153,22 @@ router.get('/me', authMiddleware, (req: AuthRequest, res: Response) => {
   ).get(req.userId) as any;
   user.points = pointsRow?.points ?? 0;
   user.homeLayout = parseHomeLayout(user.homeLayout);
+  // The app asks on every start: people signed in before NEW-29 get the photos cookie, and it's renewed
+  setFilesCookie(res, req.userId!);
   res.json(user);
 });
 
 // "Log out everywhere else" (NEW-8): every other device's login stops working; this one gets a fresh token
 router.post('/logout-others', authMiddleware, (req: AuthRequest, res: Response) => {
   revokeTokens(req.userId!);
-  res.json({ token: generateToken(req.userId!) });
+  res.json({ token: loginToken(res, req.userId!) });
+});
+
+// Log out on this device: the app forgets its token, and this drops the photos cookie. No login needed, so
+// it works even when the token has already stopped working.
+router.post('/logout', (_req: AuthRequest, res: Response) => {
+  clearFilesCookie(res);
+  res.json({ success: true });
 });
 
 export default router;

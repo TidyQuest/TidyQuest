@@ -23,9 +23,17 @@ upstream TidyQuest's: see [RELEASE-NOTES.md](RELEASE-NOTES.md).
   The operator page lists the waitlist, oldest first, with each family's email as a link to write to them and a
   Remove button. Nothing is emailed. Families already signed up aren't affected. Each change of the switch and
   each removal goes in the History, under a new Sign-ups filter. It's open by default.
+- Tapping a proof photo in Activity or in Waiting for approval opens it full size inside the app, instead of in
+  a new browser tab. Tap anywhere (or press Esc) to close it.
 
 ### Changed
 
+- Proof photos only open for someone logged in to the family who may see them: parents see all of them, and
+  everyone else only their own (or one from a team-up they were on). A photo's link copied out of the app no
+  longer opens anywhere else, or after logging out, "Log out everywhere" or a password change. In hosted mode
+  the same goes for avatars, and no photos open while a family is paused, its trial has ended or its email is
+  waiting to be confirmed. Self-hosted avatars still open without logging in, because the login screen shows
+  them. Nothing changes for families: the app gets what it needs when it starts, so nobody has to log in again.
 - In hosted mode the "Allow new registrations" setting is hidden. Hosted families add people from Settings →
   Family Members, and the public sign-up page is always off there, so the toggle did nothing. Self-hosted installs
   still have it, unchanged.

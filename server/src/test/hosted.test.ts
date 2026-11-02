@@ -12,7 +12,7 @@ import { runInFamily } from '../hosted/context';
 import { closeIdleFamilies, createFamily, deleteFamily, familyDir, openFamily, purgeDeletedFamilies } from '../hosted/families';
 import { dataDir, mainDb } from '../hosted/mainDb';
 import { generateToken } from '../middleware/auth';
-import { addTestFamily, createAdmin, createTestApp, createUser, familyCodeOf, familyField } from './setup';
+import { addTestFamily, createAdmin, createTestApp, createUser, familyCodeOf, familyField, photoCookie } from './setup';
 
 // Hosted mode (NEW-9): many families on one server, each with its own database and folder.
 const PNG = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=', 'base64');
@@ -93,13 +93,17 @@ describe('Hosted mode: avatars and proof photos', () => {
     const name = path.basename(up.body.avatarPhotoUrl);
     expect(fs.existsSync(path.join(familyDir(A), 'avatars', name))).toBe(true);
 
-    const got = await agent.get(up.body.avatarPhotoUrl);
+    // Only for the family's own people (NEW-29): another family's parent and no login get a 404
+    const cookieA = await photoCookie(agent, adminA.token);
+    const got = await agent.get(up.body.avatarPhotoUrl).set('Cookie', cookieA);
     expect(got.status).toBe(200);
     expect(got.headers['cache-control']).toContain('private');
     expect(got.headers['x-robots-tag']).toBe('noindex');
-    expect((await agent.get(`/api/files/${B}/avatars/${name}`)).status).toBe(404);
-    expect((await agent.get(`/api/files/${A}/proofs/${name}`)).status).toBe(404);
-    expect((await agent.get(`/api/files/${A}/avatars/..%2F..%2F${A}%2Ftidyquest.db`)).status).toBe(404);
+    expect((await agent.get(up.body.avatarPhotoUrl)).status).toBe(404);
+    expect((await agent.get(up.body.avatarPhotoUrl).set('Cookie', await photoCookie(agent, adminB.token))).status).toBe(404);
+    expect((await agent.get(`/api/files/${B}/avatars/${name}`).set('Cookie', cookieA)).status).toBe(404);
+    expect((await agent.get(`/api/files/${A}/proofs/${name}`).set('Cookie', cookieA)).status).toBe(404);
+    expect((await agent.get(`/api/files/${A}/avatars/..%2F..%2F${A}%2Ftidyquest.db`).set('Cookie', cookieA)).status).toBe(404);
     expect((await agent.get(`/api/avatars/${name}`)).status).not.toBe(200);
   });
 
@@ -138,7 +142,17 @@ describe('Hosted mode: avatars and proof photos', () => {
     expect(up.status).toBe(200);
     expect(up.body.photoUrl).toMatch(new RegExp(`^/api/files/${A}/proofs/proof-[0-9a-f]+\\.png$`));
     expect(fs.existsSync(path.join(familyDir(A), 'proofs', path.basename(up.body.photoUrl)))).toBe(true);
-    expect((await agent.get(up.body.photoUrl)).status).toBe(200);
+    const cookie = await photoCookie(agent, adminA.token);
+    expect((await agent.get(up.body.photoUrl).set('Cookie', cookie)).status).toBe(200);
+    expect((await agent.get(up.body.photoUrl).set('Cookie', await photoCookie(agent, adminB.token))).status).toBe(404);
+    // Not while the family is shut out (NEW-29): suspended, or locked for an unconfirmed email
+    const setFamily = (fields: string) => mainDb().prepare(`UPDATE families SET ${fields} WHERE id = ?`).run(A);
+    setFamily("status = 'suspended'");
+    expect((await agent.get(up.body.photoUrl).set('Cookie', cookie)).status).toBe(404);
+    setFamily("status = 'trial', createdAt = '2020-01-01T00:00:00.000Z'");
+    expect((await agent.get(up.body.photoUrl).set('Cookie', cookie)).status).toBe(404);
+    mainDb().prepare("UPDATE accounts SET emailConfirmedAt = '2020-01-02T00:00:00.000Z' WHERE familyId = ?").run(A);
+    expect((await agent.get(up.body.photoUrl).set('Cookie', cookie)).status).toBe(200);
   });
 });
 

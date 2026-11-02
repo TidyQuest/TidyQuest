@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { api, type LoginDetails } from './useApi';
+import { api, forgetPhotos, type LoginDetails } from './useApi';
 import { deviceZone } from '../utils/clock';
 
 export interface User {
@@ -45,6 +45,7 @@ export function useAuth() {
       setUser(userData);
     } catch {
       localStorage.removeItem('tidyquest_token');
+      forgetPhotos();
     } finally {
       setLoading(false);
     }
@@ -72,6 +73,7 @@ export function useAuth() {
 
   const logout = () => {
     localStorage.removeItem('tidyquest_token');
+    forgetPhotos();
     setUser(null);
   };
 

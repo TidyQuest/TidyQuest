@@ -348,6 +348,13 @@ export async function createUser(
   return { user: loginRes.body.user, token: loginRes.body.token };
 }
 
+/** The photos cookie (NEW-29) for a login, as the app gets it on start: a Cookie header value ('' if none). */
+export async function photoCookie(agent: supertest.Agent, token: string): Promise<string> {
+  const me = await agent.get('/api/auth/me').set('Authorization', `Bearer ${token}`);
+  const set = ([] as string[]).concat(me.headers['set-cookie'] ?? []).find((c) => c.startsWith('tq_files='));
+  return set ? set.split(';')[0] : '';
+}
+
 export async function loginAs(
   agent: supertest.Agent,
   username: string,

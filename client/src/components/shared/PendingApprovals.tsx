@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { api } from '../../hooks/useApi';
 import { useTranslation } from '../../hooks/useTranslation';
+import { PhotoViewer } from './PhotoViewer';
 import { CoinIcon } from '../icons/UIIcons';
 import { lateDayLabel } from '../../utils/lateLog';
 
@@ -41,6 +42,8 @@ export function PendingApprovals({ items, language, onChanged, gamificationEnabl
   extras?: boolean;
 }) {
   const { t, taskName, roomDisplayName, timeAgo } = useTranslation(language);
+  // A proof photo open at full size (the in-app viewer: photos need the app's cookie, NEW-29)
+  const [photoOpen, setPhotoOpen] = useState<string | null>(null);
   const [selected, setSelected] = useState<Set<number>>(new Set());
   const [busy, setBusy] = useState(false);
   // Rejected rows stay hidden while their toast is up and until the list reloads
@@ -124,6 +127,7 @@ export function PendingApprovals({ items, language, onChanged, gamificationEnabl
   if (visible.length === 0 && !held) return null;
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+      {photoOpen && <PhotoViewer url={photoOpen} alt={t('approvals.proofPhoto')} closeLabel={t('common.close')} onClose={() => setPhotoOpen(null)} />}
       {held && createPortal(
         <div role="status" style={{
           position: 'fixed', left: '50%', bottom: 'calc(20px + env(safe-area-inset-bottom))', transform: 'translateX(-50%)',
@@ -195,9 +199,10 @@ export function PendingApprovals({ items, language, onChanged, gamificationEnabl
               <div style={{ fontSize: 12, color: 'var(--warm-text-secondary)', fontWeight: 600, marginTop: 4, overflowWrap: 'anywhere' }}>“{p.note}”</div>
             )}
             {p.photoUrl && (
-              <a href={p.photoUrl} target="_blank" rel="noreferrer" style={{ display: 'inline-block', marginTop: 6 }}>
-                <img src={p.photoUrl} alt={t('approvals.proofPhoto')} style={{ maxWidth: 160, maxHeight: 120, borderRadius: 10, border: '1px solid var(--warm-border)', objectFit: 'cover' }} />
-              </a>
+              <button type="button" onClick={() => setPhotoOpen(p.photoUrl!)} title={t('approvals.proofPhoto')}
+                style={{ display: 'inline-block', marginTop: 6, padding: 0, border: 'none', background: 'none', cursor: 'zoom-in' }}>
+                <img src={p.photoUrl} alt={t('approvals.proofPhoto')} style={{ display: 'block', maxWidth: 160, maxHeight: 120, borderRadius: 10, border: '1px solid var(--warm-border)', objectFit: 'cover' }} />
+              </button>
             )}
             {extras && extraFor === p.id && (
               <div style={{ display: 'grid', gap: 6, marginTop: 8 }}>
