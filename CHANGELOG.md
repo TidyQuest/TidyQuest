@@ -9,6 +9,8 @@ What changed in each release, in plain language, newest first. Releases up to v0
 
 ## Unreleased
 
+## v0.15.0 (2026-11-02)
+
 ### Changed
 - TidyQuest has a new home: [github.com/TidyQuest/TidyQuest](https://github.com/TidyQuest/TidyQuest). New
   versions are published as `tidyquest/tidyquest` on Docker Hub and `ghcr.io/tidyquest/tidyquest` on GitHub.
