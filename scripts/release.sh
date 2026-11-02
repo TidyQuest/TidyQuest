@@ -4,7 +4,8 @@
 # Moves CHANGELOG.md's Unreleased lines under the new version, bumps the version in package.json,
 # commits and tags it on main, pushes, and publishes a GitHub release (notes: that CHANGELOG section,
 # then GitHub's list of merged pull requests). Publishing the release makes the GitHub workflow build
-# ghcr.io/<owner>/tidyquest:0.7.0 and :latest. See RELEASING.md for the whole routine.
+# ghcr.io/<owner>/tidyquest:0.7.0 and :latest (and, from TidyQuest/TidyQuest, tidyquest/tidyquest on Docker
+# Hub). See RELEASING.md for the whole routine.
 set -eu
 
 VERSION="${1:-}"

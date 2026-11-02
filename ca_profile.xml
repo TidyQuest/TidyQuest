@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <Maintainer>
-  <WebPage>https://github.com/mellow-fox/TidyQuest</WebPage>
+  <WebPage>https://github.com/TidyQuest/TidyQuest</WebPage>
   <Profile>
 ## TidyQuest
 
@@ -11,8 +11,8 @@ Assign tasks to rooms, earn coins, unlock achievements, track goals, and compete
 **Apps maintained:**
 - **TidyQuest** — Household chore gamification (tasks, coins, achievements, leaderboard, goals)
 
-**Support:** https://github.com/mellow-fox/TidyQuest/issues
+**Support:** https://github.com/TidyQuest/TidyQuest/issues
   </Profile>
-  <Photo>https://raw.githubusercontent.com/mellow-fox/TidyQuest/main/screenshots/dashboard.jpg</Photo>
-  <Photo>https://raw.githubusercontent.com/mellow-fox/TidyQuest/main/screenshots/rooms.jpg</Photo>
+  <Photo>https://raw.githubusercontent.com/TidyQuest/TidyQuest/main/screenshots/dashboard.jpg</Photo>
+  <Photo>https://raw.githubusercontent.com/TidyQuest/TidyQuest/main/screenshots/rooms.jpg</Photo>
 </Maintainer>

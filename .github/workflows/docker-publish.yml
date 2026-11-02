@@ -1,9 +1,11 @@
 name: Build and Push Docker Image
 
 # Publishes to GitHub Container Registry (ghcr.io/<owner>/tidyquest) with the
-# built-in GITHUB_TOKEN, so no registry secrets are needed.
+# built-in GITHUB_TOKEN, so no registry secrets are needed there.
 #   push to main      -> :main and :sha-<short>   (staging pulls :main)
 #   published release -> :latest, :X.Y.Z, :X.Y, :X (production pins :X.Y.Z, see RELEASING.md)
+# Releases from TidyQuest/TidyQuest also go to Docker Hub as tidyquest/tidyquest (same tags), with the
+# repo's DOCKERHUB_USERNAME / DOCKERHUB_TOKEN secrets. Forks and main builds skip Docker Hub.
 # Builds from main are labelled "main · <short sha>" (shown in Settings next to the version).
 
 on:
@@ -15,6 +17,8 @@ on:
 
 env:
   REGISTRY: ghcr.io
+  DOCKERHUB_IMAGE: docker.io/tidyquest/tidyquest
+  DOCKERHUB: ${{ github.event_name == 'release' && github.repository == 'TidyQuest/TidyQuest' }}
 
 jobs:
   build-and-push:
@@ -48,11 +52,20 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Log in to Docker Hub (releases from TidyQuest/TidyQuest only)
+        if: env.DOCKERHUB == 'true'
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
       - name: Extract metadata (tags, labels)
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.IMAGE_NAME }}
+          images: |
+            ${{ env.IMAGE_NAME }}
+            name=${{ env.DOCKERHUB_IMAGE }},enable=${{ env.DOCKERHUB == 'true' }}
           tags: |
             type=ref,event=branch
             type=sha,enable=${{ github.event_name == 'push' }}

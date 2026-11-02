@@ -1,13 +1,20 @@
 # Changelog
 
-What changed in each release of this fork, in plain language, newest first. Releases before v0.7.0 are
-upstream TidyQuest's: see [RELEASE-NOTES.md](RELEASE-NOTES.md).
+What changed in each release, in plain language, newest first. Releases up to v0.6.3 came out as
+`mellowfox/tidyquest`, before the project moved to the TidyQuest organization: see [RELEASE-NOTES.md](RELEASE-NOTES.md).
 
 **Adding to it:** every pull request adds its lines under **Unreleased** (in Added, Changed or Fixed).
 `scripts/release.sh X.Y.Z` turns Unreleased into that version's section and uses it as the GitHub release notes
 (see [RELEASING.md](RELEASING.md)).
 
 ## Unreleased
+
+### Changed
+- TidyQuest has a new home: [github.com/TidyQuest/TidyQuest](https://github.com/TidyQuest/TidyQuest). New
+  versions are published as `tidyquest/tidyquest` on Docker Hub and `ghcr.io/tidyquest/tidyquest` on GitHub.
+  Coming from `mellowfox/tidyquest` (0.6.3)? Back up, change the image name and pull (README, *Moving from
+  mellowfox/tidyquest*). The Unraid template, the Home Assistant integration, and the README's links point to
+  the new home.
 
 ## v0.14.3 (2026-11-02)
 

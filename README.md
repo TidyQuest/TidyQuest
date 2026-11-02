@@ -4,7 +4,7 @@
 
 **TidyQuest** is a self-hosted web application that gamifies housework using RPG mechanics. Complete tasks, earn coins, unlock achievements, and compete with your family on the leaderboard.
 
-![Version](https://img.shields.io/badge/version-0.6.0-blue.svg)
+[![Version](https://img.shields.io/github/v/release/TidyQuest/TidyQuest)](https://github.com/TidyQuest/TidyQuest/releases)
 ![Docker](https://img.shields.io/badge/docker-ready-brightgreen.svg)
 ![License](https://img.shields.io/badge/license-AGPL--3.0-blue.svg)
 [![Discord](https://img.shields.io/badge/Discord-Join%20us-5865F2?logo=discord&logoColor=white)](https://discord.gg/ucXmKM6y)
@@ -12,7 +12,7 @@
 ---
 
 > [!WARNING]
-> **Early-stage project** — TidyQuest is under active development. You may encounter bugs, incomplete features, or breaking changes between versions. Back up your data regularly and feel free to [open an issue](https://github.com/mellow-fox/TidyQuest/issues) if something breaks.
+> **Early-stage project** — TidyQuest is under active development. You may encounter bugs, incomplete features, or breaking changes between versions. Back up your data regularly and feel free to [open an issue](https://github.com/TidyQuest/TidyQuest/issues) if something breaks.
 
 ---
 
@@ -98,7 +98,7 @@ Fastest way to get started on any Linux server using the pre-built multi-platfor
    ```yaml
    services:
      tidyquest:
-       image: mellowfox/tidyquest:latest
+       image: tidyquest/tidyquest:latest
        container_name: tidyquest
        ports:
          - "3020:3000"
@@ -123,13 +123,15 @@ Fastest way to get started on any Linux server using the pre-built multi-platfor
 
    Access at **http://localhost:3020**
 
+   The same image is on GitHub as `ghcr.io/tidyquest/tidyquest:latest`, if you'd rather pull from there.
+
 #### Option C: Build from Source
 
 For development or customization:
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/mellow-fox/TidyQuest.git
+   git clone https://github.com/TidyQuest/TidyQuest.git
    cd TidyQuest
    ```
 
@@ -336,6 +338,16 @@ docker compose pull
 docker compose up -d
 ```
 
+### Moving from `mellowfox/tidyquest`
+TidyQuest moved to the [TidyQuest organization](https://github.com/TidyQuest) in November 2026, and new versions
+are published as `tidyquest/tidyquest`. The old `mellowfox/tidyquest` image stays at 0.6.3 and gets no updates.
+
+1. Back up first: Admin → Settings → Export Data, or copy the `data` folder.
+2. In `docker-compose.yml`, change `image: mellowfox/tidyquest:latest` to `image: tidyquest/tidyquest:latest`.
+3. `docker compose pull && docker compose up -d`. Your data stays in `./data` and updates itself on start.
+
+On Unraid, edit the container and change *Repository* to `tidyquest/tidyquest`.
+
 ### Using Source Build
 ```bash
 cd TidyQuest
@@ -463,6 +475,7 @@ See the `LICENSE` file for full details.
 
 ## 🙏 Acknowledgments
 
+- Created by [mellow-fox](https://github.com/mellow-fox), and moved to the TidyQuest organization in November 2026
 - Inspired by RPG mechanics from classic games
 - Built with love for families who want to make chores fun
 - Uses [Nunito](https://fonts.google.com/specimen/Nunito) font (bundled locally)
@@ -471,8 +484,8 @@ See the `LICENSE` file for full details.
 
 ## 📞 Support
 
-- 🐛 **Bug Reports**: [GitHub Issues](https://github.com/mellow-fox/TidyQuest/issues)
-- 💬 **Discussions**: [GitHub Discussions](https://github.com/mellow-fox/TidyQuest/discussions)
+- 🐛 **Bug Reports**: [GitHub Issues](https://github.com/TidyQuest/TidyQuest/issues)
+- 💬 **Discussions**: [GitHub Discussions](https://github.com/TidyQuest/TidyQuest/discussions)
 - 🔒 **Security Issues**: See `SECURITY.md` for responsible disclosure
 
 ---

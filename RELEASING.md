@@ -29,7 +29,7 @@ build from `main`. Without logging in: `curl http://<server>:<port>/api/version`
 4. On the production server, pin the new version in `docker-compose.yml` and pull it:
 
    ```yaml
-   image: ghcr.io/<your-github-user>/tidyquest:0.7.0
+   image: ghcr.io/tidyquest/tidyquest:0.7.0
    ```
 
    ```sh
