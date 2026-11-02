@@ -1094,6 +1094,7 @@ router.post('/tasks/:id/pin', (req: AuthRequest, res: Response) => {
   res.json({ pinned: true });
 });
 router.delete('/tasks/:id/pin', (req: AuthRequest, res: Response) => {
+  if (!db.prepare('SELECT 1 FROM tasks WHERE id = ?').get(req.params.id)) return res.status(404).json({ error: 'Task not found' });
   db.prepare('DELETE FROM task_pins WHERE userId = ? AND taskId = ?').run(req.userId, req.params.id);
   res.json({ pinned: false });
 });
@@ -1125,6 +1126,7 @@ router.post('/tasks/:id/snooze', (req: AuthRequest, res: Response) => {
   res.json({ snoozedUntil: until });
 });
 router.delete('/tasks/:id/snooze', (req: AuthRequest, res: Response) => {
+  if (!db.prepare('SELECT 1 FROM tasks WHERE id = ?').get(req.params.id)) return res.status(404).json({ error: 'Task not found' });
   db.prepare('DELETE FROM task_snoozes WHERE userId = ? AND taskId = ?').run(req.userId, req.params.id);
   res.json({ success: true });
 });

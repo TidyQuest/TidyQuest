@@ -19,6 +19,8 @@ upstream TidyQuest's: see [RELEASE-NOTES.md](RELEASE-NOTES.md).
 
 - The side navigation now scrolls when the window is short, so you can always reach every menu item and your
   profile. Before, the lower items and the profile could be cut off with no way to scroll to them.
+- Un-pinning or un-snoozing a chore that no longer exists now answers "not found", as pinning and snoozing
+  already did, instead of saying it worked.
 
 ## v0.14.2 (2026-10-30)
 
