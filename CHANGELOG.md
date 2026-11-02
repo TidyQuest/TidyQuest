@@ -18,6 +18,7 @@ upstream TidyQuest's: see [RELEASE-NOTES.md](RELEASE-NOTES.md).
   instead of every 30 seconds, and do far less work each time. What gets sent, and when, stays the same.
 - In hosted mode, requests no longer wait while the background jobs go through every family: the jobs let them
   through after each family.
+- The README says what hosted mode (`HOSTED=1`) is: how tidyquest.org runs, allowed for others but not supported.
 
 ### Fixed
 
