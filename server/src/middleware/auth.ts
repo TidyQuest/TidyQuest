@@ -51,13 +51,20 @@ export function authMiddleware(req: AuthRequest, res: Response, next: NextFuncti
   // can only see its account and export. The app shows why from /api/hosted/account.
   const shutOut = () => {
     if (OPEN_WHEN_LOCKED.test(req.originalUrl)) return next();
-    const status = familyStatusOf(family.familyId);
-    if (status === 'suspended') return res.status(403).json({ error: 'This family is paused', code: 'suspended' });
-    if (status === 'expired') return res.status(403).json({ error: 'The free trial has ended', code: 'expired' });
-    if (isLocked(family.familyId)) return res.status(403).json({ error: 'Confirm your email to keep using TidyQuest', code: 'confirm-email' });
+    const code = shutOutCode(family.familyId);
+    if (code === 'suspended') return res.status(403).json({ error: 'This family is paused', code });
+    if (code === 'expired') return res.status(403).json({ error: 'The free trial has ended', code });
+    if (code === 'confirm-email') return res.status(403).json({ error: 'Confirm your email to keep using TidyQuest', code });
     next();
   };
   runInFamily(family, () => checkUser(req, res, shutOut, payload));
+}
+
+/** Why a hosted family can only see its account and export, or null when it's open. */
+export function shutOutCode(familyId: string): 'suspended' | 'expired' | 'confirm-email' | null {
+  const status = familyStatusOf(familyId);
+  if (status === 'suspended' || status === 'expired') return status;
+  return isLocked(familyId) ? 'confirm-email' : null;
 }
 
 // What a locked, suspended or expired family can still reach: its account (confirming, changing the
@@ -75,11 +82,53 @@ function checkUser(req: AuthRequest, res: Response, next: NextFunction, payload:
   next();
 }
 
-/** A login token for this person, carrying their current token version. */
-export function generateToken(userId: number): string {
+function tokenPayload(userId: number): TokenPayload {
   const row = db.prepare('SELECT tokenVersion FROM users WHERE id = ?').get(userId) as { tokenVersion: number } | undefined;
   const fid = isHosted() ? currentFamily()?.familyId : undefined;
-  return jwt.sign({ userId, v: row?.tokenVersion ?? 0, ...(fid && { fid }) }, JWT_SECRET, { expiresIn: '30d' });
+  return { userId, v: row?.tokenVersion ?? 0, ...(fid && { fid }) };
+}
+
+/** A login token for this person, carrying their current token version. */
+export function generateToken(userId: number): string {
+  return jwt.sign(tokenPayload(userId), JWT_SECRET, { expiresIn: '30d' });
+}
+
+/** A login token, plus the photos cookie for the same person (every answer that signs someone in uses this). */
+export function loginToken(res: Response, userId: number): string {
+  setFilesCookie(res, userId);
+  return generateToken(userId);
+}
+
+// Photos (NEW-29). An <img> can't send the login header, so the server also sets a cookie that the browser
+// sends only to the photo addresses (hosted/files.ts). It carries its own token, marked "files": the family
+// routes refuse it like an operator token, so it can't be used for anything but loading photos.
+const FILES_AUDIENCE = 'files';
+const FILES_COOKIE = 'tq_files';
+export type FilesViewer = { userId: number; v: number; fid?: string };
+
+/** Where the cookie is sent: hosted photos are all under /api/files; self-hosted avatars stay open. */
+const filesCookiePath = () => (isHosted() ? '/api/files' : '/api/proofs');
+const filesCookieOptions = (res: Response) =>
+  ({ httpOnly: true, sameSite: 'strict', secure: res.req.secure, path: filesCookiePath() }) as const;
+
+export function setFilesCookie(res: Response, userId: number): void {
+  const token = jwt.sign(tokenPayload(userId), JWT_SECRET, { audience: FILES_AUDIENCE, expiresIn: '30d' });
+  res.cookie(FILES_COOKIE, token, { ...filesCookieOptions(res), maxAge: 30 * 24 * 60 * 60 * 1000 });
+}
+
+export function clearFilesCookie(res: Response): void {
+  res.clearCookie(FILES_COOKIE, filesCookieOptions(res));
+}
+
+/** Who's asking for a photo, from the cookie (not yet checked against the person's token version). */
+export function filesViewer(req: Request): FilesViewer | null {
+  const pair = (req.headers.cookie ?? '').split(';').map((c) => c.trim()).find((c) => c.startsWith(`${FILES_COOKIE}=`));
+  if (!pair) return null;
+  try {
+    return jwt.verify(decodeURIComponent(pair.slice(FILES_COOKIE.length + 1)), JWT_SECRET, { audience: FILES_AUDIENCE }) as FilesViewer;
+  } catch {
+    return null;
+  }
 }
 
 /** Logs this person out on every device: their existing tokens stop working. */

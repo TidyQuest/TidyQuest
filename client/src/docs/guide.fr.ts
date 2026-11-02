@@ -164,7 +164,7 @@ export const GUIDE_FR: GuideSection[] = [
       { h: 'Terminer une tâche' },
       { ul: [
         'Appuie sur Fait sur Accueil, dans la pièce, ou sur la page Tâches. Le bouton 📎 ajoute une note ou une photo comme preuve.',
-        'Après l’approbation d’un parent, la note et la photo restent avec la tâche dans Activité (appuie sur la photo pour la voir en grand). Les parents voient celles de tout le monde ; les autres, seulement les leurs. Annuler ou refuser la tâche supprime sa photo.',
+        'Après l’approbation d’un parent, la note et la photo restent avec la tâche dans Activité (appuie sur la photo pour la voir en grand). Les parents voient celles de tout le monde ; les autres, seulement les leurs. Le lien d’une photo ne s’ouvre pour personne d’autre, ni après la déconnexion. Annuler ou refuser la tâche supprime sa photo.',
         'Les parents et les membres peuvent marquer une tâche comme faite pour quelqu’un d’autre (« qui l’a faite ? »).',
         'Une erreur peut être annulée depuis Activité (parents), ou avec ↩️ Annuler à côté du « Fait par » de la tâche dans sa pièce (parents ; l’appli demande d’abord, car les pièces sont reprises). Une tâche en équipe est annulée pour toute l’équipe, et les pièces de chacun sont reprises. Un enfant peut annuler son propre Fait tant qu’il attend la validation.',
       ] },
@@ -520,6 +520,12 @@ export const GUIDE_FR: GuideSection[] = [
           'Sur tidyquest.org, une famille peut compter jusqu’à 15 personnes.',
           'Le téléphone réduit les grandes photos avant de les envoyer. Si une photo ne s’envoie toujours pas après Fait, la tâche compte quand même : le message reste jusqu’à ce que tu le fermes et, tant que la tâche attend un parent, Réessayer renvoie la photo.',
           'Pas de champ photo en terminant une tâche avec 📎 ? Un parent les a désactivées dans Paramètres → Fonctionnalités → Photos de preuve.',
+        ] },
+        { q: 'Une photo ou un avatar ne s’affiche pas', a: [
+          'Les photos de preuve ne s’ouvrent que pour une personne connectée à la famille : les parents les voient toutes, les autres seulement les leurs. Sur tidyquest.org, c’est pareil pour les avatars.',
+          'Si les photos ne s’affichent plus, ferme et rouvre l’appli. Si ça ne suffit pas, touche Se déconnecter et reconnecte-toi.',
+          'Un lien copié vers une photo ne s’ouvre nulle part ailleurs, exprès : les photos des enfants restent privées.',
+          'Sur tidyquest.org, aucune photo ne s’affiche tant que la famille est en pause ou que son essai gratuit est terminé.',
         ] },
         { q: 'J’ai été déconnecté de tous mes appareils', a: [
           'Un parent a changé ton mot de passe ou utilisé Déconnecter de tous les appareils, ou tu as changé ton mot de passe ou utilisé Se déconnecter partout ailleurs sur un autre appareil. Reconnecte-toi avec ton mot de passe actuel.',

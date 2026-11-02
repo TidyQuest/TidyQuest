@@ -6,6 +6,7 @@ import { api } from '../../hooks/useApi';
 import { CheerBar } from '../shared/CheerBar';
 import { UserTitle } from '../shared/UserTitle';
 import { useTranslation } from '../../hooks/useTranslation';
+import { PhotoViewer } from '../shared/PhotoViewer';
 import { startOfWeek, useWeekStart } from '../../utils/week';
 import { at, wall, startOfDay } from '../../utils/clock';
 
@@ -21,19 +22,22 @@ function rangeStart(range: Range, weekStart: number): Date | null {
 }
 
 /** A kid's proof on a chore: a small photo (tap for full size) and their note. A photo that won't load is left out. */
-function Proof({ note, photoUrl, label }: { note?: string | null; photoUrl?: string | null; label: string }) {
+function Proof({ note, photoUrl, label, closeLabel }: { note?: string | null; photoUrl?: string | null; label: string; closeLabel: string }) {
   const [broken, setBroken] = useState(false);
+  const [open, setOpen] = useState(false);
   const photo = photoUrl && !broken;
   if (!photo && !note) return null;
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 4, minWidth: 0 }}>
       {photo && (
-        <a href={photoUrl} target="_blank" rel="noreferrer" title={label} style={{ position: 'relative', flexShrink: 0, display: 'block' }}>
+        <button type="button" onClick={() => setOpen(true)} title={label}
+          style={{ position: 'relative', flexShrink: 0, display: 'block', padding: 0, border: 'none', background: 'none', cursor: 'zoom-in' }}>
           <img src={photoUrl} alt={label} loading="lazy" onError={() => setBroken(true)}
             style={{ display: 'block', width: 44, height: 44, borderRadius: 8, objectFit: 'cover', border: '1px solid var(--warm-border)' }} />
           <span aria-hidden="true" style={{ position: 'absolute', right: -5, bottom: -5, fontSize: 12 }}>📎</span>
-        </a>
+        </button>
       )}
+      {photo && open && <PhotoViewer url={photoUrl} alt={label} closeLabel={closeLabel} onClose={() => setOpen(false)} />}
       {note && <span style={{ fontSize: 12, color: 'var(--warm-text-secondary)', fontWeight: 600, overflowWrap: 'anywhere', minWidth: 0 }}>“{note}”</span>}
     </div>
   );
@@ -146,7 +150,7 @@ export function History({ language, isAdmin, users = [], rooms = [], userId, mas
                   <div style={{ fontSize: 11, color: 'var(--warm-text-light)', fontWeight: 600 }}>
                     {roomDisplayName(p.roomName, p.roomType || '')} · {timeAgo(p.completedAt)} · {t('app.waitingForApproval')}
                   </div>
-                  <Proof note={p.note} photoUrl={p.photoUrl} label={t('approvals.proofPhoto')} />
+                  <Proof note={p.note} photoUrl={p.photoUrl} label={t('approvals.proofPhoto')} closeLabel={t('common.close')} />
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 13, fontWeight: 800, color: 'var(--warm-text-light)' }}>+{p.coinsEarned} <CoinIcon /></div>
               </div>
@@ -235,7 +239,7 @@ export function History({ language, isAdmin, users = [], rooms = [], userId, mas
                     <div style={{ fontSize: 11, color: 'var(--warm-text-light)', fontWeight: 600 }}>{t('history.by')} {byName}{!isDuo && <> <UserTitle userId={h.userId} language={language} style={{ fontSize: 10 }} /></>}</div>
                     <div className="history-mobile-meta">{roomDisplayName(h.roomName, h.roomType || '')} · {timeAgo(h.completedAt)}</div>
                     {h.loggedAt && <div style={{ fontSize: 11, color: 'var(--warm-text-muted)', fontWeight: 700, marginTop: 2 }}>🕘 {t('late.tag')}</div>}
-                    <Proof note={h.note} photoUrl={h.photoUrl} label={t('approvals.proofPhoto')} />
+                    <Proof note={h.note} photoUrl={h.photoUrl} label={t('approvals.proofPhoto')} closeLabel={t('common.close')} />
                     {h.approvalNote && <div style={{ fontSize: 12, color: 'var(--warm-text-secondary)', fontWeight: 600, marginTop: 2, overflowWrap: 'anywhere' }}>💬 “{h.approvalNote}”</div>}
                     {h.cheers && (
                       <CheerBar completionId={h.id} cheers={h.cheers} language={language} mascotName={mascotName}

@@ -302,6 +302,14 @@ export interface BoardData {
 /** Self-hosted: username. Hosted: a parent's email, or the family code and username. */
 export type LoginDetails = { password: string; username?: string; email?: string; familyCode?: string };
 
+/**
+ * Drops the photos cookie (NEW-29) when this device signs out. keepalive lets it finish while the page moves on
+ * to the login screen; a failure only leaves a cookie that stops working with the login anyway.
+ */
+export function forgetPhotos(): void {
+  fetch(`${API_BASE}/auth/logout`, { method: 'POST', keepalive: true }).catch(() => {});
+}
+
 function getToken(): string | null {
   return localStorage.getItem('tidyquest_token');
 }
@@ -325,6 +333,7 @@ async function apiFetch<T>(path: string, options: RequestInit = {}): Promise<T> 
   // sign-up and email-link pages) the page shows the error itself.
   if (res.status === 401 && token) {
     localStorage.removeItem('tidyquest_token');
+    forgetPhotos();
     window.location.href = '/login';
     throw new Error('Unauthorized');
   }

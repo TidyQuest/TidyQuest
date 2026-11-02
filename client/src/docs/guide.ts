@@ -188,7 +188,7 @@ export const GUIDE_EN: GuideSection[] = [
       { h: 'Finishing a chore' },
       { ul: [
         'Tap Done on Home, in the room, or on the Tasks page. The 📎 button adds a note or photo as proof.',
-        'After a parent approves, the note and photo stay with the chore in Activity (tap the photo to see it full size). Parents see everyone’s; everyone else sees only their own. Undoing or rejecting the chore deletes its photo.',
+        'After a parent approves, the note and photo stay with the chore in Activity (tap the photo to see it full size). Parents see everyone’s; everyone else sees only their own. A photo’s link doesn’t open for anyone else, or after logging out. Undoing or rejecting the chore deletes its photo.',
         'Parents and members can mark a chore done for someone else ("who did it?").',
         'A mistake can be undone from Activity (parents), or with ↩️ Undo next to the chore’s "Done by" in its room (parents; it asks first, because the coins come back off). A team-up is undone for the whole team, and everyone’s coins for it are taken back. A kid can take back their own Done while it waits for approval.',
       ] },
@@ -544,6 +544,12 @@ export const GUIDE_EN: GuideSection[] = [
           'On tidyquest.org a family can have up to 15 people.',
           'Phones make big photos smaller before they upload. If a photo still doesn’t upload after Done, the chore counts anyway: the message stays until you close it, and while the chore waits for a parent, Try again sends the photo again.',
           'No photo field when finishing a chore with 📎? A parent switched them off in Settings → Features → Proof photos.',
+        ] },
+        { q: 'A photo or avatar doesn’t show', a: [
+          'Proof photos only open for someone logged in to the family: parents see all of them, everyone else only their own. On tidyquest.org the same goes for avatars.',
+          'If photos stopped showing, close and reopen the app. If that doesn’t help, tap Log out and log in again.',
+          'A copied link to a photo doesn’t open anywhere else, on purpose: it keeps kids’ photos private.',
+          'On tidyquest.org, no photos show while the family is paused or its free trial has ended.',
         ] },
         { q: 'I was signed out on every device', a: [
           'A parent changed your password or used Log out of all devices, or you changed your password or used Log out everywhere else on another device. Log in again with your current password.',

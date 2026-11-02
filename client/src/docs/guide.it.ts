@@ -164,7 +164,7 @@ export const GUIDE_IT: GuideSection[] = [
       { h: 'Finire una faccenda' },
       { ul: [
         'Tocca Fatto nella Home, nella stanza o nella pagina Compiti. Il pulsante 📎 aggiunge una nota o una foto come prova.',
-        'Dopo l’approvazione di un genitore, la nota e la foto restano con la faccenda in Attività (tocca la foto per vederla in grande). I genitori vedono quelle di tutti; gli altri solo le proprie. Annullare o rifiutare la faccenda cancella la sua foto.',
+        'Dopo l’approvazione di un genitore, la nota e la foto restano con la faccenda in Attività (tocca la foto per vederla in grande). I genitori vedono quelle di tutti; gli altri solo le proprie. Il link di una foto non si apre per nessun altro, né dopo essere usciti. Annullare o rifiutare la faccenda cancella la sua foto.',
         'Genitori e membri possono segnare una faccenda come fatta per qualcun altro ("chi l’ha fatta?").',
         'Un errore si può annullare da Attività (genitori), oppure con ↩️ Annulla accanto a "Fatto da" della faccenda nella sua stanza (genitori; chiede conferma, perché le monete vengono tolte). Una squadra viene annullata per tutta la squadra e le monete di tutti per quella faccenda vengono riprese. Un bambino può ritirare il proprio Fatto finché aspetta l’approvazione.',
       ] },
@@ -520,6 +520,12 @@ export const GUIDE_IT: GuideSection[] = [
           'Su tidyquest.org una famiglia può avere fino a 15 persone.',
           'Il telefono rimpicciolisce le foto grandi prima di caricarle. Se una foto non si carica lo stesso dopo Fatto, la faccenda conta comunque: il messaggio resta finché non lo chiudi e, finché la faccenda aspetta un genitore, Riprova invia di nuovo la foto.',
           'Nessun campo foto quando concludi una faccenda con 📎? Un genitore le ha spente in Impostazioni → Funzioni → Foto di prova.',
+        ] },
+        { q: 'Una foto o un avatar non si vede', a: [
+          'Le foto di prova si aprono solo per chi ha fatto l’accesso alla famiglia: i genitori le vedono tutte, gli altri solo le proprie. Su tidyquest.org vale lo stesso per gli avatar.',
+          'Se le foto non si vedono più, chiudi e riapri l’app. Se non basta, tocca Esci e accedi di nuovo.',
+          'Un link copiato a una foto non si apre da nessun’altra parte, apposta: così le foto dei bambini restano private.',
+          'Su tidyquest.org nessuna foto si vede mentre la famiglia è in pausa o la sua prova gratuita è finita.',
         ] },
         { q: 'Sono stato disconnesso da tutti i dispositivi', a: [
           'Un genitore ha cambiato la tua password o ha usato Esci da tutti i dispositivi, oppure hai cambiato la tua password o usato Esci da tutti gli altri dispositivi su un altro dispositivo. Accedi di nuovo con la tua password attuale.',

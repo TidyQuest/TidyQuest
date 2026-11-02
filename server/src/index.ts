@@ -38,7 +38,7 @@ import insightsRoutes from './routes/insights';
 import { countRequests, isHosted } from './hosted/context';
 import { startHosted } from './hosted/families';
 import { startJobs, type Job } from './hosted/jobs';
-import { filesRouter } from './hosted/files';
+import { filesRouter, proofsRouter } from './hosted/files';
 import hostedRoutes from './hosted/routes';
 import operatorRoutes, { operatorFromEnv } from './hosted/operator';
 import { hostedCorsOrigin, securityHeaders } from './hosted/headers';
@@ -82,8 +82,8 @@ export function createApp() {
     // Serve uploaded avatars
     const avatarsDir = path.join(__dirname, '..', '..', 'data', 'avatars');
     app.use('/api/avatars', express.static(avatarsDir));
-    // Proof photos attached to completions (random, unguessable file names, like avatars)
-    app.use('/api/proofs', express.static(path.join(__dirname, '..', '..', 'data', 'proofs')));
+    // Proof photos attached to completions: only for the people allowed to see them (the photos cookie)
+    app.use('/api/proofs', proofsRouter);
   }
 
   // API routes

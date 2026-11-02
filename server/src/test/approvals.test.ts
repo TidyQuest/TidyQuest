@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import fs from 'fs';
 import path from 'path';
-import { createTestApp, createAdmin, createUser } from './setup';
+import { createTestApp, createAdmin, createUser, photoCookie } from './setup';
 import type supertest from 'supertest';
 import type Database from 'better-sqlite3';
 import { uploadDir } from '../hosted/files';
@@ -42,7 +42,7 @@ describe('Proof with a completion', () => {
     expect(up.body.photoUrl).toMatch(/^\/api\/(proofs|files\/[a-z0-9]{16}\/proofs)\/proof-[0-9a-f]{24}\.png$/);
     const saved = path.join(uploadDir('proofs'), path.basename(up.body.photoUrl));
     expect(fs.existsSync(saved)).toBe(true);
-    expect((await agent.get(up.body.photoUrl)).status).toBe(200);
+    expect((await agent.get(up.body.photoUrl).set('Cookie', await photoCookie(agent, kidA.token))).status).toBe(200);
 
     const pending = (await agent.get('/api/completions/pending').set(auth(admin.token))).body.pending;
     expect(pending[0]).toMatchObject({ id, note: 'Math test, 94%', photoUrl: up.body.photoUrl });

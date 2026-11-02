@@ -164,7 +164,7 @@ export const GUIDE_ES: GuideSection[] = [
       { h: 'Terminar una tarea' },
       { ul: [
         'Pulsa Hecho en Inicio, en la habitación o en la página Tareas. El botón 📎 añade una nota o una foto como prueba.',
-        'Cuando un padre o una madre la aprueba, la nota y la foto se quedan con la tarea en Actividad (pulsa la foto para verla en grande). Los padres ven las de todos; los demás, solo las suyas. Deshacer o rechazar la tarea borra su foto.',
+        'Cuando un padre o una madre la aprueba, la nota y la foto se quedan con la tarea en Actividad (pulsa la foto para verla en grande). Los padres ven las de todos; los demás, solo las suyas. El enlace de una foto no se abre para nadie más, ni después de cerrar sesión. Deshacer o rechazar la tarea borra su foto.',
         'Los padres y miembros pueden marcar una tarea como hecha por otra persona ("¿quién la hizo?").',
         'Un error se puede deshacer desde Actividad (padres), o con ↩️ Deshacer junto al "Hecho por" de la tarea en su habitación (padres; pregunta antes, porque las monedas se devuelven). Una tarea En equipo se deshace para todo el equipo y se retiran las monedas de todos. Un niño puede deshacer su propio Hecho mientras espera aprobación.',
       ] },
@@ -520,6 +520,12 @@ export const GUIDE_ES: GuideSection[] = [
           'En tidyquest.org una familia puede tener hasta 15 personas.',
           'El móvil reduce las fotos grandes antes de subirlas. Si aun así una foto no se sube después de Hecho, la tarea cuenta igual: el mensaje se queda hasta que lo cierres y, mientras la tarea espera a un padre o una madre, Reintentar vuelve a enviar la foto.',
           '¿No hay campo de foto al terminar una tarea con 📎? Un padre o una madre las desactivó en Ajustes → Funciones → Fotos de prueba.',
+        ] },
+        { q: 'No se ve una foto o un avatar', a: [
+          'Las fotos de prueba solo se abren para alguien que ha iniciado sesión en la familia: los padres las ven todas; los demás, solo las suyas. En tidyquest.org pasa lo mismo con los avatares.',
+          'Si las fotos han dejado de verse, cierra la app y vuelve a abrirla. Si no se arregla, pulsa Cerrar sesión y vuelve a entrar.',
+          'Un enlace copiado a una foto no se abre en ningún otro sitio, a propósito: así las fotos de los niños siguen siendo privadas.',
+          'En tidyquest.org no se ve ninguna foto mientras la familia está en pausa o su prueba gratuita ha terminado.',
         ] },
         { q: 'Se cerró mi sesión en todos los dispositivos', a: [
           'Un padre o una madre cambió tu contraseña o usó Cerrar sesión en todos los dispositivos, o tú cambiaste tu contraseña o usaste Cerrar sesión en los demás dispositivos en otro dispositivo. Vuelve a iniciar sesión con tu contraseña actual.',

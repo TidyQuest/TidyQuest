@@ -6,7 +6,7 @@ import path from 'path';
 import fs from 'fs';
 import bcrypt from 'bcryptjs';
 import db from '../database';
-import { AuthRequest, authMiddleware, generateToken, revokeTokens } from '../middleware/auth';
+import { AuthRequest, authMiddleware, loginToken, revokeTokens } from '../middleware/auth';
 import { DEFAULT_COINS_BY_EFFORT, normalizeCoinsByEffortConfig } from '../utils/health';
 import { notifyCoinsAdjusted } from '../utils/notifyMessages';
 import { NOTIFICATION_KINDS, NotificationTypeSettings, sendTelegramMessageDetailed, sendNtfyMessageDetailed } from '../utils/notifications';
@@ -261,7 +261,7 @@ router.put('/:id/password', (req: AuthRequest, res: Response) => {
   db.prepare('UPDATE users SET passwordHash = ? WHERE id = ?').run(hash, userId);
   // A new password logs the person out everywhere; someone changing their own stays signed in here
   revokeTokens(userId);
-  res.json(isSelf ? { success: true, token: generateToken(userId) } : { success: true });
+  res.json(isSelf ? { success: true, token: loginToken(res, userId) } : { success: true });
 });
 
 // A parent logs someone out on every device, e.g. a lost tablet (NEW-8). Their own: "Log out everywhere else"

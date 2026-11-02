@@ -164,7 +164,7 @@ export const GUIDE_DE: GuideSection[] = [
       { h: 'Eine Aufgabe abschließen' },
       { ul: [
         'Tippe auf Erledigt auf der Startseite, im Raum oder auf der Seite Aufgaben. Mit dem 📎-Knopf fügst du eine Notiz oder ein Foto als Beweis hinzu.',
-        'Nach der Freigabe durch ein Elternteil bleiben Notiz und Foto bei der Aufgabe unter Aktivität (tippe auf das Foto, um es groß zu sehen). Eltern sehen die von allen, alle anderen nur ihre eigenen. Wird die Aufgabe rückgängig gemacht oder abgelehnt, wird ihr Foto gelöscht.',
+        'Nach der Freigabe durch ein Elternteil bleiben Notiz und Foto bei der Aufgabe unter Aktivität (tippe auf das Foto, um es groß zu sehen). Eltern sehen die von allen, alle anderen nur ihre eigenen. Der Link zu einem Foto öffnet sich für niemanden sonst, auch nicht nach dem Abmelden. Wird die Aufgabe rückgängig gemacht oder abgelehnt, wird ihr Foto gelöscht.',
         'Eltern und Mitglieder können eine Aufgabe für jemand anderen als erledigt markieren („Wer hat es gemacht?“).',
         'Ein Fehler lässt sich unter Aktivität rückgängig machen (Eltern) oder mit ↩️ Rückgängig neben „Erledigt von“ der Aufgabe in ihrem Raum (Eltern; es fragt vorher nach, weil die Münzen wieder abgezogen werden). Ein Teamwork wird für das ganze Team rückgängig gemacht, und die Münzen aller dafür werden zurückgenommen. Ein Kind kann sein eigenes Erledigt zurücknehmen, solange es auf Freigabe wartet.',
       ] },
@@ -520,6 +520,12 @@ export const GUIDE_DE: GuideSection[] = [
           'Auf tidyquest.org kann eine Familie bis zu 15 Personen haben.',
           'Große Fotos verkleinert das Handy vor dem Hochladen. Wird ein Foto nach Erledigt dennoch nicht hochgeladen, zählt die Aufgabe trotzdem: Die Meldung bleibt, bis du sie schließt, und solange die Aufgabe auf ein Elternteil wartet, schickt Nochmal versuchen das Foto erneut.',
           'Kein Fotofeld beim Abschließen mit 📎? Ein Elternteil hat sie unter Einstellungen → Funktionen → Beweisfotos ausgeschaltet.',
+        ] },
+        { q: 'Ein Foto oder Avatar wird nicht angezeigt', a: [
+          'Beweisfotos öffnen sich nur für jemanden, der in der Familie angemeldet ist: Eltern sehen alle, alle anderen nur ihre eigenen. Auf tidyquest.org gilt das auch für Avatare.',
+          'Wenn keine Fotos mehr angezeigt werden, schließe die App und öffne sie neu. Hilft das nicht, tippe auf Abmelden und melde dich wieder an.',
+          'Ein kopierter Link zu einem Foto öffnet sich nirgendwo sonst, mit Absicht: So bleiben die Fotos der Kinder privat.',
+          'Auf tidyquest.org werden keine Fotos angezeigt, solange die Familie pausiert ist oder ihre kostenlose Testphase vorbei ist.',
         ] },
         { q: 'Ich wurde auf allen Geräten abgemeldet', a: [
           'Ein Elternteil hat dein Passwort geändert oder Auf allen Geräten abmelden benutzt, oder du hast dein Passwort geändert oder Überall sonst abmelden auf einem anderen Gerät benutzt. Melde dich mit deinem aktuellen Passwort wieder an.',

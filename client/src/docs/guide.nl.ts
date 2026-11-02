@@ -164,7 +164,7 @@ export const GUIDE_NL: GuideSection[] = [
       { h: 'Een klusje afronden' },
       { ul: [
         'Tik op Klaar! op Home, in de kamer of op de pagina Klusjes. Met de 📎-knop voeg je een notitie of foto toe als bewijs.',
-        'Als een ouder het goedkeurt, blijven de notitie en foto bij het klusje in Activiteit (tik op de foto om hem groot te zien). Ouders zien die van iedereen, de anderen alleen hun eigen. Ongedaan maken of afwijzen van het klusje verwijdert de foto.',
+        'Als een ouder het goedkeurt, blijven de notitie en foto bij het klusje in Activiteit (tik op de foto om hem groot te zien). Ouders zien die van iedereen, de anderen alleen hun eigen. De link naar een foto opent voor niemand anders, ook niet na het uitloggen. Ongedaan maken of afwijzen van het klusje verwijdert de foto.',
         'Ouders en leden kunnen een klusje voor iemand anders op klaar zetten ("wie heeft het gedaan?").',
         'Een vergissing kun je ongedaan maken via Activiteit (ouders), of met ↩️ Ongedaan naast "Gedaan door" van het klusje in de kamer (ouders; er wordt eerst gevraagd, omdat de munten er weer af gaan). Een Samen doen wordt voor het hele team ongedaan gemaakt en ieders munten daarvoor worden teruggenomen. Een kind kan zijn eigen Klaar terugnemen zolang het op goedkeuring wacht.',
       ] },
@@ -520,6 +520,12 @@ export const GUIDE_NL: GuideSection[] = [
           'Op tidyquest.org kan een gezin maximaal 15 personen hebben.',
           'Grote foto’s maakt de telefoon eerst kleiner. Wordt een foto na Klaar! toch niet geüpload, dan telt het klusje wel: de melding blijft staan tot je hem sluit, en zolang het klusje op een ouder wacht, stuurt Opnieuw proberen de foto nog een keer.',
           'Geen fotoveld bij afronden met 📎? Een ouder heeft ze uitgezet in Instellingen → Functies → Bewijsfoto’s.',
+        ] },
+        { q: 'Een foto of avatar is niet te zien', a: [
+          'Bewijsfoto’s openen alleen voor iemand die in het gezin is ingelogd: ouders zien ze allemaal, de anderen alleen hun eigen. Op tidyquest.org geldt dat ook voor avatars.',
+          'Zijn de foto’s niet meer te zien? Sluit de app en open hem opnieuw. Helpt dat niet, tik dan op Uitloggen en log weer in.',
+          'Een gekopieerde link naar een foto opent nergens anders, met opzet: zo blijven foto’s van kinderen privé.',
+          'Op tidyquest.org zijn er geen foto’s te zien zolang het gezin gepauzeerd is of de gratis proefperiode voorbij is.',
         ] },
         { q: 'Ik ben op elk apparaat uitgelogd', a: [
           'Een ouder heeft je wachtwoord veranderd of Uitloggen op alle apparaten gebruikt, of je hebt zelf je wachtwoord veranderd of Overal anders uitloggen gebruikt op een ander apparaat. Log opnieuw in met je huidige wachtwoord.',
