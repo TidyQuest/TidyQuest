@@ -1,24 +1,24 @@
 <?xml version="1.0"?>
 <Container version="2">
   <Name>TidyQuest</Name>
-  <Repository>mellowfox/tidyquest</Repository>
-  <Registry>https://hub.docker.com/r/mellowfox/tidyquest</Registry>
+  <Repository>tidyquest/tidyquest</Repository>
+  <Registry>https://hub.docker.com/r/tidyquest/tidyquest</Registry>
   <Network>bridge</Network>
   <Shell>sh</Shell>
   <Privileged>false</Privileged>
-  <Support>https://github.com/mellow-fox/TidyQuest/issues</Support>
-  <Project>https://github.com/mellow-fox/TidyQuest</Project>
+  <Support>https://github.com/TidyQuest/TidyQuest/issues</Support>
+  <Project>https://github.com/TidyQuest/TidyQuest</Project>
   <Overview>Gamify household chores for the whole family. Assign tasks to rooms, earn coins, unlock achievements, track goals and compete on the leaderboard. Supports multiple users with roles (admin, member, child), recurring tasks, on-demand tasks, custom coin payouts, rotating assignments, and notification via Telegram or ntfy.</Overview>
   <Category>Productivity: Tools:</Category>
   <WebUI>http://[IP]:[PORT:3020]/</WebUI>
-  <TemplateURL>https://raw.githubusercontent.com/mellow-fox/TidyQuest/main/unraid/tidyquest.xml</TemplateURL>
-  <Icon>https://raw.githubusercontent.com/mellow-fox/TidyQuest/main/client/public/favicon.svg</Icon>
+  <TemplateURL>https://raw.githubusercontent.com/TidyQuest/TidyQuest/main/unraid/tidyquest.xml</TemplateURL>
+  <Icon>https://raw.githubusercontent.com/TidyQuest/TidyQuest/main/client/public/favicon.svg</Icon>
   <License>AGPL-3.0</License>
-  <Screenshot>https://raw.githubusercontent.com/mellow-fox/TidyQuest/main/screenshots/dashboard.jpg</Screenshot>
-  <Screenshot>https://raw.githubusercontent.com/mellow-fox/TidyQuest/main/screenshots/rooms.jpg</Screenshot>
-  <Screenshot>https://raw.githubusercontent.com/mellow-fox/TidyQuest/main/screenshots/leaderboard.jpg</Screenshot>
-  <Screenshot>https://raw.githubusercontent.com/mellow-fox/TidyQuest/main/screenshots/achievements.jpg</Screenshot>
-  <Screenshot>https://raw.githubusercontent.com/mellow-fox/TidyQuest/main/screenshots/rewards.jpg</Screenshot>
+  <Screenshot>https://raw.githubusercontent.com/TidyQuest/TidyQuest/main/screenshots/dashboard.jpg</Screenshot>
+  <Screenshot>https://raw.githubusercontent.com/TidyQuest/TidyQuest/main/screenshots/rooms.jpg</Screenshot>
+  <Screenshot>https://raw.githubusercontent.com/TidyQuest/TidyQuest/main/screenshots/leaderboard.jpg</Screenshot>
+  <Screenshot>https://raw.githubusercontent.com/TidyQuest/TidyQuest/main/screenshots/achievements.jpg</Screenshot>
+  <Screenshot>https://raw.githubusercontent.com/TidyQuest/TidyQuest/main/screenshots/rewards.jpg</Screenshot>
   <Config Name="WebUI Port" Target="3000" Default="3020" Mode="tcp" Description="Port to access the TidyQuest web interface." Type="Port" Display="always" Required="true" Mask="false">3020</Config>
   <Config Name="Data" Target="/app/data" Default="/mnt/user/appdata/tidyquest" Description="Path to store the database and uploaded avatars." Type="Path" Display="always" Required="true" Mask="false">/mnt/user/appdata/tidyquest</Config>
   <Config Name="JWT_SECRET" Target="JWT_SECRET" Default="" Description="Secret key used to sign user sessions. Generate a secure value with: openssl rand -base64 32" Type="Variable" Display="always" Required="true" Mask="true"/>

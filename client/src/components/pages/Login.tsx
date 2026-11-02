@@ -6,7 +6,7 @@ import UserAvatar from '../shared/UserAvatar';
 import { authLanguage, rememberFamily, rememberedFamily } from '../../utils/hosted';
 
 // The README's steps for resetting the first parent's password (ADMIN_RESET_PASSWORD)
-const RECOVERY_URL = 'https://github.com/cjueden/TidyQuest#admin-password-recovery';
+const RECOVERY_URL = 'https://github.com/TidyQuest/TidyQuest#admin-password-recovery';
 
 interface LoginUser {
   username: string;
