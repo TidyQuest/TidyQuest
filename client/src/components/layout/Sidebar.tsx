@@ -64,7 +64,7 @@ export function Sidebar({ user, isMobileOpen = false, onClose, gamificationEnabl
       <nav
         style={{
           width: effectiveCollapsed ? 60 : 240,
-          minHeight: '100vh',
+          height: '100vh',
           backgroundColor: 'var(--warm-sidebar)',
           borderRight: '1.5px solid var(--warm-sidebar-border)',
           padding: effectiveCollapsed ? '24px 8px' : '24px 0',
@@ -160,7 +160,7 @@ export function Sidebar({ user, isMobileOpen = false, onClose, gamificationEnabl
           )}
         </div>
 
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 2, padding: effectiveCollapsed ? '0 8px' : '0 12px' }}>
+        <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 2, padding: effectiveCollapsed ? '0 8px' : '0 12px' }}>
           {navItems.filter((item) => (gamificationEnabled || !GAMIFICATION_ROUTES.has(item.to)) && (!item.adminOnly || user.role === 'admin')).map((item) => (
             <NavLink
               key={item.to}

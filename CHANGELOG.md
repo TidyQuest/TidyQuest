@@ -9,6 +9,17 @@ upstream TidyQuest's: see [RELEASE-NOTES.md](RELEASE-NOTES.md).
 
 ## Unreleased
 
+### Changed
+
+- In hosted mode the "Allow new registrations" setting is hidden. Hosted families add people from Settings →
+  Family Members, and the public sign-up page is always off there, so the toggle did nothing. Self-hosted installs
+  still have it, unchanged.
+
+### Fixed
+
+- The side navigation now scrolls when the window is short, so you can always reach every menu item and your
+  profile. Before, the lower items and the profile could be cut off with no way to scroll to them.
+
 ## v0.14.2 (2026-10-30)
 
 ### Added

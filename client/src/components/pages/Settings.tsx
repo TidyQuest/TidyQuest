@@ -874,7 +874,7 @@ export function Settings({
               </div>
             </div>
             )}
-            {isAdmin && (
+            {isAdmin && !hosted && (
               <div style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '14px 0', borderTop: '1px solid var(--warm-border)' }}>
                 <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                   <path d="M10 2a4 4 0 0 1 4 4v1h1a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h1V6a4 4 0 0 1 4-4zm0 1.5A2.5 2.5 0 0 0 7.5 6v1h5V6A2.5 2.5 0 0 0 10 3.5z" fill="var(--warm-text-light)" />
