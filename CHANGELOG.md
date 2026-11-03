@@ -54,6 +54,8 @@ What changed in each release, in plain language, newest first. Releases up to v0
 ### Fixed
 - On a phone, the × that closes the side menu no longer sits off the menu's edge: it has room and a bigger tap target,
   and the desktop-only "collapse" button no longer shows there. Its label is translated (#155).
+- How to set up Home Assistant notifications is now explained, in the README and in the guide (Settings → Guide &
+  help → Notifications), with a troubleshooting entry for when the test fails (#156).
 
 ## v0.15.3 (2026-11-03)
 

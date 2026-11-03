@@ -358,6 +358,15 @@ export const GUIDE_NL: GuideSection[] = [
         'Het Meldingenlogboek toont wat er is verstuurd, in de wachtrij staat of mislukt is, en waarom.',
       ] },
       { p: 'Op tidyquest.org gaan meldingen via ntfy.sh of Telegram. Een eigen ntfy-server en Home Assistant werken alleen op een server thuis.' },
+      { h: 'Home Assistant' },
+      { p: 'Heeft je gezin de Home Assistant-app op de telefoon, dan kan TidyQuest daar berichten via sturen. Dit werkt alleen op een server thuis, niet op tidyquest.org.' },
+      { ol: [
+        'Open in Home Assistant je profiel (linksonder) en dan het tabblad Beveiliging. Maak helemaal onderaan een langdurig toegangstoken en kopieer het: Home Assistant laat het maar één keer zien.',
+        'Vul bij Instellingen → Algemeen → Meldingen → Home Assistant de Home Assistant-URL in zoals de TidyQuest-server die bereikt, bijv. http://homeassistant.local:8123 of http://192.168.1.20:8123, en plak het token.',
+        'Voeg eventueel een gezinsmeldingsservice toe voor berichten die iedereen krijgt, bijv. notify.gezin (een notify-groep die je in Home Assistant hebt gemaakt). Tik dan op Opslaan.',
+        'Geef bij "Wie krijgt wat" iedereen de service van hun telefoon: notify.mobile_app_ en de naam van de telefoon, bijv. notify.mobile_app_telefoon_alex. Home Assistant zet ze onder Ontwikkelhulpmiddelen → Acties (typ notify.). Een telefoon staat daar zodra de Home Assistant-app erop is ingelogd.',
+        'Tik naast die persoon op Testbericht sturen. "ha: ✓" betekent dat het aankwam; anders zegt de melding wat er misging.',
+      ] },
     ],
   },
   {
@@ -485,6 +494,13 @@ export const GUIDE_NL: GuideSection[] = [
           'Privésoorten (uitkomsten, overzichten, duwtjes, aanmoedigingen) hebben het eigen kanaal van de persoon nodig.',
           'Stille uren en schooltijden houden berichten vast tot ze afgelopen zijn.',
           'Het Meldingenlogboek toont elk bericht en eventuele fouten.',
+        ] },
+        { q: 'De Home Assistant-test mislukt', a: [
+          '"Could not reach Home Assistant": de URL klopt niet, of de TidyQuest-server kan hem niet bereiken. In Docker werkt homeassistant.local vaak niet: gebruik het IP-adres met :8123.',
+          '"Home Assistant returned 401": het token klopt niet of is verwijderd. Maak een nieuw in Home Assistant en plak het opnieuw.',
+          '"Home Assistant returned 400" (of 404): Home Assistant heeft geen notify-service met die naam. Kopieer de naam uit Ontwikkelhulpmiddelen → Acties; notify. ervoor mag, hoeft niet.',
+          '"Invalid Home Assistant notify service": alleen kleine letters, cijfers en underscores, bijv. notify.mobile_app_telefoon_alex.',
+          'De testknop is grijs: sla eerst de URL en het token op, en geef de persoon een Home Assistant-service bij "Wie krijgt wat".',
         ] },
         { q: 'Onze eigen ntfy-server of Home Assistant werkt niet op tidyquest.org', a: [
           'tidyquest.org stuurt alleen naar ntfy.sh en Telegram: een ingetypt adres kan machines in ons netwerk bereiken, dus de server roept het niet aan. Een server thuis kan allebei gebruiken.',
