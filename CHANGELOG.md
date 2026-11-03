@@ -9,6 +9,8 @@ What changed in each release, in plain language, newest first. Releases up to v0
 
 ## Unreleased
 
+## v0.15.2 (2026-11-02)
+
 ### Added
 - A **Source code** link to the code of the exact version you run, at the bottom of the login and sign-up pages and
   in Settings → General under the version (TidyQuest is free software, AGPL-3.0). Running code you changed? Set
