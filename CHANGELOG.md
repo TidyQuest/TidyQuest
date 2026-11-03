@@ -9,6 +9,10 @@ What changed in each release, in plain language, newest first. Releases up to v0
 
 ## Unreleased
 
+### Fixed
+- The table of contents in API.md links to its sections again, and now lists *Rate Limiting* and *Notes* too
+  (#139).
+
 ## v0.15.2 (2026-11-02)
 
 ### Added
