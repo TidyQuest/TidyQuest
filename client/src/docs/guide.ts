@@ -36,6 +36,7 @@ export const GUIDE_EN: GuideSection[] = [
       { ol: [
         'Install it (see "Installing and updating"), open it in a browser and sign up. The first person to sign up becomes a parent (admin).',
         'Add everyone in Settings → Family Members: a name, a login and a role (see "People and roles"). Set each kid’s Task view and Kid mode there too.',
+        'Put TidyQuest on everyone’s phone or tablet so it opens like an app (see "On your phone").',
         'Make your rooms on the Rooms page. A room type adds suggested chores you can untick. Give a room to one person ("assigned to") to make it theirs, like a bedroom.',
         'Add or adjust chores in each room: how often, effort or coins, who can do it, and an icon (see "Chores").',
         'Set the coin values in Settings → Coins per effort, then build the Rewards Catalog with prices kids can reach (see "Coins, rewards and goals").',
@@ -46,6 +47,37 @@ export const GUIDE_EN: GuideSection[] = [
         'Download a backup in Settings → Data & Privacy once everything is set up, and now and then after that.',
       ] },
       { tip: 'Start small: a handful of chores per kid and a few cheap rewards they can earn in the first week. You can add more any time.' },
+    ],
+  },
+  {
+    id: 'phone',
+    icon: '📱',
+    title: 'On your phone',
+    blocks: [
+      { p: 'TidyQuest is a web app: there’s nothing to get from an app store. Add it to the home screen once and it opens like any other app, full screen with its own icon. Do it on every phone and tablet in the family, kids’ too.' },
+      { h: 'iPhone and iPad' },
+      { ol: [
+        'Open your TidyQuest address in Safari: app.tidyquest.org, or your home server’s address.',
+        'Tap Share (a square with an arrow pointing up). Don’t see it? Tap ⋯ next to the address bar first.',
+        'Scroll down and tap Add to Home Screen.',
+        'If there’s a switch to open it as a web app, leave it on. Tap Add.',
+        'Open TidyQuest from the home screen and sign in once more: it keeps its own sign-in, apart from Safari’s.',
+      ] },
+      { tip: 'Chrome and Edge on an iPhone can do it too: tap Share in the address bar, then Add to Home Screen.' },
+      { h: 'Android' },
+      { ol: [
+        'Open your TidyQuest address in Chrome: app.tidyquest.org, or your home server’s address.',
+        'Tap ⋮ at the top right.',
+        'Tap Add to home screen or Install app (the name depends on the Chrome version), then Install or Add.',
+        'Open TidyQuest from the home screen: you’re still signed in.',
+      ] },
+      { tip: 'Samsung Internet: tap ☰ at the bottom, then Add page to → Home screen.' },
+      { h: 'Good to know' },
+      { ul: [
+        'Updates arrive by themselves: it opens the newest version from the server every time. If it looks out of date after an update, close it fully and open it again.',
+        'Remove it like any other app: press and hold the icon. The family’s data stays on the server.',
+        'Messages about chores and rewards come through ntfy, Telegram or Home Assistant (see "Notifications"), not from the home screen app.',
+      ] },
     ],
   },
   {
@@ -521,6 +553,20 @@ export const GUIDE_EN: GuideSection[] = [
         { q: 'A shield didn’t save the streak', a: [
           'Each missed day needs its own shield. With fewer shields than missed days, none are used: the streak starts again and the shields are kept.',
           'Shields aren’t used during Vacation Mode; vacation already protects the streak.',
+        ] },
+        { q: 'There’s no Add to Home Screen on an iPhone', a: [
+          'Open the address in Safari itself. A link tapped in Mail, Messages or a chat app can open inside that app, which can’t add it: tap the Safari compass (or "Open in Safari") first.',
+          'Still not in the Share list? Scroll to the bottom, tap Edit Actions and add it.',
+        ] },
+        { q: 'On Android it opens in a browser tab, with an address bar', a: [
+          'Chrome installs it as an app only from a secure (https://) address. Over a plain http:// address, as on many home servers, you get a shortcut instead: it works the same, with Chrome’s bar on top. See "Installing and updating".',
+          'Added it to the home screen a while ago? Remove the icon and add it again to get the full-screen app.',
+        ] },
+        { q: 'The app on the home screen asks me to sign in again', a: [
+          'On an iPhone or iPad that’s normal the first time: it keeps its own sign-in, apart from Safari’s. Sign in once and it stays signed in.',
+        ] },
+        { q: 'After an update the app on the home screen looks the same', a: [
+          'Close it fully (swipe it away in the app switcher) and open it again: it loads the newest version when it starts.',
         ] },
         { q: 'Someone can’t log in', a: [
           'Too many wrong passwords block logins for up to 15 minutes: 10 for one account, or 20 from one device. Wait and try again; a correct password clears the account’s count.',

@@ -12,6 +12,7 @@ export const GUIDE_DE: GuideSection[] = [
       { ol: [
         'Installiere es (siehe „Installieren und aktualisieren“), öffne es im Browser und registriere dich. Die erste Person, die sich registriert, wird Elternteil (Admin).',
         'Füge alle unter Einstellungen → Familienmitglieder hinzu: ein Name, ein Login und eine Rolle (siehe „Personen und Rollen“). Stelle dort auch für jedes Kind die Aufgabenansicht und den Kindermodus ein.',
+        'Bring TidyQuest auf jedes Handy und Tablet, damit es sich wie eine App öffnet (siehe „Auf dem Handy“).',
         'Lege auf der Seite Räume deine Räume an. Ein Raumtyp bringt vorgeschlagene Aufgaben mit, die du abwählen kannst. Weise einen Raum einer Person zu („Zugewiesen an“), dann gehört er ihr, zum Beispiel ein Schlafzimmer.',
         'Füge in jedem Raum Aufgaben hinzu oder passe sie an: wie oft, Aufwand oder Münzen, wer sie machen darf und ein Symbol (siehe „Aufgaben“).',
         'Lege die Münzwerte unter Einstellungen → Münzen pro Aufwand fest und baue dann den Belohnungskatalog mit Preisen auf, die Kinder erreichen können (siehe „Münzen, Belohnungen und Ziele“).',
@@ -22,6 +23,37 @@ export const GUIDE_DE: GuideSection[] = [
         'Lade unter Einstellungen → Daten & Datenschutz ein Backup herunter, sobald alles eingerichtet ist, und danach ab und zu wieder.',
       ] },
       { tip: 'Fang klein an: ein paar Aufgaben pro Kind und ein paar günstige Belohnungen, die sie schon in der ersten Woche verdienen können. Mehr kannst du jederzeit hinzufügen.' },
+    ],
+  },
+  {
+    id: 'phone',
+    icon: '📱',
+    title: 'Auf dem Handy',
+    blocks: [
+      { p: 'TidyQuest ist eine Web-App: Aus einem App Store musst du nichts laden. Füge sie einmal zum Home-Bildschirm hinzu, dann öffnet sie sich wie jede andere App, im Vollbild mit eigenem Symbol. Mach das auf jedem Handy und Tablet der Familie, auch bei den Kindern.' },
+      { h: 'iPhone und iPad' },
+      { ol: [
+        'Öffne deine TidyQuest-Adresse in Safari: app.tidyquest.org oder die Adresse eures Servers zu Hause.',
+        'Tippe auf Teilen (ein Quadrat mit einem Pfeil nach oben). Siehst du es nicht? Tippe zuerst auf ⋯ neben der Adressleiste.',
+        'Scrolle nach unten und tippe auf Zum Home-Bildschirm.',
+        'Gibt es einen Schalter, um sie als Web-App zu öffnen, lass ihn an. Tippe auf Hinzufügen.',
+        'Öffne TidyQuest vom Home-Bildschirm und melde dich noch einmal an: Die App hat ihre eigene Anmeldung, getrennt von Safari.',
+      ] },
+      { tip: 'Chrome und Edge auf dem iPhone können das auch: Tippe in der Adressleiste auf Teilen, dann auf Zum Home-Bildschirm.' },
+      { h: 'Android' },
+      { ol: [
+        'Öffne deine TidyQuest-Adresse in Chrome: app.tidyquest.org oder die Adresse eures Servers zu Hause.',
+        'Tippe oben rechts auf ⋮.',
+        'Tippe auf Zum Startbildschirm hinzufügen oder App installieren (der Name hängt von der Chrome-Version ab), dann auf Installieren oder Hinzufügen.',
+        'Öffne TidyQuest vom Startbildschirm: Du bist weiter angemeldet.',
+      ] },
+      { tip: 'Samsung Internet: Tippe unten auf ☰, dann auf Seite hinzufügen zu → Startbildschirm.' },
+      { h: 'Gut zu wissen' },
+      { ul: [
+        'Updates kommen von selbst: Sie öffnet jedes Mal die neueste Version vom Server. Sieht sie nach einem Update alt aus, schließe sie ganz und öffne sie wieder.',
+        'Entfernen wie jede andere App: Symbol gedrückt halten. Die Daten der Familie bleiben auf dem Server.',
+        'Nachrichten zu Aufgaben und Belohnungen kommen über ntfy, Telegram oder Home Assistant (siehe „Benachrichtigungen“), nicht von der App auf dem Home-Bildschirm.',
+      ] },
     ],
   },
   {
@@ -497,6 +529,20 @@ export const GUIDE_DE: GuideSection[] = [
         { q: 'Ein Schild hat die Serie nicht gerettet', a: [
           'Jeder verpasste Tag braucht seinen eigenen Schild. Mit weniger Schilden als verpassten Tagen wird keiner verbraucht: die Serie beginnt neu und die Schilde bleiben.',
           'Im Urlaubsmodus werden keine Schilde verbraucht; der Urlaub schützt die Serie schon.',
+        ] },
+        { q: 'Auf dem iPhone fehlt „Zum Home-Bildschirm“', a: [
+          'Öffne die Adresse direkt in Safari. Ein Link aus Mail, Nachrichten oder einer Chat-App öffnet sich oft in dieser App, und die kann sie nicht hinzufügen: Tippe zuerst auf den Safari-Kompass (oder „In Safari öffnen“).',
+          'Immer noch nicht in der Teilen-Liste? Scrolle ganz nach unten, tippe auf Aktionen bearbeiten und füge es hinzu.',
+        ] },
+        { q: 'Auf Android öffnet sie sich in einem Browser-Tab, mit Adressleiste', a: [
+          'Chrome installiert sie nur von einer sicheren Adresse (https://) als App. Bei einer einfachen http://-Adresse, wie bei vielen Servern zu Hause, bekommst du stattdessen eine Verknüpfung: Sie funktioniert genauso, nur mit der Leiste von Chrome oben. Siehe „Installieren und aktualisieren“.',
+          'Schon vor einer Weile zum Startbildschirm hinzugefügt? Entferne das Symbol und füge sie neu hinzu, dann bekommst du die Vollbild-App.',
+        ] },
+        { q: 'Die App auf dem Home-Bildschirm will, dass ich mich neu anmelde', a: [
+          'Auf iPhone und iPad ist das beim ersten Mal normal: Sie hat ihre eigene Anmeldung, getrennt von Safari. Melde dich einmal an, dann bleibst du angemeldet.',
+        ] },
+        { q: 'Nach einem Update sieht die App auf dem Home-Bildschirm gleich aus', a: [
+          'Schließe sie ganz (im App-Umschalter wegwischen) und öffne sie wieder: Beim Start lädt sie die neueste Version.',
         ] },
         { q: 'Jemand kann sich nicht anmelden', a: [
           'Zu viele falsche Passwörter sperren Anmeldungen für bis zu 15 Minuten: 10 bei einem Konto oder 20 von einem Gerät. Warte und versuche es erneut; ein richtiges Passwort setzt den Zähler des Kontos zurück.',

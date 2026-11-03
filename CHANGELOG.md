@@ -9,6 +9,16 @@ What changed in each release, in plain language, newest first. Releases up to v0
 
 ## Unreleased
 
+### Added
+- TidyQuest can go on a phone's home screen like a real app: it opens full screen with its own icon, on iPhone,
+  iPad and Android. On Android this needs a secure (https://) address; over plain http:// it's a browser shortcut.
+  Added it to a home screen before? Remove the icon and add it again.
+- A new guide section, *On your phone* (Settings → Guide & help), with the steps for iPhone, iPad and Android, a
+  step for it in *Getting started*, and troubleshooting entries for when it doesn't work.
+
+### Changed
+- On a phone's home screen, the status bar takes the color of the theme you picked.
+
 ## v0.15.3 (2026-11-03)
 
 ### Changed

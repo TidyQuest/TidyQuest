@@ -12,6 +12,7 @@ export const GUIDE_NL: GuideSection[] = [
       { ol: [
         'Installeer de app (zie "Installeren en updaten"), open hem in een browser en maak een account. De eerste die zich aanmeldt wordt ouder (admin).',
         'Voeg iedereen toe in Instellingen → Gezinsleden: een naam, een inlognaam en een rol (zie "Mensen en rollen"). Stel daar ook van elk kind de Klusjesweergave en de Kindermodus in.',
+        'Zet TidyQuest op ieders telefoon of tablet, zodat hij opent als een app (zie "Op je telefoon").',
         'Maak je kamers aan op de pagina Kamers. Een kamertype voegt voorgestelde klusjes toe die je kunt uitvinken. Geef een kamer aan één persoon ("toegewezen aan") om hem van die persoon te maken, zoals een slaapkamer.',
         'Voeg klusjes toe of pas ze aan in elke kamer: hoe vaak, moeite of munten, wie het mag doen en een icoon (zie "Klusjes").',
         'Stel de muntwaarden in bij Instellingen → Munten per klusje en bouw dan de Beloningen Winkel op met prijzen die kinderen kunnen halen (zie "Munten, beloningen en doelen").',
@@ -22,6 +23,37 @@ export const GUIDE_NL: GuideSection[] = [
         'Download een back-up in Instellingen → Privacy & Gegevens als alles is ingesteld, en daarna af en toe weer.',
       ] },
       { tip: 'Begin klein: een handjevol klusjes per kind en een paar goedkope beloningen die ze in de eerste week kunnen verdienen. Je kunt altijd meer toevoegen.' },
+    ],
+  },
+  {
+    id: 'phone',
+    icon: '📱',
+    title: 'Op je telefoon',
+    blocks: [
+      { p: 'TidyQuest is een webapp: je hoeft niets uit een app store te halen. Zet hem één keer op het beginscherm en hij opent zoals elke andere app, schermvullend met een eigen icoon. Doe dat op elke telefoon en tablet in het gezin, ook die van de kinderen.' },
+      { h: 'iPhone en iPad' },
+      { ol: [
+        'Open je TidyQuest-adres in Safari: app.tidyquest.org, of het adres van je eigen server thuis.',
+        'Tik op Deel (een vierkantje met een pijl omhoog). Zie je het niet? Tik dan eerst op ⋯ naast de adresbalk.',
+        'Scrol omlaag en tik op Zet op beginscherm.',
+        'Staat er een schakelaar om hem als webapp te openen, laat die aan. Tik op Voeg toe.',
+        'Open TidyQuest vanaf het beginscherm en log nog één keer in: hij heeft een eigen login, los van die van Safari.',
+      ] },
+      { tip: 'Chrome en Edge op een iPhone kunnen het ook: tik op Deel in de adresbalk en dan op Zet op beginscherm.' },
+      { h: 'Android' },
+      { ol: [
+        'Open je TidyQuest-adres in Chrome: app.tidyquest.org, of het adres van je eigen server thuis.',
+        'Tik rechtsboven op ⋮.',
+        'Tik op Toevoegen aan startscherm of App installeren (de naam hangt af van de Chrome-versie) en dan op Installeren of Toevoegen.',
+        'Open TidyQuest vanaf het startscherm: je bent nog steeds ingelogd.',
+      ] },
+      { tip: 'Samsung Internet: tik onderaan op ☰ en dan op Pagina toevoegen aan → Startscherm.' },
+      { h: 'Goed om te weten' },
+      { ul: [
+        'Updates komen vanzelf: hij opent elke keer de nieuwste versie van de server. Ziet hij er na een update oud uit, sluit hem dan helemaal en open hem opnieuw.',
+        'Verwijder hem zoals elke andere app: houd het icoon ingedrukt. De gegevens van het gezin blijven op de server.',
+        'Berichten over klusjes en beloningen komen via ntfy, Telegram of Home Assistant (zie "Meldingen"), niet van de app op het beginscherm.',
+      ] },
     ],
   },
   {
@@ -497,6 +529,20 @@ export const GUIDE_NL: GuideSection[] = [
         { q: 'Een schild heeft de reeks niet gered', a: [
           'Elke gemiste dag heeft een eigen schild nodig. Met minder schilden dan gemiste dagen wordt er geen gebruikt: de reeks begint opnieuw en de schilden blijven.',
           'Tijdens de vakantiemodus worden geen schilden gebruikt; vakantie beschermt de reeks al.',
+        ] },
+        { q: '"Zet op beginscherm" ontbreekt op een iPhone', a: [
+          'Open het adres in Safari zelf. Een link uit Mail, Berichten of een chatapp opent soms binnen die app, en die kan hem niet toevoegen: tik eerst op het kompas van Safari (of "Open in Safari").',
+          'Staat het nog steeds niet in de lijst van Deel? Scrol helemaal naar beneden, tik op Wijzig taken en voeg het toe.',
+        ] },
+        { q: 'Op Android opent hij in een browsertabblad, met een adresbalk', a: [
+          'Chrome installeert hem alleen als app vanaf een beveiligd adres (https://). Met een gewoon http://-adres, zoals bij veel servers thuis, krijg je een snelkoppeling: die werkt hetzelfde, met de balk van Chrome bovenaan. Zie "Installeren en updaten".',
+          'Al een tijd geleden op het startscherm gezet? Verwijder het icoon en zet hem er opnieuw op voor de schermvullende app.',
+        ] },
+        { q: 'De app op het beginscherm vraagt me opnieuw in te loggen', a: [
+          'Op een iPhone of iPad is dat de eerste keer normaal: hij heeft een eigen login, los van die van Safari. Log één keer in en je blijft ingelogd.',
+        ] },
+        { q: 'Na een update ziet de app op het beginscherm er hetzelfde uit', a: [
+          'Sluit hem helemaal (veeg hem weg in de appkiezer) en open hem opnieuw: bij het starten laadt hij de nieuwste versie.',
         ] },
         { q: 'Iemand kan niet inloggen', a: [
           'Te veel foute wachtwoorden blokkeren inloggen tot 15 minuten: 10 voor één account of 20 vanaf één apparaat. Wacht en probeer opnieuw; een juist wachtwoord zet de teller van het account terug.',
