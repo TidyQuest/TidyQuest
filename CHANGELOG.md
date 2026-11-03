@@ -9,6 +9,8 @@ What changed in each release, in plain language, newest first. Releases up to v0
 
 ## Unreleased
 
+## v0.15.3 (2026-11-03)
+
 ### Changed
 - On a room's page, a chore that can't be done yet no longer turns red as it gets close: its bar stops at yellow and
   turns red only once it's due. Chores with *Allow early completion* on, and anytime chores, keep their colours (#153).
