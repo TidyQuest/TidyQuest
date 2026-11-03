@@ -315,7 +315,9 @@
       "logoutAllDevicesConfirm": "Déconnecter {name} de tous ses appareils ? Il faudra son mot de passe pour se reconnecter.",
       "logoutAllDevicesDone": "{name} est déconnecté partout.",
       "logoutAllDevicesFailed": "Impossible de le déconnecter. Réessaie.",
-      "passwordResetSignedOut": "Mot de passe réinitialisé. {name} est déconnecté de tous ses appareils."
+      "passwordResetSignedOut": "Mot de passe réinitialisé. {name} est déconnecté de tous ses appareils.",
+      "privacyDescHosted": "Ce que TidyQuest garde sur votre famille, et comment le voir ou le supprimer",
+      "privacyRead": "Lire"
     },
     "nav": {
       "home": "Accueil",
@@ -1923,7 +1925,17 @@
       "emailChangingSubject": "Votre e-mail de connexion TidyQuest va changer",
       "emailChangingBody": "Bonjour {name},\n\nQuelqu'un connecté avec votre compte a demandé à remplacer votre e-mail de connexion TidyQuest par {email}. Le changement se fera dès que cette adresse sera confirmée.\n\nSi ce n'était pas vous, connectez-vous et changez votre mot de passe.",
       "trialEndingSubject": "Votre famille TidyQuest sera supprimée le {date}",
-      "trialEndingBody": "Bonjour {name},\n\nL'essai gratuit de {family} s'est terminé le {ended}. Le {date}, {family} et tout son contenu seront supprimés : tâches, historique, pièces et photos.\n\nPour continuer à utiliser TidyQuest, choisissez une formule d'ici là. Pour garder une copie de vos données, connectez-vous sur {link} et utilisez {export} dans {settings}.\n\nSi vous arrêtez TidyQuest, vous n'avez rien à faire."
+      "trialEndingBody": "Bonjour {name},\n\nL'essai gratuit de {family} s'est terminé le {ended}. Le {date}, {family} et tout son contenu seront supprimés : tâches, historique, pièces et photos.\n\nPour continuer à utiliser TidyQuest, choisissez une formule d'ici là. Pour garder une copie de vos données, connectez-vous sur {link} et utilisez {export} dans {settings}.\n\nSi vous arrêtez TidyQuest, vous n'avez rien à faire.",
+      "consentNotice": "À propos des informations de vos enfants (l'avis que la loi américaine sur la vie privée des enfants, COPPA, nous demande de vous envoyer) :\n- Vous nous avez donné cette adresse e-mail pour créer votre famille et pour que nous puissions vous demander votre consentement. Si vous ne la confirmez pas sous 30 jours, nous supprimons votre famille et cette adresse.\n- Quand vous ajoutez vos enfants, TidyQuest garde ce que vous et eux saisissez : un nom et un identifiant, un mot de passe, une date d'anniversaire et une photo facultatives, les tâches qu'ils font, leurs pièces et récompenses, les notes et les photos de preuve.\n- Nous nous en servons uniquement pour faire fonctionner TidyQuest pour votre famille. Nous ne les vendons pas, n'affichons pas de publicité et ne les partageons pas, sauf avec les entreprises qui hébergent le service pour nous.\n- Ouvrir le lien ci-dessus confirme votre e-mail et donne votre consentement. Vos enfants ne peuvent pas se connecter avant.\n- Vous pouvez à tout moment voir, modifier ou supprimer les informations de vos enfants dans l'application, et retirer votre consentement en supprimant votre famille dans les Paramètres ou en nous écrivant.\nNotre politique de confidentialité : {privacy}",
+      "consentConfirmedSubject": "{family} est prête sur TidyQuest",
+      "consentConfirmedBody": "Bonjour {name},\n\nMerci d'avoir confirmé votre e-mail. Cela donne aussi votre consentement pour que vos enfants utilisent TidyQuest : tout le monde dans {family} peut maintenant se connecter.\n\nSi ce n'était pas vous, ou si vous changez d'avis, vous pouvez supprimer la famille à tout moment avec {deleteFamily} dans {settings}, ou répondre à cet e-mail et nous vous aiderons.\n\nNotre politique de confidentialité : {privacy}",
+      "consentReminderSubject": "Confirmez votre e-mail, sinon {family} sera supprimée le {date}",
+      "consentReminderBody": "Bonjour {name},\n\nVous avez créé {family} sur TidyQuest, mais votre e-mail n'est pas encore confirmé. D'ici là, le reste de votre famille ne peut pas se connecter, et le {date} nous supprimerons {family} et tout son contenu.\n\nPour la garder, ouvrez ce lien :\n{link}\n\nSi vous ne voulez finalement pas de TidyQuest, vous n'avez rien à faire.",
+      "inactiveWarningSubject": "{family} sera supprimée le {date}",
+      "inactiveWarningBody": "Bonjour {name},\n\nPersonne dans {family} n'a utilisé TidyQuest depuis un an : le {date}, nous supprimerons {family} et tout son contenu (tâches, historique, pièces et photos).\n\nPour la garder, il suffit de vous connecter d'ici là : {link}\nPour en garder une copie, connectez-vous et utilisez {export} dans {settings}.\n\nSi vous n'utilisez plus TidyQuest, vous n'avez rien à faire.",
+      "familyDeletedSubject": "{family} a été supprimée de TidyQuest",
+      "familyDeletedBody": "Bonjour {name},\n\n{who} a supprimé {family} de TidyQuest le {date}. Tout le monde a été déconnecté, et plus personne ne peut s'y connecter.\n\nNous gardons une copie pendant {days} jours au cas où ce serait une erreur : répondez à cet e-mail d'ici là si vous voulez la récupérer. Ensuite, elle disparaît pour de bon.\n\nMerci d'avoir utilisé TidyQuest.",
+      "newsFooter": "Vous recevez cet e-mail parce que vous avez demandé les nouvelles de TidyQuest. Pour arrêter, ouvrez : {link}\nTidyQuest · {address}"
     },
     "hosted": {
       "emailOrUsername": "E-mail ou nom d'utilisateur",
@@ -1950,7 +1962,7 @@
       "emailPlaceholder": "vous@exemple.com",
       "passwordMin8": "Au moins 8 caractères",
       "timeZoneNote": "Fuseau horaire : {zone}. Il vient de cet appareil ; vous pouvez le changer dans les Paramètres.",
-      "agreeTerms": "J'accepte les {terms} et la {privacy}.",
+      "agreeTerms": "J'ai 18 ans ou plus et je suis le parent ou le tuteur des enfants que j'ajoute. J'accepte les {terms} et la {privacy}.",
       "terms": "Conditions",
       "privacy": "Politique de confidentialité",
       "createFamilyAction": "Créer notre famille",
@@ -1968,13 +1980,13 @@
       "confirming": "Confirmation de votre e-mail…",
       "emailConfirmed": "Merci ! {email} est confirmé.",
       "openApp": "Ouvrir TidyQuest",
-      "bannerConfirm": "Confirmez votre e-mail : nous avons envoyé un lien à {email}.",
-      "bannerConfirmBy": "Faites-le avant le {date} pour continuer à utiliser TidyQuest.",
+      "bannerConfirm": "Confirmez votre e-mail : nous avons envoyé un lien à {email}. D'ici là, le reste de la famille ne peut pas se connecter.",
+      "bannerConfirmBy": "Faites-le avant le {date}, sinon la famille sera supprimée.",
       "resend": "Renvoyer",
       "resent": "Envoyé. Regardez votre boîte de réception et vos spams.",
       "lockedTitle": "Confirmez votre e-mail pour continuer à utiliser TidyQuest",
-      "lockedParent": "Votre famille avait 30 jours pour confirmer l'e-mail d'un parent. Ouvrez le lien envoyé à {email}, ou demandez-en un nouveau. Vos tâches et votre historique sont toujours là.",
-      "lockedOther": "Votre famille avait 30 jours pour confirmer l'e-mail d'un parent. Demande à un parent d'ouvrir le lien que nous lui avons envoyé. Tes tâches et tes pièces sont toujours là.",
+      "lockedParent": "Votre famille avait 30 jours pour confirmer l'e-mail d'un parent. Ouvrez le lien envoyé à {email}, ou demandez-en un nouveau, avant que la famille soit supprimée.",
+      "lockedOther": "Votre famille avait 30 jours pour confirmer l'e-mail d'un parent. Demandez à un parent d'ouvrir le lien que nous lui avons envoyé avant que la famille soit supprimée.",
       "exportData": "Télécharger nos données",
       "familyCodeTitle": "Code de la famille",
       "familyCodeDesc": "Les enfants et les ados se connectent avec ce code, leur nom d'utilisateur et leur mot de passe. Les parents peuvent utiliser leur e-mail.",
@@ -2012,7 +2024,31 @@
       "waitlistSending": "Envoi…",
       "waitlistThanks": "Merci ! Vous êtes sur la liste d'attente. Nous écrirons à {email} dès qu'une place se libère.",
       "waitlistFailed": "L'envoi n'a pas abouti. Veuillez réessayer.",
-      "errSignupsClosed": "Les inscriptions viennent de fermer, mais vous pouvez rejoindre la liste d'attente."
+      "errSignupsClosed": "Les inscriptions viennent de fermer, mais vous pouvez rejoindre la liste d'attente.",
+      "newsOptIn": "Envoyez-moi de temps en temps les nouvelles de TidyQuest. Je peux arrêter à tout moment.",
+      "errAwaitingParent": "Un parent doit confirmer son e-mail avant que le reste de la famille puisse se connecter.",
+      "awaitingParentTitle": "En attente d'un parent",
+      "awaitingParentText": "Un parent doit confirmer son e-mail avant que tu puisses utiliser TidyQuest. Demande-lui d'ouvrir le lien que nous lui avons envoyé.",
+      "agreeTitle": "Avant de continuer",
+      "agreeText": "Lisez les {terms} et la {privacy}. Appuyez sur le bouton pour les accepter.",
+      "agreeUpdated": "Elles ont changé depuis que vous les avez acceptées.",
+      "agreeAction": "Accepter et continuer",
+      "channelsParentOnly": "C'est un parent qui choisit où arrivent tes notifications.",
+      "newsSetting": "M'envoyer les nouvelles de TidyQuest",
+      "newsSettingDesc": "Chaque e-mail de nouvelles contient un lien pour les arrêter. Les e-mails sur votre compte arrivent toujours.",
+      "unsubscribeTitle": "Arrêter les nouvelles de TidyQuest",
+      "unsubscribeAsk": "Ne plus envoyer les nouvelles de TidyQuest à {email} ?",
+      "unsubscribeAction": "Arrêter les nouvelles",
+      "unsubscribeDone": "{email} ne recevra plus les nouvelles de TidyQuest. Les e-mails sur votre compte, comme les réinitialisations de mot de passe, arrivent toujours.",
+      "deleteFamilyTitle": "Supprimer notre famille",
+      "deleteFamilyDesc": "Les tâches, l'historique, les pièces et les photos de tout le monde, pour de bon",
+      "deleteFamilyStart": "Supprimer…",
+      "deleteFamilyIntro": "Cela supprime {family} et tout son contenu : chaque personne, tâche et récompense, tout l'historique et les pièces, et chaque photo. Tout le monde est déconnecté aussitôt. Téléchargez d'abord une copie si vous pourriez en avoir besoin.",
+      "deleteFamilyName": "Tapez le nom de la famille pour confirmer : {family}",
+      "deleteFamilyAction": "Supprimer la famille pour de bon",
+      "deleteFamilyDone": "{family} a été supprimée. Merci d'avoir utilisé TidyQuest.",
+      "errWrongName": "Ce n'est pas le nom de la famille.",
+      "memberPrivacy": "Ce que TidyQuest garde sur chaque personne : {privacy}"
     },
     "limits": {
       "people": "Une famille peut compter jusqu'à {n} personnes.",
@@ -2021,6 +2057,9 @@
     },
     "about": {
       "sourceCode": "Code source"
+    },
+    "photos": {
+      "unreadable": "Cette photo ne peut pas être lue ici. Essayez un JPEG ou un PNG, ou une capture d'écran de la photo."
     }
   }
 }

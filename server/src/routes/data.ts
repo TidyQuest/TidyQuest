@@ -98,10 +98,13 @@ router.post('/import', (req: AuthRequest, res: Response) => {
   // who already has an account here (same username) keeps their current password; new people get
   // a random one and need a reset.
   const currentAdmin = db.prepare('SELECT id, username, passwordHash FROM users WHERE id = ?').get(req.userId) as { id: number; username: string; passwordHash: string } | undefined;
-  const existing = db.prepare('SELECT username, passwordHash, tokenVersion FROM users').all() as { username: string; passwordHash: string; tokenVersion: number }[];
+  const existing = db.prepare('SELECT username, passwordHash, tokenVersion, agreedAt, agreedTerms, agreedPrivacy FROM users').all() as
+    { username: string; passwordHash: string; tokenVersion: number; agreedAt: string | null; agreedTerms: string | null; agreedPrivacy: string | null }[];
   const existingHashes = new Map(existing.map((u) => [u.username.toLowerCase(), u.passwordHash]));
   // Logins stay as they are: anyone already here keeps their token version (NEW-8)
   const existingVersions = new Map(existing.map((u) => [u.username.toLowerCase(), u.tokenVersion]));
+  // So do agreements to the terms (NEW-34): a file can't say someone agreed
+  const existingAgreements = new Map(existing.map(({ username, agreedAt, agreedTerms, agreedPrivacy }) => [username.toLowerCase(), { agreedAt, agreedTerms, agreedPrivacy }]));
 
   // Hosted mode: parents' sign-in emails follow them to their ids in the file
   const accounts = isHosted() ? accountUsernames(req.familyId!) : [];
@@ -120,8 +123,9 @@ router.post('/import', (req: AuthRequest, res: Response) => {
         ? currentAdmin!.passwordHash
         : existingHashes.get(String(u.username).toLowerCase())
           ?? bcrypt.hashSync(require('crypto').randomBytes(32).toString('hex'), 10);
-      const { passwordHash: _ignored, tokenVersion: _v, ...rest } = u;
-      return { ...rest, passwordHash, tokenVersion: existingVersions.get(String(u.username).toLowerCase()) ?? 0 };
+      const { passwordHash: _ignored, tokenVersion: _v, agreedAt: _a, agreedTerms: _t, agreedPrivacy: _p, ...rest } = u;
+      const name = String(u.username).toLowerCase();
+      return { ...rest, passwordHash, tokenVersion: existingVersions.get(name) ?? 0, ...existingAgreements.get(name) };
     });
     insertRows('users', usersWithHashes);
 

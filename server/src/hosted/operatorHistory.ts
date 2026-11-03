@@ -1,11 +1,18 @@
 import { mainDb } from './mainDb';
 
 // The operator page's History (NEW-24): every operator action, sign-ins included, and what the server did
-// to a family by itself. Kept for good, family names and emails too. The server log still gets its lines.
+// to a family by itself. Kept for good, but once a deleted family is gone for good its name and the emails
+// in its entries are cleared (NEW-34), and so are waitlist emails after 12 months. The server log still
+// gets its lines.
 
 export type OperatorAction =
-  // On a family, by an operator or (trial-delete) by the expired-trial clean-up
-  | 'suspend' | 'resume' | 'delete' | 'resend-confirmation' | 'trial-delete'
+  // On a family, by an operator or by the server's clean-up: an expired trial, a parent who never
+  // confirmed, a year unused (NEW-34)
+  | 'suspend' | 'resume' | 'delete' | 'resend-confirmation' | 'trial-delete' | 'unconfirmed-delete' | 'inactive-delete'
+  // A parent deleted their own family (NEW-25); detail is their email
+  | 'parent-delete'
+  // A news email went out (NEW-34); detail is its subject and how many got it
+  | 'news'
   // An operator's own account; the env- ones come from OPERATOR_EMAIL and OPERATOR_PASSWORD
   | 'sign-in' | 'wrong-password' | 'password' | 'sign-out' | 'env-account' | 'env-password'
   // New sign-ups opened or closed, and a family taken off the waitlist (NEW-30)

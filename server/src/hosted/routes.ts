@@ -9,9 +9,13 @@ import {
 } from './accounts';
 import { runInFamily } from './context';
 import { appLink, sendEmail, writeEmail } from './email';
-import { createFamily, deleteFamily, familyStatus, openFamily } from './families';
+import { createFamily, deleteFamily, familyStatus, KEEP_DELETED_DAYS, openFamily } from './families';
 import { newFamilyCode } from './familyCode';
+import { familyConsented, legal, mustAgree, recordAgreement, recordConsent, type AgreementRow } from './legal';
 import { mainDb } from './mainDb';
+import { setNews, unsubscribe } from './news';
+import { recordOperatorAction } from './operatorHistory';
+import { consentNotice, familyParents, sendConsentConfirmed } from './privacy';
 import { addParent, captchaPasses, usernameFrom } from './signup';
 import { joinWaitlist, signupsOpen } from './signupGate';
 
@@ -29,21 +33,24 @@ const SIGNUPS_CLOSED = { error: 'New sign-ups are closed right now. You can join
 const text = (v: unknown, max: number) => (typeof v === 'string' ? v.trim().slice(0, max) : '');
 
 /**
- * What the sign-up page needs before it's filled in. Terms and privacy links show once the lawyer's are ready
- * (Phase 3). signupsOpen false: the operator closed new sign-ups, and the page is the waitlist form (NEW-30).
+ * What the sign-up and login pages need before anyone signs in: the terms and privacy links (TERMS_URL,
+ * PRIVACY_URL; NEW-34). signupsOpen false: the operator closed new sign-ups, and the page is the waitlist
+ * form (NEW-30).
  */
 router.get('/config', (_req, res: Response) => {
+  const { termsUrl, privacyUrl } = legal();
   res.json({
     turnstileSiteKey: process.env.TURNSTILE_SITE_KEY || null,
-    termsUrl: process.env.TERMS_URL || null,
-    privacyUrl: process.env.PRIVACY_URL || null,
+    termsUrl,
+    privacyUrl,
     signupsOpen: signupsOpen(),
   });
 });
 
+/** The confirmation email, which is also how a parent gives consent for their children (it carries the COPPA notice). */
 export function sendConfirmation(req: AuthRequest, p: { familyId: string; userId: number; email: string; name: string; language: string }) {
   const token = createEmailToken({ kind: 'confirm', familyId: p.familyId, userId: p.userId, email: p.email, newEmail: null });
-  void sendEmail(writeEmail('confirm', p.language, p.email, { name: p.name, link: appLink(req, `/confirm-email?token=${token}`) }));
+  void sendEmail(writeEmail('confirm', p.language, p.email, { name: p.name, link: appLink(req, `/confirm-email?token=${token}`) }, consentNotice(p.language)));
 }
 
 // Sign-up: a new family (on a 30-day trial), its first parent and family code; then the confirmation email
@@ -58,8 +65,9 @@ router.post('/signup', async (req: AuthRequest, res: Response) => {
   if (typeof password !== 'string' || password.length < MIN_PASSWORD) {
     return res.status(400).json(SHORT_PASSWORD);
   }
-  if ((process.env.TERMS_URL || process.env.PRIVACY_URL) && req.body.acceptTerms !== true) {
-    return res.status(400).json({ error: 'Please agree to the terms and the privacy policy' });
+  // The box: 18 or over, the children's parent or guardian, agrees to the terms and the privacy policy (NEW-34)
+  if (legal().on && req.body.acceptTerms !== true) {
+    return res.status(400).json({ error: 'Please agree to the terms and the privacy policy', code: 'must-agree' });
   }
   // Counted once the form is filled in properly, so fixing a typo doesn't use up a try
   if (!checkRateLimit(`signup:${clientIp(req)}`, 5)) {
@@ -78,6 +86,9 @@ router.post('/signup', async (req: AuthRequest, res: Response) => {
     const family = openFamily(familyId)!;
     runInFamily(family, () => {
       const userId = addParent({ username: usernameFrom(parentName), displayName: parentName, password, email, language, timeZone });
+      if (legal().on) recordAgreement(userId);
+      // "Send me TidyQuest news", unticked unless they tick it
+      if (req.body.news === true) setNews(family.familyId, userId, true);
       const user = db.prepare('SELECT * FROM users WHERE id = ?').get(userId) as any;
       sendConfirmation(req, { familyId: family.familyId, userId, email, name: parentName, language: user.language });
       console.log(`[signup] new family ${family.familyId}`);
@@ -145,8 +156,8 @@ router.post('/reset-password', (req: AuthRequest, res: Response) => {
     if (!user) return res.status(400).json(LINK_EXPIRED);
     db.prepare('UPDATE users SET passwordHash = ? WHERE id = ?').run(bcrypt.hashSync(password, 10), link.userId);
     revokeTokens(link.userId);
-    // The link reached them, so the email works
-    markConfirmed(link.familyId, link.userId);
+    // The link reached them, so the email works, and that's the family's consent if it's the first (NEW-34)
+    if (markConfirmed(link.familyId, link.userId)) sendConsentConfirmed(link.familyId, link.userId);
     req.familyId = family.familyId;
     sendLogin(res, db.prepare('SELECT * FROM users WHERE id = ?').get(link.userId));
   });
@@ -158,11 +169,15 @@ router.post('/confirm-email', (req: AuthRequest, res: Response) => {
   if (!link) return res.status(400).json(LINK_EXPIRED);
   const main = mainDb();
   const now = new Date().toISOString();
+  // A family's first confirmed email is its parent's consent (NEW-34): the second email of "email plus" says so
+  const first = !familyConsented(link.familyId);
+  const consented = () => { if (recordConsent(link.familyId) && first) sendConsentConfirmed(link.familyId, link.userId); };
   if (link.kind === 'confirm') {
     // Only while the account still has the address the link went to
     const done = main.prepare('UPDATE accounts SET emailConfirmedAt = COALESCE(emailConfirmedAt, ?) WHERE familyId = ? AND userId = ? AND email = ?')
       .run(now, link.familyId, link.userId, link.email);
     if (done.changes !== 1) return res.status(400).json(LINK_EXPIRED);
+    consented();
     return res.json({ ok: true, email: link.email });
   }
   const newEmail = link.newEmail!;
@@ -178,10 +193,20 @@ router.post('/confirm-email', (req: AuthRequest, res: Response) => {
       main.prepare('UPDATE accounts SET email = ?, emailConfirmedAt = ? WHERE familyId = ? AND userId = ?').run(newEmail, now, link.familyId, link.userId);
     } else {
       addAccount(newEmail, link.familyId, link.userId);
-      markConfirmed(link.familyId, link.userId);
+      main.prepare('UPDATE accounts SET emailConfirmedAt = ? WHERE familyId = ? AND userId = ?').run(now, link.familyId, link.userId);
     }
   })();
+  consented();
   res.json({ ok: true, email: newEmail });
+});
+
+// The unsubscribe link in a news email (NEW-34). Mail apps' one-click button posts here with the link's
+// query (RFC 8058); the app's /unsubscribe page posts the same in the body. No sign-in: the link is signed.
+router.post('/unsubscribe', (req: AuthRequest, res: Response) => {
+  const e = req.query.e ?? req.body?.e;
+  const sig = req.query.s ?? req.body?.s;
+  if (!unsubscribe(e, sig)) return res.status(400).json(LINK_EXPIRED);
+  res.json({ ok: true });
 });
 
 // Signed in from here on
@@ -195,6 +220,8 @@ router.get('/account', (req: AuthRequest, res: Response) => {
   const familyId = req.familyId!;
   const family = mainDb().prepare('SELECT name, code, status, trialEndsAt, plan FROM families WHERE id = ?').get(familyId) as { name: string; code: string; status: string; trialEndsAt: string; plan: string | null };
   const account = accountOf(familyId, req.userId!);
+  const me = db.prepare('SELECT role, agreedAt, agreedTerms, agreedPrivacy FROM users WHERE id = ?').get(req.userId) as AgreementRow;
+  const { termsUrl, privacyUrl } = legal();
   res.json({
     familyName: family.name,
     familyCode: family.code,
@@ -207,7 +234,27 @@ router.get('/account', (req: AuthRequest, res: Response) => {
     locked: isLocked(familyId),
     // trial or active; suspended and expired see a page about it instead of the app
     status: familyStatus(family),
+    // NEW-34: members and children wait for a parent's consent; adults agree to the terms before going on
+    awaitingParent: me.role !== 'admin' && !familyConsented(familyId),
+    mustAgree: mustAgree(me),
+    termsUrl,
+    privacyUrl,
+    news: !!account?.newsAt,
   });
+});
+
+// "Agree and continue" (NEW-34): a parent or member agrees to the current terms and privacy policy
+router.post('/agree', (req: AuthRequest, res: Response) => {
+  if (!legal().on) return res.status(400).json({ error: 'There is nothing to agree to' });
+  recordAgreement(req.userId!);
+  res.json({ ok: true });
+});
+
+// "Send me TidyQuest news" in Settings (NEW-34), for a parent with a sign-in email
+router.post('/news', (req: AuthRequest, res: Response) => {
+  if (!accountOf(req.familyId!, req.userId!)) return res.status(400).json({ error: 'Only parents with a sign-in email get news' });
+  setNews(req.familyId!, req.userId!, req.body.on === true);
+  res.json({ ok: true, news: req.body.on === true });
 });
 
 router.post('/resend-confirmation', (req: AuthRequest, res: Response) => {
@@ -242,6 +289,41 @@ router.post('/change-email', (req: AuthRequest, res: Response) => {
   // The old address hears about it, in case it wasn't them
   if (current) void sendEmail(writeEmail('email-changing', user.language, current.email, { name: user.displayName, email: newEmail }));
   res.json({ ok: true, email: newEmail });
+});
+
+// "Delete our family" (NEW-25): a parent deletes the whole family, confirming with its name and their password.
+// Like the operator's delete: the folder is kept 30 days, then gone. Everyone is signed out at once, and the
+// parents with a confirmed email hear about it.
+router.post('/delete-family', (req: AuthRequest, res: Response) => {
+  const familyId = req.familyId!;
+  const user = db.prepare('SELECT displayName, role, passwordHash FROM users WHERE id = ?').get(req.userId) as
+    { displayName: string; role: string; passwordHash: string };
+  if (user.role !== 'admin') return res.status(403).json({ error: 'Admin only' });
+  if (!checkRateLimit(`delete-family:${familyId}:${req.userId}`, 5)) {
+    return res.status(429).json({ error: 'Too many tries. Please try again later.' });
+  }
+  const family = mainDb().prepare('SELECT id, name FROM families WHERE id = ?').get(familyId) as { id: string; name: string };
+  if (text(req.body.name, 100).toLowerCase() !== family.name.trim().toLowerCase()) {
+    return res.status(400).json({ error: "Type the family's name to delete it", code: 'wrong-name' });
+  }
+  if (typeof req.body.password !== 'string' || !bcrypt.compareSync(req.body.password, user.passwordHash)) {
+    return res.status(400).json({ error: "Your password isn't right", code: 'wrong-password' });
+  }
+  // Read before deleting: the emails go with the family
+  const parents = familyParents(familyId).filter((p) => p.confirmed);
+  const who = accountOf(familyId, req.userId!)?.email ?? user.displayName;
+  deleteFamily(familyId);
+  recordOperatorAction({ action: 'parent-delete', family, detail: who });
+  console.log(`[hosted] A parent deleted family ${familyId}`);
+  const now = new Date();
+  for (const p of parents) {
+    void sendEmail(writeEmail('family-deleted', p.lang, p.email, {
+      name: p.name, family: family.name, who: user.displayName,
+      date: new Intl.DateTimeFormat(p.lang, { dateStyle: 'long', timeZone: 'UTC' }).format(now),
+      days: String(KEEP_DELETED_DAYS),
+    }));
+  }
+  res.json({ ok: true });
 });
 
 // "New code": the old code and link stop working at once

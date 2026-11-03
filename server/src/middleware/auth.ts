@@ -1,9 +1,11 @@
 import { Request, Response, NextFunction } from 'express';
+import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
 import db from '../database';
 import { currentFamily, isHosted, runInFamily } from '../hosted/context';
 import { familyStatusOf, openFamily } from '../hosted/families';
 import { isLocked } from '../hosted/accounts';
+import { familyConsented, mustAgree, type AgreementRow } from '../hosted/legal';
 
 // Security: Require JWT_SECRET in production
 if (process.env.NODE_ENV === 'production' && !process.env.JWT_SECRET) {
@@ -55,6 +57,9 @@ export function authMiddleware(req: AuthRequest, res: Response, next: NextFuncti
     if (code === 'suspended') return res.status(403).json({ error: 'This family is paused', code });
     if (code === 'expired') return res.status(403).json({ error: 'The free trial has ended', code });
     if (code === 'confirm-email') return res.status(403).json({ error: 'Confirm your email to keep using TidyQuest', code });
+    const own = personShutOutCode(family.familyId, req.userId!);
+    if (own === 'awaiting-parent') return res.status(403).json({ error: 'A parent needs to confirm their email first', code: own });
+    if (own === 'must-agree') return res.status(403).json({ error: 'Please agree to the terms and the privacy policy first', code: own });
     next();
   };
   runInFamily(family, () => checkUser(req, res, shutOut, payload));
@@ -65,6 +70,17 @@ export function shutOutCode(familyId: string): 'suspended' | 'expired' | 'confir
   const status = familyStatusOf(familyId);
   if (status === 'suspended' || status === 'expired') return status;
   return isLocked(familyId) ? 'confirm-email' : null;
+}
+
+/**
+ * Why this one person can only see their account (NEW-34), or null: members and children wait until a parent
+ * has confirmed their email (the COPPA consent), and parents and members first agree to the terms.
+ */
+export function personShutOutCode(familyId: string, userId: number): 'awaiting-parent' | 'must-agree' | null {
+  const user = db.prepare('SELECT role, agreedAt, agreedTerms, agreedPrivacy FROM users WHERE id = ?').get(userId) as AgreementRow | undefined;
+  if (!user) return null;
+  if (user.role !== 'admin' && !familyConsented(familyId)) return 'awaiting-parent';
+  return mustAgree(user) ? 'must-agree' : null;
 }
 
 // What a locked, suspended or expired family can still reach: its account (confirming, changing the
@@ -129,6 +145,11 @@ export function filesViewer(req: Request): FilesViewer | null {
   } catch {
     return null;
   }
+}
+
+/** A signature for a value in a link that needs no sign-in (a news email's unsubscribe link, NEW-34). */
+export function linkSignature(purpose: string, value: string): string {
+  return crypto.createHmac('sha256', JWT_SECRET).update(`${purpose}:${value}`).digest('base64url').slice(0, 32);
 }
 
 /** Logs this person out on every device: their existing tokens stop working. */

@@ -315,7 +315,9 @@
       "logoutAllDevicesConfirm": "{name} uitloggen op alle apparaten? Om weer in te loggen is het wachtwoord nodig.",
       "logoutAllDevicesDone": "{name} is overal uitgelogd.",
       "logoutAllDevicesFailed": "Uitloggen is niet gelukt. Probeer het opnieuw.",
-      "passwordResetSignedOut": "Wachtwoord opnieuw ingesteld. {name} is op alle apparaten uitgelogd."
+      "passwordResetSignedOut": "Wachtwoord opnieuw ingesteld. {name} is op alle apparaten uitgelogd.",
+      "privacyDescHosted": "Wat TidyQuest over je gezin bewaart, en hoe je het bekijkt of verwijdert",
+      "privacyRead": "Lezen"
     },
     "nav": {
       "home": "Home",
@@ -1923,7 +1925,17 @@
       "emailChangingSubject": "Je TidyQuest-inlogmail verandert",
       "emailChangingBody": "Hoi {name},\n\nIemand die als jou is ingelogd, wil je TidyQuest-inlogmail veranderen in {email}. Die verandert zodra dat adres is bevestigd.\n\nWas jij dit niet? Log dan in en verander je wachtwoord.",
       "trialEndingSubject": "Je TidyQuest-gezin wordt op {date} verwijderd",
-      "trialEndingBody": "Hoi {name},\n\nDe gratis proefperiode van {family} is op {ended} afgelopen. Op {date} worden {family} en alles erin verwijderd: klusjes, geschiedenis, munten en foto's.\n\nWil je TidyQuest blijven gebruiken? Kies dan vóór die datum een abonnement. Wil je een kopie van je gegevens bewaren? Log in op {link} en gebruik {export} in {settings}.\n\nStop je met TidyQuest, dan hoef je niets te doen."
+      "trialEndingBody": "Hoi {name},\n\nDe gratis proefperiode van {family} is op {ended} afgelopen. Op {date} worden {family} en alles erin verwijderd: klusjes, geschiedenis, munten en foto's.\n\nWil je TidyQuest blijven gebruiken? Kies dan vóór die datum een abonnement. Wil je een kopie van je gegevens bewaren? Log in op {link} en gebruik {export} in {settings}.\n\nStop je met TidyQuest, dan hoef je niets te doen.",
+      "consentNotice": "Over de gegevens van je kinderen (de melding die de Amerikaanse privacywet voor kinderen, COPPA, ons laat sturen):\n- Je gaf ons dit e-mailadres om je gezin aan te maken en zodat we om je toestemming kunnen vragen. Bevestig je het niet binnen 30 dagen, dan verwijderen we je gezin en dit adres.\n- Als je je kinderen toevoegt, bewaart TidyQuest wat jij en zij invullen: een naam en gebruikersnaam, een wachtwoord, eventueel een verjaardag en foto, de klusjes die ze doen, hun munten en beloningen, notities en bewijsfoto's.\n- We gebruiken dat alleen om TidyQuest voor je gezin te laten werken. We verkopen het niet, tonen geen advertenties en delen het met niemand, behalve met de bedrijven die de dienst voor ons hosten.\n- Met de link hierboven bevestig je je e-mailadres en geef je toestemming. Tot dan kunnen je kinderen niet inloggen.\n- Je kunt de gegevens van je kinderen altijd in de app bekijken, wijzigen of verwijderen, en je toestemming intrekken door je gezin te verwijderen in Instellingen of door ons te schrijven.\nOns privacybeleid: {privacy}",
+      "consentConfirmedSubject": "{family} staat klaar op TidyQuest",
+      "consentConfirmedBody": "Hoi {name},\n\nBedankt voor het bevestigen van je e-mailadres. Daarmee geef je ook toestemming dat je kinderen TidyQuest gebruiken, dus iedereen in {family} kan nu inloggen.\n\nWas jij dit niet, of bedenk je je, dan kun je het gezin altijd verwijderen met {deleteFamily} in {settings}, of beantwoord deze e-mail en we helpen je.\n\nOns privacybeleid: {privacy}",
+      "consentReminderSubject": "Bevestig je e-mailadres, anders wordt {family} op {date} verwijderd",
+      "consentReminderBody": "Hoi {name},\n\nJe hebt {family} op TidyQuest aangemaakt, maar je e-mailadres is nog niet bevestigd. Tot dan kan de rest van je gezin niet inloggen, en op {date} verwijderen we {family} met alles erin.\n\nWil je het houden, open dan deze link:\n{link}\n\nWil je TidyQuest toch niet, dan hoef je niets te doen.",
+      "inactiveWarningSubject": "{family} wordt op {date} verwijderd",
+      "inactiveWarningBody": "Hoi {name},\n\nNiemand in {family} heeft TidyQuest een jaar lang gebruikt, dus op {date} verwijderen we {family} met alles erin: klusjes, geschiedenis, munten en foto's.\n\nWil je het houden, log dan voor die tijd in: {link}\nWil je liever een kopie, log dan in en gebruik {export} in {settings}.\n\nBen je klaar met TidyQuest, dan hoef je niets te doen.",
+      "familyDeletedSubject": "{family} is verwijderd uit TidyQuest",
+      "familyDeletedBody": "Hoi {name},\n\n{who} heeft {family} op {date} uit TidyQuest verwijderd. Iedereen is uitgelogd en niemand kan er nog inloggen.\n\nWe bewaren {days} dagen een kopie voor als het een vergissing was: beantwoord deze e-mail binnen die tijd als je het terug wilt. Daarna is het voorgoed weg.\n\nBedankt dat je TidyQuest hebt gebruikt.",
+      "newsFooter": "Je krijgt deze e-mail omdat je om nieuws van TidyQuest hebt gevraagd. Stoppen: {link}\nTidyQuest · {address}"
     },
     "hosted": {
       "emailOrUsername": "E-mail of gebruikersnaam",
@@ -1950,7 +1962,7 @@
       "emailPlaceholder": "jij@voorbeeld.nl",
       "passwordMin8": "Minstens 8 tekens",
       "timeZoneNote": "Tijdzone: {zone}. Die komt van dit apparaat; je kunt hem wijzigen bij Instellingen.",
-      "agreeTerms": "Ik ga akkoord met de {terms} en het {privacy}.",
+      "agreeTerms": "Ik ben 18 of ouder en de ouder of voogd van de kinderen die ik toevoeg. Ik ga akkoord met de {terms} en het {privacy}.",
       "terms": "Voorwaarden",
       "privacy": "Privacybeleid",
       "createFamilyAction": "Ons gezin aanmaken",
@@ -1968,13 +1980,13 @@
       "confirming": "Je e-mail wordt bevestigd…",
       "emailConfirmed": "Bedankt! {email} is bevestigd.",
       "openApp": "TidyQuest openen",
-      "bannerConfirm": "Bevestig je e-mail: we hebben een link gestuurd naar {email}.",
-      "bannerConfirmBy": "Doe het vóór {date} om TidyQuest te blijven gebruiken.",
+      "bannerConfirm": "Bevestig je e-mailadres: we stuurden een link naar {email}. Tot dan kan de rest van het gezin niet inloggen.",
+      "bannerConfirmBy": "Doe het voor {date}, anders wordt het gezin verwijderd.",
       "resend": "Opnieuw sturen",
       "resent": "Verstuurd. Kijk in je inbox en je spammap.",
       "lockedTitle": "Bevestig je e-mail om TidyQuest te blijven gebruiken",
-      "lockedParent": "Je gezin had 30 dagen om het e-mailadres van een ouder te bevestigen. Open de link die we naar {email} stuurden, of vraag een nieuwe aan. Alle klusjes en de geschiedenis staan er nog.",
-      "lockedOther": "Je gezin had 30 dagen om het e-mailadres van een ouder te bevestigen. Vraag een ouder de link te openen die we stuurden. Je klusjes en munten staan er nog allemaal.",
+      "lockedParent": "Je gezin had 30 dagen om het e-mailadres van een ouder te bevestigen. Open de link die we naar {email} stuurden, of vraag een nieuwe aan, voordat het gezin wordt verwijderd.",
+      "lockedOther": "Je gezin had 30 dagen om het e-mailadres van een ouder te bevestigen. Vraag een ouder de link te openen die we stuurden, voordat het gezin wordt verwijderd.",
       "exportData": "Onze gegevens downloaden",
       "familyCodeTitle": "Gezinscode",
       "familyCodeDesc": "Kinderen en tieners loggen in met deze code, hun gebruikersnaam en hun wachtwoord. Ouders kunnen hun e-mail gebruiken.",
@@ -2012,7 +2024,31 @@
       "waitlistSending": "Versturen…",
       "waitlistThanks": "Bedankt! Je staat op de wachtlijst. We mailen {email} zodra er plek is.",
       "waitlistFailed": "Dat is niet gelukt. Probeer het opnieuw.",
-      "errSignupsClosed": "Nieuwe aanmeldingen zijn net gesloten, maar je kunt op de wachtlijst."
+      "errSignupsClosed": "Nieuwe aanmeldingen zijn net gesloten, maar je kunt op de wachtlijst.",
+      "newsOptIn": "Stuur me af en toe nieuws van TidyQuest. Ik kan altijd stoppen.",
+      "errAwaitingParent": "Een ouder moet eerst zijn of haar e-mailadres bevestigen voordat de rest van het gezin kan inloggen.",
+      "awaitingParentTitle": "Wachten op een ouder",
+      "awaitingParentText": "Een ouder moet eerst zijn of haar e-mailadres bevestigen voordat je TidyQuest kunt gebruiken. Vraag of die de link opent die we stuurden.",
+      "agreeTitle": "Voordat je verdergaat",
+      "agreeText": "Lees de {terms} en het {privacy}. Tik op de knop om ermee akkoord te gaan.",
+      "agreeUpdated": "Ze zijn veranderd sinds je er de vorige keer mee akkoord ging.",
+      "agreeAction": "Akkoord en verder",
+      "channelsParentOnly": "Een ouder kiest waar je meldingen naartoe gaan.",
+      "newsSetting": "Stuur me nieuws van TidyQuest",
+      "newsSettingDesc": "Elke nieuwsmail heeft een link om te stoppen. E-mails over je account komen altijd.",
+      "unsubscribeTitle": "Stoppen met nieuws van TidyQuest",
+      "unsubscribeAsk": "Geen nieuws van TidyQuest meer naar {email} sturen?",
+      "unsubscribeAction": "Stop het nieuws",
+      "unsubscribeDone": "{email} krijgt geen nieuws van TidyQuest meer. E-mails over je account, zoals een nieuw wachtwoord, komen nog wel.",
+      "deleteFamilyTitle": "Ons gezin verwijderen",
+      "deleteFamilyDesc": "Ieders klusjes, geschiedenis, munten en foto's, voorgoed",
+      "deleteFamilyStart": "Verwijderen…",
+      "deleteFamilyIntro": "Dit verwijdert {family} met alles erin: elke persoon, elk klusje en elke beloning, alle geschiedenis en munten, en elke foto. Iedereen wordt meteen uitgelogd. Download eerst een kopie als je die misschien nog wilt.",
+      "deleteFamilyName": "Typ de naam van het gezin om te bevestigen: {family}",
+      "deleteFamilyAction": "Het gezin voorgoed verwijderen",
+      "deleteFamilyDone": "{family} is verwijderd. Bedankt dat jullie TidyQuest hebben gebruikt.",
+      "errWrongName": "Dat is niet de naam van het gezin.",
+      "memberPrivacy": "Wat TidyQuest over elke persoon bewaart: {privacy}"
     },
     "limits": {
       "people": "Een gezin kan maximaal {n} personen hebben.",
@@ -2021,6 +2057,9 @@
     },
     "about": {
       "sourceCode": "Broncode"
+    },
+    "photos": {
+      "unreadable": "Deze foto kan hier niet gelezen worden. Probeer een JPEG of PNG, of een schermafbeelding ervan."
     }
   }
 }

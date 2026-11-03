@@ -81,16 +81,21 @@ export function NotifyScheduleAdmin({ language }: { language?: string }) {
   );
 }
 
-/** One person's own channels and the kinds of messages they get. Also used on the Profile page. */
-export function PersonNotify({ person, language, onSaved }: { person: NotifyPerson; language?: string; onSaved?: (p: NotifyPerson) => void }) {
+/**
+ * One person's own channels and the kinds of messages they get. Also used on the Profile page (`own`), where
+ * in hosted mode only a parent can change the channels (NEW-34): everyone else sees them and picks the kinds.
+ */
+export function PersonNotify({ person, language, onSaved, own }: { person: NotifyPerson; language?: string; onSaved?: (p: NotifyPerson) => void; own?: boolean }) {
   const { t } = useTranslation(language);
   const hosted = useHosted();
   const [p, setP] = useState(person);
   const [message, setMessage] = useState('');
+  const channelsLocked = !!own && !!hosted && person.role !== 'admin';
   const save = async () => {
     setMessage('');
     try {
-      const next = await api.updateNotifyPerson(p.id, { ntfyTopic: p.ntfyTopic, telegramChatId: p.telegramChatId, haNotifyService: p.haNotifyService, prefs: p.prefs });
+      const channels = channelsLocked ? {} : { ntfyTopic: p.ntfyTopic, telegramChatId: p.telegramChatId, haNotifyService: p.haNotifyService };
+      const next = await api.updateNotifyPerson(p.id, { ...channels, prefs: p.prefs });
       setP(next); onSaved?.(next);
       setMessage(t('common.saved'));
     } catch (err) {
@@ -115,9 +120,11 @@ export function PersonNotify({ person, language, onSaved }: { person: NotifyPers
       ] as const).filter(([field]) => !(hosted && field === 'haNotifyService')).map(([field, name, hint]) => (
         <label key={field} style={{ display: 'grid', gap: 3 }}>
           <span style={label}>{name}</span>
-          <input className="tq-input" value={p[field]} placeholder={t(hint)} onChange={(e) => setP({ ...p, [field]: e.target.value })} />
+          <input className="tq-input" value={p[field]} placeholder={channelsLocked ? '' : t(hint)} readOnly={channelsLocked} disabled={channelsLocked}
+            onChange={(e) => setP({ ...p, [field]: e.target.value })} />
         </label>
       ))}
+      {channelsLocked && <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--warm-text-light)' }}>{t('hosted.channelsParentOnly')}</div>}
       <div style={{ ...label }}>{t('notifyAdmin.gets')}</div>
       <div style={row}>
         {KINDS.map((k) => (

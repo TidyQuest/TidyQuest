@@ -13,7 +13,7 @@ export function MyNotifications({ userId, language }: { userId: number; language
     <div className="tq-card tq-card-padded" style={{ marginTop: 16, display: 'grid', gap: 8 }}>
       <h3 className="tq-card-title" style={{ margin: 0 }}>🔔 {t('notifyAdmin.mineTitle')}</h3>
       <div style={{ fontSize: 11, color: 'var(--warm-text-light)', fontWeight: 600 }}>{t('notifyAdmin.mineDesc')}</div>
-      <PersonNotify person={me} language={language} onSaved={setMe} />
+      <PersonNotify person={me} language={language} onSaved={setMe} own />
     </div>
   );
 }

@@ -6,7 +6,7 @@ import { isSeasonalNow, scheduleFields, taskHealth } from '../utils/schedule';
 import { suggestTaskIcon } from '../utils/taskIcons';
 import { ensureAdmin, getGlobalVacation, getUserVacation, hiddenRoomIdsFor, resolveVacation } from '../utils/adminHelpers';
 import { repeatCountsFor } from '../utils/repeatLimits';
-import { softDeleteTasks } from '../utils/trash';
+import { dropProofPhotos, softDeleteTasks } from '../utils/trash';
 import { daySql } from '../utils/clock';
 
 const router = Router();
@@ -420,7 +420,10 @@ router.delete('/:id', (req: AuthRequest, res: Response) => {
   if (!room) return res.status(404).json({ error: 'Room not found' });
 
   db.transaction(() => {
+    // Its chores can't come back (they aren't in the trash), so their proof photos go now (NEW-34)
+    const chores = (db.prepare('SELECT id FROM tasks WHERE roomId = ? AND deletedAt IS NULL').all(req.params.id) as { id: number }[]).map((t) => t.id);
     softDeleteTasks('roomId = ?', req.params.id);
+    dropProofPhotos(chores);
     db.prepare("UPDATE rooms SET deletedAt = datetime('now') WHERE id = ?").run(req.params.id);
   })();
   res.json({ success: true });

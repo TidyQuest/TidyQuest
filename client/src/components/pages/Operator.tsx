@@ -29,7 +29,8 @@ interface FamilyList {
   keepDeletedDays: number;
   families: Family[];
 }
-type Action = 'suspend' | 'resume' | 'delete' | 'resend-confirmation' | 'trial-delete'
+type Action = 'suspend' | 'resume' | 'delete' | 'resend-confirmation' | 'trial-delete' | 'unconfirmed-delete' | 'inactive-delete'
+  | 'parent-delete' | 'news'
   | 'sign-in' | 'wrong-password' | 'password' | 'sign-out' | 'env-account' | 'env-password'
   | 'signups-open' | 'signups-closed' | 'waitlist-remove';
 interface Entry {
@@ -95,13 +96,19 @@ const address = (ip: string) => ip.replace(/^::ffff:/, ''); // an IPv4 address c
 
 /** What a History entry says happened. On a family's own card it leaves out which family. */
 function happened(e: Entry, onCard: boolean): string {
-  const family = onCard ? '' : ` ${e.familyName}`;
+  // Once a deleted family is gone for good, its name and emails are too (NEW-34)
+  const name = e.familyName ?? 'a removed family';
+  const family = onCard ? '' : ` ${name}`;
   switch (e.action) {
     case 'suspend': return `Paused${family}`;
     case 'resume': return `Resumed${family}`;
     case 'delete': return `Deleted${family}`;
     case 'trial-delete': return `Deleted${family} after the trial ended`;
-    case 'resend-confirmation': return `Resent the confirmation email to ${e.detail}${onCard ? '' : ` (${e.familyName})`}`;
+    case 'unconfirmed-delete': return `Deleted${family}: no parent confirmed their email in 30 days`;
+    case 'inactive-delete': return `Deleted${family}: unused for a year`;
+    case 'parent-delete': return `${e.detail ?? 'A parent'} deleted${onCard ? ' the family' : family}`;
+    case 'news': return `Sent the news email ${e.detail}`;
+    case 'resend-confirmation': return `Resent the confirmation email to ${e.detail ?? 'a parent'}${onCard ? '' : ` (${name})`}`;
     case 'sign-in': return 'Signed in';
     case 'wrong-password': return 'Sign-in refused: wrong password';
     case 'password': return 'Changed the password';
@@ -193,6 +200,7 @@ function Families({ token, onToken, onSignedOut }: { token: string; onToken: (to
   const [error, setError] = useState('');
   const [result, setResult] = useState<CardResult | null>(null);
   const [changingPassword, setChangingPassword] = useState(false);
+  const [writingNews, setWritingNews] = useState(false);
   const [view, setView] = useState<'families' | 'history' | 'waitlist'>('families');
   const [signups, setSignups] = useState<SignUps | null>(null);
 
@@ -310,10 +318,13 @@ function Families({ token, onToken, onSignedOut }: { token: string; onToken: (to
             <button type="button" className="tq-btn tq-btn-secondary tq-btn-sm" onClick={() => show(view === 'families' ? 'history' : 'families')}>
               {view === 'families' ? 'History' : 'Families'}
             </button>
+            <button type="button" className="tq-btn tq-btn-secondary tq-btn-sm" onClick={() => setWritingNews((v) => !v)}>News</button>
             <button type="button" className="tq-btn tq-btn-secondary tq-btn-sm" onClick={() => setChangingPassword((v) => !v)}>Password</button>
             <button type="button" className="tq-btn tq-btn-secondary tq-btn-sm" onClick={signOutEverywhere} title="Signs out every device">Sign out</button>
           </div>
         </div>
+
+        {writingNews && <NewsCard token={token} onFailed={failed} onSent={(sent) => { setWritingNews(false); setNotice(`The news email went to ${sent} parent${sent === 1 ? '' : 's'}.`); }} />}
 
         {changingPassword && (
           <ChangePassword token={token} onFailed={failed} onChanged={(next) => {
@@ -698,5 +709,56 @@ function ChangePassword({ token, onChanged, onFailed }: { token: string; onChang
       {error && <div role="alert" style={authError}>{error}</div>}
       <button type="submit" className="tq-btn tq-btn-primary tq-btn-md">Save password</button>
     </form>
+  );
+}
+
+/**
+ * A news email to every parent who asked for them (NEW-34). Each gets its own unsubscribe link and the postal
+ * address under the text. "Send me a test" goes only to this operator's address.
+ */
+function NewsCard({ token, onSent, onFailed }: { token: string; onSent: (sent: number) => void; onFailed: (err: unknown) => void }) {
+  const [info, setInfo] = useState<{ recipients: number; blocked: string | null } | null>(null);
+  const [subject, setSubject] = useState('');
+  const [body, setBody] = useState('');
+  const [note, setNote] = useState('');
+  const [busy, setBusy] = useState(false);
+  useEffect(() => {
+    call<{ recipients: number; blocked: string | null }>('/news', token).then(setInfo).catch(onFailed);
+  }, [token]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const send = async (test: boolean) => {
+    if (!test && !confirm(`Send "${subject}" to ${info?.recipients ?? 0} parents?`)) return;
+    setNote('');
+    setBusy(true);
+    try {
+      const { sent } = await call<{ sent: number }>('/news', token, { subject, body, test });
+      if (test) setNote('The test is on its way to you.');
+      else onSent(sent);
+    } catch (err) {
+      if (err instanceof SignedOut) onFailed(err);
+      else setNote(message(err));
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <div className="tq-card" style={{ padding: 14, marginTop: 14, display: 'grid', gap: 8 }}>
+      <div style={{ fontSize: 14, fontWeight: 800, color: 'var(--warm-text)' }}>News email</div>
+      <div style={muted}>
+        {info ? `${info.recipients} parent${info.recipients === 1 ? '' : 's'} asked for news.` : 'Loading…'}
+        {' '}Each email gets its own unsubscribe link and the postal address. English only.
+      </div>
+      {info?.blocked && <div role="alert" style={failedLine}>{info.blocked}</div>}
+      <input className="tq-input" value={subject} onChange={(e) => setSubject(e.target.value)} maxLength={150} placeholder="Subject" aria-label="Subject" />
+      <textarea className="tq-input" value={body} onChange={(e) => setBody(e.target.value)} rows={8} placeholder="The text, plain" aria-label="Text" style={{ resize: 'vertical' }} />
+      {note && <div role="status" style={muted}>{note}</div>}
+      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+        <button type="button" className="tq-btn tq-btn-secondary tq-btn-sm" disabled={busy || !subject.trim() || !body.trim() || !!info?.blocked} onClick={() => void send(true)}>Send me a test</button>
+        <button type="button" className="tq-btn tq-btn-primary tq-btn-sm" disabled={busy || !subject.trim() || !body.trim() || !!info?.blocked || !info?.recipients} onClick={() => void send(false)}>
+          Send to {info?.recipients ?? 0}
+        </button>
+      </div>
+    </div>
   );
 }

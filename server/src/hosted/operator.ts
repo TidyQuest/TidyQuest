@@ -16,6 +16,8 @@ import { mainDb } from './mainDb';
 import { SIGN_IN_ACTIONS, SIGN_UP_ACTIONS, recordOperatorAction } from './operatorHistory';
 import { removeFromWaitlist, setSignupsOpen, signupsOpen, waitlist, waitlistCount } from './signupGate';
 import { sendConfirmation } from './routes';
+import { sendEmail } from './email';
+import { newsBlocked, newsRecipients, sendNews, writeNews } from './news';
 
 // The operator page (/operator, NEW-13): the people running the server see each family's name, dates,
 // size, status and plan, and can suspend, resume or delete a family, or resend a confirmation email. The
@@ -308,6 +310,32 @@ router.post('/signups', (req: OperatorRequest, res: Response) => {
 router.get('/waitlist', (req: OperatorRequest, res: Response) => {
   const offset = Math.max(0, Math.floor(Number(req.query.offset)) || 0);
   res.json(waitlist(offset, limitOf(req)));
+});
+
+/** News emails (NEW-34): how many parents asked for them, and what's missing before any can go out. */
+router.get('/news', (_req: OperatorRequest, res: Response) => {
+  res.json({ recipients: newsRecipients().length, blocked: newsBlocked() });
+});
+
+/**
+ * Sends a news email to every parent who asked for it, or with `test` only to the operator's own address.
+ * Each has its unsubscribe link and the postal address under it.
+ */
+router.post('/news', async (req: OperatorRequest, res: Response) => {
+  const subject = text(req.body.subject).slice(0, 150);
+  const body = typeof req.body.body === 'string' ? req.body.body.slice(0, 20_000) : '';
+  if (!subject || !body.trim()) return res.status(400).json({ error: 'Write a subject and the text' });
+  const blocked = newsBlocked();
+  if (blocked) return res.status(400).json({ error: blocked });
+  if (req.body.test === true) {
+    await sendEmail(writeNews(req.operatorEmail!, 'en', subject, body));
+    return res.json({ ok: true, sent: 1 });
+  }
+  const sent = await sendNews(subject, body);
+  const detail = `"${subject}" to ${sent} parent${sent === 1 ? '' : 's'}`;
+  console.log(`[operator] ${req.operatorEmail} sent the news email ${detail}`);
+  recordOperatorAction({ action: 'news', operatorEmail: req.operatorEmail, detail, ip: clientIp(req) });
+  res.json({ ok: true, sent });
 });
 
 /** Takes a family off the waitlist (once they've been written to, or let in). */

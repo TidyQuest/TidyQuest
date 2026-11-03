@@ -364,7 +364,7 @@ export const api = {
     apiFetch<{ token: string; user: any }>('/auth/login', { method: 'POST', body: JSON.stringify(data) }),
   // Hosted mode (tidyquest.org)
   hostedConfig: () => apiFetch<HostedConfig>('/hosted/config'),
-  signUp: (data: { familyName: string; parentName: string; email: string; password: string; timeZone: string; language: string; captchaToken?: string; acceptTerms?: boolean }) =>
+  signUp: (data: { familyName: string; parentName: string; email: string; password: string; timeZone: string; language: string; captchaToken?: string; acceptTerms?: boolean; news?: boolean }) =>
     apiFetch<{ token: string; user: User }>('/hosted/signup', { method: 'POST', body: JSON.stringify(data) }),
   joinWaitlist: (data: { familyName: string; parentName: string; email: string; note: string; language: string; captchaToken?: string }) =>
     apiFetch<{ ok: boolean }>('/hosted/waitlist', { method: 'POST', body: JSON.stringify(data) }),
@@ -379,6 +379,12 @@ export const api = {
   changeEmail: (email: string, password: string) =>
     apiFetch<{ ok: boolean; email: string }>('/hosted/change-email', { method: 'POST', body: JSON.stringify({ email, password }) }),
   newFamilyCode: () => apiFetch<{ familyCode: string; familyLink: string }>('/hosted/family-code', { method: 'POST' }),
+  // NEW-34: agreeing to the terms, news emails; NEW-25: deleting the family
+  agreeToTerms: () => apiFetch<{ ok: boolean }>('/hosted/agree', { method: 'POST' }),
+  setNews: (on: boolean) => apiFetch<{ ok: boolean; news: boolean }>('/hosted/news', { method: 'POST', body: JSON.stringify({ on }) }),
+  unsubscribe: (e: string, s: string) => apiFetch<{ ok: boolean }>('/hosted/unsubscribe', { method: 'POST', body: JSON.stringify({ e, s }) }),
+  deleteFamily: (name: string, password: string) =>
+    apiFetch<{ ok: boolean }>('/hosted/delete-family', { method: 'POST', body: JSON.stringify({ name, password }) }),
   me: () => apiFetch<any>('/auth/me'),
 
   // Dashboard

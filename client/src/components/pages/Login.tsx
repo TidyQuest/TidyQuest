@@ -3,7 +3,7 @@ import { SparkleIcon } from '../icons/UIIcons';
 import { useTranslation } from '../../hooks/useTranslation';
 import { api, type LoginDetails } from '../../hooks/useApi';
 import UserAvatar from '../shared/UserAvatar';
-import { authLanguage, rememberFamily, rememberedFamily } from '../../utils/hosted';
+import { authLanguage, hostedError, rememberFamily, rememberedFamily } from '../../utils/hosted';
 import { SourceFooter } from '../shared/SourceLink';
 
 // The README's steps for resetting the first parent's password (ADMIN_RESET_PASSWORD)
@@ -82,7 +82,8 @@ export function Login({ onLogin, onSwitchToRegister, hosted = false, onSignUp }:
     } catch (err: any) {
       // A wrong name or password, in the page's language
       if (err?.message === 'Invalid credentials') setError(t(!hosted ? 'auth.loginFailed' : byEmail ? 'hosted.loginFailedEmail' : 'hosted.loginFailed'));
-      else setError(err.message || t('auth.loginFailed'));
+      // A kid or member whose parent hasn't confirmed their email yet (NEW-34)
+      else setError(hostedError(err, t, err.message || t('auth.loginFailed')));
     } finally {
       setLoading(false);
     }

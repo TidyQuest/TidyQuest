@@ -172,6 +172,8 @@ describe('Notification settings API', () => {
     expect(JSON.stringify(s)).not.toContain('secret');
     expect((await agent.put('/api/notify/settings').set(auth(kid.token)).send({})).status).toBe(403);
 
+    // Hosted mode: only a parent sets where anyone's notifications go (NEW-34; test/hosted-privacy.test.ts)
+    if (HOSTED_RUN) await agent.put(`/api/notify/people/${kid.user.id}`).set(auth(admin.token)).send({ ntfyTopic: 'cecil-chores' });
     const mine = (await agent.put(`/api/notify/people/${kid.user.id}`).set(auth(kid.token)).send({ ntfyTopic: 'cecil-chores', prefs: { nudge: false } })).body;
     expect(mine).toMatchObject({ ntfyTopic: 'cecil-chores', channels: ['ntfy'], prefs: { nudge: false, outcome: true } });
     expect((await agent.put(`/api/notify/people/${admin.user.id}`).set(auth(kid.token)).send({ ntfyTopic: 'x' })).status).toBe(403);
