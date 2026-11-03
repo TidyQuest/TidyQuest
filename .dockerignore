@@ -1,0 +1,8 @@
+# Kept out of image builds. Each stage installs and builds its own packages: a node_modules from your
+# computer could hold a better-sqlite3 built for the wrong system, and the final image copies the
+# server's node_modules from the build stage. Family data and secrets never go into an image.
+**/node_modules
+**/dist
+data
+.env
+.git
