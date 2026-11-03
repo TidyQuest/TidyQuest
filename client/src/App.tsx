@@ -26,8 +26,8 @@ import { Guide } from './components/pages/Guide';
 import { Login } from './components/pages/Login';
 import { Register } from './components/pages/Register';
 import { SignUp } from './components/pages/SignUp';
-import { ConfirmEmail, ResetPassword } from './components/pages/EmailLinks';
-import { ConfirmEmailBanner, LockedScreen } from './components/shared/HostedAccount';
+import { ConfirmEmail, ResetPassword, Unsubscribe } from './components/pages/EmailLinks';
+import { AgreeScreen, ConfirmEmailBanner, LockedScreen } from './components/shared/HostedAccount';
 import { isShutOut, limitError, takeFamilyLink, useHosted, type HostedAccount } from './utils/hosted';
 import { Achievements } from './components/pages/Achievements';
 import { Rewards } from './components/pages/Rewards';
@@ -358,6 +358,7 @@ function AppContent() {
   // The links in hosted mode's emails
   if (location.pathname === '/confirm-email') return <ConfirmEmail signedIn={!!user} />;
   if (location.pathname === '/reset-password') return <ResetPassword onSignedIn={signIn} />;
+  if (location.pathname === '/unsubscribe') return <Unsubscribe />;
 
   if (!user) {
     if (hosted && location.pathname === '/signup') return <SignUp onSignedIn={signIn} />;
@@ -367,8 +368,13 @@ function AppContent() {
     return <Login onLogin={login} onSwitchToRegister={() => setAuthView('register')} hosted={!!hosted} onSignUp={() => navigate('/signup')} />;
   }
 
-  if (isShutOut(hostedAccount)) {
+  if (hostedAccount && isShutOut(hostedAccount)) {
     return <LockedScreen account={hostedAccount} language={user.language} onChanged={loadHostedAccount}
+      onLogout={() => { logout(); setHostedAccount(null); navigate('/login', { replace: true }); }} />;
+  }
+  // NEW-34: a parent or member agrees to the terms first; a full load then fetches what the server held back
+  if (hostedAccount?.mustAgree) {
+    return <AgreeScreen account={hostedAccount} language={user.language} onAgreed={() => { window.location.href = '/'; }}
       onLogout={() => { logout(); setHostedAccount(null); navigate('/login', { replace: true }); }} />;
   }
 

@@ -149,7 +149,7 @@ describe('Hosted mode: avatars and proof photos', () => {
     const setFamily = (fields: string) => mainDb().prepare(`UPDATE families SET ${fields} WHERE id = ?`).run(A);
     setFamily("status = 'suspended'");
     expect((await agent.get(up.body.photoUrl).set('Cookie', cookie)).status).toBe(404);
-    setFamily("status = 'trial', createdAt = '2020-01-01T00:00:00.000Z'");
+    setFamily("status = 'trial', createdAt = '2020-01-01T00:00:00.000Z', consentAt = NULL");
     expect((await agent.get(up.body.photoUrl).set('Cookie', cookie)).status).toBe(404);
     mainDb().prepare("UPDATE accounts SET emailConfirmedAt = '2020-01-02T00:00:00.000Z' WHERE familyId = ?").run(A);
     expect((await agent.get(up.body.photoUrl).set('Cookie', cookie)).status).toBe(200);

@@ -89,11 +89,38 @@ export interface HostedAccount {
   locked: boolean;
   /** trial or active; suspended and expired families see a screen about it instead of the app */
   status: 'trial' | 'active' | 'suspended' | 'expired';
+  /** A member or child whose family has no parent's consent yet (NEW-34) */
+  awaitingParent: boolean;
+  /** A parent or member who hasn't agreed to the current terms and privacy policy (NEW-34) */
+  mustAgree: boolean;
+  termsUrl: string | null;
+  privacyUrl: string | null;
+  /** This parent gets news emails */
+  news: boolean;
 }
 
-/** Whether the app gives way to the LockedScreen: the family is locked, paused, or its trial has ended. */
-export const isShutOut = (account: HostedAccount | null): account is HostedAccount =>
-  !!account && (account.locked || account.status === 'suspended' || account.status === 'expired');
+/**
+ * Whether the app gives way to the LockedScreen: the family is locked, paused, or its trial has ended, or
+ * this person waits for a parent's consent. (The AgreeScreen comes after.)
+ */
+export const isShutOut = (account: HostedAccount): boolean =>
+  (account.locked || account.awaitingParent || account.status === 'suspended' || account.status === 'expired');
+
+/** The terms and privacy links for pages before sign-in (NEW-34); null until the server answers, or self-hosted. */
+let legalPromise: Promise<{ termsUrl: string | null; privacyUrl: string | null }> | null = null;
+export function useLegalLinks(): { termsUrl: string | null; privacyUrl: string | null } | null {
+  const [links, setLinks] = useState<{ termsUrl: string | null; privacyUrl: string | null } | null>(null);
+  useEffect(() => {
+    let live = true;
+    void fetchHosted().then((hosted) => {
+      if (!hosted) return;
+      legalPromise ??= fetch('/api/hosted/config').then((r) => r.json()).catch(() => ({ termsUrl: null, privacyUrl: null }));
+      return legalPromise.then((l) => { if (live) setLinks({ termsUrl: l.termsUrl ?? null, privacyUrl: l.privacyUrl ?? null }); });
+    });
+    return () => { live = false; };
+  }, []);
+  return links;
+}
 
 /** The server's error code (link-expired, email-taken…) as a message in the page's language. */
 export function hostedError(err: unknown, t: (key: string) => string, fallback: string): string {
@@ -106,6 +133,9 @@ export function hostedError(err: unknown, t: (key: string) => string, fallback: 
     'short-password': 'hosted.errShortPassword',
     captcha: 'hosted.captchaNeeded',
     'signups-closed': 'hosted.errSignupsClosed',
+    'awaiting-parent': 'hosted.errAwaitingParent',
+    'wrong-name': 'hosted.errWrongName',
+    'photo-type': 'photos.unreadable',
   };
   return code && keys[code] ? t(keys[code]) : fallback;
 }
@@ -113,6 +143,6 @@ export function hostedError(err: unknown, t: (key: string) => string, fallback: 
 /** A limit the server answered with (people, file size, photo space) in the page's language; else the fallback. */
 export function limitError(err: unknown, t: (key: string) => string, fallback: string): string {
   const body = (err as { body?: { code?: string; limit?: number } })?.body;
-  const keys: Record<string, string> = { 'people-limit': 'limits.people', 'too-large': 'limits.tooLarge', 'storage-full': 'limits.storageFull' };
+  const keys: Record<string, string> = { 'people-limit': 'limits.people', 'too-large': 'limits.tooLarge', 'storage-full': 'limits.storageFull', 'photo-type': 'photos.unreadable' };
   return body?.code && keys[body.code] ? t(keys[body.code]).replace('{n}', String(body.limit ?? '')) : fallback;
 }

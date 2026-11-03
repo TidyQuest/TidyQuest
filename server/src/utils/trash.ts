@@ -1,4 +1,6 @@
 import db from '../database';
+import { currentFamily } from '../hosted/context';
+import { removeFile } from '../hosted/files';
 
 /**
  * Trash for deleted tasks and rewards. A deleted task or reward keeps its row (deletedAt set), so its
@@ -13,9 +15,40 @@ export type TrashKind = 'task' | 'reward';
 
 interface ColumnInfo { name: string; notnull: number; dflt_value: unknown; pk: number }
 
-/** Items older than TRASH_DAYS are removed for good (runs whenever the trash is used). */
+/**
+ * Items older than TRASH_DAYS are removed for good (runs whenever the trash is used, and hourly as a
+ * background job). A chore's proof photos go with its trash entry (NEW-34).
+ */
 export function purgeOldTrash() {
-  db.prepare(`DELETE FROM trash WHERE deletedAt < datetime('now', ?)`).run(`-${TRASH_DAYS} days`);
+  const age = `-${TRASH_DAYS} days`;
+  const tasks = db.prepare(`SELECT itemId FROM trash WHERE kind = 'task' AND deletedAt < datetime('now', ?)`).all(age) as { itemId: number }[];
+  dropProofPhotos(tasks.map((t) => t.itemId));
+  db.prepare(`DELETE FROM trash WHERE deletedAt < datetime('now', ?)`).run(age);
+}
+
+/**
+ * Deleted chores that can't come back lose their proof photos: the files, and the links on their completions.
+ * Who did them, when, and the coins stay (PRIVACY.md decision 8). Chores that were restored are skipped.
+ */
+export function dropProofPhotos(taskIds: number[]) {
+  for (const id of taskIds) {
+    if (!db.prepare('SELECT 1 FROM tasks WHERE id = ? AND deletedAt IS NOT NULL').get(id)) continue;
+    const rows = db.prepare('SELECT photoUrl FROM task_completions WHERE taskId = ? AND photoUrl IS NOT NULL').all(id) as { photoUrl: string }[];
+    if (!rows.length) continue;
+    for (const r of rows) removeFile('proofs', r.photoUrl);
+    db.prepare('UPDATE task_completions SET photoUrl = NULL WHERE taskId = ?').run(id);
+  }
+}
+
+const HOUR = 60 * 60 * 1000;
+const lastExpired = new Map<string, number>();
+
+/** The background job: expires old trash once an hour per family, so photos go even if nobody opens the trash. */
+export function expireTrash(now = new Date()) {
+  const key = currentFamily()?.familyId ?? '';
+  if (now.getTime() - (lastExpired.get(key) ?? 0) < HOUR) return;
+  lastExpired.set(key, now.getTime());
+  purgeOldTrash();
 }
 
 /** Hide a task (keeping its row and history) and list it in the trash. Open team-ups on it are cancelled. */

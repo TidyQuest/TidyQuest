@@ -18,6 +18,7 @@ import { at, wall } from '../utils/clock';
 import { currentFamily, isHosted, runInFamily, setHosted, setTestFamily } from '../hosted/context';
 import { closeAllFamilies, createFamily, openFamily } from '../hosted/families';
 import { mainDb, setDataDir, setMainDb } from '../hosted/mainDb';
+import { recordConsent } from '../hosted/legal';
 import { addParent } from '../hosted/signup';
 
 /**
@@ -42,6 +43,8 @@ export function createTestApp(opts: { hosted?: boolean } = {}) {
     startTestHosting();
     familyId = createFamily('Family A', { db });
     setTestFamily(opts.hosted ? null : { familyId, db });
+    // The whole suite as one family (HOSTED=1): as if its parent had confirmed, so everyone can sign in (NEW-34)
+    if (!opts.hosted) recordConsent(familyId);
   } else {
     // Swap the global singleton so all routes use this DB
     setDatabase(db);
@@ -310,8 +313,11 @@ export async function createAdmin(
   familyId = currentFamily()?.familyId
 ) {
   if (isHosted()) {
-    // No /register in hosted mode: the family's first parent is made as sign-up makes them, with an email
+    // No /register in hosted mode: the family's first parent is made as sign-up makes them, with an email.
+    // The family counts as having its parent's consent, so the rest of it can sign in (NEW-34), though the
+    // email stays unconfirmed; tests of the wait sign up instead.
     runInFamily(openFamily(familyId)!, () => addParent({ username, displayName, password, email: `${username}@${familyId}.example` }));
+    recordConsent(familyId!);
     const login = await agent.post('/api/auth/login').send({ username, password, ...familyField(familyId) });
     return { user: login.body.user, token: login.body.token as string };
   }

@@ -8,6 +8,7 @@ import { setEmailTransport, type Email } from '../hosted/email';
 import { setCaptchaCheck } from '../hosted/signup';
 import db from '../database';
 import { addTestFamily, createAdmin, createTestApp, createUser, familyCodeOf } from './setup';
+import { tr } from '../utils/i18n';
 
 // Hosted mode (NEW-10): parents sign in with their email, everyone with the family code; sign-up,
 // confirming the email, forgot password and changing the email.
@@ -165,33 +166,46 @@ describe('Hosted: confirming the email', () => {
     expect(me.body).toMatchObject({ emailConfirmed: true, confirmBy: null });
   });
 
-  it('locks the family 30 days after sign-up until a parent confirms; confirming and export still work', async () => {
+  it('keeps members and kids out until a parent confirms, locks the family at 30 days, and sends the second email', async () => {
     const res = await signup();
     const { fid } = jwt.decode(res.body.token) as { fid: string };
-    const kid = await createUser(agent, res.body.token, { username: 'kid', displayName: 'Kid', password: 'pass123', role: 'child', familyId: fid });
-    expect((await agent.get('/api/dashboard').set(auth(kid.token))).status).toBe(200);
+    const parentToken = res.body.token;
+    expect((await agent.post('/api/users').set(auth(parentToken)).send({ username: 'kid', displayName: 'Kid', password: 'pass123', role: 'child' })).status).toBe(201);
+    const kidLogin = () => agent.post('/api/auth/login').send({ familyCode: familyCodeOf(fid), username: 'kid', password: 'pass123' });
+    // NEW-34 (COPPA): the parent can set things up, but the kid can't sign in yet; a wrong password still answers as one
+    expect((await agent.get('/api/dashboard').set(auth(parentToken))).status).toBe(200);
+    expect((await kidLogin()).status).toBe(403);
+    expect((await kidLogin()).body.code).toBe('awaiting-parent');
+    expect((await agent.post('/api/auth/login').send({ familyCode: familyCodeOf(fid), username: 'kid', password: 'wrong' })).status).toBe(401);
+    expect((await agent.get('/api/hosted/account').set(auth(parentToken))).body.awaitingParent).toBe(false);
 
     vi.useFakeTimers({ toFake: ['Date'] });
     vi.setSystemTime(Date.now() + 30 * DAY + 60_000);
-    // Signing in still works (logins last 30 days, so these are new), so a parent can confirm or export
+    // Signing in still works for the parent (logins last 30 days, so this is new), to confirm or export
     const parent = (await agent.post('/api/auth/login').send({ email: 'zoe@example.com', password: 'longpassword' })).body.token;
-    const kidToken = (await agent.post('/api/auth/login').send({ familyCode: familyCodeOf(fid), username: 'kid', password: 'pass123' })).body.token;
-    const blocked = await agent.get('/api/dashboard').set(auth(kidToken));
+    const blocked = await agent.get('/api/dashboard').set(auth(parent));
     expect(blocked.status).toBe(403);
     expect(blocked.body.code).toBe('confirm-email');
-    expect((await agent.get('/api/hosted/account').set(auth(kidToken))).body.locked).toBe(true);
-    expect((await agent.get('/api/auth/me').set(auth(kidToken))).status).toBe(200);
+    expect((await agent.get('/api/hosted/account').set(auth(parent))).body.locked).toBe(true);
+    expect((await agent.get('/api/auth/me').set(auth(parent))).status).toBe(200);
     expect((await agent.get('/api/export').set(auth(parent))).status).toBe(200);
 
-    // The first link has expired by now; a new one works
+    // The first link has expired by now; a new one works, and the kid can sign in
     expect((await agent.post('/api/hosted/confirm-email').send({ token: linkToken(sent[0]) })).status).toBe(400);
     expect((await agent.post('/api/hosted/resend-confirmation').set(auth(parent))).status).toBe(200);
     expect((await agent.post('/api/hosted/confirm-email').send({ token: linkToken(lastTo('zoe@example.com')) })).status).toBe(200);
+    expect((await agent.get('/api/dashboard').set(auth(parent))).status).toBe(200);
+    const kidToken = (await kidLogin()).body.token;
     expect((await agent.get('/api/dashboard').set(auth(kidToken))).status).toBe(200);
+    // The second email of "email plus": the consent is recorded, and how to take it back
+    const ready = tr('fr', 'hostedEmail.consentConfirmedSubject', { family: 'The Okafors' });
+    expect(lastTo('zoe@example.com').subject).toBe(ready);
+    expect(sent.filter((e) => e.subject === ready)).toHaveLength(1);
   });
 
   it("doesn't lock A for B's unconfirmed email, or a family that confirmed", async () => {
     mainDb().prepare('UPDATE accounts SET emailConfirmedAt = ? WHERE familyId = ?').run(new Date().toISOString(), A);
+    mainDb().prepare('UPDATE families SET consentAt = NULL WHERE id = ?').run(B);
     vi.useFakeTimers({ toFake: ['Date'] });
     vi.setSystemTime(Date.now() + 31 * DAY);
     const token = (await agent.post('/api/auth/login').send({ email: `admin@${A}.example`, password: 'admin123' })).body.token;

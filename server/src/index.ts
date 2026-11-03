@@ -35,6 +35,7 @@ import { closeOldTeamups } from './utils/teamups';
 import { settleAllStreaks } from './utils/streaks';
 import { snapshotOverdueChores } from './utils/insights';
 import { resumeDuePauses } from './utils/pause';
+import { expireTrash } from './utils/trash';
 import insightsRoutes from './routes/insights';
 import { countRequests, isHosted } from './hosted/context';
 import { startHosted } from './hosted/families';
@@ -144,6 +145,7 @@ export const backgroundJobs: Job[] = [
   settleAllStreaks,
   snapshotOverdueChores,
   resumeDuePauses,
+  expireTrash,
 ];
 
 // Start server only when run directly (not imported by tests)

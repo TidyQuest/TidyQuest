@@ -712,10 +712,12 @@ router.delete('/:id', (req: AuthRequest, res: Response) => {
     }
   }
 
-  // Their completions go with them, and so do the proof photos on them
+  // Their completions go with them, and so do the proof photos on them and their avatar photo (NEW-34)
   const photos = db.prepare('SELECT photoUrl FROM task_completions WHERE userId = ? AND photoUrl IS NOT NULL').all(targetId) as { photoUrl: string }[];
+  const avatar = db.prepare('SELECT avatarPhotoUrl FROM users WHERE id = ?').get(targetId) as { avatarPhotoUrl: string | null };
   db.prepare('DELETE FROM users WHERE id = ?').run(targetId);
   for (const p of photos) removeFile('proofs', p.photoUrl);
+  removeFile('avatars', avatar.avatarPhotoUrl);
   // Hosted mode: their sign-in email goes with them
   if (isHosted()) removeAccount(req.familyId!, targetId);
   res.json({ success: true });

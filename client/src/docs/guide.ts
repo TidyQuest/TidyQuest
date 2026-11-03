@@ -114,10 +114,18 @@ export const GUIDE_EN: GuideSection[] = [
         'Settings → 🔑 Family code shows the code (like sunny-otter-42), the family link and a QR code. Open the link or scan the code on a kid’s phone or tablet: it remembers the family, so they only type their username and password. Capitals, spaces and dashes in the code don’t matter.',
         'New code gives the family a fresh code. The old code and link stop working; everyone who’s signed in stays signed in.',
         'Settings → ✉️ Sign-in email: Change email sends a link to the new address, and the change happens when you open it. A second parent can Add email to sign in with their own.',
-        'At sign-up we email a link to confirm your address. A family that hasn’t confirmed a parent’s email within 30 days can only confirm it or download its data until it does.',
+        'At sign-up we email a link to confirm your address. Opening it is also how a parent agrees, for their children, to what TidyQuest keeps (the US children’s privacy law, COPPA, asks for this). Until a parent has confirmed, only parents can sign in. A family that hasn’t confirmed a parent’s email within 30 days is deleted; we send a reminder a week before.',
         'Forgot password? on the login screen emails a parent a link that works once, for one hour. Kids and teens ask a parent to set a new one in Settings → Family Members.',
       ] },
       { p: 'When new sign-ups on tidyquest.org are closed, the sign-up page is a waitlist form instead. Another family can leave their details there, and we email them when there’s room. Families already signed up aren’t affected.' },
+      { h: 'On tidyquest.org: privacy' },
+      { ul: [
+        'Privacy policy and Terms links are under the login and sign-up pages, and in Settings under Version.',
+        'Other parents and members see the terms and the privacy policy the first time they sign in, and tap Agree and continue. Children never do. When either changes, the adults are asked again.',
+        'Only a parent sets where anyone’s notifications go (an ntfy topic or Telegram chat). Everyone still picks which kinds they get in Profile.',
+        'Settings → ✉️ Sign-in email → Send me TidyQuest news: news now and then, only if a parent ticks it (at sign-up or here). Every news email has a link to stop them.',
+        'A family nobody has used for a year gets an email, and is deleted 30 days later unless someone signs in.',
+      ] },
       { h: 'On tidyquest.org: limits' },
       { ul: [
         'A family can have up to 15 people.',
@@ -380,6 +388,14 @@ export const GUIDE_EN: GuideSection[] = [
         'A deleted reward keeps its history the same way: what was bought before stays in Insights under its name. A request still waiting stays in Reward requests (under the catalog), so a parent can still approve it or turn it down, which gives the coins back.',
         'Deleting a room (Rooms → 🗑) deletes its chores too, and the room can’t be brought back. Their history and coins stay.',
       ] },
+      { p: 'Proof photos go with their chore: when a chore leaves Recently deleted (or its room is deleted), its photos are deleted too, while who did it and the coins stay. A person’s avatar photo goes when they’re removed.' },
+      { p: 'Every photo is redrawn on the phone or computer before it uploads, which leaves out where and with what it was taken. A photo the browser can’t read (some HEIC photos) is refused: send a JPEG or a screenshot instead.' },
+      { h: 'On tidyquest.org: deleting the family' },
+      { ul: [
+        'Settings → Data & Privacy → Delete our family deletes everyone’s chores, history, coins and photos. Tap Download our data first if you might want a copy.',
+        'Type the family’s name and your password, then tap Delete the family for good. Everyone is signed out at once, and parents with a confirmed email get an email about it.',
+        'We keep it for 30 days in case it was a mistake (reply to that email), then it’s gone for good.',
+      ] },
     ],
   },
   {
@@ -537,8 +553,14 @@ export const GUIDE_EN: GuideSection[] = [
           'A password link works for one hour and only once; ask for a new one with Forgot password? on the login screen.',
           'Typed the address wrong? Settings → ✉️ Sign-in email → Change email.',
         ] },
+        { q: 'It says “A parent needs to confirm their email first”', a: [
+          'Only on tidyquest.org. Until a parent has confirmed their email, only parents can sign in. A parent opens the link we sent (Settings → ✉️ Sign-in email → Send it again sends a new one), and then everyone can sign in.',
+        ] },
         { q: 'It says "Confirm your email to keep using TidyQuest"', a: [
-          'Your family had 30 days to confirm a parent’s email. A parent opens the link we sent, or taps Send it again (or Change email if the address was wrong). Nothing is lost, and Download our data still works.',
+          'Your family had 30 days to confirm a parent’s email. A parent opens the link we sent, or taps Send it again (or Change email if the address was wrong). Until then Download our data still works, but the family is deleted soon after, so don’t wait.',
+        ] },
+        { q: 'It asks me to agree to the terms', a: [
+          'Only on tidyquest.org, for parents and members: the first time you sign in, and again when the terms or the privacy policy change. Read them with the links, then tap Agree and continue. Children are never asked.',
         ] },
         { q: 'It says the family is paused, or the free trial has ended', a: [
           'Only on tidyquest.org. A paused family can’t use the app until TidyQuest resumes it. Nothing is lost, and a parent can still tap Download our data.',
@@ -550,6 +572,9 @@ export const GUIDE_EN: GuideSection[] = [
           'On tidyquest.org a family can have up to 15 people.',
           'Phones make big photos smaller before they upload. If a photo still doesn’t upload after Done, the chore counts anyway: the message stays until you close it, and while the chore waits for a parent, Try again sends the photo again.',
           'No photo field when finishing a chore with 📎? A parent switched them off in Settings → Features → Proof photos.',
+        ] },
+        { q: 'It says a photo can’t be read', a: [
+          'The phone or browser couldn’t open that photo (often a HEIC photo on a computer), and every photo is redrawn before it uploads to leave out where it was taken. Send a JPEG or PNG, or take a screenshot of the photo and send that.',
         ] },
         { q: 'A photo or avatar doesn’t show', a: [
           'Proof photos only open for someone logged in to the family: parents see all of them, everyone else only their own. On tidyquest.org the same goes for avatars.',

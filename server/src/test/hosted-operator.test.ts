@@ -265,14 +265,14 @@ describe('The History', () => {
     ]);
   });
 
-  it("keeps a family's entries, its name and emails too, after the family is removed for good", async () => {
+  it("keeps a family's entries after it's removed for good, without its name or emails (NEW-34)", async () => {
     const email = `admin@${A}.example`;
     await agent.post(`/api/operator/families/${A}/resend-confirmation`).set(auth(op)).send({ email });
     await agent.post(`/api/operator/families/${A}/delete`).set(auth(op)).send({ name: 'Family A' });
     expect(purgeDeletedFamilies(new Date(Date.now() + 31 * DAY))).toBe(1);
     expect(mainDb().prepare('SELECT 1 FROM families WHERE id = ?').get(A)).toBeUndefined();
     expect((await history(op, `?family=${A}`)).entries.map((e: any) => [e.action, e.familyName, e.detail])).toEqual([
-      ['delete', 'Family A', null], ['resend-confirmation', 'Family A', email],
+      ['delete', null, null], ['resend-confirmation', null, null],
     ]);
   });
 });

@@ -152,7 +152,10 @@ export function deleteFamily(id: string, now = new Date()): boolean {
   return true;
 }
 
-/** Removes the folders of families deleted more than 30 days ago (a daily job from NEW-11). */
+/**
+ * Removes the folders of families deleted more than 30 days ago (a daily job from NEW-11), and their names
+ * and emails from the operator History (NEW-34: no leftovers).
+ */
 export function purgeDeletedFamilies(now = new Date()): number {
   const main = mainDb();
   const cutoff = new Date(now.getTime() - KEEP_DELETED_DAYS * DAY).toISOString();
@@ -162,7 +165,10 @@ export function purgeDeletedFamilies(now = new Date()): number {
     for (const name of folders) {
       if (name.startsWith(`${id}-`)) fs.rmSync(path.join(deletedDir(), name), { recursive: true, force: true });
     }
-    main.prepare('DELETE FROM families WHERE id = ?').run(id);
+    main.transaction(() => {
+      main.prepare('UPDATE operator_history SET familyName = NULL, detail = NULL WHERE familyId = ?').run(id);
+      main.prepare('DELETE FROM families WHERE id = ?').run(id);
+    })();
   }
   return gone.length;
 }
