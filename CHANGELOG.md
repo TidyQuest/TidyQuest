@@ -15,6 +15,9 @@ What changed in each release, in plain language, newest first. Releases up to v0
   troubleshooting entry, *A parent is missing from the Board* (#152).
 
 ### Fixed
+- Editing a starter reward (like *Stay Up 30 Min*) no longer shows its description in French. The form now shows the
+  same text as the list, in your language. A starter reward whose description you changed also shows your text
+  instead of the built-in one. New installs save the starter descriptions in English (#150).
 - Each admin can now turn *Participates in tasks* on or off on their own card in Settings → Family Members. Before,
   only another admin could, so a family with one admin had no way to change it (#152).
 - The table of contents in API.md links to its sections again, and now lists *Rate Limiting* and *Notes* too

@@ -33,6 +33,7 @@ import { TimeZonePicker } from '../shared/TimeZonePicker';
 import { FamilyCodeCard, SignInEmailCard } from '../shared/HostedAccount';
 import { limitError, useHosted, useSourceUrl, type HostedAccount } from '../../utils/hosted';
 import { dateStr, endOfHomeDay } from '../../utils/clock';
+import { rewardDescText, rewardTextToSave, rewardTitleText } from '../../utils/presetRewards';
 
 interface FamilyUser {
   id: number;
@@ -239,28 +240,8 @@ export function Settings({
     return status;
   };
 
-  const rewardPresetKeyByTitle: Record<string, string> = {
-    'movie night pick': 'movie_night',
-    'ice cream treat': 'ice_cream',
-    'stay up 30 min': 'late_bedtime',
-    'game time bonus': 'game_bonus',
-    'choose dinner': 'choose_dinner',
-    'park adventure': 'park_adventure',
-    'no-chore pass': 'chore_pass',
-    'family board game': 'board_game',
-  };
-
-  const rewardTitle = (r: { title: string; isPreset?: boolean }): string => {
-    const k = rewardPresetKeyByTitle[r.title.toLowerCase()];
-    if (k) return t(`rewardsPreset.${k}.title`);
-    return r.title;
-  };
-
-  const rewardDesc = (r: { title: string; description?: string | null; isPreset?: boolean }): string => {
-    const k = rewardPresetKeyByTitle[r.title.toLowerCase()];
-    if (k) return t(`rewardsPreset.${k}.desc`);
-    return r.description || '-';
-  };
+  const rewardTitle = (r: { title: string }): string => rewardTitleText(r.title, t);
+  const rewardDesc = (r: { title: string; description?: string | null }): string => rewardDescText(r, t) || '-';
 
   useEffect(() => {
     setCoinsDraft(coinsByEffort);
@@ -498,8 +479,9 @@ export function Settings({
   const startRewardEdit = (r: { id: number; title: string; description?: string | null; costCoins: number; category?: string | null }) => {
     setEditingRewardId(r.id);
     setEditingRewardCategory(r.category ?? '');
-    setEditingRewardTitle(r.title);
-    setEditingRewardDesc(r.description || '');
+    // The same text the list shows (a starter reward in your language, #150)
+    setEditingRewardTitle(rewardTitleText(r.title, t));
+    setEditingRewardDesc(rewardDescText(r, t));
     setEditingRewardCost(String(r.costCoins));
   };
 
@@ -549,13 +531,12 @@ export function Settings({
     });
   };
 
-  const saveRewardEdit = async (r: { id: number; isActive?: boolean; category?: string | null }) => {
+  const saveRewardEdit = async (r: { id: number; title: string; description?: string | null; isActive?: boolean; category?: string | null }) => {
     const parsed = Math.max(1, Math.round(Number(editingRewardCost)));
     if (!Number.isFinite(parsed)) return;
     if (!editingRewardTitle.trim()) return;
     await api.updateReward(r.id, {
-      title: editingRewardTitle.trim(),
-      description: editingRewardDesc.trim() || '',
+      ...rewardTextToSave(r, editingRewardTitle.trim(), editingRewardDesc.trim(), t),
       costCoins: parsed,
       isActive: r.isActive !== false,
     });
