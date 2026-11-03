@@ -68,7 +68,7 @@ export const GUIDE_FR: GuideSection[] = [
       ] },
       { h: 'Réglages par personne' },
       { ul: [
-        'Participe aux tâches : désactivé pour un parent qui ne fait que gérer ; il ne gagnera pas de pièces et n’apparaîtra pas sur le Tableau.',
+        'Participe aux tâches : désactivé pour un parent qui ne fait que gérer. Il gagne quand même des pièces pour chaque tâche faite, mais n’apparaît sur le Tableau que pendant une période où il en a fait une, et ne peut pas avoir d’objectifs. Chaque admin peut aussi le changer pour lui-même.',
         'Affichage des tâches : Toutes (au choix), Commence sur les miennes, ou Seulement les siennes (verrouillé).',
         'Mode enfant : des boutons plus gros, moins de cartes, les pièces et l’objectif en avant.',
         'Le thème et les couleurs des fêtes suivent la personne sur tous ses appareils (elle peut les changer dans Profil).',
@@ -399,6 +399,9 @@ export const GUIDE_FR: GuideSection[] = [
         { q: 'Une carte a disparu de l’accueil', a: [
           'Elle est peut-être masquée : ouvrez Personnaliser (le bouton en bas de l’accueil) et appuyez sur son 🚫 pour l’afficher à nouveau, ou utilisez Revenir à l’ordre par défaut.',
           'Certaines cartes n’apparaissent que quand elles ont du contenu (Tes habitudes, Tu as peut-être oublié ceux-ci, Planifiées, Complétées aujourd’hui), et certaines sont réservées aux parents.',
+        ] },
+        { q: 'Un parent n’apparaît pas sur le Tableau', a: [
+          'Un parent dont Participe aux tâches est désactivé n’apparaît sur le Tableau que pendant une période où il a fait une tâche. Pour qu’il y reste, activez l’option dans Paramètres → Membres de la famille. Chaque parent peut aussi la changer sur sa propre fiche.',
         ] },
         { q: 'Une chose à la fois n’apparaît pas, ou une tâche n’y est pas', a: [
           'Pour les parents et les membres, elle est désactivée sauf si elle est réglée dans Paramètres → Membres de la famille. Les enfants l’ont (un bouton sur l’accueil) sauf si un parent l’a désactivée. Elle peut aussi être masquée dans Accueil → Personnaliser, ou désactivée dans Paramètres → Fonctionnalités.',

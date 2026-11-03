@@ -1430,7 +1430,7 @@ export function Settings({
                   )}
                 </div>
               )}
-              {isAdmin && u.id !== user.id && u.role === 'admin' && (
+              {isAdmin && u.role === 'admin' && (
                 <div style={{ marginTop: 10, paddingTop: 10, borderTop: '1px solid var(--warm-border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   <div>
                     <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--warm-text)' }}>{t('settings.participantMode')}</div>

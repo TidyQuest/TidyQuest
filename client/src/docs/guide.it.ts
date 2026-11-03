@@ -68,7 +68,7 @@ export const GUIDE_IT: GuideSection[] = [
       ] },
       { h: 'Impostazioni per persona' },
       { ul: [
-        'Partecipa alle attività: disattivato per un genitore che si limita a gestire; non guadagnerà monete né comparirà nella Classifica.',
+        'Partecipa alle attività: disattivato per un genitore che si limita a gestire. Guadagna comunque monete per ogni attività svolta, ma compare nella Classifica solo in un periodo in cui ne ha svolta una, e non può avere obiettivi. Ogni admin può cambiarlo anche per sé.',
         'Vista compiti: Tutti (sceglie lui), Parte da I miei, o Solo i suoi (bloccata).',
         'Modalità bambino: pulsanti più grandi, meno schede, monete e obiettivo in primo piano.',
         'Tema e colori delle feste seguono la persona su ogni dispositivo (li può cambiare in Profilo).',
@@ -399,6 +399,9 @@ export const GUIDE_IT: GuideSection[] = [
         { q: 'Manca una scheda nella Home', a: [
           'Forse è nascosta: apri Personalizza (il pulsante in fondo alla Home) e tocca il suo 🚫 per mostrarla di nuovo, oppure usa Ripristina l’ordine predefinito.',
           'Alcune schede compaiono solo quando contengono qualcosa (I tuoi soliti, Forse hai dimenticato queste, Programmate, Completate oggi), e alcune sono solo per i genitori.',
+        ] },
+        { q: 'Un genitore non compare nella Classifica', a: [
+          'Un genitore con Partecipa alle attività disattivato compare nella Classifica solo in un periodo in cui ha svolto un’attività. Per tenerlo sempre, attiva l’opzione in Impostazioni → Membri della famiglia. Ogni genitore può cambiarla anche sulla propria scheda.',
         ] },
         { q: 'Una cosa alla volta non c’è, o manca una faccenda', a: [
           'Per genitori e membri è disattivata a meno che non sia scelta in Impostazioni → Membri della famiglia. I bambini ce l’hanno (un pulsante nella Home) a meno che un genitore non l’abbia disattivata lì. Può anche essere nascosta in Home → Personalizza, o disattivata in Impostazioni → Funzioni.',

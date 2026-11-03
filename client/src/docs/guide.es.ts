@@ -68,7 +68,7 @@ export const GUIDE_ES: GuideSection[] = [
       ] },
       { h: 'Ajustes por persona' },
       { ul: [
-        'Participa en tareas: desactivado para un padre o una madre que solo gestiona; no ganará monedas ni aparecerá en el Tablero.',
+        'Participa en tareas: desactivado para un padre o una madre que solo gestiona. Sigue ganando monedas por cada tarea que haga, pero solo aparece en el Tablero en un periodo en que hizo alguna, y no puede tener objetivos. Cada admin también puede cambiarlo para sí mismo.',
         'Vista de tareas: Todos (elige cada uno), Empieza en Mías o Solo las suyas (bloqueada).',
         'Modo niño: botones más grandes, menos tarjetas, monedas y objetivo a la vista.',
         'El tema y los colores de fiesta acompañan a la persona en todos sus dispositivos (puede cambiarlos en Perfil).',
@@ -399,6 +399,9 @@ export const GUIDE_ES: GuideSection[] = [
         { q: 'Falta una tarjeta en el inicio', a: [
           'Puede estar oculta: abre Personalizar (el botón al final del inicio) y pulsa su 🚫 para mostrarla otra vez, o usa Volver al orden por defecto.',
           'Algunas tarjetas solo aparecen cuando tienen algo (Lo de siempre, Quizá olvidaste estas, Programadas, Completadas hoy), y algunas son solo para padres.',
+        ] },
+        { q: 'Un padre o una madre no aparece en el Tablero', a: [
+          'Con Participa en tareas desactivado, un padre o una madre solo aparece en el Tablero en un periodo en que hizo una tarea. Para que siga ahí, actívalo en Ajustes → Miembros de la familia. Cada uno puede cambiarlo también en su propia tarjeta.',
         ] },
         { q: 'No aparece Una cosa cada vez, o falta una tarea', a: [
           'Para padres y miembros está desactivada salvo que se elija en Ajustes → Miembros de la familia. Los niños la tienen (un botón en el inicio) salvo que un padre la desactive ahí. También puede estar oculta en Inicio → Personalizar, o desactivada en Ajustes → Funciones.',

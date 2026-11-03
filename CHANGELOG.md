@@ -9,7 +9,14 @@ What changed in each release, in plain language, newest first. Releases up to v0
 
 ## Unreleased
 
+### Changed
+- A parent with *Participates in tasks* off now shows on the Board in any period when they did a chore, instead of
+  never. The switch's description says what it really does (they still earn coins), and the guide has a new
+  troubleshooting entry, *A parent is missing from the Board* (#152).
+
 ### Fixed
+- Each admin can now turn *Participates in tasks* on or off on their own card in Settings → Family Members. Before,
+  only another admin could, so a family with one admin had no way to change it (#152).
 - The table of contents in API.md links to its sections again, and now lists *Rate Limiting* and *Notes* too
   (#139).
 
