@@ -114,6 +114,7 @@ export const GUIDE_DE: GuideSection[] = [
         'Lege einen Raum auf der Seite Räume an; ein Raumtyp bringt vorgeschlagene Aufgaben mit, aus denen du wählen kannst.',
         'Zonen gruppieren Räume auf der Seite Räume (zum Beispiel „Obergeschoss“ oder „Eltern-Quests“).',
         'Die Gesundheit eines Raums ist der Durchschnitt seiner Aufgaben; der schlechteste Raum ist der, bei dem das Maskottchen um Hilfe bittet.',
+        'Der Balken einer Aufgabe wird erst rot, wenn sie fällig ist. Eine Aufgabe, die noch nicht erledigt werden kann (Frühe Erledigung aus), bleibt gelb.',
       ] },
     ],
   },

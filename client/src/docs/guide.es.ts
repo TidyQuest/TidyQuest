@@ -114,6 +114,7 @@ export const GUIDE_ES: GuideSection[] = [
         'Crea una habitación en la página Habitaciones; un tipo de habitación añade tareas sugeridas entre las que puedes elegir.',
         'Las zonas agrupan habitaciones en la página Habitaciones (por ejemplo "Planta de arriba" o "Misiones de los padres").',
         'La salud de una habitación es el promedio de sus tareas; la peor habitación es aquella con la que la mascota pide ayuda.',
+        'La barra de una tarea solo se pone roja cuando le toca. Una tarea que aún no se puede hacer (Completar antes desactivado) se queda en amarillo.',
       ] },
     ],
   },

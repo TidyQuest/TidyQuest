@@ -10,6 +10,8 @@ What changed in each release, in plain language, newest first. Releases up to v0
 ## Unreleased
 
 ### Changed
+- On a room's page, a chore that can't be done yet no longer turns red as it gets close: its bar stops at yellow and
+  turns red only once it's due. Chores with *Allow early completion* on, and anytime chores, keep their colours (#153).
 - A parent with *Participates in tasks* off now shows on the Board in any period when they did a chore, instead of
   never. The switch's description says what it really does (they still earn coins), and the guide has a new
   troubleshooting entry, *A parent is missing from the Board* (#152).

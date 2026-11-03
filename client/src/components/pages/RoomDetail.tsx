@@ -358,6 +358,9 @@ export function RoomDetail({ room, language, isAdmin, currentUserId, currentUser
     }, 500);
   };
 
+  // Done stays locked until it's due again (the same rule as in getDoneButtonState), so its bar shouldn't turn red yet
+  const notDueYet = (task: Task) => !task.onDemand && !task.allowEarlyCompletion && task.health > 0 && !!task.lastCompletedAt;
+
   // Determine if Done button should be disabled for a task
   function getDoneButtonState(task: Task): { disabled: boolean; label: string } {
     const claimed = claimedLabel(task.teamUp);
@@ -897,7 +900,7 @@ export function RoomDetail({ room, language, isAdmin, currentUserId, currentUser
                     </div>
                   </div>
                 </div>
-                <div className="room-task-health"><HealthBar value={animatedTask === task.id ? 100 : task.health} height={8} animate={animatedTask === task.id} /></div>
+                <div className="room-task-health"><HealthBar value={animatedTask === task.id ? 100 : task.health} height={8} animate={animatedTask === task.id} notDueYet={notDueYet(task)} /></div>
                 <div className="room-task-frequency" style={{ fontSize: 13, color: 'var(--warm-text-secondary)', fontWeight: 600 }}>
                   {task.onDemand
                     ? <span style={{ color: 'var(--warm-accent)', fontWeight: 700 }}>{t('roomDetail.onDemand')}</span>

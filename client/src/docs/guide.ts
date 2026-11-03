@@ -138,6 +138,7 @@ export const GUIDE_EN: GuideSection[] = [
         'Create a room on the Rooms page; a room type adds suggested chores you can pick from.',
         'Zones group rooms on the Rooms page (for example "Upstairs" or "Parents’ Quests").',
         'A room’s health is the average of its chores; the worst room is the one the mascot asks for help with.',
+        'A chore’s bar turns red only once it’s due. A chore that can’t be done yet (Allow early completion off) stops at yellow.',
       ] },
     ],
   },
