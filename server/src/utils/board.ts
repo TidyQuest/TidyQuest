@@ -53,11 +53,15 @@ interface Person {
   avatarPhotoUrl: string | null; coins: number; currentStreak: number;
 }
 
-function participants(): Person[] {
-  return db.prepare(
-    `SELECT id, displayName, avatarColor, avatarType, avatarPreset, avatarPhotoUrl, coins, currentStreak FROM users
-     WHERE role IN ('child', 'member') OR (role = 'admin' AND isParticipant = 1) ORDER BY displayName`
-  ).all() as Person[];
+/** Kids, members and participating admins, plus any other admin who did a chore in the period (#152). */
+function participants(earners: Set<number>): Person[] {
+  const rows = db.prepare(
+    `SELECT id, displayName, avatarColor, avatarType, avatarPreset, avatarPhotoUrl, coins, currentStreak, role, isParticipant FROM users
+     ORDER BY displayName`
+  ).all() as Array<Person & { role: string; isParticipant: number }>;
+  return rows
+    .filter((u) => u.role !== 'admin' || u.isParticipant === 1 || earners.has(u.id))
+    .map(({ role: _role, isParticipant: _isParticipant, ...p }) => p);
 }
 
 function coinsIn(range: Range): Map<number, { coins: number; chores: number }> {
@@ -171,18 +175,18 @@ function getSetting(key: string): string | null {
 export function familyGoal(now: Date = new Date()) {
   const target = Number(getSetting('familyGoalCoins')) || 0;
   if (target <= 0) return null;
-  const ids = new Set(participants().map((p) => p.id));
-  const week = { start: startOfLocalWeek(now), end: now };
+  const week = coinsIn({ start: startOfLocalWeek(now), end: now });
+  const ids = new Set(participants(new Set(week.keys())).map((p) => p.id));
   let total = 0;
-  for (const [id, v] of coinsIn(week)) if (ids.has(id)) total += v.coins;
+  for (const [id, v] of week) if (ids.has(id)) total += v.coins;
   return { target, prize: getSetting('familyGoalPrize') || '', total, reached: total >= target };
 }
 
 export function buildBoard(period: BoardPeriod, mode: BoardMode, now: Date = new Date()) {
   const ranges = boardRanges(period, now);
-  const people = participants();
-  const ids = new Set(people.map((p) => p.id));
   const current = coinsIn(ranges.current);
+  const people = participants(new Set(current.keys()));
+  const ids = new Set(people.map((p) => p.id));
   const compare = coinsIn(ranges.compare);
   const previous = coinsIn(ranges.previous);
   const targets = goalTargets(ranges.current);

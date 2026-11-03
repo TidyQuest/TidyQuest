@@ -9,7 +9,22 @@ What changed in each release, in plain language, newest first. Releases up to v0
 
 ## Unreleased
 
+### Changed
+- On a room's page, a chore that can't be done yet no longer turns red as it gets close: its bar stops at yellow and
+  turns red only once it's due. Chores with *Allow early completion* on, and anytime chores, keep their colours (#153).
+- A parent with *Participates in tasks* off now shows on the Board in any period when they did a chore, instead of
+  never. The switch's description says what it really does (they still earn coins), and the guide has a new
+  troubleshooting entry, *A parent is missing from the Board* (#152).
+
 ### Fixed
+- Editing a starter reward (like *Stay Up 30 Min*) no longer shows its description in French. The form now shows the
+  same text as the list, in your language. A starter reward whose description you changed also shows your text
+  instead of the built-in one. New installs save the starter descriptions in English (#150).
+- On screens wider than a tablet, buttons without a set size (like *Customise* at the bottom of Home, and *Reset to
+  default* and *Done* in it) had no padding and looked squished. They now have the same padding as on phones (#151).
+- The bug report form asks you to type your version instead of offering a list that stopped at v0.5.0 (#150).
+- Each admin can now turn *Participates in tasks* on or off on their own card in Settings → Family Members. Before,
+  only another admin could, so a family with one admin had no way to change it (#152).
 - The table of contents in API.md links to its sections again, and now lists *Rate Limiting* and *Notes* too
   (#139).
 

@@ -68,7 +68,7 @@ export const GUIDE_DE: GuideSection[] = [
       ] },
       { h: 'Einstellungen pro Person' },
       { ul: [
-        'Nimmt an Aufgaben teil: aus bei einem Elternteil, das nur verwaltet; es verdient dann keine Münzen und erscheint nicht auf dem Board.',
+        'Nimmt an Aufgaben teil: aus bei einem Elternteil, das nur verwaltet. Es verdient trotzdem Münzen für jede erledigte Aufgabe, erscheint aber nur in einem Zeitraum auf dem Board, in dem es eine erledigt hat, und kann keine Ziele haben. Jeder Admin kann das auch für sich selbst umstellen.',
         'Aufgabenansicht: Alle (die Person wählt selbst), Startet bei Meine oder Nur eigene (gesperrt).',
         'Kindermodus: größere Knöpfe, weniger Karten, Münzen und Ziel ganz vorn.',
         'Design und Feiertagsfarben folgen der Person auf jedes Gerät (sie kann sie im Profil ändern).',
@@ -114,6 +114,7 @@ export const GUIDE_DE: GuideSection[] = [
         'Lege einen Raum auf der Seite Räume an; ein Raumtyp bringt vorgeschlagene Aufgaben mit, aus denen du wählen kannst.',
         'Zonen gruppieren Räume auf der Seite Räume (zum Beispiel „Obergeschoss“ oder „Eltern-Quests“).',
         'Die Gesundheit eines Raums ist der Durchschnitt seiner Aufgaben; der schlechteste Raum ist der, bei dem das Maskottchen um Hilfe bittet.',
+        'Der Balken einer Aufgabe wird erst rot, wenn sie fällig ist. Eine Aufgabe, die noch nicht erledigt werden kann (Frühe Erledigung aus), bleibt gelb.',
       ] },
     ],
   },
@@ -399,6 +400,9 @@ export const GUIDE_DE: GuideSection[] = [
         { q: 'Eine Karte fehlt auf der Startseite', a: [
           'Sie ist vielleicht ausgeblendet: Öffne Anpassen (der Knopf unten auf der Startseite) und tippe auf ihr 🚫, um sie wieder zu zeigen, oder nutze Auf Standard zurücksetzen.',
           'Manche Karten erscheinen nur, wenn etwas darin steht (Deine Klassiker, Vielleicht vergessen, Geplant, Heute erledigt), und manche sind nur für Eltern.',
+        ] },
+        { q: 'Ein Elternteil fehlt auf dem Board', a: [
+          'Ein Elternteil, bei dem Nimmt an Aufgaben teil aus ist, erscheint nur in einem Zeitraum auf dem Board, in dem es eine Aufgabe erledigt hat. Damit es dort bleibt, schalte es unter Einstellungen → Familienmitglieder ein. Jedes Elternteil kann es auch auf seiner eigenen Karte umstellen.',
         ] },
         { q: 'Eins nach dem anderen fehlt, oder eine Aufgabe ist nicht dabei', a: [
           'Für Eltern und Mitglieder ist es aus, außer es ist unter Einstellungen → Familienmitglieder eingestellt. Kinder haben es (ein Knopf auf der Startseite), außer ein Elternteil hat es dort ausgeschaltet. Es kann auch unter Startseite → Anpassen ausgeblendet oder unter Einstellungen → Funktionen ausgeschaltet sein.',

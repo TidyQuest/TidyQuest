@@ -168,7 +168,7 @@
       "vacationSince": "En vacances depuis le",
       "vacationReturnDate": "Date de retour",
       "participantMode": "Participe aux tâches",
-      "participantDesc": "Gagne des pièces, apparaît dans le classement et les objectifs",
+      "participantDesc": "Toujours sur le Tableau et peut avoir des objectifs. Désactivé : n’apparaît sur le Tableau qu’après avoir fait une tâche.",
       "strictMode": "Mode strict",
       "strictModeDesc": "Demander l'approbation d'un parent admin quand un enfant marque une tâche comme faite.",
       "registrationEnabled": "Autoriser les nouvelles inscriptions",

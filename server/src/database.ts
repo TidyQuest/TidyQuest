@@ -468,15 +468,16 @@ export function initDatabase() {
     const insertReward = db.prepare(
       'INSERT INTO rewards (title, description, costCoins, isPreset, isActive) VALUES (?, ?, ?, 1, 1)'
     );
+    // In English like the rest of the stored data; the client shows them in each reader's language (#150)
     const defaults: Array<[string, string, number]> = [
-      ['Movie Night Pick', 'Choisir le film du soir en famille.', 40],
-      ['Ice Cream Treat', 'Une glace ou un dessert special.', 30],
-      ['Stay Up 30 Min', 'Se coucher 30 minutes plus tard.', 35],
-      ['Game Time Bonus', '30 minutes de jeu supplementaire.', 50],
-      ['Choose Dinner', 'Choisir le menu du diner.', 45],
-      ['Park Adventure', 'Sortie au parc en mode aventure.', 60],
-      ['No-Chore Pass', 'Une tache au choix sautee cette semaine.', 80],
-      ['Family Board Game', 'Choisir un jeu de societe pour la soiree.', 25],
+      ['Movie Night Pick', "Choose tonight's family movie.", 40],
+      ['Ice Cream Treat', 'Get an ice cream or special dessert.', 30],
+      ['Stay Up 30 Min', 'Go to bed 30 minutes later.', 35],
+      ['Game Time Bonus', 'Get 30 extra minutes of game time.', 50],
+      ['Choose Dinner', 'Pick what the family eats tonight.', 45],
+      ['Park Adventure', 'Special family park outing.', 60],
+      ['No-Chore Pass', 'Skip one chore this week.', 80],
+      ['Family Board Game', 'Pick the board game for family night.', 25],
     ];
     const seed = db.transaction(() => {
       defaults.forEach(([title, description, cost]) => insertReward.run(title, description, cost));

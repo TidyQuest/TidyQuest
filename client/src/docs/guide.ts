@@ -92,7 +92,7 @@ export const GUIDE_EN: GuideSection[] = [
       ] },
       { h: 'Per-person settings' },
       { ul: [
-        'Participates in tasks: off for a parent who only manages; they won’t earn coins or appear on the Board.',
+        'Participates in tasks: off for a parent who only manages. They still earn coins for any chore they do, but appear on the Board only in a period when they did one, and can’t have goals. Each admin can also switch it for themselves.',
         'Task view: All (they choose), Starts on Mine, or Only theirs (locked).',
         'Kid mode: bigger buttons, fewer cards, coins and goal up front.',
         'Theme and holiday colors follow the person to every device (they can change them in Profile).',
@@ -138,6 +138,7 @@ export const GUIDE_EN: GuideSection[] = [
         'Create a room on the Rooms page; a room type adds suggested chores you can pick from.',
         'Zones group rooms on the Rooms page (for example "Upstairs" or "Parents’ Quests").',
         'A room’s health is the average of its chores; the worst room is the one the mascot asks for help with.',
+        'A chore’s bar turns red only once it’s due. A chore that can’t be done yet (Allow early completion off) stops at yellow.',
       ] },
     ],
   },
@@ -423,6 +424,9 @@ export const GUIDE_EN: GuideSection[] = [
         { q: 'A card is missing from Home', a: [
           'It may be hidden: open Customise (the button at the bottom of Home) and tap its 🚫 to show it again, or use Reset to default.',
           'Some cards only show when they have something in them (Your usual, Maybe you forgot, Scheduled, Completed today), and some are for parents only.',
+        ] },
+        { q: 'A parent is missing from the Board', a: [
+          'A parent with Participates in tasks off shows on the Board only in a period when they did a chore. To keep them on it, turn the switch on in Settings → Family Members. Each parent can switch it on their own card too.',
         ] },
         { q: 'One thing at a time is missing, or a chore isn’t in it', a: [
           'For parents and members it’s off unless it’s set in Settings → Family Members. Kids get it (a button on Home) unless a parent turned it off there. It can also be hidden in Home → Customise, or switched off in Settings → Features.',

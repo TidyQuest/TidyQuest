@@ -3,7 +3,7 @@ import { createTestApp, createAdmin, createUser } from './setup';
 import { at as homeAt } from '../utils/clock';
 import type supertest from 'supertest';
 import type Database from 'better-sqlite3';
-import { boardRanges, buildBoard } from '../utils/board';
+import { boardRanges, buildBoard, familyGoal } from '../utils/board';
 
 let agent: supertest.Agent;
 let db: InstanceType<typeof Database>;
@@ -69,6 +69,17 @@ describe('Board ranking', () => {
     f.done(f.cylis, f.tasks.feed, at(9), 30);
     f.done(f.cecil, f.tasks.feed, at(13), 99);
     expect(buildBoard('lastWeek', 'coins', NOW()).people.map((p) => [p.displayName, p.points])).toEqual([['Cylis', 30], ['Cecil', 0]]);
+  });
+
+  it('lists a parent who does not take part only in periods where they did a chore (#152)', async () => {
+    const f = await family();
+    f.done(f.cecil, f.tasks.dishes, at(13), 20);
+    f.done(f.admin.user.id, f.tasks.feed, at(13), 30);
+    const names = (period: 'week' | 'lastWeek') => buildBoard(period, 'coins', NOW()).people.map((p) => p.displayName);
+    expect(names('week')).toContain(f.admin.user.displayName);
+    expect(names('lastWeek')).not.toContain(f.admin.user.displayName);
+    db.prepare("INSERT OR REPLACE INTO app_settings (key, value) VALUES ('familyGoalCoins', '100')").run();
+    expect(familyGoal(NOW())?.total).toBe(50);
   });
 });
 

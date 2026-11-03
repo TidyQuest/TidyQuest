@@ -168,7 +168,7 @@
       "vacationSince": "Im Urlaub seit",
       "vacationReturnDate": "Rückkehrdatum",
       "participantMode": "Nimmt an Aufgaben teil",
-      "participantDesc": "Verdient Münzen, erscheint in der Bestenliste und den Zielen",
+      "participantDesc": "Immer auf dem Board und kann Ziele haben. Aus: erscheint erst nach einer erledigten Aufgabe auf dem Board.",
       "strictMode": "Strenger Modus",
       "strictModeDesc": "Erfordert Admin-Freigabe, wenn ein Kind eine Aufgabe als erledigt markiert.",
       "registrationEnabled": "Neue Registrierungen erlauben",

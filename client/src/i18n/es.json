@@ -168,7 +168,7 @@
       "vacationSince": "De vacaciones desde",
       "vacationReturnDate": "Fecha de regreso",
       "participantMode": "Participa en tareas",
-      "participantDesc": "Gana monedas, aparece en la clasificación y objetivos",
+      "participantDesc": "Siempre en el Tablero y puede tener objetivos. Desactivado: solo aparece en el Tablero tras hacer una tarea.",
       "strictMode": "Modo estricto",
       "strictModeDesc": "Requiere validación de admin cuando un niño marca una tarea como completada.",
       "registrationEnabled": "Permitir nuevos registros",

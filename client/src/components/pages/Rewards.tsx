@@ -7,6 +7,7 @@ import type { RewardAvailability, RewardPot } from '../../hooks/useApi';
 import { formatCoins } from '../../utils/format';
 import { localeFor } from '../../utils/locale';
 import { byFeatured } from '../../utils/rewardRules';
+import { rewardDescText, rewardTitleText } from '../../utils/presetRewards';
 
 interface Reward {
   category?: string | null;
@@ -117,32 +118,9 @@ export function Rewards({ language, rewards, mine, userCoins, isAdmin, pendingRe
 
   const pendingReward = useMemo(() => rewards.find((r) => r.id === pendingRewardId) || null, [pendingRewardId, rewards]);
 
-  const presetKeyByTitle: Record<string, string> = {
-    'movie night pick': 'movie_night',
-    'ice cream treat': 'ice_cream',
-    'stay up 30 min': 'late_bedtime',
-    'game time bonus': 'game_bonus',
-    'choose dinner': 'choose_dinner',
-    'park adventure': 'park_adventure',
-    'no-chore pass': 'chore_pass',
-    'family board game': 'board_game',
-  };
-
-  const rewardTitleByName = (title: string): string => {
-    const k = presetKeyByTitle[title.toLowerCase()];
-    if (k) return t(`rewardsPreset.${k}.title`);
-    return title;
-  };
-
-  const rewardTitle = (r: Reward): string => {
-    return rewardTitleByName(r.title);
-  };
-
-  const rewardDesc = (r: Reward): string => {
-    const k = presetKeyByTitle[r.title.toLowerCase()];
-    if (k) return t(`rewardsPreset.${k}.desc`);
-    return r.description || t('rewards.noDescription');
-  };
+  const rewardTitleByName = (title: string): string => rewardTitleText(title, t);
+  const rewardTitle = (r: Reward): string => rewardTitleText(r.title, t);
+  const rewardDesc = (r: Reward): string => rewardDescText(r, t) || t('rewards.noDescription');
 
   const hasFeatured = rewards.some((r) => (r.sortOrder ?? 0) > 0);
   const sort = sortChoice || (hasFeatured ? 'featured' : 'priceLow');

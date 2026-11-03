@@ -68,7 +68,7 @@ export const GUIDE_NL: GuideSection[] = [
       ] },
       { h: 'Instellingen per persoon' },
       { ul: [
-        'Doet mee aan klusjes: uit voor een ouder die alleen beheert; die verdient geen munten en komt niet op het Scorebord.',
+        'Doet mee aan klusjes: uit voor een ouder die alleen beheert. Die verdient nog steeds munten voor elk klusje dat hij doet, maar komt alleen op het Scorebord in een periode waarin hij er een deed, en kan geen doelen hebben. Elke ouder kan het ook voor zichzelf omzetten.',
         'Klusjesweergave: Alle (ze kiezen zelf), Begint bij Mijn klusjes, of Alleen eigen (vergrendeld).',
         'Kindermodus: grotere knoppen, minder kaarten, munten en doel vooraan.',
         'Thema en feestdagkleuren volgen de persoon naar elk apparaat (ze kunnen die aanpassen in Profiel).',
@@ -114,6 +114,7 @@ export const GUIDE_NL: GuideSection[] = [
         'Maak een kamer aan op de pagina Kamers; een kamertype voegt voorgestelde klusjes toe waaruit je kunt kiezen.',
         'Zones groeperen kamers op de pagina Kamers (bijvoorbeeld "Boven" of "Ouderquests").',
         'De gezondheid van een kamer is het gemiddelde van de klusjes; de slechtste kamer is die waarvoor de mascotte om hulp vraagt.',
+        'De balk van een klusje wordt pas rood als het aan de beurt is. Een klusje dat nog niet kan (Vroegtijdig afronden toestaan uit) blijft geel.',
       ] },
     ],
   },
@@ -399,6 +400,9 @@ export const GUIDE_NL: GuideSection[] = [
         { q: 'Er ontbreekt een kaart op Home', a: [
           'Hij is misschien verborgen: open Aanpassen (de knop onderaan Home) en tik op zijn 🚫 om hem weer te tonen, of gebruik Standaardvolgorde terugzetten.',
           'Sommige kaarten verschijnen alleen als er iets in staat (Je vaste klusjes, Misschien vergeten, Ingepland, Vandaag gedaan), en sommige zijn alleen voor ouders.',
+        ] },
+        { q: 'Een ouder staat niet op het Scorebord', a: [
+          'Een ouder bij wie Doet mee aan klusjes uit staat, komt alleen op het Scorebord in een periode waarin hij een klusje deed. Zet het aan in Instellingen → Gezinsleden om hem er altijd op te houden. Elke ouder kan het ook op zijn eigen kaart omzetten.',
         ] },
         { q: 'Eén ding tegelijk ontbreekt, of een klusje staat er niet in', a: [
           'Voor ouders en leden staat het uit, tenzij het is ingesteld bij Instellingen → Gezinsleden. Kinderen hebben het (een knop op Home), tenzij een ouder het daar uitzette. Het kan ook verborgen zijn via Home → Aanpassen, of uitgezet bij Instellingen → Functies.',
