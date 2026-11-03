@@ -51,6 +51,10 @@ What changed in each release, in plain language, newest first. Releases up to v0
 - On a phone's home screen, the status bar takes the color of the theme you picked.
 
 
+### Fixed
+- On a phone, the × that closes the side menu no longer sits off the menu's edge: it has room and a bigger tap target,
+  and the desktop-only "collapse" button no longer shows there. Its label is translated (#155).
+
 ## v0.15.3 (2026-11-03)
 
 ### Changed

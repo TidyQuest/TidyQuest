@@ -331,7 +331,10 @@
       "tagline": "Fais évoluer ta maison",
       "achievements": "Succès",
       "tasks": "Tâches",
-      "insights": "Statistiques"
+      "insights": "Statistiques",
+      "closeMenu": "Fermer le menu",
+      "expandSidebar": "Déplier le menu",
+      "collapseSidebar": "Replier le menu"
     },
     "app": {
       "roomsConfigured": "pièces configurées",

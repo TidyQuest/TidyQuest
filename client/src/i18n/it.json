@@ -331,7 +331,10 @@
       "tagline": "Porta la tua casa al livello successivo",
       "achievements": "Obiettivi",
       "tasks": "Compiti",
-      "insights": "Statistiche"
+      "insights": "Statistiche",
+      "closeMenu": "Chiudi menu",
+      "expandSidebar": "Espandi la barra laterale",
+      "collapseSidebar": "Comprimi la barra laterale"
     },
     "app": {
       "roomsConfigured": "stanze configurate",

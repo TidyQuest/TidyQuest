@@ -1434,6 +1434,14 @@ html[data-theme='lava'] option {
     display: block !important;
   }
 
+  /* The menu's close button: a 44px tap target. Collapsing is a desktop thing, so its button hides on phones */
+  .sidebar .sidebar-close {
+    display: flex !important;
+  }
+  .sidebar .sidebar-collapse {
+    display: none !important;
+  }
+
   /* Show hamburger menu on mobile */
   .hamburger-menu {
     display: flex !important;

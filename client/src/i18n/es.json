@@ -331,7 +331,10 @@
       "tagline": "Sube de nivel tu casa",
       "achievements": "Logros",
       "tasks": "Tareas",
-      "insights": "Estadísticas"
+      "insights": "Estadísticas",
+      "closeMenu": "Cerrar menú",
+      "expandSidebar": "Expandir el menú lateral",
+      "collapseSidebar": "Contraer el menú lateral"
     },
     "app": {
       "roomsConfigured": "habitaciones configuradas",

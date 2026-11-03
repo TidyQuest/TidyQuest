@@ -331,7 +331,10 @@
       "tagline": "Maak van je huis een game!",
       "achievements": "Medailles",
       "tasks": "Klusjes",
-      "insights": "Inzichten"
+      "insights": "Inzichten",
+      "closeMenu": "Menu sluiten",
+      "expandSidebar": "Zijbalk uitklappen",
+      "collapseSidebar": "Zijbalk inklappen"
     },
     "app": {
       "roomsConfigured": "kamers ingesteld",

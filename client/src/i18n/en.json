@@ -331,7 +331,10 @@
       "tagline": "Level up your home",
       "achievements": "Achievements",
       "tasks": "Tasks",
-      "insights": "Insights"
+      "insights": "Insights",
+      "closeMenu": "Close menu",
+      "expandSidebar": "Expand sidebar",
+      "collapseSidebar": "Collapse sidebar"
     },
     "app": {
       "roomsConfigured": "rooms configured",

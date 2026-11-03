@@ -331,7 +331,10 @@
       "tagline": "Dein Zuhause aufleveln",
       "achievements": "Erfolge",
       "tasks": "Aufgaben",
-      "insights": "Auswertung"
+      "insights": "Auswertung",
+      "closeMenu": "Menü schließen",
+      "expandSidebar": "Seitenleiste ausklappen",
+      "collapseSidebar": "Seitenleiste einklappen"
     },
     "app": {
       "roomsConfigured": "Räume konfiguriert",
