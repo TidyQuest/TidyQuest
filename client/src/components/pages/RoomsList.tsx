@@ -140,9 +140,9 @@ export function RoomsList({ rooms, language, isAdmin, users, onSelectRoom, onOpe
     (a, b) => getRoomHealth(a.tasks as any) - getRoomHealth(b.tasks as any)
   );
 
+  // Step 2's suggested chores (the button that opens step 2 turns loadingTasks on)
   useEffect(() => {
     if (step === 2) {
-      setLoadingTasks(true);
       api.getDefaultTasks(selectedType).then((defaults) => {
         setTaskConfigs(defaults.map((t) => {
           const { value, unit } = daysToFreq(t.frequencyDays);
@@ -642,7 +642,7 @@ export function RoomsList({ rooms, language, isAdmin, users, onSelectRoom, onOpe
                 <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
                   <button className="tq-btn tq-btn-secondary tq-btn-md" onClick={closeModal} disabled={creatingRoom}
                     >{t('common.cancel')}</button>
-                  <button className="tq-btn tq-btn-primary tq-btn-md" onClick={() => setStep(2)} disabled={creatingRoom}
+                  <button className="tq-btn tq-btn-primary tq-btn-md" onClick={() => { setLoadingTasks(true); setStep(2); }} disabled={creatingRoom}
                     >{t('rooms.nextConfigure')}</button>
                 </div>
               </>

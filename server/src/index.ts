@@ -61,6 +61,8 @@ export function createApp() {
   // The biggest body is an import: 50 MB self-hosted, 5 MB in hosted mode (MAX_IMPORT_MB)
   const bodyMb = isHosted() ? limits().importMb : 50;
   app.use(express.json({ limit: `${bodyMb}mb` }));
+  // Express 5 leaves req.body undefined when nothing was sent; the routes expect {} as in Express 4
+  app.use((req, _res, next) => { req.body ??= {}; next(); });
 
   // Prevent browser caching of API responses
   app.use('/api', (_req, res, next) => {
@@ -119,8 +121,8 @@ export function createApp() {
   app.use('/api/teamups', teamupsRoutes);
   app.use('/api/mascot', mascotRoutes);
 
-  // 404 handler for unknown API routes
-  app.use('/api/*', (_req, res) => {
+  // 404 handler for unknown API routes (after every API router, so whatever reaches it is unknown)
+  app.use('/api', (_req, res) => {
     res.status(404).json({ error: 'API endpoint not found' });
   });
 
@@ -157,7 +159,8 @@ if (require.main === module || !process.env.VITEST) {
   // Serve static frontend in production
   const clientDist = path.join(__dirname, '..', '..', 'client', 'dist');
   app.use(express.static(clientDist));
-  app.get('*', (_req, res) => {
+  // Any other page is the app's (Express 5 names the wildcard; {…} makes it match "/" too)
+  app.get('/{*page}', (_req, res) => {
     res.sendFile(path.join(clientDist, 'index.html'));
   });
 

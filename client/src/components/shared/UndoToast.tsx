@@ -23,11 +23,12 @@ export function UndoToast({ undo, language, onClose, onRestored }: {
 }) {
   const { t } = useTranslation(language);
   const [busy, setBusy] = useState(false);
-  const [error, setError] = useState('');
+  // An error belongs to the undo it happened on, so a new toast starts without one
+  const [failed, setFailed] = useState<{ undo: UndoState; text: string } | null>(null);
+  const error = undo && failed?.undo === undo ? failed.text : '';
 
   useEffect(() => {
     if (!undo) return;
-    setError('');
     const timer = setTimeout(onClose, 8000);
     return () => clearTimeout(timer);
   }, [undo, onClose]);
@@ -42,7 +43,7 @@ export function UndoToast({ undo, language, onClose, onRestored }: {
       onClose();
       await onRestored();
     } catch (err) {
-      setError(err instanceof Error && 'body' in err ? ((err as { body?: { message?: string } }).body?.message ?? err.message) : t('common.error'));
+      setFailed({ undo, text: err instanceof Error && 'body' in err ? ((err as { body?: { message?: string } }).body?.message ?? err.message) : t('common.error') });
     } finally {
       setBusy(false);
     }

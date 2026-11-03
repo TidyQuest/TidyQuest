@@ -156,6 +156,10 @@ function AppContent() {
     return p;
   }, [leaderboardPeriod]);
 
+  const loadRewards = useCallback(() => api.getRewards()
+    .then((data) => setRewardsData(data))
+    .catch(() => setRewardsData({ rewards: [], mine: [] })), []);
+
   useEffect(() => {
     if (user) {
       loadDashboard();
@@ -217,15 +221,6 @@ function AppContent() {
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, [user]);
-
-  const loadRewards = useCallback(async () => {
-    try {
-      const data = await api.getRewards();
-      setRewardsData(data);
-    } catch {
-      setRewardsData({ rewards: [], mine: [] });
-    }
-  }, []);
 
   useEffect(() => {
     if (user) loadRewards();
