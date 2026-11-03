@@ -24,6 +24,8 @@ What changed in each release, in plain language, newest first. Releases up to v0
   shows it directly (its old link led to a "page not found").
 - Updated the tools used to build and test TidyQuest, for security fixes in them (Vite, Vitest, ESLint and
   others). None of them ship inside the app, so nothing changes in how it works.
+- The server runs on Express 5, the current version of the web framework it's built on (it was on Express 4),
+  so it keeps getting security fixes. Nothing changes in how the app works.
 
 ### Fixed
 - Building the Docker image no longer fails when one download of the database add-on (`better-sqlite3`) fails.

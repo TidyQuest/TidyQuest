@@ -1,7 +1,7 @@
-import { describe, it, expect, beforeAll } from 'vitest';
+import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import fs from 'fs';
 import path from 'path';
-import type { Express } from 'express';
+import express, { type Express } from 'express';
 import type supertest from 'supertest';
 import type Database from 'better-sqlite3';
 import { familyDir } from '../hosted/families';
@@ -134,18 +134,27 @@ function snapshot(f: Family): string {
   return JSON.stringify({ tables, files });
 }
 
-/** Each route the app answers (Express 4 keeps a router's mount path only as a regexp). */
+/** Where each router is mounted. Express 5 keeps no mount path on its layers, so note it as routers are
+ * added; createApp() mounts them all in beforeAll, after this runs. */
+const mounts = new WeakMap<object, string>();
+const routerUse = express.Router.prototype.use;
+express.Router.prototype.use = function (this: unknown, ...args: any[]) {
+  if (typeof args[0] === 'string') for (const fn of args.slice(1).flat()) if (fn) mounts.set(fn, args[0] === '/' ? '' : args[0]);
+  return routerUse.apply(this, args as any);
+};
+afterAll(() => { express.Router.prototype.use = routerUse; });
+
+/** Each route the app answers. */
 function routesOf(server: Express): { method: string; path: string }[] {
   const out: { method: string; path: string }[] = [];
-  const mountOf = (re: RegExp) => re.source.replace('\\/?(?=\\/|$)', '').replace(/\\\//g, '/').replace(/^\^/, '');
   const walk = (stack: any[], prefix: string) => {
     for (const layer of stack) {
       if (layer.route) {
         for (const method of Object.keys(layer.route.methods)) out.push({ method, path: (prefix + layer.route.path).replace(/(.)\/$/, '$1') });
-      } else if (layer.name === 'router') walk(layer.handle.stack, prefix + mountOf(layer.regexp));
+      } else if (layer.name === 'router') walk(layer.handle.stack, prefix + (mounts.get(layer.handle) ?? ''));
     }
   };
-  walk((server as any)._router.stack, '');
+  walk((server as any).router.stack, '');
   return out;
 }
 
@@ -219,6 +228,8 @@ describe("Hosted mode: the isolation sweep (one family never reaches another's d
     const all = routes();
     expect(all.length).toBeGreaterThan(150);
     expect(all.filter((r) => r.method === 'get').length).toBeGreaterThan(45);
+    // With its router's mount path in front: a bare "/:id" would answer 404 and the sweep would prove nothing
+    expect(all.filter((r) => !r.path.startsWith('/api/'))).toEqual([]);
   });
 
   it("shows none of B's data to A's parent, A's kid or someone signed out, on any GET route", async () => {
