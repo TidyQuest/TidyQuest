@@ -25,6 +25,13 @@ What changed in each release, in plain language, newest first. Releases up to v0
 - Updated the tools used to build and test TidyQuest, for security fixes in them (Vite, Vitest, ESLint and
   others). None of them ship inside the app, so nothing changes in how it works.
 
+### Fixed
+- Building the Docker image no longer fails when one download of the database add-on (`better-sqlite3`) fails.
+  The server's packages are downloaded once per platform instead of twice. If the ready-made add-on still can't be
+  downloaded, the build compiles it instead. The finished image is the same and has no build tools in it. Pull
+  requests that change the build files now build the image too, without publishing it. Building it yourself
+  (`docker compose build`) no longer copies in `node_modules`, `dist` or `data` from your computer.
+
 ## v0.15.1 (2026-11-02)
 
 ### Fixed
