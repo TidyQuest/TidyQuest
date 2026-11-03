@@ -12,6 +12,7 @@ export const GUIDE_ES: GuideSection[] = [
       { ol: [
         'Instálalo (mira "Instalación y actualización"), ábrelo en un navegador y regístrate. La primera persona que se registra pasa a ser padre o madre (admin).',
         'Añade a todos en Ajustes → Miembros de la familia: un nombre, un usuario y un rol (mira "Personas y roles"). Ahí también eliges la Vista de tareas y el Modo niño de cada peque.',
+        'Pon TidyQuest en el móvil o la tableta de cada uno para que se abra como una app (mira "En tu móvil").',
         'Crea tus habitaciones en la página Habitaciones. Un tipo de habitación añade tareas sugeridas que puedes desmarcar. Dale una habitación a una persona ("asignada a") para que sea suya, como un dormitorio.',
         'Añade o ajusta las tareas de cada habitación: cada cuánto, esfuerzo o monedas, quién puede hacerla y un icono (mira "Tareas").',
         'Fija el valor de las monedas en Ajustes → Monedas por esfuerzo y después crea el Catálogo de recompensas con precios que los niños puedan alcanzar (mira "Monedas, recompensas y objetivos").',
@@ -22,6 +23,37 @@ export const GUIDE_ES: GuideSection[] = [
         'Descarga una copia de seguridad en Ajustes → Datos y privacidad cuando todo esté listo, y de vez en cuando después.',
       ] },
       { tip: 'Empieza poco a poco: unas pocas tareas por peque y algunas recompensas baratas que puedan ganar la primera semana. Puedes añadir más cuando quieras.' },
+    ],
+  },
+  {
+    id: 'phone',
+    icon: '📱',
+    title: 'En tu móvil',
+    blocks: [
+      { p: 'TidyQuest es una app web: no hay que bajar nada de una tienda de apps. Añádela una vez a la pantalla de inicio y se abre como cualquier otra app, a pantalla completa y con su propio icono. Hazlo en cada móvil y tableta de la familia, también en los de los niños.' },
+      { h: 'iPhone y iPad' },
+      { ol: [
+        'Abre tu dirección de TidyQuest en Safari: app.tidyquest.org, o la dirección de tu servidor de casa.',
+        'Toca Compartir (un cuadrado con una flecha hacia arriba). ¿No lo ves? Toca primero ⋯ junto a la barra de direcciones.',
+        'Desliza hacia abajo y toca Añadir a pantalla de inicio.',
+        'Si hay un interruptor para abrirla como app web, déjalo activado. Toca Añadir.',
+        'Abre TidyQuest desde la pantalla de inicio e inicia sesión otra vez: guarda su propia sesión, aparte de la de Safari.',
+      ] },
+      { tip: 'Chrome y Edge en el iPhone también pueden: toca Compartir en la barra de direcciones y luego Añadir a pantalla de inicio.' },
+      { h: 'Android' },
+      { ol: [
+        'Abre tu dirección de TidyQuest en Chrome: app.tidyquest.org, o la dirección de tu servidor de casa.',
+        'Toca ⋮ arriba a la derecha.',
+        'Toca Añadir a pantalla de inicio o Instalar aplicación (el nombre depende de la versión de Chrome) y luego Instalar o Añadir.',
+        'Abre TidyQuest desde la pantalla de inicio: sigues con la sesión iniciada.',
+      ] },
+      { tip: 'Samsung Internet: toca ☰ abajo y luego Añadir página a → Pantalla de inicio.' },
+      { h: 'Conviene saber' },
+      { ul: [
+        'Las actualizaciones llegan solas: siempre abre la versión más nueva del servidor. Si tras una actualización parece antigua, ciérrala del todo y ábrela de nuevo.',
+        'Quítala como cualquier otra app: mantén pulsado el icono. Los datos de la familia se quedan en el servidor.',
+        'Los mensajes sobre tareas y recompensas llegan por ntfy, Telegram o Home Assistant (mira "Notificaciones"), no desde la app de la pantalla de inicio.',
+      ] },
     ],
   },
   {
@@ -513,6 +545,20 @@ export const GUIDE_ES: GuideSection[] = [
         { q: 'Un escudo no salvó la racha', a: [
           'Cada día perdido necesita su propio escudo. Con menos escudos que días perdidos, no se usa ninguno: la racha vuelve a empezar y los escudos se guardan.',
           'Los escudos no se usan durante el modo vacaciones; las vacaciones ya protegen la racha.',
+        ] },
+        { q: 'No aparece "Añadir a pantalla de inicio" en un iPhone', a: [
+          'Abre la dirección en el propio Safari. Un enlace tocado en Mail, Mensajes o una app de chat puede abrirse dentro de esa app, que no puede añadirla: toca antes la brújula de Safari (o "Abrir en Safari").',
+          '¿Sigue sin estar en la lista de Compartir? Desliza hasta el final, toca Editar acciones y añádelo.',
+        ] },
+        { q: 'En Android se abre en una pestaña del navegador, con barra de direcciones', a: [
+          'Chrome solo la instala como app desde una dirección segura (https://). Con una dirección http:// normal, como en muchos servidores de casa, obtienes un acceso directo: funciona igual, con la barra de Chrome arriba. Mira "Instalación y actualización".',
+          '¿La añadiste a la pantalla de inicio hace tiempo? Quita el icono y añádela de nuevo para tener la app a pantalla completa.',
+        ] },
+        { q: 'La app de la pantalla de inicio me pide iniciar sesión otra vez', a: [
+          'En iPhone o iPad es normal la primera vez: guarda su propia sesión, aparte de la de Safari. Inicia sesión una vez y se queda así.',
+        ] },
+        { q: 'Tras una actualización, la app de la pantalla de inicio se ve igual', a: [
+          'Ciérrala del todo (deslízala fuera en el selector de apps) y ábrela otra vez: al arrancar carga la versión más nueva.',
         ] },
         { q: 'Alguien no puede iniciar sesión', a: [
           'Demasiadas contraseñas incorrectas bloquean los inicios de sesión hasta 15 minutos: 10 en una cuenta o 20 desde un dispositivo. Espera e inténtalo de nuevo; una contraseña correcta borra el recuento de la cuenta.',

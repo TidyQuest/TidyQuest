@@ -245,6 +245,12 @@ function AppContent() {
     if (season) html.style.setProperty('--season-pattern', season.pattern); else html.style.removeProperty('--season-pattern');
   }, [season, seasonColors]);
 
+  // Added to a phone's home screen, the status bar takes this color: keep it the page's own background
+  useEffect(() => {
+    const bg = getComputedStyle(document.documentElement).getPropertyValue('--warm-bg').trim();
+    if (bg) document.querySelector('meta[name="theme-color"]')?.setAttribute('content', bg);
+  }, [theme, seasonColors]);
+
   useEffect(() => {
     document.title = 'TidyQuest';
   }, []);

@@ -32,6 +32,11 @@ What changed in each release, in plain language, newest first. Releases up to v0
   operator History too.
 - `RELEASING.md` has a section on releasing to the hosted service: new settings, a quiet hour, a snapshot first, and
   what to check after.
+- TidyQuest can go on a phone's home screen like a real app: it opens full screen with its own icon, on iPhone,
+  iPad and Android. On Android this needs a secure (https://) address; over plain http:// it's a browser shortcut.
+  Added it to a home screen before? Remove the icon and add it again.
+- A new guide section, *On your phone* (Settings → Guide & help), with the steps for iPhone, iPad and Android, a
+  step for it in *Getting started*, and troubleshooting entries for when it doesn't work.
 
 ### Changed
 - Every photo is redrawn in the browser before it uploads, so it no longer carries where and with what it was taken.
@@ -43,6 +48,8 @@ What changed in each release, in plain language, newest first. Releases up to v0
   still picks which kinds they get in Profile.
 - On tidyquest.org, Settings → Data & Privacy no longer says "All data stays on your server": it links to the privacy
   policy instead.
+- On a phone's home screen, the status bar takes the color of the theme you picked.
+
 
 ## v0.15.3 (2026-11-03)
 

@@ -12,6 +12,7 @@ export const GUIDE_FR: GuideSection[] = [
       { ol: [
         'Installe l’appli (voir « Installation et mises à jour »), ouvre-la dans un navigateur et inscris-toi. La première personne inscrite devient parent (admin).',
         'Ajoute tout le monde dans Paramètres → Membres de la famille : un nom, un identifiant et un rôle (voir « Personnes et rôles »). Règle aussi là l’Affichage des tâches et le Mode enfant de chaque enfant.',
+        'Mets TidyQuest sur le téléphone ou la tablette de chacun, pour qu’il s’ouvre comme une app (voir « Sur ton téléphone »).',
         'Crée tes pièces sur la page Pièces. Un type de pièce ajoute des tâches suggérées que tu peux décocher. Attribue une pièce à une seule personne pour qu’elle soit la sienne, comme une chambre.',
         'Ajoute ou ajuste les tâches de chaque pièce : fréquence, effort ou pièces, qui peut la faire, et une icône (voir « Tâches »).',
         'Fixe la valeur des pièces dans Paramètres → Pièces par effort, puis construis le Catalogue des récompenses avec des prix que les enfants peuvent atteindre (voir « Pièces, récompenses et objectifs »).',
@@ -22,6 +23,37 @@ export const GUIDE_FR: GuideSection[] = [
         'Télécharge une sauvegarde dans Paramètres → Données et confidentialité une fois que tout est en place, puis de temps en temps.',
       ] },
       { tip: 'Commence petit : quelques tâches par enfant et quelques récompenses bon marché à gagner dès la première semaine. Tu pourras en ajouter à tout moment.' },
+    ],
+  },
+  {
+    id: 'phone',
+    icon: '📱',
+    title: 'Sur ton téléphone',
+    blocks: [
+      { p: 'TidyQuest est une application web : rien à télécharger dans un store. Ajoute-la une fois à l’écran d’accueil et elle s’ouvre comme n’importe quelle app, en plein écran avec sa propre icône. Fais-le sur chaque téléphone et tablette de la famille, ceux des enfants aussi.' },
+      { h: 'iPhone et iPad' },
+      { ol: [
+        'Ouvre ton adresse TidyQuest dans Safari : app.tidyquest.org, ou l’adresse de ton serveur à la maison.',
+        'Touche Partager (un carré avec une flèche vers le haut). Tu ne le vois pas ? Touche d’abord ⋯ à côté de la barre d’adresse.',
+        'Fais défiler vers le bas et touche Sur l’écran d’accueil.',
+        'S’il y a un interrupteur pour l’ouvrir comme app web, laisse-le activé. Touche Ajouter.',
+        'Ouvre TidyQuest depuis l’écran d’accueil et connecte-toi encore une fois : l’app garde sa propre connexion, séparée de celle de Safari.',
+      ] },
+      { tip: 'Chrome et Edge sur iPhone savent le faire aussi : touche Partager dans la barre d’adresse, puis Sur l’écran d’accueil.' },
+      { h: 'Android' },
+      { ol: [
+        'Ouvre ton adresse TidyQuest dans Chrome : app.tidyquest.org, ou l’adresse de ton serveur à la maison.',
+        'Touche ⋮ en haut à droite.',
+        'Touche Ajouter à l’écran d’accueil ou Installer l’application (le nom dépend de la version de Chrome), puis Installer ou Ajouter.',
+        'Ouvre TidyQuest depuis l’écran d’accueil : tu es toujours connecté.',
+      ] },
+      { tip: 'Samsung Internet : touche ☰ en bas, puis Ajouter la page à → Écran d’accueil.' },
+      { h: 'Bon à savoir' },
+      { ul: [
+        'Les mises à jour arrivent toutes seules : l’app ouvre à chaque fois la dernière version du serveur. Si elle n’a pas l’air à jour après une mise à jour, ferme-la complètement et rouvre-la.',
+        'Supprime-la comme n’importe quelle app : appui long sur l’icône. Les données de la famille restent sur le serveur.',
+        'Les messages sur les tâches et les récompenses passent par ntfy, Telegram ou Home Assistant (voir « Notifications »), pas par l’app de l’écran d’accueil.',
+      ] },
     ],
   },
   {
@@ -513,6 +545,20 @@ export const GUIDE_FR: GuideSection[] = [
         { q: 'Un bouclier n’a pas sauvé la série', a: [
           'Chaque jour manqué demande son propre bouclier. Avec moins de boucliers que de jours manqués, aucun n’est utilisé : la série recommence et les boucliers sont gardés.',
           'Les boucliers ne sont pas utilisés pendant le mode vacances ; les vacances protègent déjà la série.',
+        ] },
+        { q: 'Pas de « Sur l’écran d’accueil » sur un iPhone', a: [
+          'Ouvre l’adresse dans Safari lui-même. Un lien touché dans Mail, Messages ou une app de discussion peut s’ouvrir dans cette app, qui ne sait pas l’ajouter : touche d’abord la boussole de Safari (ou « Ouvrir dans Safari »).',
+          'Toujours pas dans la liste Partager ? Fais défiler jusqu’en bas, touche Modifier les actions et ajoute-le.',
+        ] },
+        { q: 'Sur Android, elle s’ouvre dans un onglet du navigateur, avec une barre d’adresse', a: [
+          'Chrome l’installe comme app seulement depuis une adresse sécurisée (https://). Avec une simple adresse http://, comme sur beaucoup de serveurs à la maison, tu obtiens un raccourci : il marche pareil, avec la barre de Chrome en haut. Voir « Installation et mises à jour ».',
+          'Tu l’as ajoutée à l’écran d’accueil il y a un moment ? Supprime l’icône et ajoute-la de nouveau pour avoir l’app en plein écran.',
+        ] },
+        { q: 'L’app de l’écran d’accueil me demande de me reconnecter', a: [
+          'Sur iPhone ou iPad, c’est normal la première fois : elle garde sa propre connexion, séparée de celle de Safari. Connecte-toi une fois et elle reste connectée.',
+        ] },
+        { q: 'Après une mise à jour, l’app de l’écran d’accueil n’a pas changé', a: [
+          'Ferme-la complètement (balaie-la dans le sélecteur d’apps) et rouvre-la : elle charge la dernière version au démarrage.',
         ] },
         { q: 'Quelqu’un ne peut pas se connecter', a: [
           'Trop de mots de passe erronés bloquent les connexions jusqu’à 15 minutes : 10 pour un compte, ou 20 depuis un appareil. Attends et réessaie ; un bon mot de passe remet à zéro le compteur du compte.',
