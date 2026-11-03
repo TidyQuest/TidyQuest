@@ -37,6 +37,11 @@ What changed in each release, in plain language, newest first. Releases up to v0
   Added it to a home screen before? Remove the icon and add it again.
 - A new guide section, *On your phone* (Settings → Guide & help), with the steps for iPhone, iPad and Android, a
   step for it in *Getting started*, and troubleshooting entries for when it doesn't work.
+- 32 more icons for chores: dishwasher, grill, coffee maker, wiping the table, bins to the curb, boxes, baseboards,
+  ceiling fan, stairs, front door, a 10-minute tidy, gutters, water heater, pressure washer, paint, fireplace,
+  thermostat, hedge trimming, leaf blower, vegetable garden, chickens, bird, small pet, reptile, horse, baby,
+  medicine, music practice, sports, bath time, morning routine and screen time. The baby, medicine, music, sports and
+  bath icons are in a new *Family* group. A new chore's name suggests them in all six languages.
 
 ### Changed
 - Every photo is redrawn in the browser before it uploads, so it no longer carries where and with what it was taken.
