@@ -14,17 +14,19 @@ Authorization: Bearer <your-jwt-token>
 
 ## 📑 Table of Contents
 
-- [Authentication](#authentication)
-- [Rooms](#rooms)
-- [Tasks](#tasks)
-- [Dashboard](#dashboard)
-- [Leaderboard](#leaderboard)
-- [History](#history)
-- [Users](#users)
-- [Rewards](#rewards)
-- [Achievements](#achievements)
-- [Data Export/Import](#data-exportimport)
-- [Error Responses](#error-responses)
+- [Authentication](#-authentication)
+- [Rooms](#-rooms)
+- [Tasks](#-tasks)
+- [Dashboard](#-dashboard)
+- [Leaderboard](#-leaderboard)
+- [History](#-history)
+- [Users](#-users)
+- [Rewards](#-rewards)
+- [Achievements](#-achievements)
+- [Data Export/Import](#-data-exportimport)
+- [Error Responses](#-error-responses)
+- [Rate Limiting](#-rate-limiting)
+- [Notes](#-notes)
 
 ---
 
