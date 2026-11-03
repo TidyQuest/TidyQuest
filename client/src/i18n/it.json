@@ -331,7 +331,10 @@
       "tagline": "Porta la tua casa al livello successivo",
       "achievements": "Obiettivi",
       "tasks": "Compiti",
-      "insights": "Statistiche"
+      "insights": "Statistiche",
+      "closeMenu": "Chiudi menu",
+      "expandSidebar": "Espandi la barra laterale",
+      "collapseSidebar": "Comprimi la barra laterale"
     },
     "app": {
       "roomsConfigured": "stanze configurate",
@@ -907,7 +910,39 @@
       "star": "Stella",
       "streak": "Serie",
       "medal": "Medaglia",
-      "heart": "Gentilezza"
+      "heart": "Gentilezza",
+      "dishwasher": "Lavastoviglie",
+      "grill": "Barbecue",
+      "coffee": "Macchina del caffè",
+      "wipetable": "Pulire il tavolo",
+      "wheeliebin": "Bidoni in strada",
+      "boxes": "Scatole e cartone",
+      "baseboard": "Battiscopa",
+      "ceilingfan": "Ventilatore a soffitto",
+      "stairs": "Scale",
+      "door": "Porta d’ingresso",
+      "timer": "Riordino di 10 minuti",
+      "gutter": "Grondaie",
+      "waterheater": "Scaldabagno",
+      "pressurewasher": "Idropulitrice",
+      "paint": "Pittura",
+      "fireplace": "Camino",
+      "thermostat": "Termostato",
+      "hedge": "Potare la siepe",
+      "leafblower": "Soffiatore per foglie",
+      "garden": "Orto",
+      "chickens": "Galline",
+      "birdcage": "Uccellino",
+      "smallpet": "Animaletto",
+      "reptile": "Rettile",
+      "horse": "Cavallo",
+      "baby": "Neonato",
+      "medicine": "Medicine",
+      "music": "Musica",
+      "sports": "Sport",
+      "bath": "Ora del bagnetto",
+      "morning": "Routine del mattino",
+      "screentime": "Tempo davanti allo schermo"
     },
     "search": {
       "button": "Cerca",
@@ -1649,7 +1684,8 @@
       "errands": "Commissioni e soldi",
       "school": "Scuola e routine",
       "work": "Lavoro",
-      "wins": "Vittorie e extra"
+      "wins": "Vittorie e extra",
+      "family": "Famiglia"
     },
     "iconPicker": {
       "title": "Scegli un'icona",

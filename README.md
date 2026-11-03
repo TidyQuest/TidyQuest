@@ -25,7 +25,7 @@ TidyQuest turns boring chores into quests:
 - **🎖️ Achievements**: Unlock badges for milestones (100 tasks, 30-day streak, etc.)
 - **📅 Calendar View**: See upcoming due dates at a glance
 - **🌍 Multilingual**: English, French, German, Spanish, Italian
-- **📱 Notifications**: Optional reminders via Telegram or ntfy
+- **📱 Notifications**: Optional reminders via Telegram, ntfy or Home Assistant
 
 Perfect for families who want to:
 - Make chores fun for kids
@@ -165,7 +165,7 @@ On first launch, the database is empty. Create an admin account via the **Regist
 - 👥 **User Management**: Create family members (admin/member/child roles)
 - 📝 **Task CRUD**: Create, edit, delete tasks with custom frequencies (1-365 days)
 - 🎁 **Reward System**: Approve/reject reward requests, manage and customize catalog
-- ⚙️ **Global Settings**: Configure coins-per-effort, notifications (Telegram or ntfy)
+- ⚙️ **Global Settings**: Configure coins-per-effort, notifications (Telegram, ntfy or Home Assistant)
 - 🏖️ **Vacation Mode**: Pause task health decay globally or per member, with individual return dates
 - 📤 **Backup/Restore**: Export full database as JSON
 - 👤 **Task Assignment**: Assign tasks to specific users with three modes:
@@ -197,7 +197,7 @@ On first launch, the database is empty. Create an admin account via the **Regist
 | **Routing** | React Router v7 |
 | **Styling** | Custom design system with CSS custom properties |
 
-**Zero external dependencies** for core functionality. Optional Telegram or ntfy integration for notifications.
+**Zero external dependencies** for core functionality. Optional Telegram, ntfy or Home Assistant integration for notifications.
 
 ---
 
@@ -270,7 +270,9 @@ whether the mail server accepted the login.
 
 ### Notifications (Optional)
 
-TidyQuest supports two notification providers (configure in Settings, admin only):
+TidyQuest supports three notification providers (configure in Settings → General → Notifications, admin only).
+Each can be a family channel everyone gets, and each person can also get their own (ntfy topic, Telegram chat or
+Home Assistant phone) under *Who gets what*.
 
 **Telegram**
 1. Create a Telegram bot via [@BotFather](https://t.me/botfather)
@@ -281,6 +283,28 @@ TidyQuest supports two notification providers (configure in Settings, admin only
 1. Use [ntfy.sh](https://ntfy.sh) or your own ntfy server
 2. Enter the server URL and topic in Settings
 3. Subscribe to the topic on your phone
+
+**Home Assistant** (home servers only, not on tidyquest.org)
+
+Messages go to phones through the Home Assistant Companion app.
+1. In Home Assistant, open your profile (bottom left) → **Security** → **Long-lived access tokens** → **Create token**,
+   and copy it (it's shown only once).
+2. In TidyQuest's Home Assistant box, enter the **Home Assistant URL** as the TidyQuest server reaches it, e.g.
+   `http://homeassistant.local:8123` or `http://192.168.1.20:8123` (inside Docker, `.local` names often don't
+   resolve: use the IP address), and paste the token.
+3. Optional: a **family notify service** for messages everyone gets, e.g. `notify.family` (a
+   [notify group](https://www.home-assistant.io/integrations/group/#notify-groups) you made in Home Assistant). Save.
+4. Under **Who gets what**, give each person their phone's service, e.g. `notify.mobile_app_alexs_phone`. Home
+   Assistant lists them under **Developer tools → Actions** (type `notify.`); a phone appears there once the
+   Companion app is signed in on it. The `notify.` prefix is optional; only lowercase letters, numbers and
+   underscores are allowed.
+5. Tap **Send test notification** next to that person. If it fails, the message says why: "Could not reach Home
+   Assistant" (wrong URL or not reachable from the server), "returned 401" (wrong or deleted token), "returned 400"
+   (no notify service by that name). The *Notification log* shows every send and any error.
+
+TidyQuest calls `POST <url>/api/services/notify/<service>` with `{"title": "TidyQuest", "message": ...}`. This is
+separate from the [Home Assistant integration](#-home-assistant-integration) below, which shows chores as sensors in
+Home Assistant.
 
 Notification types:
 - 🕐 **Daily Due Tasks**: Sent at configured time (default 09:00)

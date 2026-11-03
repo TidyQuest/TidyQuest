@@ -331,7 +331,10 @@
       "tagline": "Level up your home",
       "achievements": "Achievements",
       "tasks": "Tasks",
-      "insights": "Insights"
+      "insights": "Insights",
+      "closeMenu": "Close menu",
+      "expandSidebar": "Expand sidebar",
+      "collapseSidebar": "Collapse sidebar"
     },
     "app": {
       "roomsConfigured": "rooms configured",
@@ -907,7 +910,39 @@
       "star": "Star",
       "streak": "Streak",
       "medal": "Medal",
-      "heart": "Kindness"
+      "heart": "Kindness",
+      "dishwasher": "Dishwasher",
+      "grill": "Grill & BBQ",
+      "coffee": "Coffee maker",
+      "wipetable": "Wipe the table",
+      "wheeliebin": "Bins to the curb",
+      "boxes": "Boxes & cardboard",
+      "baseboard": "Baseboards",
+      "ceilingfan": "Ceiling fan",
+      "stairs": "Stairs",
+      "door": "Front door",
+      "timer": "10-minute tidy",
+      "gutter": "Gutters",
+      "waterheater": "Water heater",
+      "pressurewasher": "Pressure washer",
+      "paint": "Paint",
+      "fireplace": "Fireplace",
+      "thermostat": "Thermostat",
+      "hedge": "Hedge trimming",
+      "leafblower": "Leaf blower",
+      "garden": "Vegetable garden",
+      "chickens": "Chickens",
+      "birdcage": "Bird",
+      "smallpet": "Small pet",
+      "reptile": "Reptile",
+      "horse": "Horse",
+      "baby": "Baby",
+      "medicine": "Medicine",
+      "music": "Music practice",
+      "sports": "Sports & exercise",
+      "bath": "Bath time",
+      "morning": "Morning routine",
+      "screentime": "Screen time"
     },
     "search": {
       "button": "Search",
@@ -1649,7 +1684,8 @@
       "errands": "Errands & money",
       "school": "School & routines",
       "work": "Work",
-      "wins": "Wins & extras"
+      "wins": "Wins & extras",
+      "family": "Family"
     },
     "iconPicker": {
       "title": "Choose an icon",

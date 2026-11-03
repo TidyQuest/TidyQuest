@@ -331,7 +331,10 @@
       "tagline": "Dein Zuhause aufleveln",
       "achievements": "Erfolge",
       "tasks": "Aufgaben",
-      "insights": "Auswertung"
+      "insights": "Auswertung",
+      "closeMenu": "Menü schließen",
+      "expandSidebar": "Seitenleiste ausklappen",
+      "collapseSidebar": "Seitenleiste einklappen"
     },
     "app": {
       "roomsConfigured": "Räume konfiguriert",
@@ -907,7 +910,39 @@
       "star": "Stern",
       "streak": "Serie",
       "medal": "Medaille",
-      "heart": "Freundlichkeit"
+      "heart": "Freundlichkeit",
+      "dishwasher": "Geschirrspüler",
+      "grill": "Grill",
+      "coffee": "Kaffeemaschine",
+      "wipetable": "Tisch abwischen",
+      "wheeliebin": "Tonnen an die Straße",
+      "boxes": "Kartons",
+      "baseboard": "Fußleisten",
+      "ceilingfan": "Deckenventilator",
+      "stairs": "Treppe",
+      "door": "Haustür",
+      "timer": "10-Minuten-Aufräumen",
+      "gutter": "Dachrinne",
+      "waterheater": "Warmwasserspeicher",
+      "pressurewasher": "Hochdruckreiniger",
+      "paint": "Streichen",
+      "fireplace": "Kamin",
+      "thermostat": "Thermostat",
+      "hedge": "Hecke schneiden",
+      "leafblower": "Laubbläser",
+      "garden": "Gemüsebeet",
+      "chickens": "Hühner",
+      "birdcage": "Vogel",
+      "smallpet": "Kleintier",
+      "reptile": "Reptil",
+      "horse": "Pferd",
+      "baby": "Baby",
+      "medicine": "Medikamente",
+      "music": "Musik üben",
+      "sports": "Sport",
+      "bath": "Badezeit",
+      "morning": "Morgenroutine",
+      "screentime": "Bildschirmzeit"
     },
     "search": {
       "button": "Suchen",
@@ -1649,7 +1684,8 @@
       "errands": "Besorgungen & Geld",
       "school": "Schule & Routinen",
       "work": "Arbeit",
-      "wins": "Erfolge & Extras"
+      "wins": "Erfolge & Extras",
+      "family": "Familie"
     },
     "iconPicker": {
       "title": "Symbol wählen",

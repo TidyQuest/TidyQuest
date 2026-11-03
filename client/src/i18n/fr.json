@@ -331,7 +331,10 @@
       "tagline": "Fais évoluer ta maison",
       "achievements": "Succès",
       "tasks": "Tâches",
-      "insights": "Statistiques"
+      "insights": "Statistiques",
+      "closeMenu": "Fermer le menu",
+      "expandSidebar": "Déplier le menu",
+      "collapseSidebar": "Replier le menu"
     },
     "app": {
       "roomsConfigured": "pièces configurées",
@@ -907,7 +910,39 @@
       "star": "Étoile",
       "streak": "Série",
       "medal": "Médaille",
-      "heart": "Gentillesse"
+      "heart": "Gentillesse",
+      "dishwasher": "Lave-vaisselle",
+      "grill": "Barbecue",
+      "coffee": "Cafetière",
+      "wipetable": "Essuyer la table",
+      "wheeliebin": "Sortir les poubelles",
+      "boxes": "Cartons",
+      "baseboard": "Plinthes",
+      "ceilingfan": "Ventilateur de plafond",
+      "stairs": "Escalier",
+      "door": "Porte d’entrée",
+      "timer": "Rangement 10 minutes",
+      "gutter": "Gouttières",
+      "waterheater": "Chauffe-eau",
+      "pressurewasher": "Nettoyeur haute pression",
+      "paint": "Peinture",
+      "fireplace": "Cheminée",
+      "thermostat": "Thermostat",
+      "hedge": "Taille de la haie",
+      "leafblower": "Souffleur de feuilles",
+      "garden": "Potager",
+      "chickens": "Poules",
+      "birdcage": "Oiseau",
+      "smallpet": "Petit animal",
+      "reptile": "Reptile",
+      "horse": "Cheval",
+      "baby": "Bébé",
+      "medicine": "Médicaments",
+      "music": "Musique",
+      "sports": "Sport",
+      "bath": "Heure du bain",
+      "morning": "Routine du matin",
+      "screentime": "Temps d’écran"
     },
     "search": {
       "button": "Rechercher",
@@ -1649,7 +1684,8 @@
       "errands": "Courses et argent",
       "school": "École et routines",
       "work": "Travail",
-      "wins": "Victoires et bonus"
+      "wins": "Victoires et bonus",
+      "family": "Famille"
     },
     "iconPicker": {
       "title": "Choisir une icône",

@@ -93,7 +93,7 @@ export function Sidebar({ user, isMobileOpen = false, onClose, gamificationEnabl
                 alignItems: 'center',
                 justifyContent: 'center',
               }}
-              aria-label="Expand sidebar"
+              aria-label={t('nav.expandSidebar')}
             >
               <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                 <path d="M3 10h14M3 5h14M3 15h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
@@ -131,7 +131,8 @@ export function Sidebar({ user, isMobileOpen = false, onClose, gamificationEnabl
                     justifyContent: 'center',
                     marginLeft: 'auto',
                   }}
-                  aria-label="Collapse sidebar"
+                  className="sidebar-collapse"
+                  aria-label={t('nav.collapseSidebar')}
                 >
                   <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                     <path d="M3 10h14M3 5h14M3 15h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
@@ -143,19 +144,28 @@ export function Sidebar({ user, isMobileOpen = false, onClose, gamificationEnabl
           {onClose && !effectiveCollapsed && (
             <button
               onClick={onClose}
-              className="mobile-only"
+              className="mobile-only sidebar-close"
               style={{
                 background: 'none',
                 border: 'none',
                 color: 'var(--warm-text-muted)',
-                fontSize: 24,
                 cursor: 'pointer',
-                padding: 4,
+                padding: 0,
+                width: 44,
+                height: 44,
+                borderRadius: 12,
+                flexShrink: 0,
+                marginLeft: 'auto',
+                marginRight: -8,
                 display: 'none',
+                alignItems: 'center',
+                justifyContent: 'center',
               }}
-              aria-label="Close menu"
+              aria-label={t('nav.closeMenu')}
             >
-              ×
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                <path d="M5 5l10 10M15 5L5 15" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"/>
+              </svg>
             </button>
           )}
         </div>

@@ -358,6 +358,15 @@ export const GUIDE_IT: GuideSection[] = [
         'Il Registro notifiche mostra cosa è stato inviato, messo in coda o fallito, e perché.',
       ] },
       { p: 'Su tidyquest.org le notifiche passano da ntfy.sh o Telegram. Un tuo server ntfy e Home Assistant funzionano solo su un server di casa.' },
+      { h: 'Home Assistant' },
+      { p: 'Se la tua famiglia ha l’app Home Assistant sul telefono, TidyQuest può mandare i messaggi da lì. Funziona solo su un server di casa, non su tidyquest.org.' },
+      { ol: [
+        'In Home Assistant apri il tuo profilo (in basso a sinistra), poi la scheda Sicurezza. In fondo crea un token di accesso a lunga durata e copialo: Home Assistant lo mostra una volta sola.',
+        'In Impostazioni → Generale → Notifiche → Home Assistant inserisci l’URL di Home Assistant come lo raggiunge il server TidyQuest, es. http://homeassistant.local:8123 o http://192.168.1.20:8123, e incolla il token.',
+        'Se vuoi, aggiungi un servizio di notifica di famiglia per i messaggi che ricevono tutti, es. notify.famiglia (un gruppo notify creato in Home Assistant). Poi tocca Salva.',
+        'In "Chi riceve cosa" dai a ciascuno il servizio del suo telefono: notify.mobile_app_ e il nome del telefono, es. notify.mobile_app_telefono_alex. Home Assistant li elenca in Strumenti per sviluppatori → Azioni (scrivi notify.). Un telefono compare lì quando l’app Home Assistant ha fatto l’accesso su di esso.',
+        'Tocca Invia notifica di test accanto a quella persona. "ha: ✓" vuol dire che è arrivata; altrimenti il messaggio dice cosa non va.',
+      ] },
     ],
   },
   {
@@ -485,6 +494,13 @@ export const GUIDE_IT: GuideSection[] = [
           'I tipi privati (esiti, riepiloghi, promemoria, tifo) hanno bisogno del canale personale della persona.',
           'Le ore di silenzio e l’orario scolastico trattengono i messaggi fino alla fine.',
           'Il Registro notifiche mostra ogni messaggio ed eventuali errori.',
+        ] },
+        { q: 'Il test di Home Assistant non va', a: [
+          '"Could not reach Home Assistant": l’URL è sbagliato, o il server TidyQuest non lo raggiunge. In Docker homeassistant.local spesso non funziona: usa l’indirizzo IP con :8123.',
+          '"Home Assistant returned 401": il token è sbagliato o è stato eliminato. Creane uno nuovo in Home Assistant e incollalo di nuovo.',
+          '"Home Assistant returned 400" (o 404): Home Assistant non ha un servizio notify con quel nome. Copia il nome da Strumenti per sviluppatori → Azioni; notify. davanti è facoltativo.',
+          '"Invalid Home Assistant notify service": solo lettere minuscole, numeri e trattini bassi, es. notify.mobile_app_telefono_alex.',
+          'Il pulsante di test è grigio: salva prima l’URL e il token, e dai alla persona un servizio Home Assistant in "Chi riceve cosa".',
         ] },
         { q: 'Il nostro server ntfy o Home Assistant non funziona su tidyquest.org', a: [
           'tidyquest.org invia solo a ntfy.sh e Telegram: un indirizzo inserito potrebbe raggiungere macchine della nostra rete, quindi il server non lo chiama. Un server di casa può usarli entrambi.',

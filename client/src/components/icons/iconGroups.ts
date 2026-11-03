@@ -10,7 +10,7 @@ export const ICON_GROUPS: Array<{ id: string; keys: string[] }> = [
   { id: 'kitchen', keys: ['dishes', 'sink', 'stove', 'counter', 'fridge', 'oven', 'microwave', 'kettle', 'rangehood', 'pantry', 'cabinet', ...extra('cooking')] },
   { id: 'bathroom', keys: ['toilet', 'shower', 'showerhead', 'mirror', 'towel', 'drain', 'bathmat', 'toothbrush', 'grout'] },
   { id: 'bedroom', keys: ['bed', 'pillow', 'sheets', 'mattress', 'nightstand'] },
-  { id: 'cleaning', keys: ['vacuum', 'mop', 'dust', 'sweep', 'broom', 'cobweb', 'chemicals', 'window', 'curtain', 'trash'] },
+  { id: 'cleaning', keys: ['vacuum', 'mop', 'dust', 'sweep', 'broom', 'cobweb', 'chemicals', 'window', 'curtain', 'trash', ...extra('cleaning')] },
   { id: 'laundry', keys: ['washer', 'dryer', 'detergent', 'iron', 'clothes', ...extra('laundry')] },
   { id: 'living', keys: ['sofa', 'tv', 'lamp', 'furniture', 'rug', 'lightswitch'] },
   { id: 'office', keys: ['desk', 'keyboard', 'monitor', 'cable', 'chair'] },
@@ -21,6 +21,7 @@ export const ICON_GROUPS: Array<{ id: string; keys: string[] }> = [
   { id: 'upkeep', keys: extra('upkeep') },
   { id: 'errands', keys: extra('errands') },
   { id: 'school', keys: extra('school') },
+  { id: 'family', keys: extra('family') },
   { id: 'work', keys: extra('work') },
   { id: 'wins', keys: [...extra('wins'), 'sparkle'] },
 ];
