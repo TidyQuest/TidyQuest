@@ -11,6 +11,8 @@ export interface Email {
   to: string;
   subject: string;
   text: string;
+  /** Extra headers, like List-Unsubscribe on news emails */
+  headers?: Record<string, string>;
 }
 
 export type EmailTransport = (email: Email) => Promise<void> | void;
@@ -71,7 +73,7 @@ export function smtpSettings(env: Env = process.env): SmtpSettings | { error: st
 export function smtpTransport(settings: SmtpSettings): { send: EmailTransport; verify: () => Promise<unknown> } {
   const mailer = createTransport(settings.options);
   return {
-    send: async ({ to, subject, text }) => {
+    send: async ({ to, subject, text, headers }) => {
       await mailer.sendMail({
         from: settings.from,
         replyTo: settings.replyTo,
@@ -79,7 +81,7 @@ export function smtpTransport(settings: SmtpSettings): { send: EmailTransport; v
         subject,
         text,
         // An automatic email: out-of-office replies shouldn't answer it (RFC 3834)
-        headers: { 'Auto-Submitted': 'auto-generated' },
+        headers: { 'Auto-Submitted': 'auto-generated', ...headers },
       });
     },
     verify: () => mailer.verify(),
@@ -127,14 +129,18 @@ export function appLink(req: Request, pathAndQuery: string): string {
   return `${base}${pathAndQuery}`;
 }
 
-export type EmailKind = 'confirm' | 'reset' | 'change-email' | 'email-changing' | 'trial-ending';
+export type EmailKind = 'confirm' | 'reset' | 'change-email' | 'email-changing' | 'trial-ending'
+  | 'consent-confirmed' | 'consent-reminder' | 'inactive-warning' | 'family-deleted';
 
-/** One of the app's emails in the person's language: hostedEmail.<kind>Subject and <kind>Body. */
-export function writeEmail(kind: EmailKind, lang: string | null | undefined, to: string, vars: Record<string, string>): Email {
+/**
+ * One of the app's emails in the person's language: hostedEmail.<kind>Subject and <kind>Body. `more` is
+ * another paragraph after the body (the COPPA notice on a confirmation email).
+ */
+export function writeEmail(kind: EmailKind, lang: string | null | undefined, to: string, vars: Record<string, string>, more?: string): Email {
   const key = kind.replace(/-(\w)/g, (_, c: string) => c.toUpperCase()); // change-email: changeEmail
   return {
     to,
     subject: tr(lang, `hostedEmail.${key}Subject`, vars),
-    text: `${tr(lang, `hostedEmail.${key}Body`, vars)}\n\n— TidyQuest`,
+    text: `${tr(lang, `hostedEmail.${key}Body`, vars)}${more ? `\n\n${more}` : ''}\n\n— TidyQuest`,
   };
 }

@@ -122,10 +122,18 @@ export const GUIDE_NL: GuideSection[] = [
         'Instellingen → 🔑 Gezinscode toont de code (zoals sunny-otter-42), de gezinslink en een QR-code. Open de link of scan de code op de telefoon of tablet van een kind: het apparaat onthoudt het gezin, dus het kind typt alleen gebruikersnaam en wachtwoord. Hoofdletters, spaties en streepjes in de code maken niet uit.',
         'Nieuwe code geeft het gezin een nieuwe code. De oude code en link werken dan niet meer; wie ingelogd is, blijft ingelogd.',
         'Instellingen → ✉️ Inlogmail: E-mail wijzigen stuurt een link naar het nieuwe adres, en de wijziging gaat in zodra je hem opent. Een tweede ouder kan met E-mail toevoegen een eigen adres instellen.',
-        'Bij het aanmelden sturen we een link om je adres te bevestigen. Een gezin dat binnen 30 dagen geen e-mailadres van een ouder bevestigt, kan tot dan alleen nog bevestigen of zijn gegevens downloaden.',
+        'Bij het aanmelden sturen we een link om je adres te bevestigen. Door die te openen geeft een ouder ook toestemming, voor de kinderen, voor wat TidyQuest bewaart (de Amerikaanse privacywet voor kinderen, COPPA, vraagt dat). Tot een ouder heeft bevestigd, kunnen alleen ouders inloggen. Een gezin dat binnen 30 dagen geen e-mailadres van een ouder bevestigt, wordt verwijderd; een week eerder sturen we een herinnering.',
         'Wachtwoord vergeten? op het inlogscherm stuurt een ouder een link die één keer werkt, een uur lang. Kinderen en tieners vragen een ouder om een nieuw wachtwoord in te stellen bij Instellingen → Gezinsleden.',
       ] },
       { p: 'Als nieuwe aanmeldingen op tidyquest.org gesloten zijn, is de aanmeldpagina een formulier voor de wachtlijst. Een ander gezin kan daar zijn gegevens achterlaten, en we mailen het zodra er plek is. Gezinnen die al zijn aangemeld merken er niets van.' },
+      { h: 'Op tidyquest.org: privacy' },
+      { ul: [
+        'De links Privacybeleid en Voorwaarden staan onder de inlog- en aanmeldpagina, en in Instellingen onder Versie.',
+        'Andere ouders en leden zien de voorwaarden en het privacybeleid de eerste keer dat ze inloggen, en tikken op Akkoord en verder. Kinderen nooit. Verandert een van beide, dan wordt het de volwassenen opnieuw gevraagd.',
+        'Alleen een ouder kiest waar ieders meldingen naartoe gaan (een ntfy-onderwerp of Telegram-chat). Welke soorten je krijgt, kies je nog steeds zelf in Profiel.',
+        'Instellingen → ✉️ Inlogmail → Stuur me nieuws van TidyQuest: af en toe nieuws, alleen als een ouder het aanvinkt (bij het aanmelden of hier). Elke nieuwsmail heeft een link om te stoppen.',
+        'Een gezin dat een jaar niemand heeft gebruikt, krijgt een e-mail en wordt 30 dagen later verwijderd, tenzij iemand inlogt.',
+      ] },
       { h: 'Op tidyquest.org: grenzen' },
       { ul: [
         'Een gezin kan maximaal 15 personen hebben.',
@@ -388,6 +396,14 @@ export const GUIDE_NL: GuideSection[] = [
         'Een verwijderde beloning houdt zijn historie op dezelfde manier: wat eerder gekocht is, blijft onder zijn naam in Inzichten. Een aanvraag die nog wacht, blijft in Aangevraagde beloningen (onder de winkel), zodat een ouder hem nog kan goedkeuren of afwijzen; bij afwijzen komen de munten terug.',
         'Een kamer verwijderen (Kamers → 🗑) verwijdert ook de klusjes en de kamer kan niet worden teruggehaald. Hun historie en munten blijven.',
       ] },
+      { p: 'Bewijsfoto’s horen bij hun klusje: als een klusje uit Onlangs verwijderd gaat (of de kamer wordt verwijderd), gaan de foto’s ook weg, maar wie het deed en de munten blijven. De avatarfoto van iemand gaat weg als die persoon wordt verwijderd.' },
+      { p: 'Elke foto wordt op de telefoon of computer opnieuw getekend voor het uploaden, zodat er niet meer in staat waar en waarmee hij is gemaakt. Een foto die de browser niet kan lezen (sommige HEIC-foto’s) wordt geweigerd: stuur dan een JPEG of een schermafbeelding.' },
+      { h: 'Op tidyquest.org: het gezin verwijderen' },
+      { ul: [
+        'Instellingen → Privacy & Gegevens → Ons gezin verwijderen verwijdert ieders klusjes, geschiedenis, munten en foto’s. Tik eerst op Onze gegevens downloaden als je misschien een kopie wilt.',
+        'Typ de naam van het gezin en je wachtwoord, en tik op Het gezin voorgoed verwijderen. Iedereen wordt meteen uitgelogd, en ouders met een bevestigd e-mailadres krijgen er een e-mail over.',
+        'We bewaren het 30 dagen voor als het een vergissing was (beantwoord die e-mail), daarna is het voorgoed weg.',
+      ] },
     ],
   },
   {
@@ -559,8 +575,14 @@ export const GUIDE_NL: GuideSection[] = [
           'Een wachtwoordlink werkt een uur lang en maar één keer; vraag een nieuwe aan met Wachtwoord vergeten? op het inlogscherm.',
           'Adres verkeerd getypt? Instellingen → ✉️ Inlogmail → E-mail wijzigen.',
         ] },
+        { q: 'Er staat “Een ouder moet eerst zijn of haar e-mailadres bevestigen”', a: [
+          'Alleen op tidyquest.org. Tot een ouder het e-mailadres heeft bevestigd, kunnen alleen ouders inloggen. Een ouder opent de link die we stuurden (Instellingen → ✉️ Inlogmail → Opnieuw sturen stuurt een nieuwe), en daarna kan iedereen inloggen.',
+        ] },
         { q: 'Er staat "Bevestig je e-mail om TidyQuest te blijven gebruiken"', a: [
-          'Je gezin had 30 dagen om het e-mailadres van een ouder te bevestigen. Een ouder opent de link die we stuurden, of tikt op Opnieuw sturen (of E-mail wijzigen als het adres niet klopte). Er gaat niets verloren, en Onze gegevens downloaden werkt nog steeds.',
+          'Je gezin had 30 dagen om het e-mailadres van een ouder te bevestigen. Een ouder opent de link die we stuurden, of tikt op Opnieuw sturen (of E-mail wijzigen als het adres niet klopte). Tot dan werkt Onze gegevens downloaden nog, maar het gezin wordt kort daarna verwijderd, dus wacht niet.',
+        ] },
+        { q: 'Er wordt gevraagd akkoord te gaan met de voorwaarden', a: [
+          'Alleen op tidyquest.org, voor ouders en leden: de eerste keer dat je inlogt, en opnieuw als de voorwaarden of het privacybeleid veranderen. Lees ze via de links en tik op Akkoord en verder. Kinderen wordt het nooit gevraagd.',
         ] },
         { q: 'Er staat dat het gezin gepauzeerd is, of dat de gratis proefperiode voorbij is', a: [
           'Alleen op tidyquest.org. Een gepauzeerd gezin kan de app pas weer gebruiken als TidyQuest het hervat. Er gaat niets verloren, en een ouder kan nog steeds op Onze gegevens downloaden tikken.',
@@ -572,6 +594,9 @@ export const GUIDE_NL: GuideSection[] = [
           'Op tidyquest.org kan een gezin maximaal 15 personen hebben.',
           'Grote foto’s maakt de telefoon eerst kleiner. Wordt een foto na Klaar! toch niet geüpload, dan telt het klusje wel: de melding blijft staan tot je hem sluit, en zolang het klusje op een ouder wacht, stuurt Opnieuw proberen de foto nog een keer.',
           'Geen fotoveld bij afronden met 📎? Een ouder heeft ze uitgezet in Instellingen → Functies → Bewijsfoto’s.',
+        ] },
+        { q: 'Er staat dat een foto niet gelezen kan worden', a: [
+          'De telefoon of browser kon die foto niet openen (vaak een HEIC-foto op een computer), en elke foto wordt voor het uploaden opnieuw getekend zodat er niet meer in staat waar hij is gemaakt. Stuur een JPEG of PNG, of een schermafbeelding van de foto.',
         ] },
         { q: 'Een foto of avatar is niet te zien', a: [
           'Bewijsfoto’s openen alleen voor iemand die in het gezin is ingelogd: ouders zien ze allemaal, de anderen alleen hun eigen. Op tidyquest.org geldt dat ook voor avatars.',

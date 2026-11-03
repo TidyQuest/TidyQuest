@@ -6,6 +6,7 @@ import { useTranslation } from '../../hooks/useTranslation';
 import { deviceZone } from '../../utils/clock';
 import { authLanguage, hostedError } from '../../utils/hosted';
 import { SourceFooter } from '../shared/SourceLink';
+import { WithLinks } from '../shared/LegalLinks';
 import { AuthCard, AuthField } from '../shared/AuthCard';
 import { authError, authLink } from '../shared/authStyles';
 
@@ -46,15 +47,7 @@ function Turnstile({ siteKey, language, onToken }: { siteKey: string; language: 
   return <div ref={box} style={{ display: 'flex', justifyContent: 'center', marginBottom: 14, minHeight: 65 }} />;
 }
 
-/** "I agree to the {terms} and the {privacy}." with the two links in place */
-function withLinks(text: string, links: Record<string, { href: string; label: string }>) {
-  return text.split(/(\{\w+\})/).map((part, i) => {
-    const link = links[part.slice(1, -1)];
-    return link
-      ? <a key={i} href={link.href} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--warm-accent)', fontWeight: 700 }}>{link.label}</a>
-      : part;
-  });
-}
+const checkRow: React.CSSProperties = { display: 'flex', gap: 8, alignItems: 'flex-start', fontSize: 12, fontWeight: 600, color: 'var(--warm-text-secondary)', marginBottom: 14 };
 
 const NO_CONFIG: HostedConfig = { turnstileSiteKey: null, termsUrl: null, privacyUrl: null, signupsOpen: true };
 
@@ -71,6 +64,7 @@ export function SignUp({ onSignedIn }: { onSignedIn: (token: string, user: User)
   const [password, setPassword] = useState('');
   const [note, setNote] = useState('');
   const [agreed, setAgreed] = useState(false);
+  const [news, setNews] = useState(false);
   const [captchaToken, setCaptchaToken] = useState('');
   // A CAPTCHA answer works once, so a failed try gets a fresh check
   const [captchaRound, setCaptchaRound] = useState(0);
@@ -98,7 +92,7 @@ export function SignUp({ onSignedIn }: { onSignedIn: (token: string, user: User)
         return;
       }
       const { token, user } = await api.signUp({
-        ...details, password, timeZone: zone, ...(needsTerms && { acceptTerms: agreed }),
+        ...details, password, timeZone: zone, ...(needsTerms && { acceptTerms: agreed }), news,
       });
       onSignedIn(token, user);
       navigate('/', { replace: true });
@@ -161,14 +155,21 @@ export function SignUp({ onSignedIn }: { onSignedIn: (token: string, user: User)
             </p>
           </>
         )}
-        {/* Room for the terms, privacy policy and COPPA consent the lawyer settles in Phase 3: they show once the server has the links */}
+        {/* The terms and privacy policy with the COPPA consent (NEW-34): shown once the server has the links */}
         {needsTerms && (
-          <label style={{ display: 'flex', gap: 8, alignItems: 'flex-start', fontSize: 12, fontWeight: 600, color: 'var(--warm-text-secondary)', marginBottom: 14 }}>
+          <label style={checkRow}>
             <input type="checkbox" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} required style={{ marginTop: 2 }} />
-            <span>{withLinks(t('hosted.agreeTerms'), {
-              terms: { href: config!.termsUrl ?? '', label: t('hosted.terms') },
-              privacy: { href: config!.privacyUrl ?? '', label: t('hosted.privacy') },
-            })}</span>
+            <span><WithLinks text={t('hosted.agreeTerms')} links={{
+              terms: { href: config!.termsUrl, label: t('hosted.terms') },
+              privacy: { href: config!.privacyUrl, label: t('hosted.privacy') },
+            }} /></span>
+          </label>
+        )}
+        {/* News emails only with consent, so the box starts unticked (PRIVACY.md decision 7) */}
+        {!closed && (
+          <label style={checkRow}>
+            <input type="checkbox" checked={news} onChange={(e) => setNews(e.target.checked)} style={{ marginTop: 2 }} />
+            <span>{t('hosted.newsOptIn')}</span>
           </label>
         )}
         {config?.turnstileSiteKey && (

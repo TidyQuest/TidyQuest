@@ -6,6 +6,7 @@ import { currentFamily, isHosted, keepFamily, runInFamily } from './context';
 import { dataDir } from './mainDb';
 import { familyDir, openFamily } from './families';
 import db from '../database';
+import { stripPhotoMetadata } from '../utils/photoMetadata';
 import { filesViewer, shutOutCode, type FilesViewer } from '../middleware/auth';
 
 // Avatars and proof photos. Self-hosted they sit in data/avatars and data/proofs, served at /api/avatars
@@ -42,8 +43,23 @@ export function oneFile(field: string, limitMb: () => number, options: Omit<mult
   return keepFamily((req, res, next) => {
     const limit = limitMb();
     multer({ ...options, limits: { fileSize: limit * 1024 * 1024 } }).single(field)(req, res, (err?: unknown) => {
-      if ((err as { code?: string } | undefined)?.code !== 'LIMIT_FILE_SIZE') return next(err);
-      res.status(413).json({ error: `That file is too big (the limit is ${limit} MB)`, code: 'too-large', limit });
+      if ((err as { code?: string } | undefined)?.code === 'LIMIT_FILE_SIZE') {
+        return res.status(413).json({ error: `That file is too big (the limit is ${limit} MB)`, code: 'too-large', limit });
+      }
+      if (err || !req.file) return next(err);
+      // Photos without location (NEW-34): the camera's metadata comes off. Hosted mode takes only photos it
+      // can clean (JPEG, PNG, WebP); the app sends JPEGs.
+      try {
+        if (!stripPhotoMetadata(req.file.path) && isHosted()) {
+          fs.rmSync(req.file.path, { force: true });
+          return res.status(400).json({ error: "That photo couldn't be read. Try a JPEG or PNG.", code: 'photo-type' });
+        }
+        req.file.size = fs.statSync(req.file.path).size;
+      } catch (e) {
+        fs.rmSync(req.file.path, { force: true });
+        return next(e);
+      }
+      next();
     });
   });
 }

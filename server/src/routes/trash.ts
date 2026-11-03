@@ -2,7 +2,7 @@ import { Router, Response } from 'express';
 import db from '../database';
 import { AuthRequest, authMiddleware } from '../middleware/auth';
 import { ensureAdmin } from '../utils/adminHelpers';
-import { purgeOldTrash, restoreFromTrash, TrashError, TRASH_DAYS } from '../utils/trash';
+import { dropProofPhotos, purgeOldTrash, restoreFromTrash, TrashError, TRASH_DAYS } from '../utils/trash';
 
 // Deleted tasks and rewards (admins): list, restore, delete forever. Items expire after 30 days.
 const router = Router();
@@ -44,8 +44,11 @@ router.post('/:id/restore', (req: AuthRequest, res: Response) => {
 
 router.delete('/:id', (req: AuthRequest, res: Response) => {
   if (!ensureAdmin(req.userId)) return res.status(403).json({ error: 'Admin only' });
-  const result = db.prepare('DELETE FROM trash WHERE id = ?').run(req.params.id);
-  if (result.changes === 0) return res.status(404).json({ error: 'not_found' });
+  const item = db.prepare('SELECT kind, itemId FROM trash WHERE id = ?').get(req.params.id) as { kind: string; itemId: number } | undefined;
+  if (!item) return res.status(404).json({ error: 'not_found' });
+  // Deleted forever: a chore's proof photos go now (NEW-34)
+  if (item.kind === 'task') dropProofPhotos([item.itemId]);
+  db.prepare('DELETE FROM trash WHERE id = ?').run(req.params.id);
   res.json({ success: true });
 });
 

@@ -122,10 +122,18 @@ export const GUIDE_IT: GuideSection[] = [
         'Impostazioni → 🔑 Codice famiglia mostra il codice (tipo sunny-otter-42), il link della famiglia e un codice QR. Apri il link o scansiona il codice sul telefono o tablet di un bambino: il dispositivo ricorda la famiglia, così basta scrivere username e password. Maiuscole, spazi e trattini nel codice non contano.',
         'Nuovo codice dà alla famiglia un codice nuovo. Il vecchio codice e il vecchio link smettono di funzionare; nessuno viene disconnesso.',
         'Impostazioni → ✉️ Email di accesso: Cambia email invia un link al nuovo indirizzo, e il cambio avviene quando lo apri. Un secondo genitore può usare Aggiungi email per accedere con la sua.',
-        'All’iscrizione inviamo un link per confermare il tuo indirizzo. Una famiglia che non conferma l’email di un genitore entro 30 giorni può solo confermarla o scaricare i suoi dati finché non lo fa.',
+        'All’iscrizione inviamo un link per confermare il tuo indirizzo. Aprirlo è anche il modo in cui un genitore acconsente, per i figli, a ciò che TidyQuest conserva (lo chiede la legge statunitense sulla privacy dei minori, COPPA). Finché un genitore non conferma, possono accedere solo i genitori. Una famiglia che non conferma l’email di un genitore entro 30 giorni viene eliminata; mandiamo un promemoria una settimana prima.',
         'Password dimenticata? nella schermata di accesso invia a un genitore un link che funziona una volta, per un’ora. Bambini e ragazzi chiedono a un genitore di impostarne una nuova in Impostazioni → Membri della famiglia.',
       ] },
       { p: 'Quando le nuove iscrizioni su tidyquest.org sono chiuse, la pagina di iscrizione diventa un modulo per la lista d’attesa. Un’altra famiglia può lasciarvi i suoi dati, e le scriviamo quando c’è posto. Le famiglie già iscritte non sono toccate.' },
+      { h: 'Su tidyquest.org: privacy' },
+      { ul: [
+        'I link Informativa sulla privacy e Termini sono sotto le pagine di accesso e di iscrizione, e nelle Impostazioni sotto Versione.',
+        'Gli altri genitori e i membri vedono i termini e l’informativa sulla privacy al primo accesso, e toccano Accetta e continua. I bambini mai. Quando uno dei due cambia, agli adulti viene chiesto di nuovo.',
+        'Solo un genitore sceglie dove arrivano le notifiche di ciascuno (un argomento ntfy o una chat Telegram). Ognuno sceglie comunque nel Profilo quali tipi riceve.',
+        'Impostazioni → ✉️ Email di accesso → Mandami le novità di TidyQuest: novità ogni tanto, solo se un genitore lo spunta (all’iscrizione o qui). Ogni email di novità ha un link per smettere.',
+        'Una famiglia che nessuno usa da un anno riceve un’email, e viene eliminata 30 giorni dopo a meno che qualcuno non acceda.',
+      ] },
       { h: 'Su tidyquest.org: limiti' },
       { ul: [
         'Una famiglia può avere fino a 15 persone.',
@@ -388,6 +396,14 @@ export const GUIDE_IT: GuideSection[] = [
         'Una ricompensa eliminata conserva la sua cronologia allo stesso modo: ciò che è stato comprato resta in Statistiche con il suo nome. Una richiesta ancora in attesa resta in Richieste ricompensa (sotto il catalogo), così un genitore può ancora approvarla o rifiutarla; rifiutandola le monete tornano indietro.',
         'Eliminare una stanza (Stanze → 🗑) elimina anche le sue faccende, e la stanza non si può riportare indietro. La loro cronologia e le monete restano.',
       ] },
+      { p: 'Le foto di prova seguono la loro faccenda: quando una faccenda esce da Eliminati di recente (o la sua stanza viene eliminata), anche le sue foto vengono eliminate, ma chi l’ha fatta e le monete restano. La foto avatar di una persona se ne va quando la persona viene rimossa.' },
+      { p: 'Ogni foto viene ridisegnata sul telefono o sul computer prima del caricamento, così non dice più dove e con cosa è stata scattata. Una foto che il browser non sa leggere (alcune foto HEIC) viene rifiutata: manda un JPEG o uno screenshot.' },
+      { h: 'Su tidyquest.org: eliminare la famiglia' },
+      { ul: [
+        'Impostazioni → Dati e privacy → Elimina la nostra famiglia elimina le faccende, la cronologia, le monete e le foto di tutti. Tocca prima Scarica i nostri dati se potrebbe servirti una copia.',
+        'Scrivi il nome della famiglia e la tua password, poi tocca Elimina la famiglia per sempre. Tutti vengono disconnessi subito, e i genitori con l’email confermata ricevono un’email.',
+        'La conserviamo 30 giorni nel caso sia un errore (rispondi a quell’email), poi sparisce per sempre.',
+      ] },
     ],
   },
   {
@@ -559,8 +575,14 @@ export const GUIDE_IT: GuideSection[] = [
           'Un link per la password funziona per un’ora e una sola volta; chiedine un altro con Password dimenticata? nella schermata di accesso.',
           'Indirizzo scritto male? Impostazioni → ✉️ Email di accesso → Cambia email.',
         ] },
+        { q: 'Dice «Un genitore deve confermare la sua email»', a: [
+          'Solo su tidyquest.org. Finché un genitore non conferma la sua email, possono accedere solo i genitori. Un genitore apre il link che abbiamo inviato (Impostazioni → ✉️ Email di accesso → Invia di nuovo ne manda uno nuovo), e poi tutti possono accedere.',
+        ] },
         { q: 'Compare «Conferma la tua email per continuare a usare TidyQuest»', a: [
-          'La tua famiglia aveva 30 giorni per confermare l’email di un genitore. Un genitore apre il link che abbiamo inviato, o tocca Invia di nuovo (o Cambia email se l’indirizzo era sbagliato). Non si perde nulla, e Scarica i nostri dati funziona ancora.',
+          'La tua famiglia aveva 30 giorni per confermare l’email di un genitore. Un genitore apre il link che abbiamo inviato, o tocca Invia di nuovo (o Cambia email se l’indirizzo era sbagliato). Fino ad allora Scarica i nostri dati funziona ancora, ma la famiglia viene eliminata poco dopo, quindi non aspettare.',
+        ] },
+        { q: 'Mi chiede di accettare i termini', a: [
+          'Solo su tidyquest.org, per genitori e membri: al primo accesso, e di nuovo quando cambiano i termini o l’informativa sulla privacy. Leggili con i link, poi tocca Accetta e continua. Ai bambini non viene mai chiesto.',
         ] },
         { q: 'Dice che la famiglia è in pausa, o che la prova gratuita è finita', a: [
           'Solo su tidyquest.org. Una famiglia in pausa non può usare l’app finché TidyQuest non la riattiva. Non si perde nulla, e un genitore può comunque toccare Scarica i nostri dati.',
@@ -572,6 +594,9 @@ export const GUIDE_IT: GuideSection[] = [
           'Su tidyquest.org una famiglia può avere fino a 15 persone.',
           'Il telefono rimpicciolisce le foto grandi prima di caricarle. Se una foto non si carica lo stesso dopo Fatto, la faccenda conta comunque: il messaggio resta finché non lo chiudi e, finché la faccenda aspetta un genitore, Riprova invia di nuovo la foto.',
           'Nessun campo foto quando concludi una faccenda con 📎? Un genitore le ha spente in Impostazioni → Funzioni → Foto di prova.',
+        ] },
+        { q: 'Dice che una foto non si può leggere', a: [
+          'Il telefono o il browser non è riuscito ad aprire quella foto (spesso una foto HEIC su un computer), e ogni foto viene ridisegnata prima del caricamento per togliere dove è stata scattata. Manda un JPEG o un PNG, o uno screenshot della foto.',
         ] },
         { q: 'Una foto o un avatar non si vede', a: [
           'Le foto di prova si aprono solo per chi ha fatto l’accesso alla famiglia: i genitori le vedono tutte, gli altri solo le proprie. Su tidyquest.org vale lo stesso per gli avatar.',

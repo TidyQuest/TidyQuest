@@ -2,6 +2,7 @@ import crypto from 'crypto';
 import db from '../database';
 import { mainDb } from './mainDb';
 import { TRIAL_DAYS } from './families';
+import { familyConsented, recordConsent } from './legal';
 
 // Parents' sign-in emails (main.db accounts) and the one-time links sent to them (email_tokens).
 const HOUR = 60 * 60 * 1000;
@@ -12,6 +13,8 @@ export interface Account {
   familyId: string;
   userId: number;
   emailConfirmedAt: string | null;
+  /** When they asked for news emails (NEW-34); null for none */
+  newsAt?: string | null;
 }
 
 /** Trimmed and lowercased, or null when it doesn't look like an email address. */
@@ -29,7 +32,7 @@ export function accountByEmail(email: string): Account | undefined {
 }
 
 export function accountOf(familyId: string, userId: number): Account | undefined {
-  return mainDb().prepare('SELECT email, familyId, userId, emailConfirmedAt FROM accounts WHERE familyId = ? AND userId = ?')
+  return mainDb().prepare('SELECT email, familyId, userId, emailConfirmedAt, newsAt FROM accounts WHERE familyId = ? AND userId = ?')
     .get(familyId, userId) as Account | undefined;
 }
 
@@ -46,13 +49,12 @@ export function removeAccount(familyId: string, userId: number): void {
 }
 
 /**
- * The day a family that hasn't confirmed any parent's email gets locked (30 days after sign-up, the
- * length of the trial), or null once one is confirmed. Decision 3.
+ * The day a family that hasn't confirmed any parent's email gets locked, and soon after deleted (30 days
+ * after sign-up, the length of the trial), or null once one is confirmed. Decision 3; NEW-34.
  */
 export function confirmBy(familyId: string): Date | null {
-  const main = mainDb();
-  if (main.prepare('SELECT 1 FROM accounts WHERE familyId = ? AND emailConfirmedAt IS NOT NULL').get(familyId)) return null;
-  const family = main.prepare('SELECT createdAt FROM families WHERE id = ?').get(familyId) as { createdAt: string } | undefined;
+  if (familyConsented(familyId)) return null;
+  const family = mainDb().prepare('SELECT createdAt FROM families WHERE id = ?').get(familyId) as { createdAt: string } | undefined;
   return family ? new Date(new Date(family.createdAt).getTime() + TRIAL_DAYS * DAY) : null;
 }
 
@@ -64,7 +66,8 @@ export function isLocked(familyId: string, now = new Date()): boolean {
 
 // One-time links. Only a hash of the token is stored, so a copy of main.db can't be used to sign in.
 export type TokenKind = 'confirm' | 'reset' | 'change-email';
-const LIFETIME: Record<TokenKind, number> = { confirm: TRIAL_DAYS * DAY, reset: HOUR, 'change-email': DAY };
+// A function, so TRIAL_DAYS is read once the modules have loaded (they import each other)
+const lifetime = (kind: TokenKind) => ({ confirm: TRIAL_DAYS * DAY, reset: HOUR, 'change-email': DAY })[kind];
 
 const hash = (token: string) => crypto.createHash('sha256').update(token).digest('hex');
 
@@ -84,7 +87,7 @@ export function createEmailToken(t: EmailToken, now = new Date()): string {
     main.prepare('UPDATE email_tokens SET usedAt = ? WHERE kind = ? AND familyId = ? AND userId = ? AND usedAt IS NULL')
       .run(now.toISOString(), t.kind, t.familyId, t.userId);
     main.prepare('INSERT INTO email_tokens (tokenHash, kind, familyId, userId, email, newEmail, expiresAt, createdAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?)')
-      .run(hash(token), t.kind, t.familyId, t.userId, t.email, t.newEmail, new Date(now.getTime() + LIFETIME[t.kind]).toISOString(), now.toISOString());
+      .run(hash(token), t.kind, t.familyId, t.userId, t.email, t.newEmail, new Date(now.getTime() + lifetime(t.kind)).toISOString(), now.toISOString());
   })();
   return token;
 }
@@ -103,9 +106,12 @@ export function useEmailToken(token: unknown, kinds: TokenKind[], now = new Date
   return { kind, familyId, userId, email, newEmail };
 }
 
-export function markConfirmed(familyId: string, userId: number, now = new Date()): void {
+/** A parent's email works: confirmed, and the family's consent with it. True when it's the family's first (NEW-34). */
+export function markConfirmed(familyId: string, userId: number, now = new Date()): boolean {
+  const first = !familyConsented(familyId);
   mainDb().prepare('UPDATE accounts SET emailConfirmedAt = COALESCE(emailConfirmedAt, ?) WHERE familyId = ? AND userId = ?')
     .run(now.toISOString(), familyId, userId);
+  return recordConsent(familyId, now) && first;
 }
 
 /** Before an import replaces the family's people: each sign-in email with its parent's username. */

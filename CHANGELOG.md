@@ -10,6 +10,28 @@ What changed in each release, in plain language, newest first. Releases up to v0
 ## Unreleased
 
 ### Added
+- **Privacy basics for tidyquest.org** (hosted mode). With `TERMS_URL` and `PRIVACY_URL` set:
+  - The sign-up box now says "I'm 18 or over and the parent or guardian of any children I add. I agree to the Terms
+    and the Privacy policy", and the server keeps when it was ticked and which versions (`TERMS_VERSION`,
+    `PRIVACY_VERSION`) were agreed to.
+  - Other parents and members see the terms and the privacy policy the first time they sign in and tap *Agree and
+    continue*, and again when either version changes. Children never do.
+  - *Privacy policy · Terms* links under the login and sign-up pages, in Settings under Version, and where a parent
+    adds a family member.
+- **Parental consent** (hosted): until a parent confirms their email, only parents can sign in; kids and members are
+  told a parent has to confirm first. The confirmation email carries the notice the US children's privacy law (COPPA)
+  asks for, and a second email follows once it's confirmed. A family that never confirms is reminded a week before
+  day 30, then deleted.
+- **Delete our family** (hosted): Settings → Data & Privacy. A parent downloads the data if they like, types the
+  family's name and their password, and the family is deleted for everyone at once. Parents with a confirmed email get
+  an email about it. It's kept 30 days in case of a mistake, like a family the operator deletes.
+- **News emails** (hosted): an unticked "Send me TidyQuest news" box at sign-up and a switch under Settings → Sign-in
+  email. The operator page sends them, each with a one-click unsubscribe link and the postal address (`POSTAL_ADDRESS`).
+- **Clean-up** (hosted): a family nobody has used for a year gets an email, and is deleted 30 days later unless someone
+  signs in. Waitlist entries go after a year. Once a deleted family is gone for good, its name and emails leave the
+  operator History too.
+- `RELEASING.md` has a section on releasing to the hosted service: new settings, a quiet hour, a snapshot first, and
+  what to check after.
 - TidyQuest can go on a phone's home screen like a real app: it opens full screen with its own icon, on iPhone,
   iPad and Android. On Android this needs a secure (https://) address; over plain http:// it's a browser shortcut.
   Added it to a home screen before? Remove the icon and add it again.
@@ -17,7 +39,17 @@ What changed in each release, in plain language, newest first. Releases up to v0
   step for it in *Getting started*, and troubleshooting entries for when it doesn't work.
 
 ### Changed
+- Every photo is redrawn in the browser before it uploads, so it no longer carries where and with what it was taken.
+  A photo the browser can't read (some HEIC photos) is refused with a message saying so, instead of going up as it
+  was. The server also strips that information from JPEG, PNG and WebP photos; in hosted mode it takes only those.
+- A chore's proof photos are deleted when it leaves Recently deleted, or at once when its room is deleted. Who did
+  it, when, and the coins stay. Removing a person deletes their avatar photo too.
+- On tidyquest.org only a parent sets where anyone's notifications go (an ntfy topic or Telegram chat); everyone
+  still picks which kinds they get in Profile.
+- On tidyquest.org, Settings → Data & Privacy no longer says "All data stays on your server": it links to the privacy
+  policy instead.
 - On a phone's home screen, the status bar takes the color of the theme you picked.
+
 
 ## v0.15.3 (2026-11-03)
 

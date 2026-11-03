@@ -122,10 +122,18 @@ export const GUIDE_DE: GuideSection[] = [
         'Einstellungen → 🔑 Familiencode zeigt den Code (z. B. sunny-otter-42), den Familienlink und einen QR-Code. Öffne den Link oder scanne den Code auf dem Handy oder Tablet eines Kindes: Das Gerät merkt sich die Familie, dann tippt es nur noch Benutzername und Passwort. Groß- und Kleinschreibung, Leerzeichen und Bindestriche im Code sind egal.',
         'Neuer Code gibt der Familie einen frischen Code. Der alte Code und Link funktionieren nicht mehr; wer angemeldet ist, bleibt angemeldet.',
         'Einstellungen → ✉️ Anmelde-E-Mail: E-Mail ändern schickt einen Link an die neue Adresse, und die Änderung gilt, sobald du ihn öffnest. Ein zweites Elternteil kann mit E-Mail hinzufügen eine eigene eintragen.',
-        'Bei der Anmeldung schicken wir einen Link, um deine Adresse zu bestätigen. Eine Familie, die die E-Mail eines Elternteils nicht innerhalb von 30 Tagen bestätigt, kann bis dahin nur noch bestätigen oder ihre Daten herunterladen.',
+        'Bei der Anmeldung schicken wir einen Link, um deine Adresse zu bestätigen. Mit dem Öffnen willigt ein Elternteil auch für seine Kinder ein, was TidyQuest speichert (das verlangt das US-Kinderdatenschutzgesetz COPPA). Bis ein Elternteil bestätigt hat, können sich nur Eltern anmelden. Eine Familie, die die E-Mail eines Elternteils nicht innerhalb von 30 Tagen bestätigt, wird gelöscht; eine Woche vorher schicken wir eine Erinnerung.',
         'Passwort vergessen? auf dem Anmeldebildschirm schickt einem Elternteil einen Link, der einmal und eine Stunde lang funktioniert. Kinder und Teens bitten ein Elternteil, in Einstellungen → Familienmitglieder ein neues festzulegen.',
       ] },
       { p: 'Wenn neue Anmeldungen auf tidyquest.org geschlossen sind, ist die Anmeldeseite stattdessen ein Formular für die Warteliste. Eine andere Familie kann dort ihre Daten hinterlassen, und wir schreiben ihr, sobald Platz frei ist. Bereits angemeldete Familien betrifft das nicht.' },
+      { h: 'Auf tidyquest.org: Datenschutz' },
+      { ul: [
+        'Die Links Datenschutzerklärung und Nutzungsbedingungen stehen unter der Anmelde- und der Registrierungsseite und in den Einstellungen unter Version.',
+        'Andere Eltern und Mitglieder sehen die Nutzungsbedingungen und die Datenschutzerklärung bei der ersten Anmeldung und tippen auf Zustimmen und weiter. Kinder nie. Ändert sich eins davon, werden die Erwachsenen erneut gefragt.',
+        'Nur ein Elternteil legt fest, wohin die Benachrichtigungen aller gehen (ein ntfy-Thema oder ein Telegram-Chat). Welche Arten man bekommt, wählt jeder weiter im Profil.',
+        'Einstellungen → ✉️ Anmelde-E-Mail → TidyQuest-Neuigkeiten an mich senden: ab und zu Neuigkeiten, nur wenn ein Elternteil es ankreuzt (bei der Anmeldung oder hier). Jede Neuigkeiten-E-Mail hat einen Link zum Abbestellen.',
+        'Eine Familie, die ein Jahr lang niemand benutzt hat, bekommt eine E-Mail und wird 30 Tage später gelöscht, wenn sich niemand anmeldet.',
+      ] },
       { h: 'Auf tidyquest.org: Grenzen' },
       { ul: [
         'Eine Familie kann bis zu 15 Personen haben.',
@@ -388,6 +396,14 @@ export const GUIDE_DE: GuideSection[] = [
         'Eine gelöschte Belohnung behält ihren Verlauf genauso: Was schon gekauft wurde, bleibt unter ihrem Namen in der Auswertung. Eine noch offene Anfrage bleibt in Belohnungsanfragen (unter dem Katalog), sodass ein Elternteil sie noch freigeben oder ablehnen kann; beim Ablehnen gibt es die Münzen zurück.',
         'Das Löschen eines Raums (Räume → 🗑) löscht auch seine Aufgaben, und der Raum lässt sich nicht zurückholen. Ihr Verlauf und die Münzen bleiben.',
       ] },
+      { p: 'Nachweisfotos gehören zu ihrer Aufgabe: Verlässt eine Aufgabe Zuletzt gelöscht (oder wird ihr Raum gelöscht), werden ihre Fotos mit gelöscht; wer sie erledigt hat und die Münzen bleiben. Das Avatar-Foto einer Person geht, wenn sie entfernt wird.' },
+      { p: 'Jedes Foto wird vor dem Hochladen auf dem Handy oder Computer neu gezeichnet. Dabei fällt weg, wo und womit es aufgenommen wurde. Ein Foto, das der Browser nicht lesen kann (manche HEIC-Fotos), wird abgelehnt: Schick stattdessen ein JPEG oder einen Screenshot.' },
+      { h: 'Auf tidyquest.org: die Familie löschen' },
+      { ul: [
+        'Einstellungen → Daten & Datenschutz → Unsere Familie löschen löscht Aufgaben, Verlauf, Münzen und Fotos aller. Tippe vorher auf Unsere Daten herunterladen, falls du eine Kopie brauchen könntest.',
+        'Gib den Namen der Familie und dein Passwort ein und tippe auf Familie endgültig löschen. Alle werden sofort abgemeldet, und Eltern mit bestätigter E-Mail bekommen eine E-Mail dazu.',
+        'Falls es ein Versehen war, bewahren wir sie 30 Tage auf (antworte auf diese E-Mail), danach ist sie endgültig weg.',
+      ] },
     ],
   },
   {
@@ -559,8 +575,14 @@ export const GUIDE_DE: GuideSection[] = [
           'Ein Passwort-Link funktioniert eine Stunde lang und nur einmal; fordere mit Passwort vergessen? auf dem Anmeldebildschirm einen neuen an.',
           'Adresse falsch eingegeben? Einstellungen → ✉️ Anmelde-E-Mail → E-Mail ändern.',
         ] },
+        { q: 'Es heißt „Ein Elternteil muss seine E-Mail bestätigen“', a: [
+          'Nur auf tidyquest.org. Bis ein Elternteil seine E-Mail bestätigt hat, können sich nur Eltern anmelden. Ein Elternteil öffnet den Link, den wir geschickt haben (Einstellungen → ✉️ Anmelde-E-Mail → Erneut senden schickt einen neuen), dann können sich alle anmelden.',
+        ] },
         { q: 'Es steht „Bestätige deine E-Mail, um TidyQuest weiter zu nutzen“ da', a: [
-          'Deine Familie hatte 30 Tage Zeit, die E-Mail eines Elternteils zu bestätigen. Ein Elternteil öffnet den Link, den wir geschickt haben, oder tippt auf Erneut senden (oder E-Mail ändern, wenn die Adresse falsch war). Nichts geht verloren, und Unsere Daten herunterladen funktioniert weiterhin.',
+          'Deine Familie hatte 30 Tage Zeit, die E-Mail eines Elternteils zu bestätigen. Ein Elternteil öffnet den Link, den wir geschickt haben, oder tippt auf Erneut senden (oder E-Mail ändern, wenn die Adresse falsch war). Bis dahin funktioniert Unsere Daten herunterladen weiterhin, aber die Familie wird bald danach gelöscht, also warte nicht.',
+        ] },
+        { q: 'Ich soll den Nutzungsbedingungen zustimmen', a: [
+          'Nur auf tidyquest.org, für Eltern und Mitglieder: bei der ersten Anmeldung und wieder, wenn sich die Nutzungsbedingungen oder die Datenschutzerklärung ändern. Lies sie über die Links und tippe dann auf Zustimmen und weiter. Kinder werden nie gefragt.',
         ] },
         { q: 'Es heißt, die Familie ist pausiert oder die kostenlose Testphase ist vorbei', a: [
           'Nur auf tidyquest.org. Eine pausierte Familie kann die App erst wieder nutzen, wenn TidyQuest sie fortsetzt. Nichts geht verloren, und ein Elternteil kann weiterhin auf Unsere Daten herunterladen tippen.',
@@ -572,6 +594,9 @@ export const GUIDE_DE: GuideSection[] = [
           'Auf tidyquest.org kann eine Familie bis zu 15 Personen haben.',
           'Große Fotos verkleinert das Handy vor dem Hochladen. Wird ein Foto nach Erledigt dennoch nicht hochgeladen, zählt die Aufgabe trotzdem: Die Meldung bleibt, bis du sie schließt, und solange die Aufgabe auf ein Elternteil wartet, schickt Nochmal versuchen das Foto erneut.',
           'Kein Fotofeld beim Abschließen mit 📎? Ein Elternteil hat sie unter Einstellungen → Funktionen → Beweisfotos ausgeschaltet.',
+        ] },
+        { q: 'Es heißt, ein Foto kann nicht gelesen werden', a: [
+          'Handy oder Browser konnten das Foto nicht öffnen (oft ein HEIC-Foto auf einem Computer), und jedes Foto wird vor dem Hochladen neu gezeichnet, damit nicht mehr drinsteht, wo es aufgenommen wurde. Schick ein JPEG oder PNG oder einen Screenshot des Fotos.',
         ] },
         { q: 'Ein Foto oder Avatar wird nicht angezeigt', a: [
           'Beweisfotos öffnen sich nur für jemanden, der in der Familie angemeldet ist: Eltern sehen alle, alle anderen nur ihre eigenen. Auf tidyquest.org gilt das auch für Avatare.',

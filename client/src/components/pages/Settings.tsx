@@ -30,7 +30,8 @@ import { localeFor } from '../../utils/locale';
 import { weekdayName } from '../../utils/schedule';
 import { useWeekStart } from '../../utils/week';
 import { TimeZonePicker } from '../shared/TimeZonePicker';
-import { FamilyCodeCard, SignInEmailCard } from '../shared/HostedAccount';
+import { DeleteFamily, FamilyCodeCard, SignInEmailCard } from '../shared/HostedAccount';
+import { LegalLinks, WithLinks } from '../shared/LegalLinks';
 import { limitError, useHosted, useSourceUrl, type HostedAccount } from '../../utils/hosted';
 import { dateStr, endOfHomeDay } from '../../utils/clock';
 import { rewardDescText, rewardTextToSave, rewardTitleText } from '../../utils/presetRewards';
@@ -977,6 +978,8 @@ export function Settings({
                     ? <a href={sourceUrl} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--warm-accent)', fontWeight: 700 }}>{t('about.sourceCode')}</a>
                     : t('about.sourceCode')}
                   {' · AGPL-3.0'}
+                  {/* NEW-34: the privacy policy and terms, for everyone in the family */}
+                  {hostedAccount && <LegalLinks legal={hostedAccount} language={user.language} style={{ display: 'block', marginTop: 2 }} />}
                 </div>
               </div>
               <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--warm-text-muted)', textAlign: 'right' }}>
@@ -1150,7 +1153,11 @@ export function Settings({
             {[
               { icon: <DownloadIcon />, title: t('settings.exportData'), desc: t('settings.exportDesc'), btn: t('settings.download'), action: onExport },
               { icon: <UploadIcon />, title: t('settings.importData'), desc: t('settings.importDesc'), btn: t('settings.upload'), action: onImport },
-              { icon: <LockIcon />, title: t('settings.privacy'), desc: t('settings.privacyDesc'), btn: null, action: null },
+              // Hosted (NEW-34): "All data stays on your server" isn't true there, so it points to the privacy policy
+              hostedAccount
+                ? { icon: <LockIcon />, title: t('settings.privacy'), desc: t('settings.privacyDescHosted'), btn: hostedAccount.privacyUrl ? t('settings.privacyRead') : null,
+                    action: () => window.open(hostedAccount.privacyUrl!, '_blank', 'noopener,noreferrer') }
+                : { icon: <LockIcon />, title: t('settings.privacy'), desc: t('settings.privacyDesc'), btn: null, action: null },
             ].map((s, i) => (
               <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '14px 0', borderBottom: i < 2 ? '1px solid var(--warm-border)' : 'none' }}>
                 {s.icon}
@@ -1165,6 +1172,13 @@ export function Settings({
                 )}
               </div>
             ))}
+            {/* NEW-25: a parent deletes the whole family; this device goes back to the login */}
+            {hostedAccount?.isParent && (
+              <DeleteFamily account={hostedAccount} language={user.language} onDeleted={() => {
+                try { localStorage.removeItem('tidyquest_token'); } catch { /* signed out on the server anyway */ }
+                window.location.href = '/login';
+              }} />
+            )}
           </div>
           )}
           {isAdmin && (
@@ -1336,6 +1350,12 @@ export function Settings({
               <button className="tq-btn tq-btn-primary tq-btn-sm" onClick={handleAddMember}>{t('settings.create')}</button>
             </div>
             {addMemberError && <div role="alert" style={{ marginTop: 8, fontSize: 12, fontWeight: 700, color: 'var(--warm-danger)' }}>{addMemberError}</div>}
+            {/* NEW-34 (COPPA §312.4(d)): the privacy policy where a child's details are entered */}
+            {hostedAccount?.privacyUrl && (
+              <div style={{ marginTop: 8, fontSize: 11, fontWeight: 600, color: 'var(--warm-text-light)' }}>
+                <WithLinks text={t('hosted.memberPrivacy')} links={{ privacy: { href: hostedAccount.privacyUrl, label: t('hosted.privacy') } }} />
+              </div>
+            )}
           </div>
         )}
         <div className="family-members-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 12 }}>

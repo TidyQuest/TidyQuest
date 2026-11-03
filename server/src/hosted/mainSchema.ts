@@ -87,6 +87,15 @@ const MAIN_TABLES: string[] = [
 const MAIN_COLUMNS: string[] = [
   // When the parents were told an expired trial is about to be deleted (NEW-11)
   `ALTER TABLE families ADD COLUMN trialWarnedAt TEXT`,
+  // Parental consent (NEW-34, COPPA "email plus"): when a parent first confirmed their email, which is the
+  // consent. Kept even if that parent's account goes later. And when the parents were reminded that an
+  // unconfirmed family is about to be deleted.
+  `ALTER TABLE families ADD COLUMN consentAt TEXT`,
+  `ALTER TABLE families ADD COLUMN consentRemindedAt TEXT`,
+  // Inactive families (NEW-34): when the parents were told that a year without a sign-in deletes it
+  `ALTER TABLE families ADD COLUMN inactiveWarnedAt TEXT`,
+  // News emails (NEW-34): when this parent asked for them (the unticked box at sign-up, or Settings); null = no news
+  `ALTER TABLE accounts ADD COLUMN newsAt TEXT`,
 ];
 
 export function applyMainSchema(instance: InstanceType<typeof Database>): void {

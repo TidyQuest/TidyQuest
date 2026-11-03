@@ -111,6 +111,13 @@ router.put('/people/:id', (req: AuthRequest, res: Response) => {
   if (b.telegramChatId !== undefined && clean(b.telegramChatId) && !/^-?\d{1,20}$|^@[A-Za-z0-9_]{4,64}$/.test(clean(b.telegramChatId))) return res.status(400).json({ error: 'invalid_chat' });
   if (b.haNotifyService !== undefined && clean(b.haNotifyService) && !/^(notify\.)?[a-z0-9_]+$/.test(clean(b.haNotifyService))) return res.status(400).json({ error: 'invalid_service' });
   if (isHosted() && clean(b.haNotifyService)) return res.status(400).json({ error: 'ha_off' });
+  // Hosted mode (NEW-34): only a parent says where anyone's notifications go, so a child can't send theirs
+  // to a stranger's ntfy topic or Telegram chat. Everyone still picks which kinds they get.
+  if (isHosted() && !ensureAdmin(req.userId)) {
+    const now = db.prepare('SELECT ntfyTopic, telegramChatId FROM users WHERE id = ?').get(id) as { ntfyTopic: string | null; telegramChatId: string | null };
+    const changes = (key: 'ntfyTopic' | 'telegramChatId') => b[key] !== undefined && clean(b[key]) !== (now[key] ?? '');
+    if (changes('ntfyTopic') || changes('telegramChatId')) return res.status(403).json({ error: 'parent_only' });
+  }
   const updates: Record<string, string | null> = {};
   for (const key of ['ntfyTopic', 'telegramChatId', 'haNotifyService']) if (b[key] !== undefined) updates[key] = clean(b[key]) || null;
   if (b.prefs && typeof b.prefs === 'object') {

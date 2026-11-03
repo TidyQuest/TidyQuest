@@ -94,3 +94,38 @@ export function ConfirmEmail({ signedIn }: { signedIn: boolean }) {
     </AuthCard>
   );
 }
+
+/**
+ * The unsubscribe link in a news email (NEW-34): asks first, so a mail scanner opening the link doesn't
+ * unsubscribe anyone. Mail apps' own one-click button posts to the server directly.
+ */
+export function Unsubscribe() {
+  const [params] = useSearchParams();
+  const [language] = useState(authLanguage);
+  const { t } = useTranslation(language);
+  const [state, setState] = useState<'ask' | 'busy' | 'done' | { failed: unknown }>('ask');
+  const email = params.get('e') ?? '';
+  const stop = () => {
+    setState('busy');
+    api.unsubscribe(email, params.get('s') ?? '').then(() => setState('done')).catch((failed) => setState({ failed }));
+  };
+  return (
+    <AuthCard title={t('hosted.unsubscribeTitle')}>
+      {state === 'done' ? (
+        <p role="status" style={{ margin: 0, color: 'var(--warm-text)', fontWeight: 700, textAlign: 'center', overflowWrap: 'anywhere' }}>
+          {t('hosted.unsubscribeDone').replace('{email}', email)}
+        </p>
+      ) : (
+        <>
+          <p style={{ margin: '0 0 14px', color: 'var(--warm-text)', fontWeight: 700, textAlign: 'center', overflowWrap: 'anywhere' }}>
+            {t('hosted.unsubscribeAsk').replace('{email}', email)}
+          </p>
+          {typeof state === 'object' && <div role="alert" style={authError}>{hostedError(state.failed, t, t('common.actionFailed'))}</div>}
+          <button type="button" className="tq-btn tq-btn-primary tq-btn-lg" disabled={state === 'busy'} onClick={stop} style={{ width: '100%', justifyContent: 'center' }}>
+            {t('hosted.unsubscribeAction')}
+          </button>
+        </>
+      )}
+    </AuthCard>
+  );
+}

@@ -1,6 +1,7 @@
 import { currentFamily, isHosted, runInFamily } from './context';
 import { familyStatus, openFamily, purgeDeletedFamilies } from './families';
 import { mainDb } from './mainDb';
+import { endInactiveFamilies, endUnconfirmedFamilies, forgetOldWaitlist } from './privacy';
 import { endExpiredTrials } from './trials';
 
 // The background jobs (HOSTED.md §6): every 30 seconds, each family's jobs inside its own database, one
@@ -62,12 +63,15 @@ export async function runJobs(jobs: Job[], now?: Date): Promise<boolean> {
   return true;
 }
 
-/** Once a day (UTC), hosted: remove families deleted 30+ days ago, and warn about or delete expired trials. */
+/**
+ * Once a day (UTC), hosted: remove families deleted 30+ days ago; warn about or delete expired trials,
+ * families whose parent never confirmed, and families unused for a year; forget old waitlist entries.
+ */
 async function dailyJobs(now: Date): Promise<void> {
   const day = now.toISOString().slice(0, 10);
   if (day === dailyRunOn) return;
   dailyRunOn = day;
-  for (const job of [purgeDeletedFamilies, endExpiredTrials]) await runJob(job, now);
+  for (const job of [purgeDeletedFamilies, endExpiredTrials, endUnconfirmedFamilies, endInactiveFamilies, forgetOldWaitlist]) await runJob(job, now);
 }
 
 /** Tests: forget the last daily run. */

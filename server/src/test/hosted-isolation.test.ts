@@ -95,7 +95,7 @@ async function seed(familyId: string, db: Db, m: string): Promise<Family> {
     { title: `${m} badge`, description: `${m} badge`, metric: 'task_count', threshold: 1, taskIds: [ids.tasks] })).id;
   ids.user_goals = (await step('post', `/api/users/${k}/goals`, p,
     { title: `${m} goal`, goalCoins: 10, startAt: at(-HOUR), endAt: at(48 * HOUR), rewardCoins: 5 })).id;
-  await step('put', `/api/notify/people/${k}`, kid.token, { ntfyTopic: `${m.toLowerCase()}-topic` });
+  await step('put', `/api/notify/people/${k}`, p, { ntfyTopic: `${m.toLowerCase()}-topic` });
 
   // Team-ups: one for anyone, declined; one with an invite, joined
   const teamupId = (body: any): number => body.id ?? body.teamup?.id;

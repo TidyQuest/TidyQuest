@@ -8,6 +8,7 @@ import { isHosted, runInFamily } from '../hosted/context';
 import { openFamily } from '../hosted/families';
 import { familyIdByCode, codeKey } from '../hosted/familyCode';
 import { accountByEmail, cleanEmail } from '../hosted/accounts';
+import { familyConsented } from '../hosted/legal';
 import { RATE_LIMIT_MAX, addFailure, checkRateLimit, clearFailures, failuresOf } from '../utils/throttle';
 
 // Limits on registering and logging in, per address and per login name (utils/throttle.ts). The address is
@@ -113,6 +114,10 @@ router.post('/login', (req: AuthRequest, res: Response) => {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
     clearFailures(userKey);
+    // Hosted: members and children can't sign in until a parent has confirmed their email (NEW-34, COPPA)
+    if (isHosted() && user.role !== 'admin' && !familyConsented(req.familyId!)) {
+      return res.status(403).json({ error: 'A parent needs to confirm their email before you can sign in', code: 'awaiting-parent' });
+    }
     sendLogin(res, user);
   };
   if (!isHosted()) return signIn(db.prepare('SELECT * FROM users WHERE username = ? COLLATE NOCASE').get(username));

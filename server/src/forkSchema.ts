@@ -302,6 +302,12 @@ const NEW_COLUMNS: string[] = [
   // Deleting a reward hides it (deletedAt set) but keeps the row, like chores (FIX-22): its purchases keep their
   // name in Insights, the coins chart and Approvals. The shop, the catalog and reward rules filter deletedAt IS NULL.
   `ALTER TABLE rewards ADD COLUMN deletedAt TEXT`,
+  // Hosted mode (NEW-34): when this person agreed to the terms and the privacy policy, and which versions
+  // (TERMS_VERSION, PRIVACY_VERSION). The first parent agrees at sign-up; other parents and members the
+  // first time they sign in, and again after either changes. Children sign nothing.
+  `ALTER TABLE users ADD COLUMN agreedAt TEXT`,
+  `ALTER TABLE users ADD COLUMN agreedTerms TEXT`,
+  `ALTER TABLE users ADD COLUMN agreedPrivacy TEXT`,
 ];
 
 /** Fork tables included in backup export/import: key in the backup file -> table. */
