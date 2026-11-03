@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { api, forgetPhotos, type LoginDetails } from './useApi';
 import { deviceZone } from '../utils/clock';
 
@@ -32,26 +32,16 @@ export interface User {
 
 export function useAuth() {
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  // Only a saved token needs checking; with none, the login page shows straight away
+  const [loading, setLoading] = useState(() => !!localStorage.getItem('tidyquest_token'));
 
-  const checkAuth = useCallback(async () => {
-    const token = localStorage.getItem('tidyquest_token');
-    if (!token) {
-      setLoading(false);
-      return;
-    }
-    try {
-      const userData = await api.me();
-      setUser(userData);
-    } catch {
+  useEffect(() => {
+    if (!localStorage.getItem('tidyquest_token')) return;
+    api.me().then(setUser).catch(() => {
       localStorage.removeItem('tidyquest_token');
       forgetPhotos();
-    } finally {
-      setLoading(false);
-    }
+    }).finally(() => setLoading(false));
   }, []);
-
-  useEffect(() => { checkAuth(); }, [checkAuth]);
 
   const login = async (details: LoginDetails) => {
     const { token, user: userData } = await api.login(details);
