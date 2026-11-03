@@ -9,6 +9,8 @@ What changed in each release, in plain language, newest first. Releases up to v0
 
 ## Unreleased
 
+## v0.15.4 (2026-11-03)
+
 ### Added
 - **Privacy basics for tidyquest.org** (hosted mode). With `TERMS_URL` and `PRIVACY_URL` set:
   - The sign-up box now says "I'm 18 or over and the parent or guardian of any children I add. I agree to the Terms
