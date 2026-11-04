@@ -308,6 +308,11 @@ const NEW_COLUMNS: string[] = [
   `ALTER TABLE users ADD COLUMN agreedAt TEXT`,
   `ALTER TABLE users ADD COLUMN agreedTerms TEXT`,
   `ALTER TABLE users ADD COLUMN agreedPrivacy TEXT`,
+  // Family members who don't log in (ENH-16): 0 = a parent does everything for them. Their passwordHash is an
+  // unusable random one, they're left out of the login picker and get no notifications. Never 0 for a parent.
+  `ALTER TABLE users ADD COLUMN canLogIn INTEGER NOT NULL DEFAULT 1`,
+  // The parent who bought this reward for someone (ENH-16); NULL = the person bought it themselves
+  `ALTER TABLE reward_redemptions ADD COLUMN boughtBy INTEGER`,
 ];
 
 /** Fork tables included in backup export/import: key in the backup file -> table. */

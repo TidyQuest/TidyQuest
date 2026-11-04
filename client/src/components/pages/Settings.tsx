@@ -2,6 +2,7 @@ import { useCallback, useContext, useEffect, useState } from 'react';
 import { UserAvatar } from '../shared/UserAvatar';
 import { EffortDots } from '../shared/EffortDots';
 import { Toggle } from '../shared/Toggle';
+import { MemberLogin } from '../shared/MemberLogin';
 import { ShieldIcons } from '../shared/StreakShields';
 import { PendingApprovals } from '../shared/PendingApprovals';
 import { RewardRulesEditor } from '../shared/RewardRulesEditor';
@@ -58,6 +59,9 @@ interface FamilyUser {
   vacationStartDate?: string | null;
   vacationEndDate?: string | null;
   isParticipant?: number;
+  username?: string;
+  /** 0 = a parent switched off their login (ENH-16) */
+  canLogIn?: number;
   taskView?: 'all' | 'mine' | 'mineOnly';
   kidMode?: number | boolean;
   focusMode?: FocusModeSetting;
@@ -92,7 +96,9 @@ interface SettingsProps {
   vacationConfig?: VacationConfig;
   onUpdateVacation?: (data: { vacationMode?: boolean; vacationEndDate?: string | null }) => Promise<void>;
   onUpdateRole: (userId: number, role: 'admin' | 'member' | 'child') => void;
-  onAddMember: (data: { username: string; password: string; displayName: string; role: 'child' }) => Promise<void>;
+  onAddMember: (data: { username?: string; password?: string; displayName: string; role: 'child'; canLogIn?: boolean }) => Promise<void>;
+  /** "Can log in" on a member's card (ENH-16) */
+  onSetMemberLogin: (userId: number, data: { canLogIn: boolean; password?: string }) => Promise<void>;
   onDeleteUser: (userId: number) => Promise<void>;
   onUpdateMemberProfile: (userId: number, data: { avatarType?: string; avatarColor?: string; avatarPreset?: string | null; language?: string; birthday?: string | null; theme?: string | null }) => Promise<void>;
   onChangePassword: (userId: number, data: { currentPassword?: string; newPassword: string }) => Promise<void>;
@@ -130,6 +136,7 @@ export function Settings({
   onUpdateVacation,
   onUpdateRole,
   onAddMember,
+  onSetMemberLogin,
   onDeleteUser,
   onUpdateMemberProfile,
   onChangePassword,
@@ -167,6 +174,8 @@ export function Settings({
   const [newMemberName, setNewMemberName] = useState('');
   const [newMemberUsername, setNewMemberUsername] = useState('');
   const [newMemberPassword, setNewMemberPassword] = useState('');
+  // Off: someone who doesn't log in (ENH-16), so no username or password
+  const [newMemberCanLogIn, setNewMemberCanLogIn] = useState(true);
   const [coinsDraft, setCoinsDraft] = useState<Record<number, number>>(coinsByEffort);
   const [memberEditOpen, setMemberEditOpen] = useState<Record<number, boolean>>({});
   const [memberPassword, setMemberPassword] = useState<Record<number, string>>({});
@@ -341,6 +350,7 @@ export function Settings({
     setNewMemberName('');
     setNewMemberUsername('');
     setNewMemberPassword('');
+    setNewMemberCanLogIn(true);
   };
 
   const initMemberProfile = (u: FamilyUser) => {
@@ -358,15 +368,15 @@ export function Settings({
   };
 
   const handleAddMember = async () => {
-    if (!newMemberName.trim() || !newMemberUsername.trim() || !newMemberPassword.trim()) return;
+    if (!newMemberName.trim() || (newMemberCanLogIn && (!newMemberUsername.trim() || !newMemberPassword.trim()))) return;
     setAddMemberError('');
     try {
-      await onAddMember({
+      await onAddMember(newMemberCanLogIn ? {
         displayName: newMemberName.trim(),
         username: newMemberUsername.trim(),
         password: newMemberPassword,
         role: 'child',
-      });
+      } : { displayName: newMemberName.trim(), role: 'child', canLogIn: false });
     } catch (err) {
       // A taken username, or hosted mode's limit on people
       setAddMemberError(limitError(err, t, (err as Error)?.message || t('common.actionFailed')));
@@ -1342,10 +1352,19 @@ export function Settings({
         </div>
         {showAddMember && (
           <div style={{ marginBottom: 14, padding: 12, borderRadius: 12, backgroundColor: 'var(--warm-bg-warm)', border: '1.5px solid var(--warm-border)' }}>
-            <div className="family-members-add-form" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr auto auto', gap: 8 }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, marginBottom: 10 }}>
+              <div>
+                <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--warm-text)' }}>{t('memberLogin.title')}</div>
+                <div style={{ fontSize: 11, color: 'var(--warm-text-light)', fontWeight: 500, marginTop: 2 }}>{t(newMemberCanLogIn ? 'memberLogin.addOnDesc' : 'memberLogin.addOffDesc')}</div>
+              </div>
+              <Toggle checked={newMemberCanLogIn} onChange={setNewMemberCanLogIn} label={t('memberLogin.title')} />
+            </div>
+            <div className="family-members-add-form" style={{ display: 'grid', gridTemplateColumns: newMemberCanLogIn ? '1fr 1fr 1fr auto auto' : '1fr auto auto', gap: 8 }}>
               <input className="tq-input" value={newMemberName} onChange={(e) => setNewMemberName(e.target.value)} placeholder={t('settings.memberDisplayName')} />
-              <input className="tq-input" value={newMemberUsername} onChange={(e) => setNewMemberUsername(e.target.value)} placeholder={t('settings.memberUsername')} />
-              <input className="tq-input" value={newMemberPassword} onChange={(e) => setNewMemberPassword(e.target.value)} type="password" placeholder={t('settings.memberPassword')} />
+              {newMemberCanLogIn && <>
+                <input className="tq-input" value={newMemberUsername} onChange={(e) => setNewMemberUsername(e.target.value)} placeholder={t('settings.memberUsername')} />
+                <input className="tq-input" value={newMemberPassword} onChange={(e) => setNewMemberPassword(e.target.value)} type="password" placeholder={t('settings.memberPassword')} />
+              </>}
               <button className="tq-btn tq-btn-secondary tq-btn-sm" onClick={resetMemberForm}>{t('common.cancel')}</button>
               <button className="tq-btn tq-btn-primary tq-btn-sm" onClick={handleAddMember}>{t('settings.create')}</button>
             </div>
@@ -1375,6 +1394,11 @@ export function Settings({
                   }}>
                       {u.role === 'admin' ? t('settings.roleAdmin') : u.role === 'member' ? t('settings.roleMember') : t('settings.roleChild')}
                   </span>
+                  {u.canLogIn === 0 && (
+                    <span title={t('memberLogin.offDesc')} style={{ fontSize: 10, fontWeight: 800, color: 'var(--warm-text-muted)', border: '1px solid var(--warm-border)', borderRadius: 999, padding: '2px 7px', whiteSpace: 'nowrap' }}>
+                      🔒 {t('memberLogin.chip')}
+                    </span>
+                  )}
                   </div>
                   <div className="family-member-stats" style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 2 }}>
                     <span style={{ fontSize: 11, color: 'var(--warm-text-light)', fontWeight: 600 }}>{u.coins} {t('settings.coins')}</span>
@@ -1392,7 +1416,8 @@ export function Settings({
                       onChange={(e) => onUpdateRole(u.id, e.target.value as 'admin' | 'member' | 'child')}
                       style={{ width: 'auto', cursor: 'pointer', fontSize: 11 }}
                     >
-                      <option value="admin">{t('settings.roleAdmin')}</option>
+                      {/* A parent always logs in (ENH-16) */}
+                      <option value="admin" disabled={u.canLogIn === 0}>{t('settings.roleAdmin')}</option>
                       <option value="member">{t('settings.roleMember')}</option>
                       <option value="child">{t('settings.roleChild')}</option>
                     </select>
@@ -1446,7 +1471,13 @@ export function Settings({
                   />
                 </div>
               )}
-              {isAdmin && u.id !== user.id && (() => {
+              {isAdmin && u.id !== user.id && u.role !== 'admin' && (
+                <div style={{ marginTop: 10, paddingTop: 10, borderTop: '1px solid var(--warm-border)' }}>
+                  <MemberLogin member={u} language={user.language} onChange={(data) => onSetMemberLogin(u.id, data)} />
+                </div>
+              )}
+              {/* How the app looks for them: nothing to set for someone who doesn't log in */}
+              {isAdmin && u.id !== user.id && u.canLogIn !== 0 && (() => {
                 const view = memberView[u.id] ?? { taskView: u.taskView ?? 'all', kidMode: !!u.kidMode, focusMode: u.focusMode ?? null };
                 const saveView = async (next: { taskView: 'all' | 'mine' | 'mineOnly'; kidMode: boolean; focusMode: FocusModeSetting }) => {
                   setMemberView((prev) => ({ ...prev, [u.id]: next }));
@@ -1528,6 +1559,7 @@ export function Settings({
                         <div style={{ fontSize: 11, color: 'var(--warm-text-light)', fontWeight: 700 }}>{memberProfileMsg[u.id]}</div>
                       )}
                     </div>
+                    {u.canLogIn !== 0 && <>
                     <div className="member-edit-password-row" style={{ display: 'flex', gap: 8 }}>
                       <input type="password" className="tq-input" value={memberPassword[u.id] || ''} onChange={(e) => setMemberPassword((prev) => ({ ...prev, [u.id]: e.target.value }))} placeholder={t('settings.newPassword')} style={{ flex: 1 }} />
                       <button className="tq-btn tq-btn-secondary tq-btn-sm" onClick={() => handleSetChildPassword(u)}>{t('settings.resetPassword')}</button>
@@ -1541,6 +1573,7 @@ export function Settings({
                         <span style={{ fontSize: 11, color: 'var(--warm-text-light)', fontWeight: 700 }}>{logoutAllMsg[u.id]}</span>
                       )}
                     </div>
+                    </>}
                   </>)}
                   {gamificationEnabled && <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
                     <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--warm-text-light)' }}>{t('settings.coinsBalance')}: {formatCoins(u.coins)}</span>

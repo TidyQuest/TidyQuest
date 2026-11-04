@@ -134,6 +134,8 @@ export function hostedError(err: unknown, t: (key: string) => string, fallback: 
     captcha: 'hosted.captchaNeeded',
     'signups-closed': 'hosted.errSignupsClosed',
     'awaiting-parent': 'hosted.errAwaitingParent',
+    // Self-hosted too: someone a parent switched to "can't log in" (ENH-16)
+    'no-login': 'auth.noLogin',
     'wrong-name': 'hosted.errWrongName',
     'photo-type': 'photos.unreadable',
   };

@@ -26,6 +26,8 @@ export interface Person {
   telegramChatId: string | null;
   haNotifyService: string | null;
   prefs: Partial<Record<NotifyKind, boolean>>;
+  /** 0 = a parent switched off their login (ENH-16) */
+  canLogIn?: number;
 }
 
 export type Audience = number[] | 'parents' | 'kids' | 'everyone';
@@ -87,7 +89,7 @@ function parsePrefs(raw: unknown): Partial<Record<NotifyKind, boolean>> {
 }
 
 export function getPeople(): Person[] {
-  return (prepared('SELECT id, displayName, role, language, ntfyTopic, telegramChatId, haNotifyService, notifyPrefs FROM users ORDER BY id').all() as any[])
+  return (prepared('SELECT id, displayName, role, language, ntfyTopic, telegramChatId, haNotifyService, notifyPrefs, canLogIn FROM users ORDER BY id').all() as any[])
     .map((u) => ({ ...u, language: u.language || 'en', prefs: parsePrefs(u.notifyPrefs) }));
 }
 
@@ -163,6 +165,7 @@ export function alreadySent(dedupeKey: string, userId: number | null, now: Date 
 
 async function deliver(userId: number | null, kind: string, message: string, dedupeKey: string | null, now: Date): Promise<boolean> {
   const person = userId === null ? null : getPeople().find((p) => p.id === userId) ?? null;
+  if (person && !receives(person)) return false;
   const channels = person ? personalChannels(person) : familyChannels();
   let any = false;
   for (const c of channels) {
@@ -197,11 +200,15 @@ export function notificationsOn(kind: NotifyKind): boolean {
   return getSetting('notificationsEnabled') === '1' && getNotificationTypeSettings()[kind] !== false;
 }
 
+/** Someone a parent switched to "can't log in" gets nothing on any channel (ENH-16); their settings are kept */
+export const receives = (p: Person) => p.canLogIn !== 0;
+
 function resolve(audience: Audience, people: Person[]): Person[] {
-  if (Array.isArray(audience)) return people.filter((p) => audience.includes(p.id));
-  if (audience === 'parents') return people.filter((p) => p.role === 'admin');
-  if (audience === 'kids') return people.filter((p) => p.role !== 'admin');
-  return people;
+  const all = people.filter(receives);
+  if (Array.isArray(audience)) return all.filter((p) => audience.includes(p.id));
+  if (audience === 'parents') return all.filter((p) => p.role === 'admin');
+  if (audience === 'kids') return all.filter((p) => p.role !== 'admin');
+  return all;
 }
 
 /**
@@ -234,7 +241,7 @@ export async function notifyPeople(audience: Audience, kind: NotifyKind, build: 
 /** Send one test message to a person's own channels (Settings → "Send a test"). */
 export async function sendPersonTest(userId: number, message: string): Promise<Array<{ channel: string; ok: boolean; error?: string }>> {
   const person = getPeople().find((p) => p.id === userId);
-  if (!person) return [];
+  if (!person || !receives(person)) return [];
   const out: Array<{ channel: string; ok: boolean; error?: string }> = [];
   for (const c of personalChannels(person)) {
     const r = await transport({ ...c, message }).catch(() => ({ ok: false, error: 'send failed' }));

@@ -109,6 +109,18 @@ export const GUIDE_IT: GuideSection[] = [
         'Password: un genitore può impostarne una nuova se qualcuno dimentica la sua. La persona viene disconnessa da tutti i dispositivi e rientra con quella nuova.',
       ] },
       { tip: 'Attiva "Nascondi ai bambini le stanze private degli altri" in Impostazioni → Generale se i bambini non devono vedere, per esempio, la stanza personale di un genitore.' },
+      { h: 'Qualcuno che non accede' },
+      { p: 'Per un nonno, un bimbo piccolo o chiunque non userà l’app: aggiungilo e fai tutto tu al posto suo, senza nome utente né password.' },
+      { ul: [
+        'Aggiungi membro: disattiva Può accedere, scrivi il nome e tocca Crea.',
+        'Può accedere, sulla scheda di un membro, lo cambia per chi è già stato aggiunto. Disattivato, viene disconnesso da tutti i dispositivi. Riattivarlo chiede una nuova password, poi mostra il nome utente con cui accede.',
+        'Le sue faccende: spuntale nella stanza o nella pagina Compiti e sceglilo in "chi l’ha fatta?". Conta subito come approvata, anche con la Modalità rigorosa.',
+        'Le sue ricompense: in Ricompense, sceglilo sotto Compra per (vedi "Monete, ricompense e obiettivi").',
+        'Monete e scudi della serie funzionano come per tutti, in Gestisci membro.',
+        'Non riceve nessuna notifica, su nessun canale. Le sue impostazioni delle notifiche restano per quando potrà accedere di nuovo.',
+        'Non compare nella schermata di accesso e non può essere invitato a fare squadra. Per una faccenda fatta insieme, scegli tutti in "chi l’ha fatta?".',
+        'I genitori accedono sempre, quindi vale solo per membri e bambini. Su tidyquest.org contano comunque tra le 15 persone.',
+      ] },
       { h: 'Uscire ovunque' },
       { ul: [
         'Profilo → Esci da tutti gli altri dispositivi: ti disconnette da tutti gli altri telefoni, tablet e computer e ti lascia connesso su questo. Utile dopo aver usato il dispositivo di qualcun altro, o se qualcuno potrebbe conoscere la tua password.',
@@ -269,6 +281,8 @@ export const GUIDE_IT: GuideSection[] = [
         'Regole per ricompensa: un limite (al giorno, alla settimana, al mese o in totale; per persona o per tutti), un intervallo di date, A rotazione (ogni settimana ne compaiono solo alcune), chi può vederla, un prezzo diverso per persona e una categoria.',
         'Risparmio condiviso: chiunque può versare monete in un salvadanaio; quando è pieno passa a un genitore. Il campo del contributo parte da 0 e ogni contributo compare in Attività. Un salvadanaio pieno non si può annullare dalle mie richieste ("Condiviso: decide un genitore"): un genitore lo rifiuta e tutti riavranno le loro monete.',
       ] },
+      { h: 'Comprare per qualcun altro' },
+      { p: 'Genitori: in cima a Ricompense, scegliete qualcuno sotto Compra per. Il negozio mostra allora le sue monete, i suoi prezzi e i suoi limiti, e quello che comprate si paga con le sue monete. Conta come consegnato, quindi nessuno deve approvarlo. Attività e Statistiche lo mostrano come suo, comprato da voi. Comodo per chi non accede (vedi "Persone e ruoli"). Le ricompense condivise (salvadanaio) restano come prima.' },
       { h: 'Nascondere una ricompensa' },
       { ul: [
         'Impostazioni → Catalogo ricompense: tocca Nascondi accanto a una ricompensa. I figli non la vedono più; i genitori la vedono in grigio in fondo alla lista, con Nascosto. Tocca Mostra per riportarla.',
@@ -581,6 +595,11 @@ export const GUIDE_IT: GuideSection[] = [
           'Un genitore può impostare una nuova password in Impostazioni → Membri della famiglia.',
           'Nessun genitore riesce ad accedere? Chi gestisce il server può reimpostare la password del primo genitore con ADMIN_RESET_PASSWORD (README, "Admin Password Recovery"). "Password dimenticata?" nella schermata di accesso dice lo stesso.',
           'Dopo aver importato un backup, chi aveva già un account su questo server mantiene la sua password. Chi è nuovo su questo server ha bisogno che un genitore gliene imposti una in Membri della famiglia.',
+        ] },
+        { q: 'Qualcuno non è nella schermata di accesso, oppure dice che l’accesso è disattivato', a: [
+          'Un genitore ha disattivato Può accedere per lui: la sua scheda in Impostazioni → Membri della famiglia dice 🔒 Senza accesso. Su tidyquest.org l’accesso dice solo che nome o password sono sbagliati.',
+          'Per farlo entrare, riattiva Può accedere, scrivi una nuova password e tocca Attiva. Poi compare il nome utente con cui accedere.',
+          'I genitori accedono sempre: l’interruttore c’è solo sulle schede di membri e bambini, e chi non accede non può diventare genitore finché non è riattivato.',
         ] },
         { q: 'Un bambino non riesce ad accedere su tidyquest.org', a: [
           'Controlla il codice in Impostazioni → 🔑 Codice famiglia sul dispositivo di un genitore. Dopo Nuovo codice il vecchio non funziona più: nella schermata di accesso tocca Cambia accanto al codice e scrivi quello nuovo.',

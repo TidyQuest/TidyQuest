@@ -423,7 +423,13 @@
       "sortPriceHigh": "Price: high to low",
       "sortName": "Name A–Z",
       "noMatches": "No rewards match.",
-      "sharedParentDecides": "Shared: a parent decides"
+      "sharedParentDecides": "Shared: a parent decides",
+      "buyingFor": "Buying for",
+      "buyingForMe": "Me",
+      "buyingForHint": "Prices, limits and coins are {name}'s. What you buy is theirs and counts as handed over.",
+      "theirRequests": "{name}'s rewards",
+      "boughtBy": "bought by {name}",
+      "confirmTextFor": "Buy \"{reward}\" for {name}? It costs {coins} of their coins."
     },
     "rewardsPreset": {
       "movie_night": {
@@ -489,7 +495,8 @@
       "shield_bought": "Bought a streak shield",
       "shield_given": "Got a streak shield",
       "shield_used": "A shield saved a {n}-day streak",
-      "shield_usedMany": "{count} shields saved a {n}-day streak"
+      "shield_usedMany": "{count} shields saved a {n}-day streak",
+      "boughtReward": "Bought {reward}"
     },
     "roomDetail": {
       "name": "Name",
@@ -712,7 +719,8 @@
       "forgotPassword": "Forgot password?",
       "forgotAskParent": "Ask a parent to set a new one in Settings → Family Members.",
       "forgotNoParent": "No parent can log in? Whoever runs the server can reset the first parent’s password.",
-      "forgotHowTo": "How to reset it"
+      "forgotHowTo": "How to reset it",
+      "noLogin": "A parent turned off logging in for you. Ask them to turn it back on in Settings → Family Members."
     },
     "achievements": {
       "familyProgress": "Family Progress",
@@ -2096,6 +2104,21 @@
     },
     "photos": {
       "unreadable": "This photo can't be read here. Try a JPEG or PNG, or a screenshot of it."
+    },
+    "memberLogin": {
+      "title": "Can log in",
+      "onDesc": "They sign in with their own username and password.",
+      "offDesc": "No login: you tick off their chores with \"who did it?\" and buy their rewards. They get no notifications.",
+      "addOnDesc": "They'll sign in with a username and password.",
+      "addOffDesc": "For someone who won't use the app: no username or password. You do everything for them.",
+      "offConfirm": "Turn off logging in for {name}? They're signed out on every device and get no notifications. Their chores, coins and streak stay.",
+      "offDone": "{name} can't log in now.",
+      "onDone": "{name} can log in now as \"{username}\".",
+      "passwordFor": "New password for {name}",
+      "passwordShort": "The password needs at least 4 characters.",
+      "turnOn": "Turn on",
+      "chip": "No login",
+      "noNotifications": "Can't log in: nothing is sent"
     }
   }
 }

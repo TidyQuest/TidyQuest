@@ -246,6 +246,7 @@ export function CoinsCard({ data, weeks, onWeeks, people, language, t, rangeLabe
                 <div style={{ ...muted, display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '2px 10px', marginTop: 2 }}>
                   <span style={{ whiteSpace: 'nowrap' }}>{homeDate(r.at).toLocaleDateString(locale, { weekday: 'short', day: 'numeric', month: 'short' })}</span>
                   {r.payers.map((p) => <Payer key={p.id} p={p} coins={r.payers.length > 1 ? fmt(p.coins) : undefined} />)}
+                  {r.boughtBy && <span style={{ whiteSpace: 'nowrap' }}>🛒 {t('rewards.boughtBy').replace('{name}', r.boughtBy)}</span>}
                   {r.waiting && <span style={waitingTag}>⏳ {t('insights.waiting')}</span>}
                 </div>
               </li>

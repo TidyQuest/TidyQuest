@@ -423,7 +423,13 @@
       "sortPriceHigh": "Precio: de mayor a menor",
       "sortName": "Nombre A–Z",
       "noMatches": "Ninguna recompensa coincide.",
-      "sharedParentDecides": "Compartida: decide un padre o una madre"
+      "sharedParentDecides": "Compartida: decide un padre o una madre",
+      "buyingFor": "Comprar para",
+      "buyingForMe": "Mí",
+      "buyingForHint": "Precios, límites y monedas de {name}. Lo que compres es de {name} y cuenta como entregado.",
+      "theirRequests": "Recompensas de {name}",
+      "boughtBy": "comprado por {name}",
+      "confirmTextFor": "¿Comprar \"{reward}\" para {name}? Cuesta {coins} de sus monedas."
     },
     "rewardsPreset": {
       "movie_night": {
@@ -489,7 +495,8 @@
       "shield_bought": "Compró un escudo de racha",
       "shield_given": "Recibió un escudo de racha",
       "shield_used": "Un escudo salvó una racha de {n} días",
-      "shield_usedMany": "{count} escudos salvaron una racha de {n} días"
+      "shield_usedMany": "{count} escudos salvaron una racha de {n} días",
+      "boughtReward": "Compró {reward}"
     },
     "roomDetail": {
       "name": "Nombre",
@@ -712,7 +719,8 @@
       "forgotPassword": "¿Olvidaste la contraseña?",
       "forgotAskParent": "Pide a un padre o una madre que te ponga una nueva en Ajustes → Miembros de la familia.",
       "forgotNoParent": "¿Ningún padre ni madre puede iniciar sesión? Quien gestiona el servidor puede restablecer la contraseña del primer padre o madre.",
-      "forgotHowTo": "Cómo restablecerla"
+      "forgotHowTo": "Cómo restablecerla",
+      "noLogin": "Un padre o una madre desactivó tu inicio de sesión. Pídele que lo vuelva a activar en Ajustes → Miembros de la familia."
     },
     "achievements": {
       "familyProgress": "Progreso familiar",
@@ -2096,6 +2104,21 @@
     },
     "photos": {
       "unreadable": "Esta foto no se puede leer aquí. Prueba con un JPEG o un PNG, o con una captura de pantalla."
+    },
+    "memberLogin": {
+      "title": "Puede iniciar sesión",
+      "onDesc": "Entra con su propio usuario y contraseña.",
+      "offDesc": "Sin inicio de sesión: tú marcas sus tareas con \"¿quién la hizo?\" y compras sus recompensas. No recibe notificaciones.",
+      "addOnDesc": "Entrará con un usuario y una contraseña.",
+      "addOffDesc": "Para alguien que no usará la app: sin usuario ni contraseña. Tú lo haces todo por esa persona.",
+      "offConfirm": "¿Desactivar el inicio de sesión de {name}? Se cerrará su sesión en todos los dispositivos y no recibirá notificaciones. Sus tareas, monedas y racha se quedan.",
+      "offDone": "{name} ya no puede iniciar sesión.",
+      "onDone": "{name} ya puede iniciar sesión como «{username}».",
+      "passwordFor": "Nueva contraseña para {name}",
+      "passwordShort": "La contraseña necesita al menos 4 caracteres.",
+      "turnOn": "Activar",
+      "chip": "Sin sesión",
+      "noNotifications": "Sin sesión: no se envía nada"
     }
   }
 }

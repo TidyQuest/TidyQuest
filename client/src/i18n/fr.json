@@ -423,7 +423,13 @@
       "sortPriceHigh": "Prix décroissant",
       "sortName": "Nom A–Z",
       "noMatches": "Aucune récompense ne correspond.",
-      "sharedParentDecides": "Partagée : un parent décide"
+      "sharedParentDecides": "Partagée : un parent décide",
+      "buyingFor": "Acheter pour",
+      "buyingForMe": "Moi",
+      "buyingForHint": "Prix, limites et pièces de {name}. Ce que vous achetez est à {name} et compte comme remis.",
+      "theirRequests": "Récompenses de {name}",
+      "boughtBy": "acheté par {name}",
+      "confirmTextFor": "Acheter \"{reward}\" pour {name} ? Cela coûte {coins} de ses pièces."
     },
     "rewardsPreset": {
       "movie_night": {
@@ -489,7 +495,8 @@
       "shield_bought": "A acheté un bouclier de série",
       "shield_given": "A reçu un bouclier de série",
       "shield_used": "Un bouclier a sauvé une série de {n} jours",
-      "shield_usedMany": "{count} boucliers ont sauvé une série de {n} jours"
+      "shield_usedMany": "{count} boucliers ont sauvé une série de {n} jours",
+      "boughtReward": "A acheté {reward}"
     },
     "roomDetail": {
       "name": "Nom",
@@ -712,7 +719,8 @@
       "forgotPassword": "Mot de passe oublié ?",
       "forgotAskParent": "Demande à un parent d’en définir un nouveau dans Paramètres → Membres de la famille.",
       "forgotNoParent": "Aucun parent ne peut se connecter ? La personne qui gère le serveur peut réinitialiser le mot de passe du premier parent.",
-      "forgotHowTo": "Comment le réinitialiser"
+      "forgotHowTo": "Comment le réinitialiser",
+      "noLogin": "Un parent a désactivé ta connexion. Demande-lui de la réactiver dans Paramètres → Membres de la famille."
     },
     "achievements": {
       "familyProgress": "Progression famille",
@@ -2096,6 +2104,21 @@
     },
     "photos": {
       "unreadable": "Cette photo ne peut pas être lue ici. Essayez un JPEG ou un PNG, ou une capture d'écran de la photo."
+    },
+    "memberLogin": {
+      "title": "Peut se connecter",
+      "onDesc": "Se connecte avec son propre nom d'utilisateur et mot de passe.",
+      "offDesc": "Sans connexion : vous cochez ses tâches avec « qui l’a faite ? » et achetez ses récompenses. Aucune notification.",
+      "addOnDesc": "Se connectera avec un nom d'utilisateur et un mot de passe.",
+      "addOffDesc": "Pour quelqu'un qui n'utilisera pas l'app : ni nom d'utilisateur ni mot de passe. Vous faites tout à sa place.",
+      "offConfirm": "Désactiver la connexion pour {name} ? Déconnexion sur tous les appareils et plus aucune notification. Ses tâches, pièces et série restent.",
+      "offDone": "{name} ne peut plus se connecter.",
+      "onDone": "{name} peut maintenant se connecter avec « {username} ».",
+      "passwordFor": "Nouveau mot de passe pour {name}",
+      "passwordShort": "Le mot de passe doit faire au moins 4 caractères.",
+      "turnOn": "Activer",
+      "chip": "Sans connexion",
+      "noNotifications": "Sans connexion : rien n'est envoyé"
     }
   }
 }

@@ -109,6 +109,18 @@ export const GUIDE_ES: GuideSection[] = [
         'Contraseña: un padre o una madre puede poner una nueva si alguien olvida la suya. Eso cierra la sesión de esa persona en todos sus dispositivos, y vuelve a entrar con la nueva.',
       ] },
       { tip: 'Activa "Ocultar a los niños las habitaciones privadas de otros" en Ajustes → General si los niños no deben ver, por ejemplo, la habitación de un padre o una madre.' },
+      { h: 'Alguien que no inicia sesión' },
+      { p: 'Para un abuelo, un niño pequeño o cualquiera que no vaya a usar la app: añádelo y hazlo todo por esa persona, sin usuario ni contraseña.' },
+      { ul: [
+        'Añadir miembro: desactiva Puede iniciar sesión, escribe su nombre y toca Crear.',
+        'Puede iniciar sesión, en la tarjeta de un miembro, lo cambia para alguien ya añadido. Desactivado, se cierra su sesión en todos los dispositivos. Al volver a activarlo pide una contraseña nueva y luego muestra el usuario con el que entra.',
+        'Sus tareas: márcalas en la habitación o en la página Tareas y elige a esa persona en "¿quién la hizo?". Cuenta como aprobado al momento, incluso con el Modo estricto.',
+        'Sus recompensas: en Recompensas, elígela en Comprar para (ver "Monedas, recompensas y objetivos").',
+        'Las monedas y los escudos de racha funcionan como para cualquiera, en Gestionar miembro.',
+        'No recibe ninguna notificación, por ningún canal. Sus ajustes de notificaciones se guardan para cuando vuelva a iniciar sesión.',
+        'No aparece en la pantalla de inicio de sesión y no se le puede invitar a un equipo. Para una tarea hecha juntos, elige a todos en "¿quién la hizo?".',
+        'Los padres siempre inician sesión, así que esto es solo para miembros y niños. En tidyquest.org siguen contando para las 15 personas.',
+      ] },
       { h: 'Cerrar sesión en todas partes' },
       { ul: [
         'Perfil → Cerrar sesión en los demás dispositivos: cierra tu sesión en todos tus otros teléfonos, tabletas y ordenadores, y te mantiene conectado en este. Útil después de usar el dispositivo de otra persona, o si alguien puede saber tu contraseña.',
@@ -269,6 +281,8 @@ export const GUIDE_ES: GuideSection[] = [
         'Reglas por recompensa: un límite (por día, semana, mes o total; por persona o para todos), una ventana de fechas, Rotativa (solo se muestran unas pocas cada semana), quién puede verla, un precio distinto por persona y una categoría.',
         'Ahorro compartido: cualquiera puede aportar monedas a un bote; cuando está lleno pasa a un padre o una madre. La casilla de aportar empieza en 0 y cada aportación aparece en Actividad. Un bote lleno no se puede cancelar desde Mi historial de canjes ("Compartida: decide un padre o una madre"): un padre o una madre lo rechaza y todos recuperan sus monedas.',
       ] },
+      { h: 'Comprar para otra persona' },
+      { p: 'Padres: arriba en Recompensas, elige a alguien en Comprar para. La tienda muestra entonces sus monedas, sus precios y sus límites, y lo que compras se paga con sus monedas. Cuenta como entregado, así que nadie tiene que aprobarlo. Actividad y Estadísticas lo muestran como suyo, comprado por ti. Útil para alguien que no inicia sesión (ver "Personas y roles"). Las recompensas compartidas (bote) siguen como antes.' },
       { h: 'Ocultar una recompensa' },
       { ul: [
         'Ajustes → Catálogo de recompensas: toca Ocultar junto a una recompensa. Los niños dejan de verla; los padres la ven en gris al final de la lista, marcada Oculta. Toca Mostrar para recuperarla.',
@@ -581,6 +595,11 @@ export const GUIDE_ES: GuideSection[] = [
           'Un padre o una madre puede poner una contraseña nueva en Ajustes → Miembros de la familia.',
           '¿Ningún padre ni madre puede iniciar sesión? Quien gestiona el servidor puede restablecer la contraseña del primer padre o madre con ADMIN_RESET_PASSWORD (README, "Admin Password Recovery"). "¿Olvidaste la contraseña?" en la pantalla de inicio de sesión dice lo mismo.',
           'Tras importar una copia de seguridad, quien ya tenía una cuenta en este servidor conserva su contraseña. Quien es nuevo en este servidor necesita que un padre o una madre le ponga una en Miembros de la familia.',
+        ] },
+        { q: 'Alguien no está en la pantalla de inicio de sesión, o dice que el inicio de sesión está desactivado', a: [
+          'Un padre o una madre desactivó Puede iniciar sesión para esa persona: su tarjeta en Ajustes → Miembros de la familia dice 🔒 Sin sesión. En tidyquest.org, el inicio de sesión solo dice que el nombre o la contraseña no son correctos.',
+          'Para dejarla entrar, vuelve a activar Puede iniciar sesión, escribe una contraseña nueva y toca Activar. Entonces se muestra el usuario con el que entra.',
+          'Los padres siempre inician sesión: el interruptor solo está en las tarjetas de miembros y niños, y alguien sin inicio de sesión no puede ser padre hasta que se active.',
         ] },
         { q: 'Un niño no puede iniciar sesión en tidyquest.org', a: [
           'Revisa el código en Ajustes → 🔑 Código de familia en el dispositivo de un padre o una madre. Tras Código nuevo, el antiguo deja de funcionar: en la pantalla de inicio de sesión toca Cambiar junto al código y escribe el nuevo.',

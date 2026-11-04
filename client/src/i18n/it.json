@@ -423,7 +423,13 @@
       "sortPriceHigh": "Prezzo: decrescente",
       "sortName": "Nome A–Z",
       "noMatches": "Nessuna ricompensa corrisponde.",
-      "sharedParentDecides": "Condiviso: decide un genitore"
+      "sharedParentDecides": "Condiviso: decide un genitore",
+      "buyingFor": "Compra per",
+      "buyingForMe": "Me",
+      "buyingForHint": "Prezzi, limiti e monete di {name}. Quello che compri è di {name} e conta come consegnato.",
+      "theirRequests": "Ricompense di {name}",
+      "boughtBy": "comprato da {name}",
+      "confirmTextFor": "Comprare \"{reward}\" per {name}? Costa {coins} delle sue monete."
     },
     "rewardsPreset": {
       "movie_night": {
@@ -489,7 +495,8 @@
       "shield_bought": "Ha comprato uno scudo della serie",
       "shield_given": "Ha ricevuto uno scudo della serie",
       "shield_used": "Uno scudo ha salvato una serie di {n} giorni",
-      "shield_usedMany": "{count} scudi hanno salvato una serie di {n} giorni"
+      "shield_usedMany": "{count} scudi hanno salvato una serie di {n} giorni",
+      "boughtReward": "Ha comprato {reward}"
     },
     "roomDetail": {
       "name": "Nome",
@@ -712,7 +719,8 @@
       "forgotPassword": "Password dimenticata?",
       "forgotAskParent": "Chiedi a un genitore di impostarne una nuova in Impostazioni → Membri della famiglia.",
       "forgotNoParent": "Nessun genitore riesce ad accedere? Chi gestisce il server può reimpostare la password del primo genitore.",
-      "forgotHowTo": "Come reimpostarla"
+      "forgotHowTo": "Come reimpostarla",
+      "noLogin": "Un genitore ha disattivato il tuo accesso. Chiedigli di riattivarlo in Impostazioni → Membri della famiglia."
     },
     "achievements": {
       "familyProgress": "Progresso famiglia",
@@ -2096,6 +2104,21 @@
     },
     "photos": {
       "unreadable": "Questa foto non si può leggere qui. Prova con un JPEG o un PNG, o con uno screenshot."
+    },
+    "memberLogin": {
+      "title": "Può accedere",
+      "onDesc": "Accede con il proprio nome utente e password.",
+      "offDesc": "Senza accesso: spunti tu le sue faccende con \"chi l’ha fatta?\" e compri le sue ricompense. Nessuna notifica.",
+      "addOnDesc": "Accederà con nome utente e password.",
+      "addOffDesc": "Per chi non userà l'app: niente nome utente né password. Fai tutto tu al posto suo.",
+      "offConfirm": "Disattivare l'accesso per {name}? Verrà disconnesso da tutti i dispositivi e non riceverà notifiche. Faccende, monete e serie restano.",
+      "offDone": "{name} ora non può accedere.",
+      "onDone": "{name} ora può accedere come «{username}».",
+      "passwordFor": "Nuova password per {name}",
+      "passwordShort": "La password deve avere almeno 4 caratteri.",
+      "turnOn": "Attiva",
+      "chip": "Senza accesso",
+      "noNotifications": "Senza accesso: non viene inviato nulla"
     }
   }
 }

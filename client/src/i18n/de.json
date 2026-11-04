@@ -423,7 +423,13 @@
       "sortPriceHigh": "Preis: absteigend",
       "sortName": "Name A–Z",
       "noMatches": "Keine passenden Belohnungen.",
-      "sharedParentDecides": "Gemeinsam: ein Elternteil entscheidet"
+      "sharedParentDecides": "Gemeinsam: ein Elternteil entscheidet",
+      "buyingFor": "Kaufen für",
+      "buyingForMe": "Mich",
+      "buyingForHint": "Preise, Limits und Münzen von {name}. Was du kaufst, gehört {name} und gilt als übergeben.",
+      "theirRequests": "Belohnungen von {name}",
+      "boughtBy": "gekauft von {name}",
+      "confirmTextFor": "\"{reward}\" für {name} kaufen? Das kostet {coins} Münzen von {name}."
     },
     "rewardsPreset": {
       "movie_night": {
@@ -489,7 +495,8 @@
       "shield_bought": "Hat einen Serienschild gekauft",
       "shield_given": "Hat einen Serienschild bekommen",
       "shield_used": "Ein Schild hat eine {n}-Tage-Serie gerettet",
-      "shield_usedMany": "{count} Schilde haben eine {n}-Tage-Serie gerettet"
+      "shield_usedMany": "{count} Schilde haben eine {n}-Tage-Serie gerettet",
+      "boughtReward": "Hat {reward} gekauft"
     },
     "roomDetail": {
       "name": "Name",
@@ -712,7 +719,8 @@
       "forgotPassword": "Passwort vergessen?",
       "forgotAskParent": "Bitte ein Elternteil, in Einstellungen → Familienmitglieder ein neues festzulegen.",
       "forgotNoParent": "Kein Elternteil kann sich anmelden? Wer den Server betreibt, kann das Passwort des ersten Elternteils zurücksetzen.",
-      "forgotHowTo": "So wird es zurückgesetzt"
+      "forgotHowTo": "So wird es zurückgesetzt",
+      "noLogin": "Ein Elternteil hat deine Anmeldung ausgeschaltet. Bitte darum, sie unter Einstellungen → Familienmitglieder wieder einzuschalten."
     },
     "achievements": {
       "familyProgress": "Fortschritt der Familie",
@@ -2096,6 +2104,21 @@
     },
     "photos": {
       "unreadable": "Dieses Foto kann hier nicht gelesen werden. Versuch es mit einem JPEG oder PNG oder einem Screenshot davon."
+    },
+    "memberLogin": {
+      "title": "Kann sich anmelden",
+      "onDesc": "Meldet sich mit eigenem Benutzernamen und Passwort an.",
+      "offDesc": "Ohne Anmeldung: Du hakst die Aufgaben mit „Wer hat es gemacht?“ ab und kaufst die Belohnungen. Keine Benachrichtigungen.",
+      "addOnDesc": "Meldet sich mit Benutzername und Passwort an.",
+      "addOffDesc": "Für jemanden, der die App nicht nutzt: kein Benutzername, kein Passwort. Du erledigst alles für sie.",
+      "offConfirm": "Anmeldung für {name} ausschalten? {name} wird auf allen Geräten abgemeldet und bekommt keine Benachrichtigungen. Aufgaben, Münzen und Serie bleiben.",
+      "offDone": "{name} kann sich jetzt nicht mehr anmelden.",
+      "onDone": "{name} kann sich jetzt als „{username}“ anmelden.",
+      "passwordFor": "Neues Passwort für {name}",
+      "passwordShort": "Das Passwort braucht mindestens 4 Zeichen.",
+      "turnOn": "Einschalten",
+      "chip": "Ohne Anmeldung",
+      "noNotifications": "Ohne Anmeldung: nichts wird gesendet"
     }
   }
 }

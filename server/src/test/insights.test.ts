@@ -274,7 +274,7 @@ describe('insights', () => {
       expect(res.body.goals).toEqual([[7, kidId, 100], [6, kidId, 90]]);
       // Who bought what and when (ENH-15): the movie is still waiting to be handed over; the pot was, and lists both payers
       const when = expect.stringMatching(/^\d{4}-\d\d-\d\dT/);
-      expect(res.body.bought).toEqual(expect.arrayContaining([[movie, kidId, movieId, 20, when, 1], [pizza, kidId, potId, 12, when, 0], [pizza, admin.user.id, potId, 18, when, 0]]));
+      expect(res.body.bought).toEqual(expect.arrayContaining([[movie, kidId, movieId, 20, when, 1, 0], [pizza, kidId, potId, 12, when, 0, 0], [pizza, admin.user.id, potId, 18, when, 0, 0]]));
       expect(res.body.bought).toHaveLength(3);
       expect(Math.abs(Date.parse(res.body.bought[0][4]) - Date.now())).toBeLessThan(60_000);
       expect(res.body.rewards.map((r: { title: string }) => r.title)).toContain('Never wanted');

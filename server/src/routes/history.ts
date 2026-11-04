@@ -176,8 +176,34 @@ router.get('/', (req: AuthRequest, res: Response) => {
     `).all(...sParams) as any[];
   }
 
+  // Rewards bought (ENH-16), including by a parent for someone who doesn't log in. Like shields: each person sees
+  // their own, parents see everyone's. Shared pots show as chip-ins above; refunded ones are left out.
+  let rewardBuys: any[] = [];
+  if (!filterRoomId) {
+    const rWhere: string[] = ["rr.status IN ('requested', 'approved')", 'NOT EXISTS (SELECT 1 FROM reward_contributions c WHERE c.redemptionId = rr.id)'];
+    const rParams: (string | number)[] = [];
+    if (!viewerIsAdmin) { rWhere.push('rr.userId = ?'); rParams.push(req.userId!); }
+    if (filterUserId) { rWhere.push('rr.userId = ?'); rParams.push(filterUserId); }
+    // redeemedAt is stored as 'YYYY-MM-DD HH:MM:SS' (UTC): compared and sorted as ISO like everything else here
+    const at = "strftime('%Y-%m-%dT%H:%M:%fZ', rr.redeemedAt)";
+    if (from) { rWhere.push(`${at} >= ?`); rParams.push(from); }
+    if (to) { rWhere.push(`${at} < ?`); rParams.push(to); }
+    if (q) { rWhere.push("rw.title LIKE ? ESCAPE '\\'"); rParams.push(`%${q.replace(/[\\%_]/g, (c) => `\\${c}`)}%`); }
+    rewardBuys = db.prepare(`
+      SELECT 'rewardPurchase' AS type, rr.id, ${at} AS completedAt, -rr.costCoins AS coinsEarned, rr.rewardId,
+             rw.title AS rewardTitle, rr.status AS rewardStatus, b.displayName AS boughtByName,
+             u.id as userId, u.displayName, u.avatarColor, u.avatarType, u.avatarPreset, u.avatarPhotoUrl
+      FROM reward_redemptions rr
+      JOIN rewards rw ON rw.id = rr.rewardId
+      JOIN users u ON u.id = rr.userId
+      LEFT JOIN users b ON b.id = rr.boughtBy
+      WHERE ${rWhere.join(' AND ')}
+      ORDER BY rr.redeemedAt DESC, rr.id DESC
+    `).all(...rParams) as any[];
+  }
+
   // Stable sort: completions keep their order among themselves
-  const extra = [...adjustments, ...contributions, ...purchases, ...shieldEvents];
+  const extra = [...adjustments, ...contributions, ...purchases, ...shieldEvents, ...rewardBuys];
   const merged = extra.length
     ? [...filtered, ...extra].sort((a, b) => (a.completedAt < b.completedAt ? 1 : a.completedAt > b.completedAt ? -1 : 0))
     : filtered;

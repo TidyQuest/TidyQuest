@@ -133,6 +133,18 @@ export const GUIDE_EN: GuideSection[] = [
         'Password: a parent can set a new one if someone forgets theirs. That signs the person out on every device, so they log in again with the new one.',
       ] },
       { tip: 'Turn on "Hide other people’s private rooms from kids" in Settings → General if kids shouldn’t see, say, a parent’s own room.' },
+      { h: 'Someone who doesn’t log in' },
+      { p: 'For a grandparent, a toddler or anyone who won’t use the app: add them and do everything for them, with no username or password.' },
+      { ul: [
+        'Add Member: switch off Can log in, type their name and tap Create.',
+        'Can log in on a member’s card switches it for someone already added. Off signs them out on every device. Turning it back on asks for a new password, then shows the username they sign in with.',
+        'Their chores: tick them off in the room or on the Tasks page and pick them in "who did it?". It counts as approved straight away, even under Strict Mode.',
+        'Their rewards: on Rewards, pick them under Buying for (see "Coins, rewards and goals").',
+        'Coins and streak shields work as for anyone, in Manage member.',
+        'They get no notifications at all, on any channel. Their notification settings are kept for when they log in again.',
+        'They’re not on the login screen and can’t be invited to a team-up. For a chore done together, pick everyone in "who did it?".',
+        'Parents always log in, so this is only for members and children. On tidyquest.org they still count toward the 15 people.',
+      ] },
       { h: 'Signing out everywhere' },
       { ul: [
         'Profile → Log out everywhere else: signs you out on every other phone, tablet and computer, and keeps you signed in on this one. Handy after using someone else’s device, or if someone may know your password.',
@@ -293,6 +305,8 @@ export const GUIDE_EN: GuideSection[] = [
         'Rules per reward: a limit (per day, week, month or ever; per person or for everyone), a date window, Rotating (only a few show each week), who can see it, a different price per person, and a category.',
         'Shared saving: anyone can chip coins into a pot; when it’s full it goes to a parent. The chip-in box starts at 0, and each chip-in shows in Activity. A full pot can’t be cancelled from My requests ("Shared: a parent decides"): a parent turns it down and everyone gets their coins back.',
       ] },
+      { h: 'Buying for someone else' },
+      { p: 'Parents: at the top of Rewards, pick someone under Buying for. The shop then shows their coins, their prices and their limits, and what you buy is paid from their coins. It counts as handed over, so nobody has to approve it. Activity and Insights show it as theirs, bought by you. Handy for someone who doesn’t log in (see "People and roles"). Shared rewards (chip-in) work as before.' },
       { h: 'Hiding a reward' },
       { ul: [
         'Settings → Rewards Catalog: tap Hide next to a reward. Kids no longer see it; parents see it greyed at the end of the list, marked Hidden. Tap Show to bring it back.',
@@ -605,6 +619,11 @@ export const GUIDE_EN: GuideSection[] = [
           'A parent can set a new password in Settings → Family Members.',
           'No parent can log in? Whoever runs the server can reset the first parent’s password with ADMIN_RESET_PASSWORD (README, "Admin Password Recovery"). "Forgot password?" on the login screen says the same.',
           'After importing a backup, people who already had an account on this server keep their passwords. People who are new to this server need a parent to set one in Family Members.',
+        ] },
+        { q: 'Someone isn’t on the login screen, or it says logging in is turned off', a: [
+          'A parent switched off Can log in for them: their card in Settings → Family Members says 🔒 No login. On tidyquest.org the login just says the name or password is wrong.',
+          'To let them in, switch Can log in back on, type a new password and tap Turn on. It then shows the username to sign in with.',
+          'Parents always log in: the switch is only on members’ and children’s cards, and someone without a login can’t be made a parent until it’s on.',
         ] },
         { q: 'A kid can’t log in on tidyquest.org', a: [
           'Check the family code in Settings → 🔑 Family code on a parent’s device. After New code the old one stops working: on the login screen tap Change next to the code and type the new one.',

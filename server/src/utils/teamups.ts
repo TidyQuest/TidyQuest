@@ -78,6 +78,8 @@ export function startTeamup(taskId: number, userId: number, partnerId: number | 
   if (!canBeOnTeam(team, userId)) return { error: 'not_assigned' };
   if (partnerId != null) {
     if (partnerId === userId || !nameOf(partnerId) || !canBeOnTeam(team, partnerId)) return { error: 'invalid_partner' };
+    // Someone who can't log in could never answer the invite (ENH-16); a parent logs shared work with "who did it?"
+    if ((db.prepare('SELECT canLogIn FROM users WHERE id = ?').get(partnerId) as { canLogIn: number }).canLogIn === 0) return { error: 'invalid_partner' };
   }
   if (openTeamupFor(taskId, now)) return { error: 'already_teamed' };
   const id = Number(db.prepare("INSERT INTO teamups (taskId, day, createdBy, invitedUserId, status) VALUES (?, ?, ?, ?, 'open')")

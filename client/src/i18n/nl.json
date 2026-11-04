@@ -423,7 +423,13 @@
       "sortPriceHigh": "Prijs: hoog naar laag",
       "sortName": "Naam A–Z",
       "noMatches": "Geen beloningen gevonden.",
-      "sharedParentDecides": "Gedeeld: een ouder beslist"
+      "sharedParentDecides": "Gedeeld: een ouder beslist",
+      "buyingFor": "Kopen voor",
+      "buyingForMe": "Mij",
+      "buyingForHint": "Prijzen, limieten en munten van {name}. Wat je koopt is van {name} en telt als gegeven.",
+      "theirRequests": "Beloningen van {name}",
+      "boughtBy": "gekocht door {name}",
+      "confirmTextFor": "\"{reward}\" kopen voor {name}? Het kost {coins} van de munten van {name}."
     },
     "rewardsPreset": {
       "movie_night": {
@@ -489,7 +495,8 @@
       "shield_bought": "Kocht een reeksschild",
       "shield_given": "Kreeg een reeksschild",
       "shield_used": "Een schild redde een reeks van {n} dagen",
-      "shield_usedMany": "{count} schilden redden een reeks van {n} dagen"
+      "shield_usedMany": "{count} schilden redden een reeks van {n} dagen",
+      "boughtReward": "Kocht {reward}"
     },
     "roomDetail": {
       "name": "Naam",
@@ -712,7 +719,8 @@
       "forgotPassword": "Wachtwoord vergeten?",
       "forgotAskParent": "Vraag een ouder om een nieuw wachtwoord in te stellen in Instellingen → Gezinsleden.",
       "forgotNoParent": "Kan geen enkele ouder inloggen? Wie de server beheert, kan het wachtwoord van de eerste ouder resetten.",
-      "forgotHowTo": "Zo reset je het"
+      "forgotHowTo": "Zo reset je het",
+      "noLogin": "Een ouder heeft inloggen voor jou uitgezet. Vraag of die het weer aanzet in Instellingen → Gezinsleden."
     },
     "achievements": {
       "familyProgress": "Gezinsvoortgang",
@@ -2096,6 +2104,21 @@
     },
     "photos": {
       "unreadable": "Deze foto kan hier niet gelezen worden. Probeer een JPEG of PNG, of een schermafbeelding ervan."
+    },
+    "memberLogin": {
+      "title": "Kan inloggen",
+      "onDesc": "Logt in met een eigen gebruikersnaam en wachtwoord.",
+      "offDesc": "Zonder login: jij vinkt de klusjes af met \"wie heeft het gedaan?\" en koopt de beloningen. Geen meldingen.",
+      "addOnDesc": "Logt in met een gebruikersnaam en wachtwoord.",
+      "addOffDesc": "Voor iemand die de app niet gebruikt: geen gebruikersnaam of wachtwoord. Jij doet alles voor diegene.",
+      "offConfirm": "Inloggen uitzetten voor {name}? {name} wordt op elk apparaat uitgelogd en krijgt geen meldingen. Klusjes, munten en reeks blijven.",
+      "offDone": "{name} kan nu niet meer inloggen.",
+      "onDone": "{name} kan nu inloggen als \"{username}\".",
+      "passwordFor": "Nieuw wachtwoord voor {name}",
+      "passwordShort": "Het wachtwoord moet minstens 4 tekens hebben.",
+      "turnOn": "Aanzetten",
+      "chip": "Zonder login",
+      "noNotifications": "Zonder login: er wordt niets verstuurd"
     }
   }
 }

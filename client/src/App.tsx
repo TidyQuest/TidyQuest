@@ -691,6 +691,10 @@ function AppContent() {
                   await api.createUser(member);
                   setFamilySettings(await api.getUsers());
                 }}
+                onSetMemberLogin={async (targetUserId, data) => {
+                  await api.setUserLogin(targetUserId, data);
+                  setFamilySettings(await api.getUsers());
+                }}
                 onDeleteUser={async (targetUserId) => {
                   await api.deleteUser(targetUserId);
                   setFamilySettings(await api.getUsers());
@@ -748,6 +752,8 @@ function AppContent() {
                 mine={rewardsData.mine}
                 userCoins={user.coins}
                 isAdmin={user.role === 'admin'}
+                people={user.role === 'admin' ? familySettings.filter((u) => u.id !== user.id) : undefined}
+                onBoughtFor={() => void loadDashboard()}
                 pendingRequests={dashboardData?.pendingRewardRequests}
                 onRewardRequestAction={async (id, status) => {
                   await api.updateRedemptionStatus(id, status);

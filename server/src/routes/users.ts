@@ -5,6 +5,7 @@ import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
 import bcrypt from 'bcryptjs';
+import crypto from 'crypto';
 import db from '../database';
 import { AuthRequest, authMiddleware, loginToken, revokeTokens } from '../middleware/auth';
 import { DEFAULT_COINS_BY_EFFORT, normalizeCoinsByEffortConfig } from '../utils/health';
@@ -26,7 +27,7 @@ router.use(authMiddleware);
 // The 8 free themes, then the ones unlocked by levels (utils/unlocks.ts)
 export const THEMES = ['orange', 'blue', 'rose', 'mint', 'grape', 'sunny', 'night', 'ocean', ...UNLOCKABLE_THEMES];
 
-const USER_SELECT = 'id, username, displayName, role, avatarColor, avatarType, avatarPreset, avatarPhotoUrl, coins, currentStreak, streakShields, goalCoins, goalStartAt, goalEndAt, isVacationMode, vacationStartDate, vacationEndDate, language, createdAt, isParticipant, taskView, kidMode, birthday, theme, holidayColors, focusMode, homeLayout';
+const USER_SELECT = 'id, username, displayName, role, avatarColor, avatarType, avatarPreset, avatarPhotoUrl, coins, currentStreak, streakShields, goalCoins, goalStartAt, goalEndAt, isVacationMode, vacationStartDate, vacationEndDate, language, createdAt, isParticipant, taskView, kidMode, birthday, theme, holidayColors, focusMode, homeLayout, canLogIn';
 
 function normalizeNotificationTime(value: string | undefined): string | null {
   if (value === undefined) return null;
@@ -100,17 +101,35 @@ router.put('/coins-config', (req: AuthRequest, res: Response) => {
   res.json({ coinsByEffort: next });
 });
 
-// Create member (admin only)
+/** A password hash nobody can match, for someone who doesn't log in (ENH-16) */
+const unusableHash = () => bcrypt.hashSync(crypto.randomBytes(32).toString('hex'), 10);
+
+/** A free username from a display name, for someone added without a login: "Grandma Jo" -> grandmajo, grandmajo2… */
+function freeUsername(displayName: string): string {
+  const base = displayName.normalize('NFKD').replace(/[^A-Za-z0-9]/g, '').toLowerCase().slice(0, 24) || 'member';
+  const taken = (name: string) => !!db.prepare('SELECT 1 FROM users WHERE username = ? COLLATE NOCASE').get(name);
+  let name = base;
+  for (let i = 2; taken(name); i++) name = `${base}${i}`;
+  return name;
+}
+
+// Parents always log in (ENH-16), so a family can't lock every parent out
+const PARENT_LOGS_IN = { error: 'A parent always logs in', code: 'parent_logs_in' };
+
+// Create member (admin only). canLogIn: false adds someone who doesn't log in: no username or password needed.
 router.post('/', (req: AuthRequest, res: Response) => {
   const requester = db.prepare('SELECT id, role FROM users WHERE id = ?').get(req.userId) as any;
   if (!requester || requester.role !== 'admin') {
     return res.status(403).json({ error: 'Admin only' });
   }
 
-  const { username, password, displayName, avatarColor, language, role } = req.body as any;
-  if (!username || !password || !displayName) {
+  const { password, displayName, avatarColor, language, role, canLogIn } = req.body as any;
+  const noLogin = canLogIn === false;
+  if (!displayName || (!noLogin && (!req.body.username || !password))) {
     return res.status(400).json({ error: 'username, password, and displayName are required' });
   }
+  if (noLogin && role === 'admin') return res.status(400).json(PARENT_LOGS_IN);
+  const username = req.body.username || freeUsername(String(displayName));
 
   const existing = db.prepare('SELECT id FROM users WHERE username = ?').get(username);
   if (existing) {
@@ -121,9 +140,9 @@ router.post('/', (req: AuthRequest, res: Response) => {
   if (tooMany) return res.status(403).json(tooMany);
 
   const safeRole = role === 'admin' ? 'admin' : role === 'child' ? 'child' : 'member';
-  const passwordHash = bcrypt.hashSync(password, 10);
+  const passwordHash = noLogin ? unusableHash() : bcrypt.hashSync(password, 10);
   const result = db.prepare(
-    'INSERT INTO users (username, displayName, passwordHash, role, avatarColor, language) VALUES (?, ?, ?, ?, ?, ?)'
+    'INSERT INTO users (username, displayName, passwordHash, role, avatarColor, language, canLogIn) VALUES (?, ?, ?, ?, ?, ?, ?)'
   ).run(
     username,
     displayName,
@@ -131,6 +150,7 @@ router.post('/', (req: AuthRequest, res: Response) => {
     safeRole,
     avatarColor || '#F97316',
     language || 'en',
+    noLogin ? 0 : 1,
   );
 
   const created = db.prepare(`SELECT ${USER_SELECT} FROM users WHERE id = ?`).get(result.lastInsertRowid);
@@ -238,8 +258,10 @@ router.put('/:id/password', (req: AuthRequest, res: Response) => {
   }
 
   const requester = db.prepare('SELECT id, role FROM users WHERE id = ?').get(req.userId) as any;
-  const target = db.prepare('SELECT id, role, passwordHash FROM users WHERE id = ?').get(userId) as any;
+  const target = db.prepare('SELECT id, role, passwordHash, canLogIn FROM users WHERE id = ?').get(userId) as any;
   if (!target) return res.status(404).json({ error: 'User not found' });
+  // Someone who doesn't log in gets a password by turning "Can log in" back on (PUT /:id/login)
+  if (target.canLogIn === 0) return res.status(400).json({ error: 'They can\'t log in', code: 'cannot_log_in' });
 
   const isSelf = userId === req.userId;
   const canAdminEditOther = requester?.role === 'admin' && userId !== req.userId;
@@ -272,6 +294,32 @@ router.post('/:id/logout-all', (req: AuthRequest, res: Response) => {
   if (!db.prepare('SELECT id FROM users WHERE id = ?').get(targetId)) return res.status(404).json({ error: 'User not found' });
   revokeTokens(targetId);
   res.json({ success: true });
+});
+
+// "Can log in" (ENH-16). Off: signed out everywhere, an unusable password and no notifications; a parent does
+// everything for them. On again: a parent sets their password. Their notification settings are kept for then.
+router.put('/:id/login', (req: AuthRequest, res: Response) => {
+  if (!ensureAdmin(req.userId)) return res.status(403).json({ error: 'Admin only' });
+  const targetId = parseInt(req.params.id as string);
+  const target = db.prepare('SELECT id, role FROM users WHERE id = ?').get(targetId) as { id: number; role: string } | undefined;
+  if (!target) return res.status(404).json({ error: 'User not found' });
+  const { canLogIn, password } = req.body as { canLogIn?: unknown; password?: unknown };
+  if (typeof canLogIn !== 'boolean') return res.status(400).json({ error: 'canLogIn must be a boolean' });
+  if (target.role === 'admin') return res.status(400).json(PARENT_LOGS_IN);
+  if (canLogIn) {
+    if (typeof password !== 'string' || password.length < 4) {
+      return res.status(400).json({ error: 'password must be at least 4 characters', code: 'password_needed' });
+    }
+    db.prepare('UPDATE users SET canLogIn = 1, passwordHash = ? WHERE id = ?').run(bcrypt.hashSync(password, 10), targetId);
+  } else {
+    db.transaction(() => {
+      db.prepare('UPDATE users SET canLogIn = 0, passwordHash = ? WHERE id = ?').run(unusableHash(), targetId);
+      // Anything held back for quiet hours stays unsent
+      db.prepare('DELETE FROM notification_queue WHERE userId = ?').run(targetId);
+    })();
+  }
+  revokeTokens(targetId);
+  res.json(db.prepare(`SELECT ${USER_SELECT} FROM users WHERE id = ?`).get(targetId));
 });
 
 // Update user settings
@@ -322,8 +370,9 @@ router.put('/:id/role', (req: AuthRequest, res: Response) => {
     return res.status(403).json({ error: 'Admin only' });
   }
 
-  const target = db.prepare('SELECT id, role FROM users WHERE id = ?').get(targetId) as any;
+  const target = db.prepare('SELECT id, role, canLogIn FROM users WHERE id = ?').get(targetId) as any;
   if (!target) return res.status(404).json({ error: 'User not found' });
+  if (role === 'admin' && target.canLogIn === 0) return res.status(400).json(PARENT_LOGS_IN);
 
   if (target.role === 'admin' && role !== 'admin') {
     const adminCount = db.prepare("SELECT COUNT(*) as count FROM users WHERE role = 'admin'").get() as { count: number };
