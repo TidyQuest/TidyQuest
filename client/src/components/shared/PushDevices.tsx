@@ -2,7 +2,7 @@ import { useEffect, useState, type CSSProperties } from 'react';
 import { api, type NotifyPerson } from '../../hooks/useApi';
 import { useTranslation } from '../../hooks/useTranslation';
 import { localeFor } from '../../utils/locale';
-import { pushBlock, pushOwner } from '../../utils/push';
+import { pushBlock, pushFailure, pushOwner } from '../../utils/push';
 import { pushOnHere, turnOffPush, turnOnPush } from '../../utils/pushSync';
 
 const label: CSSProperties = { fontSize: 11, fontWeight: 700, color: 'var(--warm-text-muted)' };
@@ -37,7 +37,7 @@ export function PushDevices({ person, own, language, onChange }: { person: Notif
     // Straight from the tap: the browser asks for permission first
     turnOnPush(person.id, info.publicKey)
       .then(() => { setHere(true); setMessage(t('push.turnedOn')); return reload(); })
-      .catch((err) => setMessage(err instanceof Error && err.message === 'denied' ? t('push.denied') : t('push.failed')))
+      .catch((err) => pushFailure(err).then((why) => setMessage(t(`push.${why}`))))
       .finally(() => setBusy(false));
   };
   const turnOff = () => {

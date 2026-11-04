@@ -2133,7 +2133,7 @@
       "familyOff": "Benachrichtigungen sind für die ganze Familie ausgeschaltet (Einstellungen → Benachrichtigungen).",
       "block_insecure": "Braucht eine sichere Adresse: Öffne TidyQuest über seine https://-Adresse, um es hier einzuschalten.",
       "block_iosInstall": "Auf iPhone und iPad füge TidyQuest zuerst zum Home-Bildschirm hinzu (Teilen → Zum Home-Bildschirm), öffne es von dort und schalte es dann ein.",
-      "block_unsupported": "Dieser Browser kann keine Benachrichtigungen von Web-Apps anzeigen. Probier Chrome, Edge, Firefox oder Safari.",
+      "block_unsupported": "Dieser Browser kann keine Benachrichtigungen von Web-Apps anzeigen, oder das ist ein privates Fenster. Probier Chrome, Edge, Firefox oder Safari in einem normalen Fenster.",
       "block_denied": "Benachrichtigungen von TidyQuest sind in diesem Browser blockiert. Erlaube sie in den Website-Einstellungen des Browsers und komm dann zurück.",
       "turnOn": "Für dieses Gerät einschalten",
       "turnOff": "Für dieses Gerät ausschalten",
@@ -2145,7 +2145,10 @@
       "device": "Gerät",
       "thisDevice": "dieses Gerät",
       "added": "hinzugefügt am {date}",
-      "remove": "Entfernen"
+      "remove": "Entfernen",
+      "dismissed": "Benachrichtigungen wurden nicht erlaubt. Tippe noch einmal auf Einschalten und wähle Zulassen (Chrome und Edge zeigen statt der Frage manchmal eine Glocke in der Adressleiste).",
+      "braveOff": "Brave hat Push-Nachrichten ausgeschaltet. Öffne brave://settings/privacy, schalte Use Google services for push messaging (Google-Dienste für Push-Nachrichten) ein, starte Brave neu und versuch es noch einmal.",
+      "noPushService": "Dieser Browser kann sich hier nicht für Benachrichtigungen anmelden: Das ist ein privates (Inkognito-)Fenster, oder der Browser hat keinen Push-Dienst (manche auf Chromium-Basis lassen ihn weg). Nimm ein normales Fenster in Chrome, Edge, Firefox oder Safari."
     }
   }
 }

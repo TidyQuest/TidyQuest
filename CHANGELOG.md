@@ -9,6 +9,14 @@ What changed in each release, in plain language, newest first. Releases up to v0
 
 ## Unreleased
 
+### Fixed
+
+- **Phone notifications say why they can't turn on, instead of "That didn't work".** Brave (which has push
+  turned off until you switch it on) now gets the exact setting to change. Browsers without a push service (some
+  built on Chromium) and private windows are named as such. A closed or quiet permission question says to tap
+  Turn on again and choose Allow. The guide's troubleshooting has the same, and a new entry for computers where
+  the test works but nothing appears.
+
 ## v0.16.3 (2026-11-04)
 
 ### Added

@@ -522,11 +522,20 @@ export const GUIDE_IT: GuideSection[] = [
           'Su iPhone e iPad: apri TidyQuest dalla sua icona nella schermata Home, non in Safari, con iOS 16.4 o successivo.',
           '"Bloccate in questo browser": le notifiche sono state rifiutate quando le ha chieste. Consentile per TidyQuest nelle impostazioni del sito del browser (iPhone: Impostazioni → Notifiche → TidyQuest), poi riprova.',
           'In Profilo non c’è la parte Notifiche sul telefono: un genitore l’ha disattivata in Impostazioni → Funzioni.',
+          '"Brave ha disattivato i messaggi push": apri brave://settings/privacy, attiva Use Google services for push messaging e riavvia Brave.',
+          '"Questo browser non può registrarsi per le notifiche qui": è una finestra privata (in incognito), oppure un browser basato su Chromium senza servizio push. Usa una finestra normale di Chrome, Edge, Firefox o Safari.',
+          '"Le notifiche non sono state consentite": la domanda è stata chiusa, oppure Chrome o Edge hanno mostrato una campanella nella barra degli indirizzi invece di chiedere. Tocca di nuovo Attiva su questo dispositivo e scegli Consenti.',
+          'Le finestre private non ricevono notifiche: apri TidyQuest in una finestra normale.',
         ] },
         { q: 'Le notifiche sul telefono non arrivano più', a: [
           'Esci su quel dispositivo, Esci da tutti i dispositivi o una nuova password messa da un genitore le ferma. Accedi e tocca di nuovo Attiva su questo dispositivo.',
           'Controlla il telefono: notifiche consentite per TidyQuest (o il browser), e nessuna modalità Full immersion o Non disturbare che le nasconda.',
           'Un genitore può guardare nel Registro notifiche: una riga "push" mostra ogni messaggio e l’eventuale errore. Un dispositivo ripristinato o senza l’app esce dall’elenco dopo il primo messaggio non riuscito.',
+        ] },
+        { q: 'Invia notifica di test mostra ✓ ma sul computer non appare niente', a: [
+          'Il browser deve essere in funzione per riceverle. Su Windows, Chrome, Edge e Brave possono restare attivi dopo la chiusura dell’ultima finestra (nelle loro Impostazioni → Sistema → Continua a eseguire le app in background); Firefox solo finché è aperto.',
+          'Consenti le notifiche per il browser stesso: su Windows, Impostazioni → Sistema → Notifiche; su Mac, Impostazioni di Sistema → Notifiche → il browser.',
+          'Disattiva Non disturbare o Full immersion: nascondono le notifiche.',
         ] },
         { q: 'Il test di Home Assistant non va', a: [
           '"Could not reach Home Assistant": l’URL è sbagliato, o il server TidyQuest non lo raggiunge. In Docker homeassistant.local spesso non funziona: usa l’indirizzo IP con :8123.',

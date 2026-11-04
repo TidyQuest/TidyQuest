@@ -66,13 +66,41 @@ export function sameKey(sub: PushSubscription, publicKey: string): boolean {
  * first thing after a tap (iPhones refuse it otherwise), so nothing is awaited before it.
  */
 export async function subscribeBrowser(publicKey: string, ask: boolean): Promise<PushSubscription> {
-  if (ask && (await Notification.requestPermission()) !== 'granted') throw new Error('denied');
+  if (ask) {
+    const answer = await Notification.requestPermission();
+    // "default": the question was closed, or Chrome and Edge showed their quiet bell in the address bar instead
+    if (answer !== 'granted') throw new Error(answer === 'denied' ? 'denied' : 'dismissed');
+  }
   await navigator.serviceWorker.register('/sw.js', { scope: '/' });
   const reg = await navigator.serviceWorker.ready;
   const existing = await reg.pushManager.getSubscription();
   if (existing && sameKey(existing, publicKey)) return existing;
   if (existing) await existing.unsubscribe();
-  return reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: toBytes(publicKey) });
+  try {
+    return await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: toBytes(publicKey) });
+  } catch (err) {
+    // The browser has no push service to sign up with: Brave until it's switched on, and Chromium builds without
+    // Google's (ungoogled-chromium, some Linux builds). They answer "AbortError: Registration failed - push service …"
+    if (err instanceof DOMException && err.name === 'AbortError') throw new Error('noPushService', { cause: err });
+    throw err;
+  }
+}
+
+/** Why turning push on failed, as a push.* message key. */
+export async function pushFailure(err: unknown): Promise<'denied' | 'dismissed' | 'braveOff' | 'noPushService' | 'failed'> {
+  const code = err instanceof Error ? err.message : '';
+  if (code === 'denied' || code === 'dismissed') return code;
+  if (code === 'noPushService') return (await isBrave()) ? 'braveOff' : 'noPushService';
+  return 'failed';
+}
+
+/** Brave says so itself (its user agent looks like Chrome's). */
+async function isBrave(): Promise<boolean> {
+  try {
+    return !!(await (navigator as Navigator & { brave?: { isBrave?: () => Promise<boolean> } }).brave?.isBrave?.());
+  } catch {
+    return false;
+  }
 }
 
 export async function unsubscribeBrowser(): Promise<void> {

@@ -2133,7 +2133,7 @@
       "familyOff": "Las notificaciones están desactivadas para toda la familia (Ajustes → Notificaciones).",
       "block_insecure": "Necesita una dirección segura: abre TidyQuest en su dirección https:// para activarlas aquí.",
       "block_iosInstall": "En iPhone y iPad, primero añade TidyQuest a la pantalla de inicio (Compartir → Añadir a pantalla de inicio), luego ábrelo desde ahí y actívalas.",
-      "block_unsupported": "Este navegador no puede mostrar notificaciones de apps web. Prueba con Chrome, Edge, Firefox o Safari.",
+      "block_unsupported": "Este navegador no puede mostrar notificaciones de apps web, o es una ventana privada. Prueba con Chrome, Edge, Firefox o Safari en una ventana normal.",
       "block_denied": "Las notificaciones de TidyQuest están bloqueadas en este navegador. Permítelas en los ajustes del sitio y vuelve aquí.",
       "turnOn": "Activar en este dispositivo",
       "turnOff": "Desactivar en este dispositivo",
@@ -2145,7 +2145,10 @@
       "device": "Dispositivo",
       "thisDevice": "este dispositivo",
       "added": "añadido el {date}",
-      "remove": "Quitar"
+      "remove": "Quitar",
+      "dismissed": "No se permitieron las notificaciones. Toca Activar otra vez y elige Permitir (Chrome y Edge pueden mostrar una campana en la barra de direcciones en vez de preguntar).",
+      "braveOff": "Brave tiene los mensajes push desactivados. Abre brave://settings/privacy, activa Use Google services for push messaging (servicios de Google para mensajes push), reinicia Brave y vuelve a intentarlo.",
+      "noPushService": "Este navegador no puede registrarse para notificaciones aquí: es una ventana privada (de incógnito), o el navegador no tiene servicio push (algunos basados en Chromium lo quitan). Usa una ventana normal de Chrome, Edge, Firefox o Safari."
     }
   }
 }
