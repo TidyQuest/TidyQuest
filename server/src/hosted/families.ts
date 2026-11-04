@@ -5,7 +5,7 @@ import type Database from 'better-sqlite3';
 import { createDatabase, initDatabase } from '../database';
 import { registerClockFunctions } from '../utils/clock';
 import { FamilyContext, runInFamily } from './context';
-import { newFamilyCode } from './familyCode';
+import { codeKey, newFamilyCode } from './familyCode';
 import { dataDir, mainDb, openMainDb } from './mainDb';
 
 type Db = InstanceType<typeof Database>;
@@ -133,23 +133,114 @@ export function closeAllFamilies(): void {
 }
 
 /**
+ * What a restore needs (NEW-23), kept as restore.json in the deleted folder, since deleting frees the emails
+ * and the family code in main.db. It goes with the folder after 30 days.
+ */
+export interface SavedFamily {
+  status: string;
+  code: string | null;
+  accounts: { email: string; userId: number; emailConfirmedAt: string | null; createdAt: string; newsAt: string | null }[];
+}
+const SAVED_FILE = 'restore.json';
+
+/** A deleted family's folder in deleted/, if it's still there. */
+function keptFolder(id: string): string | null {
+  if (!FAMILY_ID.test(id) || !fs.existsSync(deletedDir())) return null;
+  const name = fs.readdirSync(deletedDir()).find((n) => n.startsWith(`${id}-`));
+  return name ? path.join(deletedDir(), name) : null;
+}
+
+/** What was saved when this family was deleted: null when its folder is gone, {} when it was deleted before NEW-23. */
+export function savedFamily(id: string): Partial<SavedFamily> | null {
+  const kept = keptFolder(id);
+  if (!kept) return null;
+  try {
+    return JSON.parse(fs.readFileSync(path.join(kept, SAVED_FILE), 'utf8')) as SavedFamily;
+  } catch {
+    return {};
+  }
+}
+
+/**
  * Deletes a family: its folder moves to data/deleted/<familyId>-<date>/ (kept 30 days), and its emails
- * and family code are freed for a new sign-up.
+ * and family code are freed for a new sign-up. restore.json in the folder keeps them for a restore.
  */
 export function deleteFamily(id: string, now = new Date()): boolean {
   if (!isLiveFamily(id)) return false;
   closeFamily(id);
-  if (fs.existsSync(familyDir(id))) {
-    fs.mkdirSync(deletedDir(), { recursive: true });
-    fs.renameSync(familyDir(id), path.join(deletedDir(), `${id}-${now.toISOString().slice(0, 10)}`));
-  }
   const main = mainDb();
+  if (fs.existsSync(familyDir(id))) {
+    const { status, code } = main.prepare('SELECT status, code FROM families WHERE id = ?').get(id) as { status: string; code: string | null };
+    const accounts = main.prepare('SELECT email, userId, emailConfirmedAt, createdAt, newsAt FROM accounts WHERE familyId = ? ORDER BY createdAt').all(id) as SavedFamily['accounts'];
+    const kept = path.join(deletedDir(), `${id}-${now.toISOString().slice(0, 10)}`);
+    fs.mkdirSync(deletedDir(), { recursive: true });
+    fs.renameSync(familyDir(id), kept);
+    fs.writeFileSync(path.join(kept, SAVED_FILE), JSON.stringify({ status, code, accounts } satisfies SavedFamily, null, 2));
+  }
   main.transaction(() => {
     main.prepare('DELETE FROM email_tokens WHERE familyId = ?').run(id);
     main.prepare('DELETE FROM accounts WHERE familyId = ?').run(id);
     main.prepare("UPDATE families SET status = 'deleted', code = NULL, codeKey = NULL, deletedAt = ? WHERE id = ?").run(now.toISOString(), id);
   })();
   return true;
+}
+
+export interface Restored {
+  status: 'trial' | 'active' | 'suspended';
+  code: string;
+  /** The code it had, when a new sign-up took it meanwhile */
+  codeTaken: string | null;
+  /** The parents' emails that came back, and the ones a new sign-up took meanwhile */
+  emails: string[];
+  emailsTaken: string[];
+  /** Deleted before restores kept the emails and the code (NEW-23): none came back, and the code is new */
+  nothingSaved: boolean;
+}
+
+/**
+ * Brings back a deleted family whose folder is still in deleted/ (NEW-23): the folder moves back, and the
+ * status, family code and parents' emails come back from restore.json. An email or code a new sign-up took
+ * meanwhile is skipped; the family then gets a new code. The clean-up jobs' warnings start over, so a family
+ * one of them deleted is warned again, with the usual notice, before that happens again. Null when there's
+ * nothing to restore.
+ */
+export function restoreFamily(id: string): Restored | null {
+  const main = mainDb();
+  const row = main.prepare('SELECT plan FROM families WHERE id = ? AND deletedAt IS NOT NULL').get(id) as { plan: string | null } | undefined;
+  const kept = row ? keptFolder(id) : null;
+  if (!row || !kept || fs.existsSync(familyDir(id))) return null;
+  const saved = savedFamily(id) ?? {};
+  fs.mkdirSync(path.dirname(familyDir(id)), { recursive: true });
+  fs.renameSync(kept, familyDir(id));
+  try {
+    const restored = main.transaction((): Restored => {
+      const status = saved.status === 'trial' || saved.status === 'active' || saved.status === 'suspended' ? saved.status
+        : row.plan ? 'active' : 'trial';
+      main.prepare(`UPDATE families SET status = ?, deletedAt = NULL, trialWarnedAt = NULL, consentRemindedAt = NULL,
+        inactiveWarnedAt = NULL WHERE id = ?`).run(status, id);
+      const old = saved.code ?? null;
+      const free = !!old && !main.prepare('SELECT 1 FROM families WHERE codeKey = ?').get(codeKey(old));
+      if (free) main.prepare('UPDATE families SET code = ?, codeKey = ? WHERE id = ?').run(old, codeKey(old), id);
+      const code = free ? old! : newFamilyCode(id);
+      const emails: string[] = [];
+      const emailsTaken: string[] = [];
+      for (const a of saved.accounts ?? []) {
+        if (main.prepare('SELECT 1 FROM accounts WHERE email = ?').get(a.email)) {
+          emailsTaken.push(a.email);
+          continue;
+        }
+        main.prepare('INSERT INTO accounts (email, familyId, userId, emailConfirmedAt, createdAt, newsAt) VALUES (?, ?, ?, ?, ?, ?)')
+          .run(a.email, id, a.userId, a.emailConfirmedAt, a.createdAt, a.newsAt);
+        emails.push(a.email);
+      }
+      return { status, code, codeTaken: old && !free ? old : null, emails, emailsTaken, nothingSaved: !saved.accounts };
+    })();
+    fs.rmSync(path.join(familyDir(id), SAVED_FILE), { force: true });
+    return restored;
+  } catch (err) {
+    fs.renameSync(familyDir(id), kept);
+    throw err;
+  }
 }
 
 /**
