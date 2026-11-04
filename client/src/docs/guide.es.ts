@@ -363,7 +363,7 @@ export const GUIDE_ES: GuideSection[] = [
       { where: 'Ajustes → General → Notificaciones, después Quién recibe qué, Horarios y horas de silencio y Registro de notificaciones' },
       { ol: [
         'Activa las notificaciones y elige qué tipos recibe la familia.',
-        'Configura un canal familiar: ntfy (la URL de un servidor y un tema al que todos se suscriben en la app de ntfy), Telegram (un token de bot y un ID de chat) o un servicio notify de Home Assistant. Usa el botón de prueba.',
+        'Si quieres, configura un canal familiar (no hace falta si todos usan las notificaciones en el móvil, mira abajo): ntfy (la URL de un servidor y un tema al que todos se suscriben en la app de ntfy), Telegram (un token de bot y un ID de chat) o un servicio notify de Home Assistant. Usa el botón de prueba.',
         'Si quieres, da a cada persona su propio canal en "Quién recibe qué": su propio tema de ntfy, chat de Telegram o móvil de Home Assistant. Así recibe los mensajes en su propio idioma y puede desactivar tipos en Perfil.',
         'Fija las horas de silencio (los mensajes esperan y salen cuando terminan) y si los mensajes de los niños esperan durante el horario escolar en días laborables.',
       ] },

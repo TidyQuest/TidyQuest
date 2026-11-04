@@ -248,7 +248,7 @@
       "telegramChatIdRequired": "L'ID de chat Telegram est requis quand les notifications sont activées.",
       "telegramTokenRequired": "Le token Telegram est requis quand les notifications sont activées.",
       "notificationsDisabledHint": "Active les notifications pour configurer les fournisseurs et l'heure d'envoi.",
-      "providerRequired": "Au moins un fournisseur de notifications (Telegram ou ntfy) doit être activé.",
+      "providerRequired": "Active au moins un moyen d'envoyer les notifications : notifications sur le téléphone (Paramètres → Fonctionnalités), Telegram ou ntfy.",
       "notificationTypeTaskDue": "Rappels de tâches à faire",
       "notificationTypeRewardRequest": "Demandes de récompenses",
       "notificationTypeAchievementUnlocked": "Succès débloqués",

@@ -250,7 +250,7 @@
       "telegramChatIdRequired": "Telegram Chat ID is verplicht als meldingen aan staan.",
       "telegramTokenRequired": "Telegram Bot Token is verplicht als meldingen aan staan.",
       "notificationsDisabledHint": "Zet Meldingen aan om dit in te stellen.",
-      "providerRequired": "Er moet minstens één meldingssysteem (Telegram of ntfy) aan staan.",
+      "providerRequired": "Zet minstens één manier aan om meldingen te sturen: meldingen op je telefoon (Instellingen → Functies), Telegram of ntfy.",
       "notificationTypeTaskDue": "Herinnering voor klusjes",
       "notificationTypeRewardRequest": "Beloningsaanvragen",
       "notificationTypeAchievementUnlocked": "Medailles behaald",

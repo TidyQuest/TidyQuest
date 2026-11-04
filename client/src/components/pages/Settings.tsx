@@ -556,13 +556,24 @@ export function Settings({
     await loadRewardsAdmin();
   };
 
+  // A refused save names what's missing; "provider_required" is the server's own check (phone notifications count)
+  const notifError = (err: unknown) => {
+    const e = err as { message?: string; body?: { code?: string } } | undefined;
+    return e?.body?.code === 'provider_required' ? t('settings.providerRequired') : e?.message || t('settings.notificationsSaveFailed');
+  };
+
+  /** The Notifications switch saves as soon as it's flipped (it used to wait for a Save that only ntfy and Telegram had) */
+  const switchNotifications = (on: boolean) => {
+    setNotifMsg('');
+    setNotifMasterEnabled(on);
+    api.updateNotificationsConfig({ notificationsEnabled: on })
+      .then((next) => setNotifMasterEnabled(!!next.notificationsEnabled))
+      .catch((err) => { setNotifMasterEnabled(!on); setNotifMsg(notifError(err)); });
+  };
+
   const saveNotifications = async () => {
     setNotifMsg('');
     try {
-      if (notifMasterEnabled && !telegramEnabled && !ntfyEnabled) {
-        setNotifMsg(t('settings.providerRequired'));
-        return;
-      }
       if (notifMasterEnabled && telegramEnabled && !notifChatId.trim()) {
         setNotifMsg(t('settings.telegramChatIdRequired'));
         return;
@@ -599,7 +610,7 @@ export function Settings({
       setNtfyToken('');
       setNotifMsg(t('settings.notificationsSaved'));
     } catch (err: any) {
-      setNotifMsg(err?.message || t('settings.notificationsSaveFailed'));
+      setNotifMsg(notifError(err));
     }
   };
 
@@ -666,7 +677,7 @@ export function Settings({
                 <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--warm-text)' }}>{t('settings.notifications')}</div>
                 <div style={{ fontSize: 11, color: 'var(--warm-text-light)', fontWeight: 600 }}>{t('settings.notificationsDesc')}</div>
               </div>
-              <Toggle checked={notifMasterEnabled} onChange={isAdmin ? setNotifMasterEnabled : () => {}} />
+              <Toggle checked={notifMasterEnabled} onChange={isAdmin ? switchNotifications : () => {}} />
             </div>
             {isAdmin && (
               <div style={{ display: 'grid', gap: 8, marginTop: notifMasterEnabled ? 10 : 0, marginBottom: 8, padding: notifMasterEnabled ? 10 : 0, border: notifMasterEnabled ? '1px solid var(--warm-border)' : 'none', borderRadius: 10 }}>
@@ -765,6 +776,7 @@ export function Settings({
                 ) : (
                   <div style={{ fontSize: 11, color: 'var(--warm-text-muted)', fontWeight: 700 }}>
                     {t('settings.notificationsDisabledHint')}
+                    {notifMsg && <div style={{ color: 'var(--warm-accent)', marginTop: 6 }}>{notifMsg}</div>}
                   </div>
                 )}
               </div>

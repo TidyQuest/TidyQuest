@@ -387,7 +387,7 @@ export const GUIDE_EN: GuideSection[] = [
       { where: 'Settings → General → Notifications, then Who gets what, Timing & quiet hours and Notification log' },
       { ol: [
         'Turn notifications on and pick which kinds the family gets.',
-        'Set up a family channel: ntfy (a server URL and a topic everyone subscribes to in the ntfy app), Telegram (a bot token and a chat ID), or a Home Assistant notify service. Use the test button.',
+        'Optionally set up a family channel (not needed if everyone uses phone notifications, see below): ntfy (a server URL and a topic everyone subscribes to in the ntfy app), Telegram (a bot token and a chat ID), or a Home Assistant notify service. Use the test button.',
         'Optionally give each person their own channel in "Who gets what": their own ntfy topic, Telegram chat, or Home Assistant phone. They then get messages in their own language, and can turn kinds off in Profile.',
         'Set quiet hours (messages wait and go out when they end) and whether kids’ messages wait during school hours on weekdays.',
       ] },

@@ -9,6 +9,14 @@ What changed in each release, in plain language, newest first. Releases up to v0
 
 ## Unreleased
 
+### Fixed
+
+- **Notifications can be turned on with phone notifications alone.** Settings → General → Notifications used to
+  insist on Telegram or ntfy, and its switch only saved through their Save buttons, so with neither it went back to
+  off. The switch now saves as soon as you flip it, and phone notifications count as a way to send.
+- **A notification settings save that's turned down changes nothing.** Before, the Notifications switch could stay
+  saved as on while the page showed the error.
+
 ## v0.16.1 (2026-11-04)
 
 ### Added

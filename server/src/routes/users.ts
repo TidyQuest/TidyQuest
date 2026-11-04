@@ -11,6 +11,7 @@ import { AuthRequest, authMiddleware, loginToken, revokeTokens } from '../middle
 import { DEFAULT_COINS_BY_EFFORT, normalizeCoinsByEffortConfig } from '../utils/health';
 import { notifyCoinsAdjusted } from '../utils/notifyMessages';
 import { NOTIFICATION_KINDS, NotificationTypeSettings, sendTelegramMessageDetailed, sendNtfyMessageDetailed } from '../utils/notifications';
+import { pushOn } from '../utils/push';
 import { ensureAdmin, getCoinsByEffortConfig, getGlobalVacation, isHidePrivateRoomsEnabled, isStrictModeEnabled } from '../utils/adminHelpers';
 import { realignWeeklyGoals, syncPrimaryGoal } from '../utils/goals';
 import { UNLOCKABLE_THEMES, canUse } from '../utils/unlocks';
@@ -615,6 +616,11 @@ router.get('/notifications-config', (req: AuthRequest, res: Response) => {
   res.json({ notificationsEnabled, telegramEnabled, chatId, hasToken: !!botToken, notificationTime, notificationTypes, ntfyEnabled, ntfyServerUrl, ntfyTopic, hasNtfyToken: !!ntfyToken });
 });
 
+/** A notification settings save that's turned down; thrown inside the transaction so nothing is kept */
+class Refused extends Error {
+  constructor(public body: { error: string; code?: string }) { super(body.error); }
+}
+
 router.put('/notifications-config', (req: AuthRequest, res: Response) => {
   const requester = db.prepare('SELECT id, role FROM users WHERE id = ?').get(req.userId) as any;
   if (!requester || requester.role !== 'admin') {
@@ -643,72 +649,86 @@ router.put('/notifications-config', (req: AuthRequest, res: Response) => {
   }
   // Hosted mode only sends to ntfy.sh (hosted/limits.ts)
   if (ntfyServerUrl?.trim() && !ntfyServerAllowed(ntfyServerUrl.trim())) return res.status(400).json(NTFY_ONLY_ERROR);
-  if (notificationsEnabled !== undefined) {
-    db.prepare("UPDATE app_settings SET value = ?, updatedAt = datetime('now') WHERE key = 'notificationsEnabled'")
-      .run(notificationsEnabled ? '1' : '0');
-  }
-  if (telegramEnabled !== undefined) {
-    db.prepare("UPDATE app_settings SET value = ?, updatedAt = datetime('now') WHERE key = 'telegramEnabled'")
-      .run(telegramEnabled ? '1' : '0');
-  }
-  if (botToken !== undefined) {
-    db.prepare("UPDATE app_settings SET value = ?, updatedAt = datetime('now') WHERE key = 'telegramBotToken'")
-      .run(botToken.trim());
-  }
-  if (chatId !== undefined) {
-    db.prepare("UPDATE app_settings SET value = ?, updatedAt = datetime('now') WHERE key = 'telegramChatId'")
-      .run(chatId.trim());
-  }
-  if (normalizedTime) {
-    db.prepare("UPDATE app_settings SET value = ?, updatedAt = datetime('now') WHERE key = 'notificationTime'")
-      .run(normalizedTime);
-  }
-  if (normalizedTypes) {
-    db.prepare("UPDATE app_settings SET value = ?, updatedAt = datetime('now') WHERE key = 'notificationTypes'")
-      .run(JSON.stringify(normalizedTypes));
-  }
-  if (ntfyEnabled !== undefined) {
-    db.prepare("UPDATE app_settings SET value = ?, updatedAt = datetime('now') WHERE key = 'ntfyEnabled'")
-      .run(ntfyEnabled ? '1' : '0');
-  }
-  if (ntfyServerUrl !== undefined) {
-    db.prepare("UPDATE app_settings SET value = ?, updatedAt = datetime('now') WHERE key = 'ntfyServerUrl'")
-      .run(ntfyServerUrl.trim() || 'https://ntfy.sh');
-  }
-  if (ntfyTopic !== undefined) {
-    db.prepare("UPDATE app_settings SET value = ?, updatedAt = datetime('now') WHERE key = 'ntfyTopic'")
-      .run(ntfyTopic.trim());
-  }
-  if (ntfyToken !== undefined) {
-    db.prepare("UPDATE app_settings SET value = ?, updatedAt = datetime('now') WHERE key = 'ntfyToken'")
-      .run(ntfyToken.trim());
-  }
+  // All of it is checked before any of it is kept: a refused save changes nothing (it used to leave the
+  // Notifications switch saved as on, with the page showing the error)
+  let saved: { masterNow: boolean; tgEnabledNow: boolean; ntfyEnabledNow: boolean; tokenNow: string; chatNow: string; ntfyTopicNow: string };
+  try {
+    saved = db.transaction(() => {
+      if (notificationsEnabled !== undefined) {
+        db.prepare("UPDATE app_settings SET value = ?, updatedAt = datetime('now') WHERE key = 'notificationsEnabled'")
+          .run(notificationsEnabled ? '1' : '0');
+      }
+      if (telegramEnabled !== undefined) {
+        db.prepare("UPDATE app_settings SET value = ?, updatedAt = datetime('now') WHERE key = 'telegramEnabled'")
+          .run(telegramEnabled ? '1' : '0');
+      }
+      if (botToken !== undefined) {
+        db.prepare("UPDATE app_settings SET value = ?, updatedAt = datetime('now') WHERE key = 'telegramBotToken'")
+          .run(botToken.trim());
+      }
+      if (chatId !== undefined) {
+        db.prepare("UPDATE app_settings SET value = ?, updatedAt = datetime('now') WHERE key = 'telegramChatId'")
+          .run(chatId.trim());
+      }
+      if (normalizedTime) {
+        db.prepare("UPDATE app_settings SET value = ?, updatedAt = datetime('now') WHERE key = 'notificationTime'")
+          .run(normalizedTime);
+      }
+      if (normalizedTypes) {
+        db.prepare("UPDATE app_settings SET value = ?, updatedAt = datetime('now') WHERE key = 'notificationTypes'")
+          .run(JSON.stringify(normalizedTypes));
+      }
+      if (ntfyEnabled !== undefined) {
+        db.prepare("UPDATE app_settings SET value = ?, updatedAt = datetime('now') WHERE key = 'ntfyEnabled'")
+          .run(ntfyEnabled ? '1' : '0');
+      }
+      if (ntfyServerUrl !== undefined) {
+        db.prepare("UPDATE app_settings SET value = ?, updatedAt = datetime('now') WHERE key = 'ntfyServerUrl'")
+          .run(ntfyServerUrl.trim() || 'https://ntfy.sh');
+      }
+      if (ntfyTopic !== undefined) {
+        db.prepare("UPDATE app_settings SET value = ?, updatedAt = datetime('now') WHERE key = 'ntfyTopic'")
+          .run(ntfyTopic.trim());
+      }
+      if (ntfyToken !== undefined) {
+        db.prepare("UPDATE app_settings SET value = ?, updatedAt = datetime('now') WHERE key = 'ntfyToken'")
+          .run(ntfyToken.trim());
+      }
 
-  // Validate: if master is enabled, at least one provider must be enabled
-  const masterNow = (db.prepare("SELECT value FROM app_settings WHERE key = 'notificationsEnabled'").get() as any)?.value === '1';
-  const tgEnabledNow = (db.prepare("SELECT value FROM app_settings WHERE key = 'telegramEnabled'").get() as any)?.value === '1';
-  const ntfyEnabledNow = (db.prepare("SELECT value FROM app_settings WHERE key = 'ntfyEnabled'").get() as any)?.value === '1';
+      // Validate: if master is enabled, at least one provider must be enabled
+      const masterNow = (db.prepare("SELECT value FROM app_settings WHERE key = 'notificationsEnabled'").get() as any)?.value === '1';
+      const tgEnabledNow = (db.prepare("SELECT value FROM app_settings WHERE key = 'telegramEnabled'").get() as any)?.value === '1';
+      const ntfyEnabledNow = (db.prepare("SELECT value FROM app_settings WHERE key = 'ntfyEnabled'").get() as any)?.value === '1';
 
-  // Personal channels (an ntfy topic, Telegram chat or Home Assistant phone per person) count too
-  const haNow = !!(db.prepare("SELECT value FROM app_settings WHERE key = 'haUrl'").get() as any)?.value
-    && !!(db.prepare("SELECT value FROM app_settings WHERE key = 'haToken'").get() as any)?.value;
-  const personalNow = !!db.prepare('SELECT 1 FROM users WHERE ntfyTopic IS NOT NULL OR telegramChatId IS NOT NULL OR haNotifyService IS NOT NULL LIMIT 1').get();
-  if (masterNow && !tgEnabledNow && !ntfyEnabledNow && !haNow && !personalNow) {
-    return res.status(400).json({ error: 'At least one notification provider (Telegram or ntfy) must be enabled.' });
-  }
+      // Personal channels (an ntfy topic, Telegram chat or Home Assistant phone per person) count too
+      const haNow = !!(db.prepare("SELECT value FROM app_settings WHERE key = 'haUrl'").get() as any)?.value
+        && !!(db.prepare("SELECT value FROM app_settings WHERE key = 'haToken'").get() as any)?.value;
+      const personalNow = !!db.prepare('SELECT 1 FROM users WHERE ntfyTopic IS NOT NULL OR telegramChatId IS NOT NULL OR haNotifyService IS NOT NULL LIMIT 1').get();
+      // Phone notifications (web push, NEW-5) need nothing set up here: each person turns them on in Profile
+      if (masterNow && !tgEnabledNow && !ntfyEnabledNow && !haNow && !personalNow && !pushOn()) {
+        throw new Refused({ error: 'Turn on at least one way to send notifications: phone notifications (Settings → Features), Telegram or ntfy.', code: 'provider_required' });
+      }
 
-  // Validate telegram: if enabled, token + chatId required
-  const tokenNow = (db.prepare("SELECT value FROM app_settings WHERE key = 'telegramBotToken'").get() as any)?.value || '';
-  const chatNow = (db.prepare("SELECT value FROM app_settings WHERE key = 'telegramChatId'").get() as any)?.value || '';
-  if (tgEnabledNow && (!tokenNow || !chatNow)) {
-    return res.status(400).json({ error: 'To enable Telegram, both bot token and chat ID are required.' });
-  }
+      // Validate telegram: if enabled, token + chatId required
+      const tokenNow = (db.prepare("SELECT value FROM app_settings WHERE key = 'telegramBotToken'").get() as any)?.value || '';
+      const chatNow = (db.prepare("SELECT value FROM app_settings WHERE key = 'telegramChatId'").get() as any)?.value || '';
+      if (tgEnabledNow && (!tokenNow || !chatNow)) {
+        throw new Refused({ error: 'To enable Telegram, both bot token and chat ID are required.' });
+      }
 
-  // Validate ntfy: if enabled, topic required
-  const ntfyTopicNow = (db.prepare("SELECT value FROM app_settings WHERE key = 'ntfyTopic'").get() as any)?.value || '';
-  if (ntfyEnabledNow && !ntfyTopicNow) {
-    return res.status(400).json({ error: 'To enable ntfy, a topic is required.' });
+      // Validate ntfy: if enabled, topic required
+      const ntfyTopicNow = (db.prepare("SELECT value FROM app_settings WHERE key = 'ntfyTopic'").get() as any)?.value || '';
+      if (ntfyEnabledNow && !ntfyTopicNow) {
+        throw new Refused({ error: 'To enable ntfy, a topic is required.' });
+      }
+
+      return { masterNow, tgEnabledNow, ntfyEnabledNow, tokenNow, chatNow, ntfyTopicNow };
+    })();
+  } catch (err) {
+    if (err instanceof Refused) return res.status(400).json(err.body);
+    throw err;
   }
+  const { masterNow, tgEnabledNow, ntfyEnabledNow, tokenNow, chatNow, ntfyTopicNow } = saved;
 
   const notificationTimeNow = (db.prepare("SELECT value FROM app_settings WHERE key = 'notificationTime'").get() as any)?.value || '09:00';
   const notificationTypesNow = readNotificationTypesSetting();

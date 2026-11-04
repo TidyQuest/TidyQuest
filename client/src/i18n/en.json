@@ -250,7 +250,7 @@
       "telegramChatIdRequired": "Telegram chat ID is required when notifications are enabled.",
       "telegramTokenRequired": "Telegram bot token is required when notifications are enabled.",
       "notificationsDisabledHint": "Enable Notifications to configure providers and notification time.",
-      "providerRequired": "At least one notification provider (Telegram or ntfy) must be enabled.",
+      "providerRequired": "Turn on at least one way to send notifications: phone notifications (Settings → Features), Telegram or ntfy.",
       "notificationTypeTaskDue": "Task due reminders",
       "notificationTypeRewardRequest": "Reward requests",
       "notificationTypeAchievementUnlocked": "Achievement unlocked",

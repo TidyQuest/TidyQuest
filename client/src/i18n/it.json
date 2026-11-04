@@ -248,7 +248,7 @@
       "telegramChatIdRequired": "L'ID chat Telegram è obbligatorio quando le notifiche sono attive.",
       "telegramTokenRequired": "Il token bot Telegram è obbligatorio quando le notifiche sono attive.",
       "notificationsDisabledHint": "Attiva le notifiche per configurare i provider e l'orario di notifica.",
-      "providerRequired": "Almeno un provider di notifiche (Telegram o ntfy) deve essere attivato.",
+      "providerRequired": "Attiva almeno un modo per inviare le notifiche: notifiche sul telefono (Impostazioni → Funzioni), Telegram o ntfy.",
       "notificationTypeTaskDue": "Promemoria attività in scadenza",
       "notificationTypeRewardRequest": "Richieste ricompensa",
       "notificationTypeAchievementUnlocked": "Obiettivo sbloccato",

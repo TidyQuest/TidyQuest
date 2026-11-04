@@ -363,7 +363,7 @@ export const GUIDE_DE: GuideSection[] = [
       { where: 'Einstellungen → Allgemein → Benachrichtigungen, dann Wer bekommt was, Zeiten & Ruhezeiten und Benachrichtigungsprotokoll' },
       { ol: [
         'Schalte Benachrichtigungen ein und wähle, welche Arten die Familie bekommt.',
-        'Richte einen Familienkanal ein: ntfy (eine Server-URL und ein Topic, das alle in der ntfy-App abonnieren), Telegram (ein Bot-Token und eine Chat-ID) oder einen Home-Assistant-Notify-Dienst. Nutze den Test-Knopf.',
+        'Richte bei Bedarf einen Familienkanal ein (nicht nötig, wenn alle Benachrichtigungen aufs Handy nutzen, siehe unten): ntfy (eine Server-URL und ein Topic, das alle in der ntfy-App abonnieren), Telegram (ein Bot-Token und eine Chat-ID) oder einen Home-Assistant-Notify-Dienst. Nutze den Test-Knopf.',
         'Gib bei „Wer bekommt was“ auf Wunsch jeder Person einen eigenen Kanal: ihr eigenes ntfy-Topic, ihren Telegram-Chat oder ihr Home-Assistant-Handy. Dann bekommt sie Nachrichten in ihrer eigenen Sprache und kann Arten im Profil ausschalten.',
         'Lege Ruhezeiten fest (Nachrichten warten und gehen raus, wenn sie enden) und ob Nachrichten an Kinder werktags während der Schulzeit warten.',
       ] },
