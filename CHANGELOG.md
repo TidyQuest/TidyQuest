@@ -9,6 +9,8 @@ What changed in each release, in plain language, newest first. Releases up to v0
 
 ## Unreleased
 
+## v0.16.0 (2026-11-04)
+
 ### Added
 
 - **Hosted service: restore a deleted family.** The operator page has a **Restore** button on deleted families for
