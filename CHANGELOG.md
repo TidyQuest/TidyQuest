@@ -9,6 +9,8 @@ What changed in each release, in plain language, newest first. Releases up to v0
 
 ## Unreleased
 
+## v0.16.4 (2026-11-04)
+
 ### Fixed
 
 - **Phone notifications say why they can't turn on, instead of "That didn't work".** Brave (which has push
