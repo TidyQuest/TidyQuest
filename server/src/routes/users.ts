@@ -695,30 +695,39 @@ router.put('/notifications-config', (req: AuthRequest, res: Response) => {
           .run(ntfyToken.trim());
       }
 
-      // Validate: if master is enabled, at least one provider must be enabled
-      const masterNow = (db.prepare("SELECT value FROM app_settings WHERE key = 'notificationsEnabled'").get() as any)?.value === '1';
-      const tgEnabledNow = (db.prepare("SELECT value FROM app_settings WHERE key = 'telegramEnabled'").get() as any)?.value === '1';
-      const ntfyEnabledNow = (db.prepare("SELECT value FROM app_settings WHERE key = 'ntfyEnabled'").get() as any)?.value === '1';
+      const value = (key: string): string => (db.prepare('SELECT value FROM app_settings WHERE key = ?').get(key) as { value?: string } | undefined)?.value || '';
+      const masterNow = value('notificationsEnabled') === '1';
+      let tgEnabledNow = value('telegramEnabled') === '1';
+      let ntfyEnabledNow = value('ntfyEnabled') === '1';
+      const tokenNow = value('telegramBotToken');
+      const chatNow = value('telegramChatId');
+      const ntfyTopicNow = value('ntfyTopic');
 
-      // Personal channels (an ntfy topic, Telegram chat or Home Assistant phone per person) count too
-      const haNow = !!(db.prepare("SELECT value FROM app_settings WHERE key = 'haUrl'").get() as any)?.value
-        && !!(db.prepare("SELECT value FROM app_settings WHERE key = 'haToken'").get() as any)?.value;
+      // A channel left on without its details (an older refused save could do that) never sent anything: it's
+      // switched off rather than blocking this save. Turning one on now without its details is still refused below.
+      if (tgEnabledNow && (!tokenNow || !chatNow) && telegramEnabled === undefined) {
+        db.prepare("UPDATE app_settings SET value = '0' WHERE key = 'telegramEnabled'").run();
+        tgEnabledNow = false;
+      }
+      if (ntfyEnabledNow && !ntfyTopicNow && ntfyEnabled === undefined) {
+        db.prepare("UPDATE app_settings SET value = '0' WHERE key = 'ntfyEnabled'").run();
+        ntfyEnabledNow = false;
+      }
+
+      // If notifications are on, there must be a way to send them. Personal channels (an ntfy topic, Telegram chat or
+      // Home Assistant phone per person) count, and so do phone notifications (web push, NEW-5): each person turns
+      // those on in Profile, so nothing needs setting up here.
+      const haNow = !!value('haUrl') && !!value('haToken');
       const personalNow = !!db.prepare('SELECT 1 FROM users WHERE ntfyTopic IS NOT NULL OR telegramChatId IS NOT NULL OR haNotifyService IS NOT NULL LIMIT 1').get();
-      // Phone notifications (web push, NEW-5) need nothing set up here: each person turns them on in Profile
       if (masterNow && !tgEnabledNow && !ntfyEnabledNow && !haNow && !personalNow && !pushOn()) {
         throw new Refused({ error: 'Turn on at least one way to send notifications: phone notifications (Settings → Features), Telegram or ntfy.', code: 'provider_required' });
       }
 
-      // Validate telegram: if enabled, token + chatId required
-      const tokenNow = (db.prepare("SELECT value FROM app_settings WHERE key = 'telegramBotToken'").get() as any)?.value || '';
-      const chatNow = (db.prepare("SELECT value FROM app_settings WHERE key = 'telegramChatId'").get() as any)?.value || '';
-      if (tgEnabledNow && (!tokenNow || !chatNow)) {
+      // A channel being turned on needs its details (only while notifications are on: with them off nothing is sent)
+      if (masterNow && tgEnabledNow && (!tokenNow || !chatNow)) {
         throw new Refused({ error: 'To enable Telegram, both bot token and chat ID are required.' });
       }
-
-      // Validate ntfy: if enabled, topic required
-      const ntfyTopicNow = (db.prepare("SELECT value FROM app_settings WHERE key = 'ntfyTopic'").get() as any)?.value || '';
-      if (ntfyEnabledNow && !ntfyTopicNow) {
+      if (masterNow && ntfyEnabledNow && !ntfyTopicNow) {
         throw new Refused({ error: 'To enable ntfy, a topic is required.' });
       }
 

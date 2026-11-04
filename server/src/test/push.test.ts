@@ -247,4 +247,25 @@ describe('Settings → Notifications switch (v0.16.2)', () => {
     await config(admin.token, { notificationsEnabled: true, ntfyEnabled: true, ntfyTopic: 'family-topic' }).expect(200);
     expect(master()).toBe('1');
   });
+
+  it('ntfy or Telegram left on with nothing filled in no longer blocks the switch (v0.16.3)', async () => {
+    const admin = await createAdmin(agent);
+    seed();
+    const value = (key: string) => (db.prepare('SELECT value FROM app_settings WHERE key = ?').get(key) as { value: string }).value;
+    // What an older refused save could leave behind: ntfy on without a topic, Telegram on without a bot
+    const stuck = () => { setting('notificationsEnabled', '1'); setting('ntfyEnabled', '1'); setting('telegramEnabled', '1'); };
+    stuck();
+    const off = await config(admin.token, { notificationsEnabled: false }).expect(200);
+    expect(master()).toBe('0');
+    // Those channels never sent anything: they're switched off along the way
+    expect([off.body.ntfyEnabled, off.body.telegramEnabled, value('ntfyEnabled'), value('telegramEnabled')]).toEqual([false, false, '0', '0']);
+    stuck();
+    setting('notificationsEnabled', '0');
+    await config(admin.token, { notificationsEnabled: true }).expect(200);
+    expect(master()).toBe('1');
+    // Turning one on without its details is still refused, and keeps nothing
+    const refused = await config(admin.token, { ntfyEnabled: true }).expect(400);
+    expect(refused.body.error).toBe('To enable ntfy, a topic is required.');
+    expect(value('ntfyEnabled')).toBe('0');
+  });
 });

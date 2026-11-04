@@ -227,6 +227,8 @@ export function Settings({
   const [notifTypes, setNotifTypes] = useState<{ taskDue: boolean; rewardRequest: boolean; achievementUnlocked: boolean; choreApproval?: boolean; coinBoost?: boolean; outcome?: boolean; summary?: boolean; nudge?: boolean; reminder?: boolean }>({ taskDue: true, rewardRequest: true, achievementUnlocked: true, choreApproval: true, coinBoost: true, outcome: true, summary: true, nudge: true, reminder: true });
   const [notifHasToken, setNotifHasToken] = useState(false);
   const [notifMsg, setNotifMsg] = useState('');
+  // Why a switch that saves straight away (Notifications, or turning Telegram or ntfy off) didn't save; shown under it
+  const [switchMsg, setSwitchMsg] = useState('');
   const [ntfyEnabled, setNtfyEnabled] = useState(false);
   const [ntfyServerUrl, setNtfyServerUrl] = useState('https://ntfy.sh');
   const [ntfyTopic, setNtfyTopic] = useState('');
@@ -564,11 +566,25 @@ export function Settings({
 
   /** The Notifications switch saves as soon as it's flipped (it used to wait for a Save that only ntfy and Telegram had) */
   const switchNotifications = (on: boolean) => {
-    setNotifMsg('');
+    setSwitchMsg('');
     setNotifMasterEnabled(on);
     api.updateNotificationsConfig({ notificationsEnabled: on })
-      .then((next) => setNotifMasterEnabled(!!next.notificationsEnabled))
-      .catch((err) => { setNotifMasterEnabled(!on); setNotifMsg(notifError(err)); });
+      .then((next) => {
+        // The server may also have switched off a channel that was left on without its details
+        setNotifMasterEnabled(!!next.notificationsEnabled); setTelegramEnabled(!!next.telegramEnabled); setNtfyEnabled(!!next.ntfyEnabled);
+      })
+      .catch((err) => { setNotifMasterEnabled(!on); setSwitchMsg(notifError(err)); });
+  };
+
+  /** Turning Telegram or ntfy on shows its details (saved with its Save button); turning it off saves straight away */
+  const switchChannel = (key: 'telegramEnabled' | 'ntfyEnabled', on: boolean) => {
+    const show = key === 'telegramEnabled' ? setTelegramEnabled : setNtfyEnabled;
+    setSwitchMsg('');
+    show(on);
+    if (on) return;
+    api.updateNotificationsConfig({ [key]: false })
+      .then((next) => { setTelegramEnabled(!!next.telegramEnabled); setNtfyEnabled(!!next.ntfyEnabled); })
+      .catch((err) => { show(true); setSwitchMsg(notifError(err)); });
   };
 
   const saveNotifications = async () => {
@@ -679,6 +695,7 @@ export function Settings({
               </div>
               <Toggle checked={notifMasterEnabled} onChange={isAdmin ? switchNotifications : () => {}} />
             </div>
+            {switchMsg && <div role="alert" style={{ fontSize: 12, fontWeight: 700, color: 'var(--warm-accent)', margin: '0 0 8px' }}>{switchMsg}</div>}
             {isAdmin && (
               <div style={{ display: 'grid', gap: 8, marginTop: notifMasterEnabled ? 10 : 0, marginBottom: 8, padding: notifMasterEnabled ? 10 : 0, border: notifMasterEnabled ? '1px solid var(--warm-border)' : 'none', borderRadius: 10 }}>
                 {notifMasterEnabled ? (
@@ -723,7 +740,7 @@ export function Settings({
                       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M21.2 4.4L2.4 11.1c-.6.2-.6.7 0 .9l4.8 1.5 1.8 5.8c.2.5.7.5 1 .2l2.6-2.1 5.1 3.7c.5.4 1.1.1 1.2-.5L22.2 5.4c.2-.8-.4-1.3-1-1z" stroke="var(--warm-text-light)" strokeWidth="1.5" strokeLinejoin="round" fill="none"/></svg>
                         <div style={{ flex: 1, fontSize: 13, fontWeight: 700, color: 'var(--warm-text)' }}>Telegram</div>
-                        <Toggle checked={telegramEnabled} onChange={setTelegramEnabled} />
+                        <Toggle checked={telegramEnabled} onChange={(on) => switchChannel('telegramEnabled', on)} />
                       </div>
                       {telegramEnabled && (
                         <div style={{ display: 'grid', gap: 6, marginTop: 8 }}>
@@ -744,7 +761,7 @@ export function Settings({
                       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                         <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M10 2a7 7 0 0 0-7 7v3l-1.5 2h17L17 12V9a7 7 0 0 0-7-7z" stroke="var(--warm-text-light)" strokeWidth="1.5" fill="none"/><path d="M8 16a2 2 0 0 0 4 0" stroke="var(--warm-text-light)" strokeWidth="1.5" fill="none"/></svg>
                         <div style={{ flex: 1, fontSize: 13, fontWeight: 700, color: 'var(--warm-text)' }}>ntfy</div>
-                        <Toggle checked={ntfyEnabled} onChange={setNtfyEnabled} />
+                        <Toggle checked={ntfyEnabled} onChange={(on) => switchChannel('ntfyEnabled', on)} />
                       </div>
                       {ntfyEnabled && (
                         <div style={{ display: 'grid', gap: 6, marginTop: 8 }}>
@@ -776,7 +793,6 @@ export function Settings({
                 ) : (
                   <div style={{ fontSize: 11, color: 'var(--warm-text-muted)', fontWeight: 700 }}>
                     {t('settings.notificationsDisabledHint')}
-                    {notifMsg && <div style={{ color: 'var(--warm-accent)', marginTop: 6 }}>{notifMsg}</div>}
                   </div>
                 )}
               </div>
