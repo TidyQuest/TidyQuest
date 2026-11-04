@@ -9,6 +9,12 @@ What changed in each release, in plain language, newest first. Releases up to v0
 
 ## Unreleased
 
+### Added
+
+- **A `:dev` image for trying changes before they're released.** Every merge to `main`, and any branch built with
+  `scripts/dev-build.sh`, is published as `ghcr.io/tidyquest/tidyquest:dev`. It's for test servers: a server
+  people rely on should stay on `:latest` or a version number. (`:main` still follows `main`.)
+
 ### Fixed
 
 - **Notifications turn off again.** In v0.16.2 the Notifications switch in Settings → General kept turning itself

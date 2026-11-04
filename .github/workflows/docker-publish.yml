@@ -2,7 +2,8 @@ name: Build and Push Docker Image
 
 # Publishes to GitHub Container Registry (ghcr.io/<owner>/tidyquest) with the
 # built-in GITHUB_TOKEN, so no registry secrets are needed there.
-#   push to main      -> :main and :sha-<short>   (staging pulls :main)
+#   push to main      -> :main, :dev and :sha-<short>   (staging pulls :dev)
+#   run by hand on a branch (scripts/dev-build.sh) -> :dev and :sha-<short>, to try it on staging before merging
 #   published release -> :latest, :X.Y.Z, :X.Y, :X (production pins :X.Y.Z, see RELEASING.md)
 # Releases from TidyQuest/TidyQuest also go to Docker Hub as tidyquest/tidyquest (same tags), with the
 # repo's DOCKERHUB_USERNAME / DOCKERHUB_TOKEN secrets. Forks and main builds skip Docker Hub.
@@ -76,8 +77,9 @@ jobs:
             ${{ env.IMAGE_NAME }}
             name=${{ env.DOCKERHUB_IMAGE }},enable=${{ env.DOCKERHUB == 'true' }}
           tags: |
-            type=ref,event=branch
-            type=sha,enable=${{ github.event_name == 'push' }}
+            type=raw,value=main,enable=${{ github.event_name == 'push' }}
+            type=raw,value=dev,enable=${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
+            type=sha,enable=${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
             type=semver,pattern={{major}}
