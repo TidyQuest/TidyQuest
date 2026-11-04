@@ -651,6 +651,11 @@ export const GUIDE_IT: GuideSection[] = [
           'Impostazioni → Eliminati di recente può riportare indietro faccende e ricompense per 30 giorni, con la loro cronologia. Una faccenda la cui stanza è stata eliminata chiede in quale stanza metterla.',
           'Una faccenda segnata come fatta per sbaglio si può annullare da Attività, oppure con ↩️ Annulla nella sua stanza (genitori).',
         ] },
+        { q: 'Un bambino vede ancora il vecchio prezzo di una ricompensa', a: [
+          'Un prezzo diverso per persona si imposta in Impostazioni → Catalogo ricompense → Regole, con il pulsante Salva di quel riquadro (accanto compare “Salvato”). Il Salva di Modifica cambia solo il prezzo normale.',
+          'La pagina Ricompense del bambino mostra la modifica entro 15 secondi, o appena l’app viene riaperta.',
+          'Se il prezzo cambia mentre la finestra di acquisto è aperta, mostra il nuovo prezzo invece di comprare: tocca Conferma per pagarlo, oppure Annulla.',
+        ] },
         { q: 'Una ricompensa eliminata compare ancora in Statistiche', a: [
           'È voluto: ciò che è stato comprato conta ancora, così le settimane passate tornano. Non è più in Ricompense né nel Catalogo ricompense, e non compare tra i mai comprati.',
           'Ci hai ripensato? Impostazioni → Eliminati di recente la riporta indietro per 30 giorni.',

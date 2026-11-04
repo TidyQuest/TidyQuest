@@ -429,7 +429,8 @@
       "buyingForHint": "Precios, límites y monedas de {name}. Lo que compres es de {name} y cuenta como entregado.",
       "theirRequests": "Recompensas de {name}",
       "boughtBy": "comprado por {name}",
-      "confirmTextFor": "¿Comprar \"{reward}\" para {name}? Cuesta {coins} de sus monedas."
+      "confirmTextFor": "¿Comprar \"{reward}\" para {name}? Cuesta {coins} de sus monedas.",
+      "priceChanged": "El precio acaba de cambiar a {coins} monedas. Toca Confirmar para pagarlo, o Cancelar."
     },
     "rewardsPreset": {
       "movie_night": {

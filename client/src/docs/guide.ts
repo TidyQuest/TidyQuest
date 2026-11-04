@@ -675,6 +675,11 @@ export const GUIDE_EN: GuideSection[] = [
           'Settings → Recently deleted can bring chores and rewards back for 30 days, with their history. A chore whose room was deleted asks which room to go into.',
           'A chore marked done by mistake can be undone from Activity, or with ↩️ Undo in its room (parents).',
         ] },
+        { q: 'A kid still sees the old price of a reward', a: [
+          'A different price per person is set in Settings → Rewards Catalog → Rules, with the Save inside that box (“Saved” shows next to it). The Save under Edit only changes the usual price.',
+          'The kid’s Rewards page picks up the change within 15 seconds, or as soon as the app is opened again.',
+          'If the price changes while the buy box is open, the box shows the new price instead of buying: tap Confirm to pay that, or Cancel.',
+        ] },
         { q: 'A reward I deleted still shows in Insights', a: [
           'That’s on purpose: what was bought before still counts, so past weeks add up. It’s gone from Rewards and the Rewards Catalog, and isn’t listed under Never bought.',
           'Changed your mind? Settings → Recently deleted brings it back for 30 days.',

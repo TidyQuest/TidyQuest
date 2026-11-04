@@ -348,6 +348,11 @@ router.post('/:id/redeem', (req: AuthRequest, res: Response) => {
   if (blocked) return res.status(blocked.status).json({ error: blocked.error });
   // What this person pays (their own price, when one is set)
   reward.costCoins = priceFor(rule, forId);
+  // The app sends the price it showed. If a parent changed it since, say so instead of charging a different amount (BUG-13)
+  const shown = (req.body as { costCoins?: unknown } | undefined)?.costCoins;
+  if (shown !== undefined && Number(shown) !== reward.costCoins) {
+    return res.status(409).json({ error: 'price_changed', costCoins: reward.costCoins });
+  }
   if (me.coins < reward.costCoins) return res.status(400).json({ error: 'Not enough coins' });
 
   const tx = db.transaction(() => {

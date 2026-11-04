@@ -88,6 +88,34 @@ describe('Who can see a reward', () => {
     expect(await inCatalog(wyatt.token, phone)).toMatchObject({ costCoins: 50 });
   });
 
+  it("won't charge a different price than the one the app showed (BUG-13)", async () => {
+    const { dad, wyatt, cecil } = family();
+    const phone = await reward(dad.token, 'Cell Service (1 Month)', 50);
+    // Wyatt's page still shows 50 when a parent sets his own price
+    await agent.put(`/api/rewards/${phone}/rules`).set(auth(dad.token)).send({ prices: { [wyatt.id]: 75 } });
+
+    const stale = await agent.post(`/api/rewards/${phone}/redeem`).set(auth(wyatt.token)).send({ costCoins: 50 });
+    expect(stale.status).toBe(409);
+    expect(stale.body).toEqual({ error: 'price_changed', costCoins: 75 });
+    expect(coins(wyatt.id)).toBe(1000);
+
+    const ok = await agent.post(`/api/rewards/${phone}/redeem`).set(auth(wyatt.token)).send({ costCoins: 75 });
+    expect(ok.status).toBe(200);
+    expect(coins(wyatt.id)).toBe(925);
+    // Others still pay the usual price; leaving the price out (older apps, scripts) still works
+    expect((await agent.post(`/api/rewards/${phone}/redeem`).set(auth(cecil.token)).send({ costCoins: 50 })).status).toBe(200);
+    expect((await redeem(cecil.token, phone)).status).toBe(200);
+    expect(coins(cecil.id)).toBe(1900);
+
+    // A parent buying for Wyatt (ENH-16) is checked against Wyatt's price too
+    await agent.put(`/api/rewards/${phone}/rules`).set(auth(dad.token)).send({ prices: { [wyatt.id]: 60 } });
+    const forStale = await agent.post(`/api/rewards/${phone}/redeem`).set(auth(dad.token)).send({ forUserId: wyatt.id, costCoins: 75 });
+    expect(forStale.body).toEqual({ error: 'price_changed', costCoins: 60 });
+    expect(coins(wyatt.id)).toBe(925);
+    expect((await agent.post(`/api/rewards/${phone}/redeem`).set(auth(dad.token)).send({ forUserId: wyatt.id, costCoins: 60 })).status).toBe(200);
+    expect(coins(wyatt.id)).toBe(865);
+  });
+
   it('keeps reward rules for parents', async () => {
     const { dad, cecil } = family();
     const id = await reward(dad.token, 'Movie Night', 50);

@@ -186,10 +186,13 @@ function AppContent() {
     if (!user) return;
     const isDashboardPath = location.pathname === '/';
     const isRoomsPath = location.pathname === '/rooms' || location.pathname.startsWith('/rooms/') || location.pathname === '/tasks';
+    // Rewards too, so a price or reward a parent just changed shows up on a page left open (BUG-13)
+    const isRewardsPath = location.pathname === '/rewards';
     const tick = () => {
       if (document.visibilityState !== 'visible') return;
       if (isDashboardPath) loadDashboard();
       if (isRoomsPath) refreshRooms();
+      if (isRewardsPath) loadRewards();
     };
     const interval = setInterval(tick, 15000);
     document.addEventListener('visibilitychange', tick);
@@ -197,7 +200,7 @@ function AppContent() {
       clearInterval(interval);
       document.removeEventListener('visibilitychange', tick);
     };
-  }, [user, location.pathname, loadDashboard, refreshRooms]);
+  }, [user, location.pathname, loadDashboard, refreshRooms, loadRewards]);
 
   // Each page opens at the top. A room opened for one task (?task=) scrolls to that task
   // itself, and a link with a #section (the guide) scrolls to that section; parent effects run
@@ -759,8 +762,14 @@ function AppContent() {
                   await api.updateRedemptionStatus(id, status);
                   await Promise.all([loadDashboard(), loadRewards()]);
                 }}
-                onRedeem={async (rewardId: number) => {
-                  await api.redeemReward(rewardId);
+                onRedeem={async (rewardId: number, costCoins: number) => {
+                  try {
+                    await api.redeemReward(rewardId, { costCoins });
+                  } catch (err) {
+                    // A parent changed the price since this page loaded: fetch it so the box shows the new one
+                    if ((err as { body?: { error?: string } }).body?.error === 'price_changed') await loadRewards();
+                    throw err;
+                  }
                   await refreshUser();
                   await loadDashboard();
                   await loadRewards();

@@ -429,7 +429,8 @@
       "buyingForHint": "Prijzen, limieten en munten van {name}. Wat je koopt is van {name} en telt als gegeven.",
       "theirRequests": "Beloningen van {name}",
       "boughtBy": "gekocht door {name}",
-      "confirmTextFor": "\"{reward}\" kopen voor {name}? Het kost {coins} van de munten van {name}."
+      "confirmTextFor": "\"{reward}\" kopen voor {name}? Het kost {coins} van de munten van {name}.",
+      "priceChanged": "De prijs is net veranderd naar {coins} munten. Tik op Ja, kopen! om dat te betalen, of op Annuleren."
     },
     "rewardsPreset": {
       "movie_night": {
