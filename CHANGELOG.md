@@ -9,6 +9,8 @@ What changed in each release, in plain language, newest first. Releases up to v0
 
 ## Unreleased
 
+## v0.16.3 (2026-11-04)
+
 ### Added
 
 - **A `:dev` image for trying changes before they're released.** Every merge to `main`, and any branch built with
