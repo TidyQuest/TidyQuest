@@ -17,7 +17,7 @@ import { daySql, familyZone, savedZone } from '../utils/clock';
 import { MAX_SHIELDS, SHIELD_EVERY, shieldPrice, shieldsOn } from '../utils/streaks';
 import { cheersFor } from '../utils/cheers';
 import { cosmetics, unlocksFor } from '../utils/unlocks';
-import { mascotFor } from '../utils/mascot';
+import { mascotFor, TREAT_EFFORT } from '../utils/mascot';
 import { groupTeamPending, teamUpInfo, teamupsFor } from '../utils/teamups';
 
 const router = Router();
@@ -211,7 +211,7 @@ router.get('/', (req: AuthRequest, res: Response) => {
   // Completed today
   const completedToday = db.prepare(`
     SELECT tc.id AS completionId, tc.userId, tc.completedAt, tc.coinsEarned, tc.approvalNote,
-           t.id as taskId, t.name, t.translationKey, t.iconKey, t.roomId,
+           t.id as taskId, t.name, t.translationKey, t.iconKey, t.roomId, (t.effort >= ${TREAT_EFFORT}) AS mascotCheers,
            r.name as roomName, r.roomType, r.color as roomColor, r.accentColor as roomAccent,
            u.displayName, u.avatarColor, u.avatarType, u.avatarPreset, u.avatarPhotoUrl
     FROM task_completions tc
@@ -225,7 +225,8 @@ router.get('/', (req: AuthRequest, res: Response) => {
   // Cheers on today's chores
   if (isFeatureOn('cheers')) {
     const cheers = cheersFor(completedToday.map((c) => c.completionId), req.userId!);
-    for (const c of completedToday) c.cheers = cheers.get(c.completionId) ?? { counts: [], mine: null };
+    // The mascot's 🐾 only goes on bigger chores (3★ or more), like its cookie-and-hop cheer
+    for (const c of completedToday) { c.cheers = cheers.get(c.completionId) ?? { counts: [], mine: null }; c.mascotCheers = !!c.mascotCheers; }
   }
 
   // Recent activity

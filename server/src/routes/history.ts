@@ -3,6 +3,7 @@ import db from '../database';
 import { AuthRequest, authMiddleware } from '../middleware/auth';
 import { ensureAdmin } from '../utils/adminHelpers';
 import { cheersFor } from '../utils/cheers';
+import { TREAT_EFFORT } from '../utils/mascot';
 import { isFeatureOn } from '../utils/features';
 import { shieldsOn } from '../utils/streaks';
 
@@ -31,7 +32,7 @@ router.get('/', (req: AuthRequest, res: Response) => {
 
   const rawHistory = db.prepare(`
     SELECT tc.id, tc.completedAt, tc.coinsEarned, tc.taskId, tc.approvalNote, tc.teamupId, tc.loggedAt, tc.note, tc.photoUrl,
-           t.name as taskName, t.translationKey, t.roomId, t.assignmentMode,
+           t.name as taskName, t.translationKey, t.roomId, t.assignmentMode, (t.effort >= ${TREAT_EFFORT}) AS mascotCheers,
            r.name as roomName, r.roomType,
            u.id as userId, u.displayName, u.avatarColor, u.avatarType, u.avatarPreset, u.avatarPhotoUrl
     FROM task_completions tc
@@ -187,7 +188,8 @@ router.get('/', (req: AuthRequest, res: Response) => {
   if (isFeatureOn('cheers')) {
     const shown = history.filter((h) => h.type === 'completion');
     const cheers = cheersFor(shown.map((h) => h.id), req.userId!);
-    for (const h of shown) h.cheers = cheers.get(h.id) ?? { counts: [], mine: null };
+    // The mascot's 🐾 only goes on bigger chores (3★ or more), like its cookie-and-hop cheer
+    for (const h of shown) { h.cheers = cheers.get(h.id) ?? { counts: [], mine: null }; h.mascotCheers = !!h.mascotCheers; }
   }
 
   // The viewer's own completions still waiting for a parent, shown above the list

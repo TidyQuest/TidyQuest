@@ -144,6 +144,8 @@ interface CompletedTodayEntry {
   userId: number;
   approvalNote?: string | null;
   cheers?: CheerSummary;
+  /** A chore of 3★ effort or more: only those get the mascot's 🐾 */
+  mascotCheers?: boolean;
   completedAt: string;
   coinsEarned: number;
   taskId: number;
@@ -968,7 +970,7 @@ const Dashboard: React.FC<DashboardProps> = ({
                     {roomDisplayName(c.roomName, c.roomType || '')} &middot; {c.displayName}
                   </div>
                   {c.approvalNote && <div style={{ fontSize: 11, color: 'var(--warm-text-secondary)', fontWeight: 600, overflowWrap: 'anywhere' }}>💬 “{c.approvalNote}”</div>}
-                  {c.cheers && <CheerBar completionId={c.completionId} cheers={c.cheers} canCheer={c.userId !== currentUser.id} language={language} mascotName={data.mascot?.name} />}
+                  {c.cheers && <CheerBar completionId={c.completionId} cheers={c.cheers} canCheer={c.userId !== currentUser.id} language={language} mascotName={c.mascotCheers ? data.mascot?.name : null} />}
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 3, fontSize: 11, fontWeight: 800, color: 'var(--warm-accent)' }}>
                   {gamificationEnabled && <><CoinIcon /> +{c.coinsEarned}</>}

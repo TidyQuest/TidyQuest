@@ -25,7 +25,7 @@ async function family() {
   const cylis = await createUser(agent, admin.token, { username: 'cylis', displayName: 'Cylis', password: 'pass123', role: 'child' });
   const room = (await agent.post('/api/rooms').set(auth(admin.token)).send({ name: 'Bathroom', roomType: 'other' })).body.id as number;
   const chore = (await agent.post(`/api/rooms/${room}/tasks`).set(auth(admin.token)).send({ name: 'Clean Shower', effort: 1, onDemand: true, customCoins: 12 })).body.id as number;
-  return { admin, cecil, cylis, chore };
+  return { admin, cecil, cylis, chore, room };
 }
 
 describe('Cheers', () => {
@@ -60,6 +60,18 @@ describe('Cheers', () => {
     await agent.put('/api/features').set(auth(admin.token)).send({ features: { cheers: false } }).expect(200);
     expect((await cheer(cylis.token, '🎉')).status).toBe(403);
     expect((await agent.get('/api/dashboard').set(auth(cylis.token))).body.completedToday[0].cheers).toBeUndefined();
+  });
+
+  it("marks only chores of 3★ effort or more for the mascot's 🐾, on Home and in Activity", async () => {
+    const { admin, cecil, chore: small, room } = await family();
+    const big = (await agent.post(`/api/rooms/${room}/tasks`).set(auth(admin.token)).send({ name: 'Scrub Tub', effort: 3, onDemand: true })).body.id as number;
+    const smallId = (await agent.post(`/api/tasks/${small}/complete`).set(auth(cecil.token))).body.completionId as number;
+    const bigId = (await agent.post(`/api/tasks/${big}/complete`).set(auth(cecil.token))).body.completionId as number;
+
+    const today = (await agent.get('/api/dashboard').set(auth(admin.token))).body.completedToday;
+    expect(Object.fromEntries(today.map((c: any) => [c.completionId, c.mascotCheers]))).toEqual({ [smallId]: false, [bigId]: true });
+    const history = (await agent.get('/api/history').set(auth(admin.token))).body.history.filter((h: any) => h.type === 'completion');
+    expect(Object.fromEntries(history.map((h: any) => [h.id, h.mascotCheers]))).toEqual({ [smallId]: false, [bigId]: true });
   });
 
   it('lets a parent add a note and an "above and beyond" bonus when approving', async () => {
