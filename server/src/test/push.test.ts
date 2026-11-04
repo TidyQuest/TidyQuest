@@ -215,3 +215,36 @@ describe('Signing out stops a device', () => {
     expect(db.prepare('SELECT COUNT(*) AS n FROM push_subscriptions').get()).toEqual({ n: 0 });
   });
 });
+
+describe('Settings → Notifications switch (v0.16.2)', () => {
+  const config = (token: string, body: object) => agent.put('/api/users/notifications-config').set(auth(token)).send(body);
+  const master = () => (db.prepare("SELECT value FROM app_settings WHERE key = 'notificationsEnabled'").get() as { value: string }).value;
+  // A real database starts with these rows (database.ts); the routes only update them
+  const seed = () => {
+    for (const [key, value] of [['notificationsEnabled', '0'], ['telegramEnabled', '0'], ['ntfyEnabled', '0'], ['ntfyTopic', ''], ['notificationTime', '09:00']]) {
+      db.prepare('INSERT OR IGNORE INTO app_settings (key, value) VALUES (?, ?)').run(key, value);
+    }
+  };
+
+  it('turns on with phone notifications alone: nothing else to set up', async () => {
+    const admin = await createAdmin(agent);
+    seed();
+    const res = await config(admin.token, { notificationsEnabled: true }).expect(200);
+    expect(res.body.notificationsEnabled).toBe(true);
+    expect(master()).toBe('1');
+    await config(admin.token, { notificationsEnabled: false }).expect(200);
+    expect(master()).toBe('0');
+  });
+
+  it('with phone notifications switched off it needs another way to send, and a refused save keeps nothing', async () => {
+    const admin = await createAdmin(agent);
+    seed();
+    setting('features', JSON.stringify({ webPush: false }));
+    const res = await config(admin.token, { notificationsEnabled: true, notificationTime: '07:30' }).expect(400);
+    expect(res.body.code).toBe('provider_required');
+    expect(master()).toBe('0');
+    expect(db.prepare("SELECT value FROM app_settings WHERE key = 'notificationTime'").get()).toEqual({ value: '09:00' });
+    await config(admin.token, { notificationsEnabled: true, ntfyEnabled: true, ntfyTopic: 'family-topic' }).expect(200);
+    expect(master()).toBe('1');
+  });
+});

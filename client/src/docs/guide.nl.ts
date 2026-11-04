@@ -363,7 +363,7 @@ export const GUIDE_NL: GuideSection[] = [
       { where: 'Instellingen → Algemeen → Meldingen, daarna Wie krijgt wat, Tijden & stille uren en Meldingenlogboek' },
       { ol: [
         'Zet meldingen aan en kies welke soorten het gezin krijgt.',
-        'Stel een gezinskanaal in: ntfy (een server-URL en een topic waarop iedereen zich abonneert in de ntfy-app), Telegram (een bottoken en een chat-ID) of een Home Assistant notify-service. Gebruik de testknop.',
+        'Stel eventueel een gezinskanaal in (niet nodig als iedereen meldingen op de telefoon gebruikt, zie hieronder): ntfy (een server-URL en een topic waarop iedereen zich abonneert in de ntfy-app), Telegram (een bottoken en een chat-ID) of een Home Assistant notify-service. Gebruik de testknop.',
         'Geef eventueel iedereen een eigen kanaal bij "Wie krijgt wat": een eigen ntfy-topic, Telegram-chat of Home Assistant-telefoon. Ze krijgen dan berichten in hun eigen taal en kunnen soorten uitzetten in Profiel.',
         'Stel stille uren in (berichten wachten en gaan weg als ze afgelopen zijn) en of berichten voor kinderen op weekdagen wachten tijdens schooltijd.',
       ] },

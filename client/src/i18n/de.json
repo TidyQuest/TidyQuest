@@ -248,7 +248,7 @@
       "telegramChatIdRequired": "Telegram-Chat-ID ist erforderlich, wenn Benachrichtigungen aktiviert sind.",
       "telegramTokenRequired": "Telegram-Bot-Token ist erforderlich, wenn Benachrichtigungen aktiviert sind.",
       "notificationsDisabledHint": "Aktiviere Benachrichtigungen, um Anbieter und Uhrzeit zu konfigurieren.",
-      "providerRequired": "Mindestens ein Benachrichtigungsanbieter (Telegram oder ntfy) muss aktiviert sein.",
+      "providerRequired": "Schalte mindestens einen Weg für Benachrichtigungen ein: Benachrichtigungen aufs Handy (Einstellungen → Funktionen), Telegram oder ntfy.",
       "notificationTypeTaskDue": "Fällige Aufgaben",
       "notificationTypeRewardRequest": "Belohnungsanfragen",
       "notificationTypeAchievementUnlocked": "Erfolge freigeschaltet",
