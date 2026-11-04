@@ -4,16 +4,38 @@ Two images come out of this repo (`.github/workflows/docker-publish.yml`):
 
 | When | Image tags | Used by |
 |---|---|---|
-| Every merge to `main` | `:main`, `:sha-<short>` | **Staging**: `docker compose pull && docker compose up -d` |
+| `./scripts/dev-build.sh` on a branch | `:dev`, `:sha-<short>` | **Staging**, to try a branch before merging it |
+| Every merge to `main` | `:main`, `:dev`, `:sha-<short>` | **Staging** (`:dev`) |
 | A published GitHub release `vX.Y.Z` | `:X.Y.Z`, `:X.Y`, `:X`, `:latest` | **Production**, pinned to `:X.Y.Z` |
 
 Settings → Version shows which one is running: `v0.7.0` on a release, `v0.6.3 · main · 7e18930` on a
-build from `main`. Without logging in: `curl http://<server>:<port>/api/version`.
+build from `main`, `v0.6.3 · feat/x · 7e18930` on a branch. Without logging in:
+`curl http://<server>:<port>/api/version`.
+
+## Trying a branch on staging
+
+Staging runs `:dev`, so work can be tried there before it's merged: `main` then gets one merge per finished
+piece of work instead of a merge and its follow-up fixes.
+
+1. Commit and push the branch, then build it:
+
+   ```sh
+   ./scripts/dev-build.sh
+   ```
+
+   GitHub builds its copy of the branch as `:dev` in about 5 minutes (GitHub → Actions). The script stops if
+   something isn't committed or pushed.
+2. On the staging server: `docker compose pull && docker compose up -d`. Settings → Version shows the branch.
+3. Fix things on the branch, push and build again as often as you need. When it's right, open the pull request.
+
+`:dev` is whichever build finished last: the next merge to `main` puts `main` back on staging. Database
+columns a branch added stay in staging's data; `main` ignores them (the schema only ever adds).
 
 ## Putting a new version on production
 
-1. Merge the work into `main` and try it on staging (`:main`). Each pull request adds its lines to
-   [CHANGELOG.md](CHANGELOG.md) under **Unreleased** (Added, Changed or Fixed), in plain language.
+1. Try the work on staging (`:dev`, above), merge it into `main`, and check staging once more. Each pull
+   request adds its lines to [CHANGELOG.md](CHANGELOG.md) under **Unreleased** (Added, Changed or Fixed), in
+   plain language. Several merges can go out in one release.
 2. Release it from an up-to-date `main` checkout:
 
    ```sh
@@ -40,7 +62,7 @@ build from `main`. Without logging in: `curl http://<server>:<port>/api/version`
 
 The rented server runs hosted mode (`HOSTED=1`, many families on one server) from the same images. It gets a
 release the same way as production, pinned to `:X.Y.Z`, with a few extra steps because other families' data is
-on it. Hosted staging (`:main` with `HOSTED=1`, port 3022 on the home server) is where each release is tried
+on it. Hosted staging (`:dev` with `HOSTED=1`, port 3022 on the home server) is where each release is tried
 first: sign up a test family, confirm its email, and click through whatever changed.
 
 1. **Read the release's changelog for new settings.** Compare the server's `.env` with `.env.example` in the
