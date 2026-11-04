@@ -25,7 +25,7 @@ TidyQuest turns boring chores into quests:
 - **🎖️ Achievements**: Unlock badges for milestones (100 tasks, 30-day streak, etc.)
 - **📅 Calendar View**: See upcoming due dates at a glance
 - **🌍 Multilingual**: English, French, German, Spanish, Italian
-- **📱 Notifications**: Optional reminders via Telegram, ntfy or Home Assistant
+- **📱 Notifications**: Optional reminders as phone notifications from the app itself (web push), or via Telegram, ntfy or Home Assistant
 
 Perfect for families who want to:
 - Make chores fun for kids
@@ -245,6 +245,8 @@ See `.env.example` for all options. Key variables:
 | `PORT` | No | Server port (default: 3000) |
 | `TRUST_PROXY` | Behind a reverse proxy | Addresses of the proxy in front (e.g. `loopback, 172.16.0.0/12` for nginx or Nginx Proxy Manager on the same host or in Docker), or a hop count such as `1`. The login limit then counts each visitor's own address instead of the proxy's. Leave it unset without a proxy: the `X-Forwarded-For` header is ignored, since anyone can send it |
 | `ADMIN_RESET_PASSWORD` | No | One-shot admin password recovery. Set, restart, then remove. |
+| `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY` | No | The keys that sign phone notifications (web push). Without them the server makes a pair on first use and keeps it in the data folder (`vapid-keys.json`): back it up with the database. With new keys, each device signs up again the next time the app opens. |
+| `VAPID_SUBJECT` | No | How a push service can contact you about this server's messages: `mailto:you@example.org` or an `https://` address. Default: this project's GitHub page. |
 | `SOURCE_URL` | If you changed the code | Where the **Source code** link (login page and Settings → General) points. By default it's this repository at the tag (or `:main` commit) you run. If you run code you changed, set it to where people can get your copy: the AGPL asks for that |
 
 ### Hosted mode (`HOSTED=1`)
@@ -273,6 +275,15 @@ whether the mail server accepted the login.
 TidyQuest supports three notification providers (configure in Settings → General → Notifications, admin only).
 Each can be a family channel everyone gets, and each person can also get their own (ntfy topic, Telegram chat or
 Home Assistant phone) under *Who gets what*.
+
+**Phone notifications (web push)**
+
+Nothing to set up on the server. Once notifications are on, each person opens **Profile → My notifications** on
+their own phone or computer and taps **Turn on for this device**. It needs the app opened at an `https://` address
+(a reverse proxy with a certificate, e.g. Nginx Proxy Manager); on iPhone and iPad (iOS 16.4+) TidyQuest has to be
+added to the Home Screen first. Messages go through the browser's push service (Google, Apple, Mozilla or
+Microsoft), encrypted end to end. Parents see each person's devices under *Who gets what*; **Settings → Features**
+can switch it off.
 
 **Telegram**
 1. Create a Telegram bot via [@BotFather](https://t.me/botfather)

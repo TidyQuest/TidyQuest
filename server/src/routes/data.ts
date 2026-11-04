@@ -110,6 +110,9 @@ router.post('/import', (req: AuthRequest, res: Response) => {
   const accounts = isHosted() ? accountUsernames(req.familyId!) : [];
 
   const importData = db.transaction(() => {
+    // Web push devices belong to people's ids on this server, which the backup may give to someone else (NEW-5).
+    // Each device signs up again when the app opens.
+    db.prepare('DELETE FROM push_subscriptions').run();
     // Clear existing data, children first. Zones are only replaced when the backup has them.
     for (const { key, table } of [...TABLES].reverse()) {
       if (table === 'zones' && !Array.isArray(body.zones)) continue;

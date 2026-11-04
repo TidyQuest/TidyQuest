@@ -5,7 +5,7 @@ import { isHosted } from '../hosted/context';
  * Optional extras a family can switch off (Settings → Features). On by default; stored as JSON in
  * app_settings 'features', only where a family's choice differs from the default.
  */
-export const FEATURES = ['rescue', 'usual', 'forgot', 'todos', 'boardAwards', 'levels', 'nextBadge', 'seasonal', 'cheers', 'mascot', 'teamups', 'mascotShop', 'focus', 'shields', 'proofPhotos'] as const;
+export const FEATURES = ['rescue', 'usual', 'forgot', 'todos', 'boardAwards', 'levels', 'nextBadge', 'seasonal', 'cheers', 'mascot', 'teamups', 'mascotShop', 'focus', 'shields', 'proofPhotos', 'webPush'] as const;
 export type Feature = typeof FEATURES[number];
 
 /** Proof photos start off in hosted mode until the lawyer signs off on kids' photos (ROADMAP decision 7). */

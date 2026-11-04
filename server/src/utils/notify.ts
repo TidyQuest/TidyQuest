@@ -2,11 +2,13 @@ import db, { prepared } from '../database';
 import { isHosted } from '../hosted/context';
 import { at, minuteOfDay, wall } from './clock';
 import { getNotificationTypeSettings, getNtfySettings, getTelegramSettings, sendNtfyMessageDetailed, sendTelegramMessageDetailed, sendTimeout, type NotificationTypeSettings } from './notifications';
+import { activeDevices, pushOn, sendPush } from './push';
 
 /**
  * Notifications to people, not just the family channel.
  *
- * Each person can have their own channels (an ntfy topic, a Telegram chat, a Home Assistant phone).
+ * Each person can have their own channels (an ntfy topic, a Telegram chat, a Home Assistant phone, and each
+ * device where they turned on web push: utils/push.ts).
  * A message for someone goes to their own channels, in their language. People without any fall back
  * to the family channel (one message there, in the family's language), except for private kinds
  * (outcomes, summaries, nudges), which only go to personal channels. Each person can turn kinds off.
@@ -34,8 +36,10 @@ export type Audience = number[] | 'parents' | 'kids' | 'everyone';
 /** The text for one person (null person = the family channel); null = nothing to send */
 export type Builder = (lang: string, person: Person | null) => string | null;
 
-export type Channel = 'ntfy' | 'telegram' | 'ha';
-export interface Delivery { channel: Channel; target: string; message: string }
+export type Channel = 'ntfy' | 'telegram' | 'ha' | 'push';
+/** For push, target is the device's id in push_subscriptions and label its name ("iPhone · Safari") */
+export interface Delivery { channel: Channel; target: string; message: string; label?: string }
+type Route = { channel: Channel; target: string; label?: string };
 /** Sends one message on one channel. Swapped out in tests. */
 export type Transport = (d: Delivery) => Promise<{ ok: boolean; error?: string }>;
 
@@ -78,6 +82,7 @@ async function sendHomeAssistant(service: string, message: string): Promise<{ ok
 const realTransport: Transport = async ({ channel, target, message }) => {
   if (channel === 'ntfy') return sendNtfyMessageDetailed(message, { topic: target, ignoreEnabled: true });
   if (channel === 'telegram') return sendTelegramMessageDetailed(message, { chatId: target, ignoreEnabled: true });
+  if (channel === 'push') return sendPush(Number(target), message);
   return sendHomeAssistant(target, message);
 };
 let transport: Transport = realTransport;
@@ -94,17 +99,18 @@ export function getPeople(): Person[] {
 }
 
 /** A person's own channels (only those whose provider is set up). */
-export function personalChannels(p: Person): Array<{ channel: Channel; target: string }> {
-  const out: Array<{ channel: Channel; target: string }> = [];
+export function personalChannels(p: Person): Route[] {
+  const out: Route[] = [];
   if (p.ntfyTopic) out.push({ channel: 'ntfy', target: p.ntfyTopic });
   if (p.telegramChatId && getTelegramSettings().botToken) out.push({ channel: 'telegram', target: p.telegramChatId });
   if (p.haNotifyService && haReady()) out.push({ channel: 'ha', target: p.haNotifyService });
+  if (pushOn()) for (const d of activeDevices(p.id)) out.push({ channel: 'push', target: String(d.id), label: d.label });
   return out;
 }
 
 /** The family channels that are switched on. */
-export function familyChannels(): Array<{ channel: Channel; target: string }> {
-  const out: Array<{ channel: Channel; target: string }> = [];
+export function familyChannels(): Route[] {
+  const out: Route[] = [];
   const tg = getTelegramSettings();
   if (tg.enabled && tg.botToken && tg.chatId) out.push({ channel: 'telegram', target: tg.chatId });
   const ntfy = getNtfySettings();
@@ -246,7 +252,7 @@ export async function sendPersonTest(userId: number, message: string): Promise<A
   for (const c of personalChannels(person)) {
     const r = await transport({ ...c, message }).catch(() => ({ ok: false, error: 'send failed' }));
     log(userId, c.channel, 'test', message, r.ok, r.ok ? null : r.error ?? null, null, new Date());
-    out.push({ channel: c.channel, ok: r.ok, error: r.ok ? undefined : r.error });
+    out.push({ channel: c.label ? `${c.channel} (${c.label})` : c.channel, ok: r.ok, error: r.ok ? undefined : r.error });
   }
   return out;
 }

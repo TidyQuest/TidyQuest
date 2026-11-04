@@ -76,7 +76,7 @@ export const GUIDE_EN: GuideSection[] = [
       { ul: [
         'Updates arrive by themselves: it opens the newest version from the server every time. If it looks out of date after an update, close it fully and open it again.',
         'Remove it like any other app: press and hold the icon. The family’s data stays on the server.',
-        'Messages about chores and rewards come through ntfy, Telegram or Home Assistant (see "Notifications"), not from the home screen app.',
+        'To get notifications on this phone, open TidyQuest from the home screen, then Profile → My notifications → Turn on for this device. Messages can also come through ntfy, Telegram or Home Assistant (see "Notifications").',
       ] },
     ],
   },
@@ -395,7 +395,15 @@ export const GUIDE_EN: GuideSection[] = [
         'Private kinds (approved/turned down, summaries, nudges, cheers) only go to a person’s own channel, never the family channel.',
         'The Notification log shows what was sent, queued or failed, and why.',
       ] },
-      { p: 'On tidyquest.org, notifications go through ntfy.sh or Telegram. Your own ntfy server and Home Assistant only work on a home server.' },
+      { p: 'On tidyquest.org, notifications go straight to phones (web push), or through ntfy.sh or Telegram. Your own ntfy server and Home Assistant only work on a home server.' },
+      { h: 'Phone notifications (web push)' },
+      { p: 'Everyone can get their notifications on their own phone or computer, straight from TidyQuest: no ntfy or Telegram needed. Each person turns it on themselves, on that device: Profile → My notifications → Turn on for this device. It counts as their own channel, so their messages come in their own language and no longer go to the family channel.' },
+      { ul: [
+        'It needs a secure (https://) address. On iPhone and iPad (iOS 16.4 or newer), add TidyQuest to the Home Screen first and turn it on from there (see "On your phone").',
+        'Who gets what lists each person’s devices; Remove stops one. Log out stops that device, and Log out of all devices stops all of that person’s. Log out everywhere else and a new password keep only the device in your hand.',
+        'Messages travel through the browser maker’s push service (Google, Apple, Mozilla or Microsoft), encrypted so only the device can read them.',
+        'Settings → Features → Phone notifications (web push) switches it off for the whole family.',
+      ] },
       { h: 'Home Assistant' },
       { p: 'If your family has the Home Assistant app on their phones, TidyQuest can send messages through it. This only works on a home server, not on tidyquest.org.' },
       { ol: [
@@ -465,7 +473,7 @@ export const GUIDE_EN: GuideSection[] = [
         'Releases are tagged (for example 0.9.0). Pin that number in docker-compose.yml, then run "docker compose pull && docker compose up -d". The ":main" image is the newest code, for trying things out first.',
         'Settings → General shows the version running. To roll back, put the previous version number back and start it again (take a backup first: the database only moves forward).',
         'Under the version, Source code opens the code of that exact version: TidyQuest is free software (AGPL-3.0). Running code you changed? Set SOURCE_URL to where people can get your copy; the license asks for that.',
-        'Phone notifications from the app itself and installing it as an app need a secure (https://) address; until then use ntfy or Telegram.',
+        'Phone notifications (web push) and installing it as an app need a secure (https://) address; until then use ntfy or Telegram. The server makes its web push keys the first time they’re needed and keeps them in the data folder (vapid-keys.json): back it up with the rest, or set VAPID_PUBLIC_KEY and VAPID_PRIVATE_KEY yourself. With new keys, each device signs up again the next time the app opens.',
       ] },
     ],
   },
@@ -532,6 +540,17 @@ export const GUIDE_EN: GuideSection[] = [
           'Private kinds (outcomes, summaries, nudges, cheers) need the person’s own channel.',
           'Quiet hours and school hours hold messages until they end.',
           'The Notification log shows each message and any error.',
+        ] },
+        { q: 'Phone notifications won’t turn on', a: [
+          '“Needs a secure address”: open TidyQuest at its https:// address, not http:// or a number like 192.168…. A home server needs HTTPS set up first.',
+          'On iPhone and iPad: open TidyQuest from its Home Screen icon, not in Safari, on iOS 16.4 or newer.',
+          '“Blocked in this browser”: notifications were refused when it asked. Allow them for TidyQuest in the browser’s site settings (iPhone: Settings → Notifications → TidyQuest), then try again.',
+          'No Phone notifications part in Profile: a parent switched it off in Settings → Features.',
+        ] },
+        { q: 'Phone notifications stopped coming', a: [
+          'Log out on that device, Log out of all devices or a new password set by a parent stops them. Sign in and tap Turn on for this device again.',
+          'Check the phone itself: notifications allowed for TidyQuest (or the browser), and no Focus or Do Not Disturb hiding them.',
+          'A parent can look in the Notification log: a "push" line shows each message and any error. A device that was reset or had the app removed drops off the list after its first failed message.',
         ] },
         { q: 'The Home Assistant test fails', a: [
           '“Could not reach Home Assistant”: the URL is wrong, or the TidyQuest server can’t reach it. In Docker, homeassistant.local often doesn’t work: use the IP address with :8123.',

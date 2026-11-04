@@ -9,6 +9,9 @@ import { afterAll } from 'vitest';
 process.env.JWT_SECRET = 'test-secret-key-for-vitest';
 process.env.NODE_ENV = 'test';
 process.env.VITEST = 'true';
+// Web push keys (NEW-5) for the tests, so none are made and saved in the real data folder
+process.env.VAPID_PUBLIC_KEY ??= 'BG0F_SIenYvkT6wl0KI5Lkst4FfE0BacZLexYElm_P8M8tRsYrR1TV8BzLl_MZUUnS2Ea2BFBvALhbzMo9HBHFo';
+process.env.VAPID_PRIVATE_KEY ??= 'CDP07ZHsrcGupP4NI3pyRjK07QGKvvLeOBDH6xK49FU';
 
 import { setDatabase } from '../database';
 import { applyForkSchema } from '../forkSchema';

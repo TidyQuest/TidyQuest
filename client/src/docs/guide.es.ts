@@ -52,7 +52,7 @@ export const GUIDE_ES: GuideSection[] = [
       { ul: [
         'Las actualizaciones llegan solas: siempre abre la versión más nueva del servidor. Si tras una actualización parece antigua, ciérrala del todo y ábrela de nuevo.',
         'Quítala como cualquier otra app: mantén pulsado el icono. Los datos de la familia se quedan en el servidor.',
-        'Los mensajes sobre tareas y recompensas llegan por ntfy, Telegram o Home Assistant (mira "Notificaciones"), no desde la app de la pantalla de inicio.',
+        'Para recibir notificaciones en este móvil, abre TidyQuest desde la pantalla de inicio y ve a Perfil → Mis notificaciones → Activar en este dispositivo. Los mensajes también pueden llegar por ntfy, Telegram o Home Assistant (mira "Notificaciones").',
       ] },
     ],
   },
@@ -371,7 +371,15 @@ export const GUIDE_ES: GuideSection[] = [
         'Los tipos privados (aprobada o rechazada, resúmenes, avisos, ánimos) solo van al canal propio de la persona, nunca al canal familiar.',
         'El Registro de notificaciones muestra lo que se envió, quedó en cola o falló, y por qué.',
       ] },
-      { p: 'En tidyquest.org, las notificaciones van por ntfy.sh o Telegram. Tu propio servidor ntfy y Home Assistant solo funcionan en un servidor en casa.' },
+      { p: 'En tidyquest.org, las notificaciones llegan directamente al móvil (web push), o van por ntfy.sh o Telegram. Tu propio servidor ntfy y Home Assistant solo funcionan en un servidor en casa.' },
+      { h: 'Notificaciones en el móvil (web push)' },
+      { p: 'Cada uno puede recibir sus notificaciones en su propio móvil u ordenador, directamente desde TidyQuest: sin necesidad de ntfy ni Telegram. Cada persona las activa ella misma, en el dispositivo: Perfil → Mis notificaciones → Activar en este dispositivo. Cuenta como su propio canal: sus mensajes llegan en su idioma y ya no van al canal de la familia.' },
+      { ul: [
+        'Necesita una dirección segura (https://). En iPhone y iPad (iOS 16.4 o posterior), primero añade TidyQuest a la pantalla de inicio y actívalas desde ahí (mira "En tu móvil").',
+        'Quién recibe qué muestra los dispositivos de cada uno; Quitar detiene uno. Cerrar sesión detiene ese dispositivo, y Cerrar sesión en todos los dispositivos detiene todos los de esa persona. Cerrar sesión en los demás dispositivos y una contraseña nueva solo dejan el dispositivo que tienes en la mano.',
+        'Los mensajes pasan por el servicio push del fabricante del navegador (Google, Apple, Mozilla o Microsoft), cifrados para que solo el dispositivo pueda leerlos.',
+        'Ajustes → Funciones → Notificaciones en el móvil (web push) las desactiva para toda la familia.',
+      ] },
       { h: 'Home Assistant' },
       { p: 'Si tu familia tiene la app de Home Assistant en el móvil, TidyQuest puede enviar los mensajes por ahí. Solo funciona en un servidor en casa, no en tidyquest.org.' },
       { ol: [
@@ -441,7 +449,7 @@ export const GUIDE_ES: GuideSection[] = [
         'Las versiones llevan etiqueta (por ejemplo 0.9.0). Fija ese número en docker-compose.yml y ejecuta "docker compose pull && docker compose up -d". La imagen ":main" es el código más reciente, para probar cosas antes.',
         'Ajustes → General muestra la versión en uso. Para volver atrás, vuelve a poner el número de la versión anterior y arráncalo de nuevo (haz antes una copia de seguridad: la base de datos solo avanza).',
         'Bajo la versión, Código fuente abre el código de esa versión exacta: TidyQuest es software libre (AGPL-3.0). ¿Usas código que has cambiado? Pon en SOURCE_URL la dirección donde se puede obtener tu copia; la licencia lo pide.',
-        'Las notificaciones al móvil desde la propia app y su instalación como app necesitan una dirección segura (https://); hasta entonces usa ntfy o Telegram.',
+        'Las notificaciones en el móvil (web push) y su instalación como app necesitan una dirección segura (https://); hasta entonces usa ntfy o Telegram. El servidor crea sus claves web push la primera vez que las necesita y las guarda en la carpeta de datos (vapid-keys.json): haz copia de ella con lo demás, o pon tú mismo VAPID_PUBLIC_KEY y VAPID_PRIVATE_KEY. Con claves nuevas, cada dispositivo se vuelve a registrar la próxima vez que se abre la app.',
       ] },
     ],
   },
@@ -508,6 +516,17 @@ export const GUIDE_ES: GuideSection[] = [
           'Los tipos privados (resultados, resúmenes, avisos, ánimos) necesitan el canal propio de la persona.',
           'Las horas de silencio y el horario escolar retienen los mensajes hasta que terminan.',
           'El Registro de notificaciones muestra cada mensaje y cualquier error.',
+        ] },
+        { q: 'Las notificaciones en el móvil no se activan', a: [
+          '"Necesita una dirección segura": abre TidyQuest en su dirección https://, no http:// ni un número como 192.168…. Un servidor en casa necesita HTTPS primero.',
+          'En iPhone y iPad: abre TidyQuest desde su icono en la pantalla de inicio, no en Safari, con iOS 16.4 o posterior.',
+          '"Bloqueadas en este navegador": se rechazaron las notificaciones cuando las pidió. Permítelas para TidyQuest en los ajustes del sitio del navegador (iPhone: Ajustes → Notificaciones → TidyQuest) y vuelve a intentarlo.',
+          'No aparece Notificaciones en el móvil en Perfil: un padre o una madre las desactivó en Ajustes → Funciones.',
+        ] },
+        { q: 'Las notificaciones en el móvil dejaron de llegar', a: [
+          'Cerrar sesión en ese dispositivo, Cerrar sesión en todos los dispositivos o una contraseña nueva puesta por un padre o una madre las detiene. Inicia sesión y toca otra vez Activar en este dispositivo.',
+          'Revisa el propio móvil: notificaciones permitidas para TidyQuest (o el navegador), y ningún modo Concentración o No molestar que las oculte.',
+          'Un padre o una madre puede mirar el Registro de notificaciones: una línea "push" muestra cada mensaje y el error, si lo hay. Un dispositivo restablecido o sin la app sale de la lista tras su primer mensaje fallido.',
         ] },
         { q: 'La prueba de Home Assistant falla', a: [
           '"Could not reach Home Assistant": la URL está mal o el servidor de TidyQuest no llega a ella. En Docker, homeassistant.local a menudo no funciona: usa la dirección IP con :8123.',

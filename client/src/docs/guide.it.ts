@@ -52,7 +52,7 @@ export const GUIDE_IT: GuideSection[] = [
       { ul: [
         'Gli aggiornamenti arrivano da soli: ogni volta apre la versione più recente dal server. Se dopo un aggiornamento sembra vecchia, chiudila del tutto e riaprila.',
         'Toglila come qualsiasi altra app: tieni premuta l’icona. I dati della famiglia restano sul server.',
-        'I messaggi su faccende e ricompense arrivano con ntfy, Telegram o Home Assistant (vedi "Notifiche"), non dall’app sulla schermata Home.',
+        'Per ricevere le notifiche su questo telefono, apri TidyQuest dalla schermata Home, poi Profilo → Le mie notifiche → Attiva su questo dispositivo. I messaggi possono arrivare anche con ntfy, Telegram o Home Assistant (vedi "Notifiche").',
       ] },
     ],
   },
@@ -371,7 +371,15 @@ export const GUIDE_IT: GuideSection[] = [
         'I tipi privati (approvato/rifiutato, riepiloghi, promemoria, tifo) vanno solo al canale personale di una persona, mai al canale di famiglia.',
         'Il Registro notifiche mostra cosa è stato inviato, messo in coda o fallito, e perché.',
       ] },
-      { p: 'Su tidyquest.org le notifiche passano da ntfy.sh o Telegram. Un tuo server ntfy e Home Assistant funzionano solo su un server di casa.' },
+      { p: 'Su tidyquest.org le notifiche arrivano direttamente sul telefono (web push), oppure passano da ntfy.sh o Telegram. Un tuo server ntfy e Home Assistant funzionano solo su un server di casa.' },
+      { h: 'Notifiche sul telefono (web push)' },
+      { p: 'Ognuno può ricevere le sue notifiche sul proprio telefono o computer, direttamente da TidyQuest: senza bisogno di ntfy o Telegram. Ogni persona le attiva da sé, sul dispositivo: Profilo → Le mie notifiche → Attiva su questo dispositivo. Conta come il suo canale personale: i messaggi arrivano nella sua lingua e non passano più dal canale della famiglia.' },
+      { ul: [
+        'Serve un indirizzo sicuro (https://). Su iPhone e iPad (iOS 16.4 o successivo), aggiungi prima TidyQuest alla schermata Home e attivale da lì (vedi "Sul tuo telefono").',
+        'Chi riceve cosa mostra i dispositivi di ognuno; Rimuovi ne ferma uno. Esci ferma quel dispositivo, ed Esci da tutti i dispositivi li ferma tutti per quella persona. Esci da tutti gli altri dispositivi e una nuova password tengono solo il dispositivo che hai in mano.',
+        'I messaggi passano dal servizio push del produttore del browser (Google, Apple, Mozilla o Microsoft), cifrati in modo che solo il dispositivo possa leggerli.',
+        'Impostazioni → Funzioni → Notifiche sul telefono (web push) le disattiva per tutta la famiglia.',
+      ] },
       { h: 'Home Assistant' },
       { p: 'Se la tua famiglia ha l’app Home Assistant sul telefono, TidyQuest può mandare i messaggi da lì. Funziona solo su un server di casa, non su tidyquest.org.' },
       { ol: [
@@ -441,7 +449,7 @@ export const GUIDE_IT: GuideSection[] = [
         'Le versioni sono etichettate (per esempio 0.9.0). Fissa quel numero in docker-compose.yml, poi esegui "docker compose pull && docker compose up -d". L’immagine ":main" è il codice più recente, per provare le novità prima.',
         'Impostazioni → Generale mostra la versione in uso. Per tornare indietro, rimetti il numero della versione precedente e riavvia (fai prima un backup: il database va solo avanti).',
         'Sotto la versione, Codice sorgente apre il codice di quella versione esatta: TidyQuest è software libero (AGPL-3.0). Usi codice che hai modificato? Imposta in SOURCE_URL l’indirizzo dove si può avere la tua copia; la licenza lo chiede.',
-        'Le notifiche sul telefono dall’app stessa e l’installazione come app richiedono un indirizzo sicuro (https://); fino ad allora usa ntfy o Telegram.',
+        'Le notifiche sul telefono (web push) e l’installazione come app richiedono un indirizzo sicuro (https://); fino ad allora usa ntfy o Telegram. Il server crea le sue chiavi web push la prima volta che servono e le tiene nella cartella dei dati (vapid-keys.json): salvala con il resto, oppure imposta tu VAPID_PUBLIC_KEY e VAPID_PRIVATE_KEY. Con chiavi nuove, ogni dispositivo si registra di nuovo alla prossima apertura dell’app.',
       ] },
     ],
   },
@@ -508,6 +516,17 @@ export const GUIDE_IT: GuideSection[] = [
           'I tipi privati (esiti, riepiloghi, promemoria, tifo) hanno bisogno del canale personale della persona.',
           'Le ore di silenzio e l’orario scolastico trattengono i messaggi fino alla fine.',
           'Il Registro notifiche mostra ogni messaggio ed eventuali errori.',
+        ] },
+        { q: 'Le notifiche sul telefono non si attivano', a: [
+          '"Serve un indirizzo sicuro": apri TidyQuest al suo indirizzo https://, non http:// o un numero come 192.168…. Un server di casa deve prima avere HTTPS.',
+          'Su iPhone e iPad: apri TidyQuest dalla sua icona nella schermata Home, non in Safari, con iOS 16.4 o successivo.',
+          '"Bloccate in questo browser": le notifiche sono state rifiutate quando le ha chieste. Consentile per TidyQuest nelle impostazioni del sito del browser (iPhone: Impostazioni → Notifiche → TidyQuest), poi riprova.',
+          'In Profilo non c’è la parte Notifiche sul telefono: un genitore l’ha disattivata in Impostazioni → Funzioni.',
+        ] },
+        { q: 'Le notifiche sul telefono non arrivano più', a: [
+          'Esci su quel dispositivo, Esci da tutti i dispositivi o una nuova password messa da un genitore le ferma. Accedi e tocca di nuovo Attiva su questo dispositivo.',
+          'Controlla il telefono: notifiche consentite per TidyQuest (o il browser), e nessuna modalità Full immersion o Non disturbare che le nasconda.',
+          'Un genitore può guardare nel Registro notifiche: una riga "push" mostra ogni messaggio e l’eventuale errore. Un dispositivo ripristinato o senza l’app esce dall’elenco dopo il primo messaggio non riuscito.',
         ] },
         { q: 'Il test di Home Assistant non va', a: [
           '"Could not reach Home Assistant": l’URL è sbagliato, o il server TidyQuest non lo raggiunge. In Docker homeassistant.local spesso non funziona: usa l’indirizzo IP con :8123.',

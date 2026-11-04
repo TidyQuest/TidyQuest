@@ -1434,7 +1434,10 @@
       "kindDesc_rescue": "la tarea ×2 del día, por la mañana",
       "kind_cheer": "Ánimos en mis tareas",
       "kind_teamup": "Invitaciones de equipo",
-      "peopleDescHosted": "Da a cada persona su propio canal (un tema de ntfy en su teléfono o un chat de Telegram). Sin canal, comparten el canal familiar; los mensajes privados (resultados, resúmenes, avisos) solo van a su propio canal."
+      "peopleDescHosted": "Da a cada persona su propio canal (un tema de ntfy en su teléfono o un chat de Telegram). Sin canal, comparten el canal familiar; los mensajes privados (resultados, resúmenes, avisos) solo van a su propio canal.",
+      "mineDescPush": "Recibe los mensajes de TidyQuest en este móvil u ordenador: activa las notificaciones en el móvil. O usa la app ntfy: suscríbete a un tema que solo tú conozcas y escríbelo abajo.",
+      "peopleDescPush": "Da a cada persona su propio canal: las notificaciones en el móvil que activa en Perfil, un tema de ntfy en su teléfono, un chat de Telegram o su teléfono de Home Assistant. Sin canal, comparten el canal familiar; los mensajes privados (resultados, resúmenes, avisos) solo van a su propio canal.",
+      "peopleDescHostedPush": "Da a cada persona su propio canal: las notificaciones en el móvil que activa en Perfil, un tema de ntfy en su teléfono o un chat de Telegram. Sin canal, comparten el canal familiar; los mensajes privados (resultados, resúmenes, avisos) solo van a su propio canal."
     },
     "todos": {
       "roomName": "Pendientes",
@@ -1505,7 +1508,9 @@
       "shieldsDesc": "Se ganan cada 7 días seguidos o se compran con monedas (2 como máximo). Un escudo salva la racha un día que se pierde.",
       "shieldPrice": "Precio",
       "proofPhotos": "Fotos de prueba",
-      "proofPhotosDesc": "Los niños pueden añadir una foto a una tarea que espera la aprobación de un padre o una madre. Desactivado: solo una nota."
+      "proofPhotosDesc": "Los niños pueden añadir una foto a una tarea que espera la aprobación de un padre o una madre. Desactivado: solo una nota.",
+      "webPush": "📲 Notificaciones en el móvil (web push)",
+      "webPushDesc": "Cada uno puede recibir sus notificaciones en su propio móvil u ordenador, activándolas en Perfil. Necesita una dirección https://."
     },
     "seasons": {
       "halloween": "Halloween",
@@ -2120,6 +2125,27 @@
       "turnOn": "Activar",
       "chip": "Sin sesión",
       "noNotifications": "Sin sesión: no se envía nada"
+    },
+    "push": {
+      "title": "Notificaciones en el móvil",
+      "onHere": "Activadas: este dispositivo recibe tus notificaciones.",
+      "offHere": "Recibe tus notificaciones en este móvil u ordenador, como con cualquier otra app.",
+      "familyOff": "Las notificaciones están desactivadas para toda la familia (Ajustes → Notificaciones).",
+      "block_insecure": "Necesita una dirección segura: abre TidyQuest en su dirección https:// para activarlas aquí.",
+      "block_iosInstall": "En iPhone y iPad, primero añade TidyQuest a la pantalla de inicio (Compartir → Añadir a pantalla de inicio), luego ábrelo desde ahí y actívalas.",
+      "block_unsupported": "Este navegador no puede mostrar notificaciones de apps web. Prueba con Chrome, Edge, Firefox o Safari.",
+      "block_denied": "Las notificaciones de TidyQuest están bloqueadas en este navegador. Permítelas en los ajustes del sitio y vuelve aquí.",
+      "turnOn": "Activar en este dispositivo",
+      "turnOff": "Desactivar en este dispositivo",
+      "turnedOn": "¡Activadas! Toca «Enviar notificación de prueba» para probarlas.",
+      "turnedOff": "Desactivadas en este dispositivo.",
+      "denied": "El navegador no permitió las notificaciones. Permítelas en los ajustes del sitio e inténtalo de nuevo.",
+      "failed": "No ha funcionado. Inténtalo de nuevo.",
+      "none": "Aún no hay dispositivos. Cada uno las activa en Perfil, en su propio móvil.",
+      "device": "Dispositivo",
+      "thisDevice": "este dispositivo",
+      "added": "añadido el {date}",
+      "remove": "Quitar"
     }
   }
 }

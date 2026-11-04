@@ -1,6 +1,7 @@
 import type { Outfit } from '../components/mascot/MascotCard';
 import type { HostedAccount } from '../utils/hosted';
 import { AVATAR_PHOTO, PROOF_PHOTO, shrinkPhoto } from '../utils/photos';
+import { pushOwner, setPushOwner, unsubscribeBrowser } from '../utils/push';
 import type { User } from './useAuth';
 const API_BASE = '/api';
 
@@ -188,6 +189,7 @@ export interface FeatureFlags {
   focus: boolean;
   shields: boolean;
   proofPhotos: boolean;
+  webPush: boolean;
 }
 
 /** Team-ups on a chore in a list: can you start one, and has a team claimed it today? */
@@ -246,7 +248,11 @@ export interface NotifyPerson {
   channels: string[];
   /** false: a parent switched off their login, so nothing is sent to them (ENH-16) */
   canLogIn?: boolean;
+  /** Phones and computers where they turned on web push (NEW-5) */
+  devices: PushDeviceInfo[];
 }
+
+export interface PushDeviceInfo { id: number; label: string; createdAt: string; lastOkAt: string | null }
 
 export interface CustomBadge {
   id: number;
@@ -314,6 +320,32 @@ export function forgetPhotos(): void {
   fetch(`${API_BASE}/auth/logout`, { method: 'POST', keepalive: true }).catch(() => {});
 }
 
+/**
+ * Stops web push on this device when it signs out (NEW-5): the server forgets the device and the browser drops
+ * its subscription, so whoever signs in next here doesn't get this person's notifications. Call it while the
+ * token is still saved.
+ */
+export function forgetPush(): void {
+  const owner = pushOwner();
+  const token = getToken();
+  if (owner && token) {
+    fetch(`${API_BASE}/notify/push/devices/forget`, {
+      method: 'POST', keepalive: true,
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ endpoint: owner.endpoint }),
+    }).catch(() => {});
+  }
+  setPushOwner(null);
+  void unsubscribeBrowser();
+}
+
+/** Fired when this device gets a fresh login (a new password, "Log out everywhere else"): push signs up again. */
+export const NEW_TOKEN_EVENT = 'tidyquest-new-token';
+function saveNewToken(token: string): void {
+  localStorage.setItem('tidyquest_token', token);
+  window.dispatchEvent(new Event(NEW_TOKEN_EVENT));
+}
+
 function getToken(): string | null {
   return localStorage.getItem('tidyquest_token');
 }
@@ -336,6 +368,7 @@ async function apiFetch<T>(path: string, options: RequestInit = {}): Promise<T> 
   // A signed-in request that's turned away means the login ended. Without a token (logging in, the
   // sign-up and email-link pages) the page shows the error itself.
   if (res.status === 401 && token) {
+    forgetPush();
     localStorage.removeItem('tidyquest_token');
     forgetPhotos();
     window.location.href = '/login';
@@ -482,6 +515,12 @@ export const api = {
   updateNotifyPerson: (id: number, data: { ntfyTopic?: string; telegramChatId?: string; haNotifyService?: string; prefs?: Partial<Record<NotifyKind, boolean>> }) =>
     apiFetch<NotifyPerson>(`/notify/people/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
   testNotifyPerson: (id: number) => apiFetch<{ results: Array<{ channel: string; ok: boolean; error?: string }> }>(`/notify/people/${id}/test`, { method: 'POST' }),
+  // Web push on this device (NEW-5, utils/pushSync.ts)
+  pushInfo: () => apiFetch<{ publicKey: string; on: boolean; notificationsOn: boolean }>('/notify/push'),
+  pushSignUp: (body: { endpoint: string; keys: { p256dh: string; auth: string }; label: string }) =>
+    apiFetch<{ id: number }>('/notify/push/devices', { method: 'POST', body: JSON.stringify(body) }),
+  pushForget: (endpoint: string) => apiFetch<{ success: boolean }>('/notify/push/devices/forget', { method: 'POST', body: JSON.stringify({ endpoint }) }),
+  removePushDevice: (userId: number, deviceId: number) => apiFetch<NotifyPerson>(`/notify/people/${userId}/devices/${deviceId}`, { method: 'DELETE' }),
   getNotifyLog: () => apiFetch<Array<{ id: number; sentAt: string; userId: number | null; displayName: string | null; channel: string; kind: string; message: string; ok: number; error: string | null }>>('/notify/log'),
   // Badges parents make (Settings → Badges)
   getCustomBadges: () => apiFetch<{ badges: Array<CustomBadge & { earnedBy: number }>; builtinBonusCoins: number }>('/achievements/custom'),
@@ -518,13 +557,13 @@ export const api = {
   updatePassword: async (userId: number, data: { currentPassword?: string; newPassword: string }) => {
     const res = await apiFetch<{ success: boolean; token?: string }>(`/users/${userId}/password`, { method: 'PUT', body: JSON.stringify(data) });
     // A new password signs you out everywhere; your own change comes with a fresh login for this device (NEW-8)
-    if (res.token) localStorage.setItem('tidyquest_token', res.token);
+    if (res.token) saveNewToken(res.token);
     return res;
   },
   /** Signs this person out on every other device; this one stays signed in */
   logoutOthers: async () => {
     const { token } = await apiFetch<{ token: string }>('/auth/logout-others', { method: 'POST' });
-    localStorage.setItem('tidyquest_token', token);
+    saveNewToken(token);
   },
   /** A parent signs someone out on every device */
   logoutAllDevices: (userId: number) =>

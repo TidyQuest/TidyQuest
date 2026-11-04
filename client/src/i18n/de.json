@@ -1434,7 +1434,10 @@
       "kindDesc_rescue": "die 2×-Aufgabe des Tages, morgens",
       "kind_cheer": "Anfeuerungen für meine Aufgaben",
       "kind_teamup": "Team-Einladungen",
-      "peopleDescHosted": "Gib jeder Person einen eigenen Kanal (ein ntfy-Thema auf dem Handy oder einen Telegram-Chat). Ohne eigenen Kanal teilen sie den Familienkanal; private Nachrichten (Ergebnisse, Zusammenfassungen, Erinnerungen) gehen nur an den eigenen Kanal."
+      "peopleDescHosted": "Gib jeder Person einen eigenen Kanal (ein ntfy-Thema auf dem Handy oder einen Telegram-Chat). Ohne eigenen Kanal teilen sie den Familienkanal; private Nachrichten (Ergebnisse, Zusammenfassungen, Erinnerungen) gehen nur an den eigenen Kanal.",
+      "mineDescPush": "Hol dir TidyQuest-Nachrichten auf dieses Handy oder diesen Computer: Schalte Benachrichtigungen aufs Handy ein. Oder nutze die ntfy-App: Abonniere ein Thema, das nur du kennst, und trag es unten ein.",
+      "peopleDescPush": "Gib jeder Person einen eigenen Kanal: Benachrichtigungen aufs Handy, die sie im Profil einschaltet, ein ntfy-Thema auf dem Handy, einen Telegram-Chat oder ihr Home-Assistant-Handy. Ohne eigenen Kanal teilen sie den Familienkanal; private Nachrichten (Ergebnisse, Zusammenfassungen, Erinnerungen) gehen nur an den eigenen Kanal.",
+      "peopleDescHostedPush": "Gib jeder Person einen eigenen Kanal: Benachrichtigungen aufs Handy, die sie im Profil einschaltet, ein ntfy-Thema auf dem Handy oder einen Telegram-Chat. Ohne eigenen Kanal teilen sie den Familienkanal; private Nachrichten (Ergebnisse, Zusammenfassungen, Erinnerungen) gehen nur an den eigenen Kanal."
     },
     "todos": {
       "roomName": "Erledigen",
@@ -1505,7 +1508,9 @@
       "shieldsDesc": "Alle 7 Tage am Stück verdient oder mit Münzen gekauft (höchstens 2). Ein Schild rettet die Serie an einem verpassten Tag.",
       "shieldPrice": "Preis",
       "proofPhotos": "Beweisfotos",
-      "proofPhotosDesc": "Kinder können ein Foto zu einer Aufgabe hinzufügen, die auf die Freigabe eines Elternteils wartet. Aus: nur eine Notiz."
+      "proofPhotosDesc": "Kinder können ein Foto zu einer Aufgabe hinzufügen, die auf die Freigabe eines Elternteils wartet. Aus: nur eine Notiz.",
+      "webPush": "📲 Benachrichtigungen aufs Handy (Web-Push)",
+      "webPushDesc": "Jeder kann seine Benachrichtigungen auf dem eigenen Handy oder Computer bekommen, eingeschaltet im Profil. Braucht eine https://-Adresse."
     },
     "seasons": {
       "halloween": "Halloween",
@@ -2120,6 +2125,27 @@
       "turnOn": "Einschalten",
       "chip": "Ohne Anmeldung",
       "noNotifications": "Ohne Anmeldung: nichts wird gesendet"
+    },
+    "push": {
+      "title": "Benachrichtigungen aufs Handy",
+      "onHere": "An: Dieses Gerät bekommt deine Benachrichtigungen.",
+      "offHere": "Bekomm deine Benachrichtigungen auf dieses Handy oder diesen Computer, wie bei jeder anderen App.",
+      "familyOff": "Benachrichtigungen sind für die ganze Familie ausgeschaltet (Einstellungen → Benachrichtigungen).",
+      "block_insecure": "Braucht eine sichere Adresse: Öffne TidyQuest über seine https://-Adresse, um es hier einzuschalten.",
+      "block_iosInstall": "Auf iPhone und iPad füge TidyQuest zuerst zum Home-Bildschirm hinzu (Teilen → Zum Home-Bildschirm), öffne es von dort und schalte es dann ein.",
+      "block_unsupported": "Dieser Browser kann keine Benachrichtigungen von Web-Apps anzeigen. Probier Chrome, Edge, Firefox oder Safari.",
+      "block_denied": "Benachrichtigungen von TidyQuest sind in diesem Browser blockiert. Erlaube sie in den Website-Einstellungen des Browsers und komm dann zurück.",
+      "turnOn": "Für dieses Gerät einschalten",
+      "turnOff": "Für dieses Gerät ausschalten",
+      "turnedOn": "An! Tippe auf „Testbenachrichtigung senden“, um es auszuprobieren.",
+      "turnedOff": "Für dieses Gerät ausgeschaltet.",
+      "denied": "Der Browser hat Benachrichtigungen nicht erlaubt. Erlaube sie in den Website-Einstellungen und versuch es noch einmal.",
+      "failed": "Das hat nicht geklappt. Versuch es noch einmal.",
+      "none": "Noch keine Geräte. Jeder schaltet es im Profil auf dem eigenen Handy ein.",
+      "device": "Gerät",
+      "thisDevice": "dieses Gerät",
+      "added": "hinzugefügt am {date}",
+      "remove": "Entfernen"
     }
   }
 }

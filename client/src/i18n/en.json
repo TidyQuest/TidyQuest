@@ -1434,7 +1434,10 @@
       "kindDesc_rescue": "the day's 2× chore, in the morning",
       "kind_cheer": "Cheers on my chores",
       "kind_teamup": "Team-up invites",
-      "peopleDescHosted": "Give each person their own channel (an ntfy topic on their phone, or a Telegram chat). Without one, they share the family channel; private messages (their results, summaries, nudges) only go to their own channel."
+      "peopleDescHosted": "Give each person their own channel (an ntfy topic on their phone, or a Telegram chat). Without one, they share the family channel; private messages (their results, summaries, nudges) only go to their own channel.",
+      "mineDescPush": "Get TidyQuest messages on this phone or computer: turn on phone notifications. Or use the ntfy app: subscribe to a topic only you know and enter it below.",
+      "peopleDescPush": "Give each person their own channel: phone notifications they turn on in Profile, an ntfy topic on their phone, a Telegram chat, or their Home Assistant phone. Without one, they share the family channel; private messages (their results, summaries, nudges) only go to their own channel.",
+      "peopleDescHostedPush": "Give each person their own channel: phone notifications they turn on in Profile, an ntfy topic on their phone, or a Telegram chat. Without one, they share the family channel; private messages (their results, summaries, nudges) only go to their own channel."
     },
     "todos": {
       "roomName": "To-dos",
@@ -1505,7 +1508,9 @@
       "shieldsDesc": "Earned every 7 days in a row, or bought with coins (2 at most). A shield saves the streak on a missed day.",
       "shieldPrice": "Price",
       "proofPhotos": "Proof photos",
-      "proofPhotosDesc": "Kids can add a photo to a chore that waits for a parent's approval. Off: a note only."
+      "proofPhotosDesc": "Kids can add a photo to a chore that waits for a parent's approval. Off: a note only.",
+      "webPush": "📲 Phone notifications (web push)",
+      "webPushDesc": "Everyone can get their notifications on their own phone or computer, turned on in Profile. Needs an https:// address."
     },
     "seasons": {
       "halloween": "Halloween",
@@ -2120,6 +2125,27 @@
       "turnOn": "Turn on",
       "chip": "No login",
       "noNotifications": "Can't log in: nothing is sent"
+    },
+    "push": {
+      "title": "Phone notifications",
+      "onHere": "On: this device gets your notifications.",
+      "offHere": "Get your notifications on this phone or computer, like any other app.",
+      "familyOff": "Notifications are switched off for the whole family (Settings → Notifications).",
+      "block_insecure": "Needs a secure address: open TidyQuest at its https:// address to turn this on here.",
+      "block_iosInstall": "On iPhone and iPad, add TidyQuest to your Home Screen first (Share → Add to Home Screen), then open it from there and turn this on.",
+      "block_unsupported": "This browser can't show notifications from web apps. Try Chrome, Edge, Firefox or Safari.",
+      "block_denied": "Notifications are blocked for TidyQuest in this browser. Allow them in the browser's site settings, then come back.",
+      "turnOn": "Turn on for this device",
+      "turnOff": "Turn off for this device",
+      "turnedOn": "On! Tap \"Send test notification\" to try it.",
+      "turnedOff": "Turned off for this device.",
+      "denied": "The browser didn't allow notifications. Allow them in its site settings and try again.",
+      "failed": "That didn't work. Try again.",
+      "none": "No devices yet. Each person turns it on in Profile, on their own phone.",
+      "device": "Device",
+      "thisDevice": "this device",
+      "added": "added {date}",
+      "remove": "Remove"
     }
   }
 }
