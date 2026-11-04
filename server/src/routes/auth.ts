@@ -76,7 +76,7 @@ router.get('/avatars', (_req: AuthRequest, res: Response) => {
   // Hosted mode shows nobody before sign-in: anyone with the family link would see the kids' names and faces
   if (isHosted()) return res.json([]);
   const users = db.prepare(
-    'SELECT username, displayName, avatarColor, avatarType, avatarPreset, avatarPhotoUrl FROM users ORDER BY displayName'
+    'SELECT username, displayName, avatarColor, avatarType, avatarPreset, avatarPhotoUrl FROM users WHERE canLogIn != 0 ORDER BY displayName'
   ).all();
   res.json(users);
 });
@@ -107,10 +107,15 @@ router.post('/login', (req: AuthRequest, res: Response) => {
   }
 
   const signIn = (user: any) => {
-    if (!passwordMatches(user, password)) {
+    // Someone a parent switched to "can't log in" (ENH-16); parents always can
+    const noLogin = !!user && user.role !== 'admin' && user.canLogIn === 0;
+    if (!passwordMatches(user, password) || noLogin) {
       addFailure(ipKey);
       addFailure(userKey);
       console.warn(`[auth] failed login for ${who} from ${clientIp(req)}`);
+      // Self-hosted says why (the login picker shows the family anyway). Hosted answers like a wrong password,
+      // so a family code can't be confirmed by trying it with a name.
+      if (noLogin && !isHosted()) return res.status(403).json({ error: 'A parent turned off logging in for this person', code: 'no-login' });
       return res.status(401).json({ error: 'Invalid credentials' });
     }
     clearFailures(userKey);

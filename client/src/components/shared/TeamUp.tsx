@@ -17,7 +17,7 @@ export function TeamUpButton({ info, onClick, language }: { info?: TeamUpInfo | 
 export function TeamUpDialog({ task, people, onClose, onStarted, language }: {
   task: { id: number; name: string };
   /** Who could join: everyone but you, or the chore's assignees */
-  people: Array<{ id: number; displayName: string }>;
+  people: Array<{ id: number; displayName: string; canLogIn?: number }>;
   onClose: () => void;
   onStarted: () => void;
   language?: string;
@@ -41,7 +41,8 @@ export function TeamUpDialog({ task, people, onClose, onStarted, language }: {
           <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--warm-text-light)', marginTop: 4 }}>{t('teamups.how')}</div>
         </div>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-          {people.map((p) => (
+          {/* Someone who can't log in could never answer (ENH-16) */}
+          {people.filter((p) => p.canLogIn !== 0).map((p) => (
             <button key={p.id} type="button" className="tq-btn tq-btn-secondary tq-btn-sm" disabled={busy} onClick={() => void start(p.id)}>{p.displayName}</button>
           ))}
           <button type="button" className="tq-btn tq-btn-primary tq-btn-sm" disabled={busy} onClick={() => void start(null)}>{t('teamups.anyone')}</button>

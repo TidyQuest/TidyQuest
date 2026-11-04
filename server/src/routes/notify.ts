@@ -85,6 +85,8 @@ function personView(id: number) {
     ntfyTopic: p.ntfyTopic ?? '', telegramChatId: p.telegramChatId ?? '', haNotifyService: p.haNotifyService ?? '',
     prefs: Object.fromEntries(NOTIFICATION_KINDS.map((k) => [k, p.prefs[k] !== false])),
     channels: personalChannels(p).map((c) => c.channel),
+    // Can't log in (ENH-16): nothing is sent to them until a parent turns it back on
+    canLogIn: p.canLogIn !== 0,
   };
 }
 

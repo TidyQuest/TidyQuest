@@ -9,6 +9,18 @@ What changed in each release, in plain language, newest first. Releases up to v0
 
 ## Unreleased
 
+### Added
+
+- **Family members who don't log in.** In Settings → Family Members, switch off **Can log in** when adding someone
+  (a grandparent, a toddler) and they need no username or password. A parent ticks off their chores with "who did
+  it?" (approved straight away, even in Strict Mode) and buys their rewards. They don't appear on the login screen,
+  get no notifications, and can't be invited to a team-up. The same switch is on every member's and child's card:
+  turning it off signs them out everywhere, and turning it back on asks for a new password. Parents always log in.
+- **Buy a reward for someone else.** Parents pick a person under **Buying for** at the top of Rewards. The shop then
+  shows that person's coins, prices and limits, and the purchase is paid with their coins and counts as handed over.
+- Reward purchases now show in Activity (each person sees their own, parents see everyone's), with "bought by …"
+  when a parent bought it for them. Insights' Recent rewards says who bought it too.
+
 ## v0.15.5 (2026-11-04)
 
 ### Fixed

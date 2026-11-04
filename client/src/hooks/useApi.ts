@@ -112,9 +112,9 @@ export interface InsightsCoins {
   goals: Array<[number, number, number]>;
   /** Every reward, deleted ones too (deleted = 1) so their purchases keep a name */
   rewards: Array<{ id: number; title: string; costCoins: number; isActive: number; deleted: number }>;
-  /** [rewardId, userId, redemptionId, coins, redeemedAt (ISO), waiting (1 = not handed over yet)]; a shared pot has
-   *  one row per person who chipped in */
-  bought: Array<[number, number, number, number, string, number]>;
+  /** [rewardId, userId, redemptionId, coins, redeemedAt (ISO), waiting (1 = not handed over yet), boughtBy (the parent
+   *  who bought it for them, 0 = nobody; ENH-16)]; a shared pot has one row per person who chipped in */
+  bought: Array<[number, number, number, number, string, number, number?]>;
 }
 /** rows are [weekday (0 = Mon), slot, userId, chores, coins, effort] */
 /** rows: [weekday (0 = the week's first day, weekStart like getDay()), slot, userId, chores, coins, effort] */
@@ -244,6 +244,8 @@ export interface NotifyPerson {
   prefs: Record<NotifyKind, boolean>;
   /** Their own channels that are set up */
   channels: string[];
+  /** false: a parent switched off their login, so nothing is sent to them (ENH-16) */
+  canLogIn?: boolean;
 }
 
 export interface CustomBadge {
@@ -503,8 +505,12 @@ export const api = {
 
   // Users
   getUsers: () => apiFetch<any[]>('/users'),
-  createUser: (data: { username: string; password: string; displayName: string; avatarColor?: string; language?: string; role?: 'admin' | 'member' | 'child' }) =>
+  /** canLogIn: false adds someone who doesn't log in (ENH-16): no username or password */
+  createUser: (data: { username?: string; password?: string; displayName: string; avatarColor?: string; language?: string; role?: 'admin' | 'member' | 'child'; canLogIn?: boolean }) =>
     apiFetch<any>('/users', { method: 'POST', body: JSON.stringify(data) }),
+  /** "Can log in" (ENH-16): off signs them out everywhere; on needs a new password */
+  setUserLogin: (userId: number, data: { canLogIn: boolean; password?: string }) =>
+    apiFetch<{ id: number; canLogIn: number }>(`/users/${userId}/login`, { method: 'PUT', body: JSON.stringify(data) }),
   updateSettings: (userId: number, data: { language?: string; isVacationMode?: boolean }) =>
     apiFetch<any>(`/users/${userId}/settings`, { method: 'PUT', body: JSON.stringify(data) }),
   updateProfile: (userId: number, data: { displayName?: string; avatarType?: string; avatarColor?: string; avatarPreset?: string | null; language?: string; birthday?: string | null; theme?: string | null; holidayColors?: boolean; homeLayout?: { order: string[]; hidden: string[] } | null }) =>
@@ -609,8 +615,9 @@ export const api = {
     }>('/users/notifications-config', { method: 'PUT', body: JSON.stringify(data) }),
   sendNotificationsTest: (data?: { botToken?: string; chatId?: string; provider?: 'telegram' | 'ntfy'; ntfyServerUrl?: string; ntfyTopic?: string; ntfyToken?: string }) =>
     apiFetch<{ success: boolean }>('/users/notifications-test', { method: 'POST', body: JSON.stringify(data || {}) }),
-  getRewards: () =>
-    apiFetch<{ rewards: Array<{ id: number; title: string; description?: string | null; costCoins: number }>; mine: Array<{ id: number; title: string; costCoins: number; redeemedAt: string; status: string }> }>('/rewards'),
+  /** forUserId: a parent shopping for someone else (ENH-16) gets their rewards, prices and coins */
+  getRewards: (forUserId?: number) =>
+    apiFetch<{ rewards: Array<{ id: number; title: string; description?: string | null; costCoins: number }>; mine: Array<{ id: number; title: string; costCoins: number; redeemedAt: string; status: string; boughtByName?: string | null }>; coins?: number }>(forUserId ? `/rewards?for=${forUserId}` : '/rewards'),
   getRewardsAdmin: () =>
     apiFetch<{ rewards: any[]; redemptions: any[]; rotatingPerWeek?: number; rotatingThisWeek?: number[] }>('/rewards/admin'),
   updateRedemptionStatus: (id: number, status: 'requested' | 'approved' | 'rejected') =>
@@ -630,8 +637,8 @@ export const api = {
   /** The parents' "Featured" order, first to last */
   orderRewards: (ids: number[]) =>
     apiFetch<{ success: boolean }>('/rewards/order', { method: 'POST', body: JSON.stringify({ ids }) }),
-  redeemReward: (id: number) =>
-    apiFetch<{ redemption: any; coins: number }>(`/rewards/${id}/redeem`, { method: 'POST' }),
+  redeemReward: (id: number, forUserId?: number) =>
+    apiFetch<{ redemption: any; coins: number }>(`/rewards/${id}/redeem`, { method: 'POST', ...(forUserId ? { body: JSON.stringify({ forUserId }) } : {}) }),
 
   cancelCompletion: (completionId: number) =>
     apiFetch<{ success: boolean; coinsDeducted: number }>(`/completions/${completionId}`, { method: 'DELETE' }),

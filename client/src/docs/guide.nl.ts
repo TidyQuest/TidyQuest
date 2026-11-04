@@ -109,6 +109,18 @@ export const GUIDE_NL: GuideSection[] = [
         'Wachtwoord: een ouder kan een nieuw wachtwoord instellen als iemand het vergeten is. Diegene wordt dan op elk apparaat uitgelogd en logt weer in met het nieuwe.',
       ] },
       { tip: 'Zet "Privékamers van anderen verbergen voor kinderen" aan in Instellingen → Algemeen als kinderen bijvoorbeeld de eigen kamer van een ouder niet mogen zien.' },
+      { h: 'Iemand die niet inlogt' },
+      { p: 'Voor een opa of oma, een peuter of iedereen die de app niet gebruikt: voeg ze toe en doe alles voor ze, zonder gebruikersnaam of wachtwoord.' },
+      { ul: [
+        'Gezinslid toevoegen: zet Kan inloggen uit, typ de naam en tik op Maken.',
+        'Kan inloggen op de kaart van een gezinslid zet het om voor iemand die er al is. Uit logt diegene op elk apparaat uit. Weer aanzetten vraagt om een nieuw wachtwoord en toont dan de gebruikersnaam om mee in te loggen.',
+        'Hun klusjes: vink ze af in de kamer of op de pagina Klusjes en kies diegene bij "wie heeft het gedaan?". Dat telt meteen als goedgekeurd, ook met Oudercontrole.',
+        'Hun beloningen: kies diegene bij Beloningen onder Kopen voor (zie "Munten, beloningen en doelen").',
+        'Munten en reeksschilden werken zoals voor iedereen, bij Gezinslid beheren.',
+        'Ze krijgen helemaal geen meldingen, op geen enkel kanaal. Hun meldingsinstellingen blijven bewaard voor als ze weer kunnen inloggen.',
+        'Ze staan niet op het inlogscherm en kunnen niet uitgenodigd worden voor een team. Voor een klusje dat samen gedaan is, kies je iedereen bij "wie heeft het gedaan?".',
+        'Ouders loggen altijd in, dus dit is alleen voor leden en kinderen. Op tidyquest.org tellen ze wel mee voor de 15 personen.',
+      ] },
       { h: 'Overal uitloggen' },
       { ul: [
         'Profiel → Overal anders uitloggen: logt je uit op al je andere telefoons, tablets en computers; op deze blijf je ingelogd. Handig nadat je het apparaat van iemand anders hebt gebruikt, of als iemand je wachtwoord misschien kent.',
@@ -269,6 +281,8 @@ export const GUIDE_NL: GuideSection[] = [
         'Regels per beloning: een limiet (per dag, week, maand of ooit; per persoon of voor iedereen), een datumvenster, Wisselend (er zijn er elke week maar een paar te zien), wie hem kan zien, een andere prijs per persoon en een categorie.',
         'Samen sparen: iedereen kan munten in een pot leggen; als hij vol is gaat hij naar een ouder. Het bijleggen-vak begint op 0 en elke bijdrage staat in Activiteit. Een volle pot kan niet geannuleerd worden vanuit Mijn aanvragen ("Gedeeld: een ouder beslist"): een ouder wijst hem af en iedereen krijgt zijn munten terug.',
       ] },
+      { h: 'Kopen voor iemand anders' },
+      { p: 'Ouders: kies bovenaan Beloningen iemand onder Kopen voor. De winkel toont dan hun munten, prijzen en limieten, en wat je koopt wordt met hun munten betaald. Het telt als gegeven, dus niemand hoeft het goed te keuren. Activiteit en Inzichten tonen het als van hen, gekocht door jou. Handig voor iemand die niet inlogt (zie "Mensen en rollen"). Gedeelde beloningen (samen sparen) blijven zoals ze waren.' },
       { h: 'Een beloning verbergen' },
       { ul: [
         'Instellingen → Beloningen Winkel: tik op Verbergen naast een beloning. Kinderen zien hem niet meer; ouders zien hem grijs onderaan de lijst, met Verborgen. Tik op Tonen om hem terug te zetten.',
@@ -581,6 +595,11 @@ export const GUIDE_NL: GuideSection[] = [
           'Een ouder kan een nieuw wachtwoord instellen in Instellingen → Gezinsleden.',
           'Kan geen enkele ouder inloggen? Wie de server beheert, kan het wachtwoord van de eerste ouder resetten met ADMIN_RESET_PASSWORD (README, "Admin Password Recovery"). "Wachtwoord vergeten?" op het inlogscherm zegt hetzelfde.',
           'Na het importeren van een back-up houdt iedereen die al een account op deze server had het eigen wachtwoord. Wie nieuw is op deze server heeft een wachtwoord nodig dat een ouder instelt bij Gezinsleden.',
+        ] },
+        { q: 'Iemand staat niet op het inlogscherm, of er staat dat inloggen uit staat', a: [
+          'Een ouder heeft Kan inloggen voor diegene uitgezet: hun kaart bij Instellingen → Gezinsleden toont 🔒 Zonder login. Op tidyquest.org zegt het inloggen alleen dat de naam of het wachtwoord niet klopt.',
+          'Om ze binnen te laten, zet je Kan inloggen weer aan, typ je een nieuw wachtwoord en tik je op Aanzetten. Dan staat de gebruikersnaam om mee in te loggen erbij.',
+          'Ouders loggen altijd in: de schakelaar staat alleen op de kaarten van leden en kinderen, en iemand zonder login kan pas ouder worden als die weer aan staat.',
         ] },
         { q: 'Een kind kan niet inloggen op tidyquest.org', a: [
           'Controleer de code bij Instellingen → 🔑 Gezinscode op het apparaat van een ouder. Na Nieuwe code werkt de oude niet meer: tik op het inlogscherm op Wijzigen naast de code en typ de nieuwe.',

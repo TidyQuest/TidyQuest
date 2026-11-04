@@ -109,6 +109,18 @@ export const GUIDE_DE: GuideSection[] = [
         'Passwort: Ein Elternteil kann ein neues festlegen, wenn jemand seins vergisst. Die Person wird dann auf allen Geräten abgemeldet und meldet sich mit dem neuen wieder an.',
       ] },
       { tip: 'Schalte „Private Räume anderer vor Kindern verbergen“ unter Einstellungen → Allgemein ein, wenn Kinder zum Beispiel das eigene Zimmer eines Elternteils nicht sehen sollen.' },
+      { h: 'Jemand, der sich nicht anmeldet' },
+      { p: 'Für Großeltern, ein Kleinkind oder alle, die die App nicht nutzen: Füge sie hinzu und erledige alles für sie, ohne Benutzername und Passwort.' },
+      { ul: [
+        'Mitglied hinzufügen: Kann sich anmelden ausschalten, den Namen eingeben und auf Erstellen tippen.',
+        'Kann sich anmelden auf der Karte eines Mitglieds schaltet es für jemanden um, der schon da ist. Aus meldet die Person auf allen Geräten ab. Wieder einschalten fragt nach einem neuen Passwort und zeigt dann den Benutzernamen zum Anmelden.',
+        'Ihre Aufgaben: hake sie im Raum oder auf der Seite Aufgaben ab und wähle die Person bei „Wer hat es gemacht?“. Das zählt sofort als genehmigt, auch im Strengen Modus.',
+        'Ihre Belohnungen: unter Belohnungen bei Kaufen für die Person wählen (siehe „Münzen, Belohnungen und Ziele“).',
+        'Münzen und Serien-Schilde gehen wie bei allen anderen, unter Mitglied verwalten.',
+        'Sie bekommt keine Benachrichtigungen, auf keinem Kanal. Ihre Benachrichtigungs-Einstellungen bleiben erhalten, bis sie sich wieder anmelden kann.',
+        'Sie steht nicht auf dem Anmeldebildschirm und kann nicht zu einem Team eingeladen werden. Für eine gemeinsam erledigte Aufgabe wähle alle bei „Wer hat es gemacht?“.',
+        'Eltern melden sich immer an, das gibt es also nur für Mitglieder und Kinder. Auf tidyquest.org zählen sie trotzdem zu den 15 Personen.',
+      ] },
       { h: 'Überall abmelden' },
       { ul: [
         'Profil → Überall sonst abmelden: meldet dich auf allen anderen Handys, Tablets und Computern ab; auf diesem bleibst du angemeldet. Praktisch, nachdem du das Gerät von jemand anderem benutzt hast oder wenn jemand dein Passwort kennen könnte.',
@@ -269,6 +281,8 @@ export const GUIDE_DE: GuideSection[] = [
         'Regeln pro Belohnung: ein Limit (pro Tag, Woche, Monat oder insgesamt; pro Person oder für alle), ein Zeitfenster, Wechselnd (nur einige erscheinen pro Woche), wer sie sieht, ein anderer Preis pro Person und eine Kategorie.',
         'Gemeinsam sparen: Jeder kann Münzen in einen Topf beisteuern; ist er voll, geht er an ein Elternteil. Das Feld zum Beisteuern beginnt bei 0, und jede Einzahlung erscheint unter Aktivität. Ein voller Topf lässt sich unter „Meine Anfragen“ nicht absagen („Gemeinsam: ein Elternteil entscheidet“): Ein Elternteil lehnt ihn ab, und alle bekommen ihre Münzen zurück.',
       ] },
+      { h: 'Für jemand anderen kaufen' },
+      { p: 'Eltern: oben unter Belohnungen bei Kaufen für jemanden wählen. Der Shop zeigt dann die Münzen, Preise und Limits dieser Person, und was du kaufst, wird mit ihren Münzen bezahlt. Es gilt als übergeben, also muss niemand genehmigen. Aktivität und Auswertung zeigen es als ihres, von dir gekauft. Praktisch für jemanden, der sich nicht anmeldet (siehe „Personen und Rollen“). Gemeinsame Belohnungen (Sparen) bleiben wie bisher.' },
       { h: 'Eine Belohnung verstecken' },
       { ul: [
         'Einstellungen → Belohnungskatalog: Tippe neben einer Belohnung auf Verstecken. Kinder sehen sie nicht mehr; Eltern sehen sie ausgegraut am Ende der Liste, markiert mit Versteckt. Mit Zeigen kommt sie zurück.',
@@ -581,6 +595,11 @@ export const GUIDE_DE: GuideSection[] = [
           'Ein Elternteil kann in Einstellungen → Familienmitglieder ein neues Passwort festlegen.',
           'Kein Elternteil kann sich anmelden? Wer den Server betreibt, kann das Passwort des ersten Elternteils mit ADMIN_RESET_PASSWORD zurücksetzen (README, „Admin Password Recovery“). „Passwort vergessen?“ auf der Anmeldeseite sagt dasselbe.',
           'Nach dem Import eines Backups behalten alle, die auf diesem Server schon ein Konto hatten, ihr Passwort. Wer neu auf diesem Server ist, braucht ein Passwort, das ein Elternteil unter Familienmitglieder festlegt.',
+        ] },
+        { q: 'Jemand fehlt auf dem Anmeldebildschirm, oder es heißt, die Anmeldung ist ausgeschaltet', a: [
+          'Ein Elternteil hat Kann sich anmelden für die Person ausgeschaltet: Ihre Karte unter Einstellungen → Familienmitglieder zeigt 🔒 Ohne Anmeldung. Auf tidyquest.org sagt die Anmeldung nur, dass Name oder Passwort falsch sind.',
+          'Zum Reinlassen Kann sich anmelden wieder einschalten, ein neues Passwort eingeben und auf Einschalten tippen. Dann steht dort der Benutzername zum Anmelden.',
+          'Eltern melden sich immer an: Der Schalter ist nur auf den Karten von Mitgliedern und Kindern, und jemand ohne Anmeldung kann erst Elternteil werden, wenn sie wieder an ist.',
         ] },
         { q: 'Ein Kind kann sich auf tidyquest.org nicht anmelden', a: [
           'Prüfe den Code in Einstellungen → 🔑 Familiencode auf dem Gerät eines Elternteils. Nach Neuer Code funktioniert der alte nicht mehr: Tippe auf dem Anmeldebildschirm neben dem Code auf Ändern und gib den neuen ein.',

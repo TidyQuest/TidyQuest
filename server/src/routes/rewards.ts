@@ -13,20 +13,32 @@ const router = Router();
 router.use(authMiddleware);
 
 router.get('/', (req: AuthRequest, res: Response) => {
+  // ?for=<id>: a parent shopping for someone else (ENH-16) sees that person's rewards, prices, limits and coins
+  const forId = req.query.for === undefined ? req.userId! : Number(req.query.for);
+  const forSomeone = forId !== req.userId;
+  if (forSomeone) {
+    if (!ensureAdmin(req.userId)) return res.status(403).json({ error: 'Admin only' });
+    if (!Number.isInteger(forId) || !db.prepare('SELECT 1 FROM users WHERE id = ?').get(forId)) return res.status(404).json({ error: 'User not found' });
+  }
   const rewards = db.prepare(
     'SELECT id, title, description, costCoins, isActive, isPreset, createdBy, createdAt, category, sortOrder FROM rewards WHERE isActive = 1 AND deletedAt IS NULL ORDER BY costCoins ASC, id ASC'
   ).all();
   const mine = db.prepare(
     `SELECT rr.id, rr.rewardId, rr.userId, rr.costCoins, rr.redeemedAt, rr.status, r.title,
-            EXISTS (SELECT 1 FROM reward_contributions c WHERE c.redemptionId = rr.id) AS isShared
+            EXISTS (SELECT 1 FROM reward_contributions c WHERE c.redemptionId = rr.id) AS isShared,
+            b.displayName AS boughtByName
      FROM reward_redemptions rr
      JOIN rewards r ON rr.rewardId = r.id
+     LEFT JOIN users b ON b.id = rr.boughtBy
      WHERE rr.userId = ?
      ORDER BY rr.redeemedAt DESC
      LIMIT 20`
-  ).all(req.userId);
+  ).all(forId);
   // Only what this person may see right now, at their price, with limits and shared pots
-  res.json({ rewards: catalogFor(req.userId!, rewards as Array<{ id: number; costCoins: number }>), mine });
+  const catalog = catalogFor(forId, rewards as Array<{ id: number; costCoins: number }>);
+  if (!forSomeone) return res.json({ rewards: catalog, mine });
+  const { coins } = db.prepare('SELECT coins FROM users WHERE id = ?').get(forId) as { coins: number };
+  res.json({ rewards: catalog, mine, coins });
 });
 
 router.get('/admin', (req: AuthRequest, res: Response) => {
@@ -320,33 +332,38 @@ router.post('/:id/redeem', (req: AuthRequest, res: Response) => {
     return res.status(403).json({ error: 'Gamification is disabled' });
   }
 
+  // forUserId: a parent buys for someone else (ENH-16), with that person's coins, price and limits. A parent
+  // bought it, so it's approved straight away and nobody is asked.
+  const forId = req.body?.forUserId == null ? req.userId! : Number(req.body.forUserId);
+  const forSomeone = forId !== req.userId;
+  if (forSomeone && !ensureAdmin(req.userId)) return res.status(403).json({ error: 'Only a parent can buy for someone else' });
   const id = parseInt(req.params.id as string, 10);
   const reward = db.prepare('SELECT id, title, costCoins, isActive FROM rewards WHERE id = ? AND deletedAt IS NULL').get(id) as any;
   if (!reward || !reward.isActive) return res.status(404).json({ error: 'Reward not available' });
   const rule = getRules(id)!;
   if (rule.isShared) return res.status(400).json({ error: 'shared_reward' });
-  const blocked = unavailableReason(rule, req.userId!);
+  const me = db.prepare('SELECT id, coins, displayName FROM users WHERE id = ?').get(forId) as any;
+  if (!me) return res.status(404).json({ error: 'User not found' });
+  const blocked = unavailableReason(rule, forId);
   if (blocked) return res.status(blocked.status).json({ error: blocked.error });
   // What this person pays (their own price, when one is set)
-  reward.costCoins = priceFor(rule, req.userId!);
-  const me = db.prepare('SELECT id, coins, displayName FROM users WHERE id = ?').get(req.userId) as any;
-  if (!me) return res.status(404).json({ error: 'User not found' });
+  reward.costCoins = priceFor(rule, forId);
   if (me.coins < reward.costCoins) return res.status(400).json({ error: 'Not enough coins' });
 
   const tx = db.transaction(() => {
-    db.prepare('UPDATE users SET coins = coins - ? WHERE id = ?').run(reward.costCoins, req.userId);
+    db.prepare('UPDATE users SET coins = coins - ? WHERE id = ?').run(reward.costCoins, forId);
     const redemption = db.prepare(
-      "INSERT INTO reward_redemptions (rewardId, userId, costCoins, status) VALUES (?, ?, ?, 'requested')"
-    ).run(id, req.userId, reward.costCoins);
+      'INSERT INTO reward_redemptions (rewardId, userId, costCoins, status, boughtBy) VALUES (?, ?, ?, ?, ?)'
+    ).run(id, forId, reward.costCoins, forSomeone ? 'approved' : 'requested', forSomeone ? req.userId : null);
     return redemption.lastInsertRowid;
   });
   const redemptionId = tx();
-  const user = db.prepare('SELECT coins FROM users WHERE id = ?').get(req.userId) as any;
+  const user = db.prepare('SELECT coins FROM users WHERE id = ?').get(forId) as any;
   const redemption = db.prepare(
-    'SELECT id, rewardId, userId, costCoins, redeemedAt, status FROM reward_redemptions WHERE id = ?'
+    'SELECT id, rewardId, userId, costCoins, redeemedAt, status, boughtBy FROM reward_redemptions WHERE id = ?'
   ).get(redemptionId);
 
-  void notifyRewardRequest(me.id, reward.title, reward.costCoins);
+  if (!forSomeone) void notifyRewardRequest(me.id, reward.title, reward.costCoins);
   res.json({ redemption, coins: user.coins });
 });
 

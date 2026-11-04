@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import { CoinIcon } from '../icons/UIIcons';
 import { matchesQuery } from '../../utils/tasks';
 import { useTranslation } from '../../hooks/useTranslation';
-import type { RewardAvailability, RewardPot } from '../../hooks/useApi';
+import { api, type RewardAvailability, type RewardPot } from '../../hooks/useApi';
 import { formatCoins } from '../../utils/format';
 import { localeFor } from '../../utils/locale';
 import { byFeatured } from '../../utils/rewardRules';
@@ -34,6 +34,8 @@ interface Redemption {
   status: string;
   /** Paid for together (chip-in pot): only a parent can turn it down, so there's no Cancel */
   isShared?: number | boolean;
+  /** The parent who bought it for this person (ENH-16) */
+  boughtByName?: string | null;
 }
 
 interface PendingRequest {
@@ -57,7 +59,14 @@ interface RewardsProps {
   onCancel: (redemptionId: number) => Promise<void>;
   /** Chip coins into a shared reward (Family Goals) */
   onContribute?: (rewardId: number, amount: number) => Promise<void>;
+  /** Parents: the others they can buy a reward for (ENH-16), with that person's coins, prices and limits */
+  people?: Array<{ id: number; displayName: string }>;
+  /** After buying for someone else (their coins changed) */
+  onBoughtFor?: () => void;
 }
+
+/** What the shop looks like for the person a parent is buying for */
+interface ShopFor { id: number; rewards: Reward[]; mine: Redemption[]; coins: number }
 
 /** A shared reward's pot: progress, who chipped in, and a box to add more. */
 function SharedPot({ pot, userCoins, language, onContribute }: { pot: RewardPot; userCoins: number; language?: string; onContribute?: (amount: number) => Promise<void> }) {
@@ -81,15 +90,15 @@ function SharedPot({ pot, userCoins, language, onContribute }: { pot: RewardPot;
       </div>
       {pot.awaitingApproval ? (
         <div style={{ fontSize: 12, fontWeight: 800, color: 'var(--warm-accent)' }}>🎉 {t('rewardRules.potWaiting')}</div>
-      ) : (
+      ) : onContribute && (
         <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexWrap: 'wrap' }}>
           <input type="number" min={0} max={most} className="tq-input-compact" value={amount} onChange={(e) => setAmount(e.target.value)}
             onFocus={(e) => e.target.select()} aria-label={t('rewardRules.chipIn')} style={{ width: 80 }} disabled={most < 1} />
-          <button className="tq-btn tq-btn-primary tq-btn-sm" disabled={!valid || !onContribute}
+          <button className="tq-btn tq-btn-primary tq-btn-sm" disabled={!valid}
             onClick={async () => {
               setError('');
               if (!valid) return;
-              try { await onContribute?.(n); setAmount('0'); } catch (err) { setError(err instanceof Error ? err.message : t('common.error')); }
+              try { await onContribute(n); setAmount('0'); } catch (err) { setError(err instanceof Error ? err.message : t('common.error')); }
             }}>
             {t('rewardRules.chipIn')}
           </button>
@@ -100,8 +109,29 @@ function SharedPot({ pot, userCoins, language, onContribute }: { pot: RewardPot;
   );
 }
 
-export function Rewards({ language, rewards, mine, userCoins, isAdmin, pendingRequests, onRewardRequestAction, onRedeem, onCancel, onContribute }: RewardsProps) {
+export function Rewards({ language, rewards: ownRewards, mine: ownMine, userCoins: ownCoins, isAdmin, pendingRequests, onRewardRequestAction, onRedeem, onCancel, onContribute, people, onBoughtFor }: RewardsProps) {
   const { t } = useTranslation(language);
+  // A parent buying for someone else (ENH-16): the shop shows that person's rewards, prices, limits and coins
+  const [forId, setForId] = useState<number | null>(null);
+  const [shopFor, setShopFor] = useState<ShopFor | null>(null);
+  const [forFailed, setForFailed] = useState(false);
+  // The person picked last: an answer for someone picked earlier is dropped
+  const forIdRef = useRef<number | null>(null);
+  const forName = people?.find((p) => p.id === forId)?.displayName ?? '';
+  const loadFor = (id: number) => api.getRewards(id)
+    .then((d) => setShopFor((prev) => (forIdRef.current === id ? { id, rewards: d.rewards as Reward[], mine: d.mine as Redemption[], coins: d.coins ?? 0 } : prev)))
+    .catch(() => setForFailed(true));
+  const pickPerson = (id: number | null) => {
+    forIdRef.current = id;
+    setForId(id);
+    setShopFor(null);
+    setForFailed(false);
+    if (id !== null) void loadFor(id);
+  };
+  const buyingFor = forId !== null;
+  const rewards = buyingFor ? shopFor?.rewards ?? [] : ownRewards;
+  const mine = buyingFor ? shopFor?.mine ?? [] : ownMine;
+  const userCoins = buyingFor ? shopFor?.coins ?? 0 : ownCoins;
   const [pendingRewardId, setPendingRewardId] = useState<number | null>(null);
   const [spendFx, setSpendFx] = useState<{ amount: number; key: number } | null>(null);
   const [refundFx, setRefundFx] = useState<{ amount: number; key: number } | null>(null);
@@ -140,7 +170,11 @@ export function Rewards({ language, rewards, mine, userCoins, isAdmin, pendingRe
 
   const confirmRedeem = async () => {
     if (!pendingReward) return;
-    await onRedeem(pendingReward.id);
+    if (forId !== null) {
+      await api.redeemReward(pendingReward.id, forId);
+      await loadFor(forId);
+      onBoughtFor?.();
+    } else await onRedeem(pendingReward.id);
     setSpendFx({ amount: pendingReward.costCoins, key: Date.now() });
     setPendingRewardId(null);
   };
@@ -204,9 +238,24 @@ export function Rewards({ language, rewards, mine, userCoins, isAdmin, pendingRe
       <div className="tq-card tq-card-padded">
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <CoinIcon />
-          <div style={{ fontSize: 14, fontWeight: 800, color: 'var(--warm-text)' }}>{formatCoins(userCoins, localeFor(language))} {t('settings.coins')}</div>
+          <div style={{ fontSize: 14, fontWeight: 800, color: 'var(--warm-text)' }}>
+            {buyingFor && `${forName}: `}{formatCoins(userCoins, localeFor(language))} {t('settings.coins')}
+          </div>
         </div>
-        <div style={{ fontSize: 11, color: 'var(--warm-text-light)', fontWeight: 600, marginTop: 4 }}>{t('rewards.balanceHint')}</div>
+        <div style={{ fontSize: 11, color: 'var(--warm-text-light)', fontWeight: 600, marginTop: 4 }}>
+          {buyingFor ? t('rewards.buyingForHint').replace('{name}', forName) : t('rewards.balanceHint')}
+        </div>
+        {isAdmin && people && people.length > 0 && (
+          <label style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 10, flexWrap: 'wrap', fontSize: 12, fontWeight: 700, color: 'var(--warm-text-muted)' }}>
+            🛒 {t('rewards.buyingFor')}
+            <select className="tq-input-compact" value={forId ?? ''} onChange={(e) => pickPerson(e.target.value ? Number(e.target.value) : null)}
+              style={{ padding: '6px 10px', fontSize: 13, cursor: 'pointer', minWidth: 0, maxWidth: '100%' }}>
+              <option value="">{t('rewards.buyingForMe')}</option>
+              {people.map((p) => <option key={p.id} value={p.id}>{p.displayName}</option>)}
+            </select>
+          </label>
+        )}
+        {forFailed && <div role="alert" style={{ fontSize: 11, fontWeight: 700, color: 'var(--warm-danger)', marginTop: 6 }}>{t('common.actionFailed')}</div>}
       </div>
 
       {isAdmin && pendingRequests && pendingRequests.filter(r => r.status === 'requested').length > 0 && (
@@ -299,7 +348,7 @@ export function Rewards({ language, rewards, mine, userCoins, isAdmin, pendingRe
                   )}
                 </div>
                 {r.isShared && r.pot && (
-                  <SharedPot pot={r.pot} userCoins={userCoins} language={language} onContribute={onContribute ? (n) => onContribute(r.id, n) : undefined} />
+                  <SharedPot pot={r.pot} userCoins={userCoins} language={language} onContribute={onContribute && !buyingFor ? (n) => onContribute(r.id, n) : undefined} />
                 )}
               </div>
             );
@@ -308,7 +357,7 @@ export function Rewards({ language, rewards, mine, userCoins, isAdmin, pendingRe
       </div>
 
       <div className="tq-card tq-card-padded">
-        <h3 className="tq-card-title">{t('rewards.myRequests')}</h3>
+        <h3 className="tq-card-title">{buyingFor ? t('rewards.theirRequests').replace('{name}', forName) : t('rewards.myRequests')}</h3>
         {mine.length === 0 ? (
           <div className="tq-empty-state" style={{ padding: '16px 0' }}>{t('rewards.noRequests')}</div>
         ) : (
@@ -317,7 +366,10 @@ export function Rewards({ language, rewards, mine, userCoins, isAdmin, pendingRe
               <div key={m.id} className="rewards-my-row" style={{ border: '1.5px solid var(--warm-border)', borderRadius: 12, padding: 10, display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 10 }}>
                 <div style={{ minWidth: 0 }}>
                   <div style={{ fontSize: 13, fontWeight: 800, color: 'var(--warm-text)' }}>{rewardTitleByName(m.title)}</div>
-                  <div style={{ fontSize: 10, color: 'var(--warm-text-light)', fontWeight: 700 }}>{new Date(m.redeemedAt).toLocaleString()}</div>
+                  <div style={{ fontSize: 10, color: 'var(--warm-text-light)', fontWeight: 700 }}>
+                    {new Date(m.redeemedAt).toLocaleString()}
+                    {m.boughtByName && ` · 🛒 ${t('rewards.boughtBy').replace('{name}', m.boughtByName)}`}
+                  </div>
                   {cancelFailed === m.id && <div role="alert" style={{ fontSize: 11, fontWeight: 700, color: 'var(--warm-danger)' }}>{t('common.actionFailed')}</div>}
                 </div>
                 <div className="rewards-my-row-meta" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -327,7 +379,7 @@ export function Rewards({ language, rewards, mine, userCoins, isAdmin, pendingRe
                   </span>
                   {m.status === 'requested' && m.isShared ? (
                     <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--warm-text-muted)' }}>{t('rewards.sharedParentDecides')}</span>
-                  ) : m.status === 'requested' && (
+                  ) : m.status === 'requested' && !buyingFor && (
                     <button className="tq-btn tq-btn-secondary" onClick={() => { setCancelFailed(null); onCancel(m.id).catch(() => setCancelFailed(m.id)); }} style={{ padding: '4px 8px', fontSize: 10 }}>
                       {t('rewards.cancelRequest')}
                     </button>
@@ -343,7 +395,8 @@ export function Rewards({ language, rewards, mine, userCoins, isAdmin, pendingRe
           <div className="tq-card rewards-confirm-modal tq-modal tq-modal-narrow tq-card-padded">
             <div style={{ fontSize: 16, fontWeight: 900, color: 'var(--warm-text)', marginBottom: 6 }}>{t('rewards.confirmTitle')}</div>
             <div style={{ fontSize: 12, color: 'var(--warm-text-light)', fontWeight: 600, marginBottom: 14 }}>
-              {t('rewards.confirmText').replace('{reward}', rewardTitle(pendingReward)).replace('{coins}', String(pendingReward.costCoins))}
+              {(buyingFor ? t('rewards.confirmTextFor').replace('{name}', forName) : t('rewards.confirmText'))
+                .replace('{reward}', rewardTitle(pendingReward)).replace('{coins}', String(pendingReward.costCoins))}
             </div>
             <div className="rewards-confirm-actions" style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
               <button className="tq-btn tq-btn-secondary tq-btn-sm" onClick={() => setPendingRewardId(null)}>{t('common.cancel')}</button>

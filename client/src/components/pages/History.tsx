@@ -4,6 +4,7 @@ import { CoinIcon } from '../icons/UIIcons';
 import { formatCoins } from '../../utils/format';
 import { api } from '../../hooks/useApi';
 import { CheerBar } from '../shared/CheerBar';
+import { rewardTitleText } from '../../utils/presetRewards';
 import { UserTitle } from '../shared/UserTitle';
 import { useTranslation } from '../../hooks/useTranslation';
 import { PhotoViewer } from '../shared/PhotoViewer';
@@ -177,6 +178,9 @@ export function History({ language, isAdmin, users = [], rooms = [], userId, mas
             const isChipIn = h.type === 'contribution';
             const isPurchase = h.type === 'mascotPurchase';
             const isShield = h.type === 'shield';
+            // A reward bought, maybe by a parent for someone who doesn't log in (ENH-16)
+            const isReward = h.type === 'rewardPurchase';
+            const notChore = isAdjustment || isChipIn || isPurchase || isShield || isReward;
             const refunded = isChipIn && h.potStatus === 'rejected';
             const isDuo = h.participants && h.participants.length > 1;
             const byName = isDuo
@@ -216,6 +220,15 @@ export function History({ language, isAdmin, users = [], rooms = [], userId, mas
                     <div style={{ fontSize: 11, color: 'var(--warm-text-light)', fontWeight: 600 }}>{h.displayName}</div>
                     <div className="history-mobile-meta">{timeAgo(h.completedAt)}</div>
                   </>
+                ) : isReward ? (
+                  <>
+                    <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--warm-text)' }}>🎁 {t('history.boughtReward').replace('{reward}', rewardTitleText(h.rewardTitle, t))}</div>
+                    <div style={{ fontSize: 11, color: 'var(--warm-text-light)', fontWeight: 600 }}>
+                      {h.displayName}{h.boughtByName ? ` · 🛒 ${t('rewards.boughtBy').replace('{name}', h.boughtByName)}` : ''}
+                      {h.rewardStatus === 'requested' ? ` · ${t('rewards.statusPending')}` : ''}
+                    </div>
+                    <div className="history-mobile-meta">{timeAgo(h.completedAt)}</div>
+                  </>
                 ) : isChipIn ? (
                   <>
                     <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--warm-text)' }}>🏦 {t('history.chippedIn').replace('{reward}', h.rewardTitle)}</div>
@@ -248,13 +261,13 @@ export function History({ language, isAdmin, users = [], rooms = [], userId, mas
                   </>
                 )}
               </div>
-              <div className="history-col-room" style={{ fontSize: 13, color: 'var(--warm-text-secondary)', fontWeight: 600 }}>{isAdjustment || isChipIn || isPurchase || isShield ? '—' : roomDisplayName(h.roomName, h.roomType || '')}</div>
+              <div className="history-col-room" style={{ fontSize: 13, color: 'var(--warm-text-secondary)', fontWeight: 600 }}>{notChore ? '—' : roomDisplayName(h.roomName, h.roomType || '')}</div>
               <div className="history-col-when" style={{ fontSize: 12, color: 'var(--warm-text-light)', fontWeight: 600 }}>{timeAgo(h.completedAt)}</div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 4, justifyContent: 'flex-end', fontSize: 13, fontWeight: 800, color: refunded ? 'var(--warm-text-light)' : h.coinsEarned < 0 ? 'var(--warm-danger)' : 'var(--warm-coin)', textDecoration: refunded ? 'line-through' : undefined }}>
                 {isShield && !h.coinsEarned ? '—' : <>{h.coinsEarned < 0 ? '' : '+'}{formatCoins(h.coinsEarned)} <CoinIcon /></>}
               </div>
-              {isAdmin && (isAdjustment || isChipIn || isPurchase || isShield) && <div />}
-              {isAdmin && !isAdjustment && !isChipIn && !isPurchase && !isShield && (
+              {isAdmin && notChore && <div />}
+              {isAdmin && !notChore && (
                 <div style={{ display: 'flex', justifyContent: 'center' }}>
                   {confirmCancel === h.id ? (
                     <div style={{ display: 'flex', gap: 4 }}>

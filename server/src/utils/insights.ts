@@ -329,7 +329,7 @@ export function coinLedger(start: Date, end: Date): LedgerEntry[] {
  * Coins per person and week over the `weeks` weeks ending with the one holding `at` (the family's weeks): flows
  * [week, userId, category, coins], weekly goals [week, userId, goal], everyone's balance now with the net change
  * since the last week ended [userId, net] (end-of-week balances are worked back from them), and rewards bought
- * [rewardId, userId, redemptionId, coins, redeemedAt (ISO), waiting (1 = not handed over yet)] for "bought most or
+ * [rewardId, userId, redemptionId, coins, redeemedAt (ISO), waiting (1 = not handed over yet), boughtBy (the parent who bought it for them, 0 = nobody; ENH-16)] for "bought most or
  * never", who bought each one and the recent list. A shared pot has one row per person who chipped in.
  */
 export function coinsByWeek(weeks: number, at: Date = new Date(), now: Date = new Date()) {
@@ -362,9 +362,9 @@ export function coinsByWeek(weeks: number, at: Date = new Date(), now: Date = ne
     if (i >= 0) goals[i][2] = g.goalCoins; else goals.push([w, g.userId, g.goalCoins]);
   }
 
-  const bought: Array<[number, number, number, number, string, number]> = [];
-  const redemptions = db.prepare(`SELECT id, rewardId, userId, costCoins, redeemedAt, status FROM reward_redemptions
-    WHERE status NOT IN ${REFUNDED}`).all() as Array<{ id: number; rewardId: number; userId: number; costCoins: number; redeemedAt: string; status: string }>;
+  const bought: Array<[number, number, number, number, string, number, number]> = [];
+  const redemptions = db.prepare(`SELECT id, rewardId, userId, costCoins, redeemedAt, status, boughtBy FROM reward_redemptions
+    WHERE status NOT IN ${REFUNDED}`).all() as Array<{ id: number; rewardId: number; userId: number; costCoins: number; redeemedAt: string; status: string; boughtBy: number | null }>;
   const chipIns = db.prepare('SELECT redemptionId, userId, SUM(amount) AS amount FROM reward_contributions WHERE redemptionId IS NOT NULL GROUP BY redemptionId, userId')
     .all() as Array<{ redemptionId: number; userId: number; amount: number }>;
   for (const r of redemptions) {
@@ -373,8 +373,9 @@ export function coinsByWeek(weeks: number, at: Date = new Date(), now: Date = ne
     const pot = chipIns.filter((c) => c.redemptionId === r.id);
     const when = at.toISOString();
     const waiting = r.status === 'requested' ? 1 : 0;
-    if (pot.length) for (const c of pot) bought.push([r.rewardId, c.userId, r.id, c.amount, when, waiting]);
-    else bought.push([r.rewardId, r.userId, r.id, r.costCoins, when, waiting]);
+    if (pot.length) for (const c of pot) bought.push([r.rewardId, c.userId, r.id, c.amount, when, waiting, 0]);
+    // The last number: the parent who bought it for them (ENH-16), 0 = they bought it themselves
+    else bought.push([r.rewardId, r.userId, r.id, r.costCoins, when, waiting, r.boughtBy ?? 0]);
   }
 
   const after = new Map<number, number>();

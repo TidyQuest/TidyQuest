@@ -153,7 +153,13 @@ export function PeopleNotifyAdmin({ language }: { language?: string }) {
   return (
     <div style={{ display: 'grid', gap: 8 }}>
       <div style={{ fontSize: 11, color: 'var(--warm-text-light)', fontWeight: 600 }}>{t(hosted ? 'notifyAdmin.peopleDescHosted' : 'notifyAdmin.peopleDesc')}</div>
-      {people.map((p) => (
+      {people.map((p) => p.canLogIn === false ? (
+        // Can't log in (ENH-16): nothing goes to them; their settings come back with their login
+        <div key={p.id} style={{ ...box, ...row, justifyContent: 'space-between' }}>
+          <span style={{ fontSize: 13, fontWeight: 800, color: 'var(--warm-text)' }}>{p.displayName}</span>
+          <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--warm-text-light)' }}>🔕 {t('memberLogin.noNotifications')}</span>
+        </div>
+      ) : (
         <div key={p.id} style={box}>
           <button onClick={() => setOpen(open === p.id ? null : p.id)} style={{ ...row, justifyContent: 'space-between', background: 'none', border: 'none', padding: 0, cursor: 'pointer', fontFamily: 'Nunito', color: 'inherit', width: '100%' }}>
             <span style={{ fontSize: 13, fontWeight: 800, color: 'var(--warm-text)' }}>{p.displayName}</span>

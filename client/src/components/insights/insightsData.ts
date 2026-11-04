@@ -317,7 +317,11 @@ export function coinWeeks(data: InsightsCoins, people: People): CoinWeeks {
 export interface RewardPayer { id: number; name: string; color: string; coins: number }
 export interface RewardBuyer extends RewardPayer { times: number }
 /** One reward handed out (or waiting to be): who paid and how much. A shared pot lists everyone who chipped in. */
-export interface RecentReward { id: number; at: string; name: string; coins: number; waiting: boolean; payers: RewardPayer[] }
+export interface RecentReward {
+  id: number; at: string; name: string; coins: number; waiting: boolean; payers: RewardPayer[];
+  /** The parent who bought it for them (ENH-16) */
+  boughtBy?: string;
+}
 
 /**
  * Rewards bought most (times, coins, and who bought each: times and coins per person), every purchase newest
@@ -331,14 +335,17 @@ export function rewardStats(data: InsightsCoins, people: People) {
   const title = new Map(data.rewards.map((r) => [r.id, r.title]));
   const by = new Map<number, { ids: Set<number>; coins: number; buyers: Map<number, { ids: Set<number>; coins: number }> }>();
   const recent = new Map<number, RecentReward>();
-  for (const [rewardId, userId, redemptionId, coins, at, waiting] of rows) {
+  for (const [rewardId, userId, redemptionId, coins, at, waiting, boughtBy] of rows) {
     const it = by.get(rewardId) ?? { ids: new Set<number>(), coins: 0, buyers: new Map() };
     it.ids.add(redemptionId); it.coins += coins;
     const buyer = it.buyers.get(userId) ?? { ids: new Set<number>(), coins: 0 };
     buyer.ids.add(redemptionId); buyer.coins += coins;
     it.buyers.set(userId, buyer);
     by.set(rewardId, it);
-    const r = recent.get(redemptionId) ?? { id: redemptionId, at, name: title.get(rewardId) ?? '?', coins: 0, waiting: !!waiting, payers: [] };
+    const r: RecentReward = recent.get(redemptionId) ?? {
+      id: redemptionId, at, name: title.get(rewardId) ?? '?', coins: 0, waiting: !!waiting, payers: [],
+      ...(boughtBy ? { boughtBy: person.get(boughtBy)?.name ?? '?' } : {}),
+    };
     r.coins += coins;
     r.payers.push(payer(userId, coins));
     recent.set(redemptionId, r);

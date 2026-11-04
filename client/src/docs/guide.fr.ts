@@ -109,6 +109,18 @@ export const GUIDE_FR: GuideSection[] = [
         'Mot de passe : un parent peut en définir un nouveau si quelqu’un oublie le sien. La personne est alors déconnectée de tous ses appareils et se reconnecte avec le nouveau.',
       ] },
       { tip: 'Active « Masquer aux enfants les pièces privées des autres » dans Paramètres → Général si les enfants ne doivent pas voir, par exemple, la pièce personnelle d’un parent.' },
+      { h: 'Quelqu’un qui ne se connecte pas' },
+      { p: 'Pour un grand-parent, un tout-petit ou quiconque n’utilisera pas l’appli : ajoutez-le et faites tout à sa place, sans nom d’utilisateur ni mot de passe.' },
+      { ul: [
+        'Ajouter un membre : désactivez Peut se connecter, tapez son nom et appuyez sur Créer.',
+        'Peut se connecter, sur la fiche d’un membre, change ce réglage pour quelqu’un déjà ajouté. Désactivé, il est déconnecté sur tous les appareils. Le réactiver demande un nouveau mot de passe, puis affiche le nom d’utilisateur avec lequel il se connecte.',
+        'Ses tâches : cochez-les dans la pièce ou sur la page Tâches et choisissez-le dans « qui l’a faite ? ». C’est validé tout de suite, même en Mode strict.',
+        'Ses récompenses : dans Récompenses, choisissez-le sous Acheter pour (voir « Pièces, récompenses et objectifs »).',
+        'Les pièces et les boucliers de série fonctionnent comme pour tout le monde, dans Gérer le membre.',
+        'Il ne reçoit aucune notification, sur aucun canal. Ses réglages de notifications sont gardés pour le jour où il se reconnecte.',
+        'Il n’apparaît pas sur l’écran de connexion et ne peut pas être invité à faire équipe. Pour une tâche faite ensemble, choisissez tout le monde dans « qui l’a faite ? ».',
+        'Les parents se connectent toujours : ce réglage ne concerne que les membres et les enfants. Sur tidyquest.org, ils comptent quand même dans les 15 personnes.',
+      ] },
       { h: 'Se déconnecter partout' },
       { ul: [
         'Profil → Se déconnecter partout ailleurs : te déconnecte de tous tes autres téléphones, tablettes et ordinateurs, et te garde connecté sur celui-ci. Pratique après avoir utilisé l’appareil de quelqu’un d’autre, ou si quelqu’un connaît peut-être ton mot de passe.',
@@ -269,6 +281,8 @@ export const GUIDE_FR: GuideSection[] = [
         'Règles par récompense : une limite (par jour, semaine, mois ou à vie ; par personne ou pour tout le monde), une période, En rotation (seules quelques-unes s’affichent chaque semaine), qui peut la voir, un prix différent par personne, et une catégorie.',
         'Épargne partagée : chacun peut mettre des pièces dans une cagnotte ; quand elle est pleine, elle va à un parent. La case de contribution démarre à 0, et chaque contribution apparaît dans Activité. Une cagnotte pleine ne peut pas être annulée depuis Mes demandes (« Partagée : un parent décide ») : un parent la refuse et tout le monde récupère ses pièces.',
       ] },
+      { h: 'Acheter pour quelqu’un d’autre' },
+      { p: 'Parents : en haut de Récompenses, choisissez quelqu’un sous Acheter pour. La boutique montre alors ses pièces, ses prix et ses limites, et ce que vous achetez est payé avec ses pièces. C’est compté comme remis, donc personne n’a à valider. Activité et Statistiques le montrent comme à lui, acheté par vous. Pratique pour quelqu’un qui ne se connecte pas (voir « Personnes et rôles »). Les récompenses partagées (cagnotte) restent comme avant.' },
       { h: 'Masquer une récompense' },
       { ul: [
         'Paramètres → Catalogue des récompenses : touche Masquer à côté d’une récompense. Les enfants ne la voient plus ; les parents la voient grisée en fin de liste, marquée Masquée. Touche Afficher pour la remettre.',
@@ -581,6 +595,11 @@ export const GUIDE_FR: GuideSection[] = [
           'Un parent peut définir un nouveau mot de passe dans Paramètres → Membres de la famille.',
           'Aucun parent ne peut se connecter ? La personne qui gère le serveur peut réinitialiser le mot de passe du premier parent avec ADMIN_RESET_PASSWORD (README, « Admin Password Recovery »). « Mot de passe oublié ? » sur l’écran de connexion dit la même chose.',
           'Après l’import d’une sauvegarde, les personnes qui avaient déjà un compte sur ce serveur gardent leur mot de passe. Les personnes nouvelles sur ce serveur ont besoin qu’un parent leur en définisse un dans Membres de la famille.',
+        ] },
+        { q: 'Quelqu’un n’est pas sur l’écran de connexion, ou on lit que la connexion est désactivée', a: [
+          'Un parent a désactivé Peut se connecter pour lui : sa fiche dans Paramètres → Membres de la famille indique 🔒 Sans connexion. Sur tidyquest.org, la connexion dit simplement que le nom ou le mot de passe est faux.',
+          'Pour le laisser entrer, réactivez Peut se connecter, tapez un nouveau mot de passe et appuyez sur Activer. Le nom d’utilisateur pour se connecter s’affiche alors.',
+          'Les parents se connectent toujours : le réglage n’est que sur les fiches des membres et des enfants, et quelqu’un sans connexion ne peut pas devenir parent tant qu’il n’est pas réactivé.',
         ] },
         { q: 'Un enfant n’arrive pas à se connecter sur tidyquest.org', a: [
           'Vérifiez le code dans Paramètres → 🔑 Code de la famille sur l’appareil d’un parent. Après Nouveau code, l’ancien ne marche plus : sur l’écran de connexion, touchez Changer à côté du code et tapez le nouveau.',
