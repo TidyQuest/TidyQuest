@@ -21,6 +21,14 @@ What changed in each release, in plain language, newest first. Releases up to v0
 - Reward purchases now show in Activity (each person sees their own, parents see everyone's), with "bought by …"
   when a parent bought it for them. Insights' Recent rewards says who bought it too.
 
+### Fixed
+
+- A price a parent gives one person (Settings → Rewards Catalog → Rules) now shows on that person's Rewards page
+  even if it was already open: the page refreshes every 15 seconds and when the app comes back to the front.
+  Before, a page left open (or the home-screen app reopened on Rewards) kept the old price.
+- Buying a reward never charges a different price than the one shown. If the price changed after the page loaded,
+  the buy box shows the new price and asks again. A purchase that fails now says why instead of doing nothing.
+
 ## v0.15.5 (2026-11-04)
 
 ### Fixed

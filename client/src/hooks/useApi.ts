@@ -637,8 +637,10 @@ export const api = {
   /** The parents' "Featured" order, first to last */
   orderRewards: (ids: number[]) =>
     apiFetch<{ success: boolean }>('/rewards/order', { method: 'POST', body: JSON.stringify({ ids }) }),
-  redeemReward: (id: number, forUserId?: number) =>
-    apiFetch<{ redemption: any; coins: number }>(`/rewards/${id}/redeem`, { method: 'POST', ...(forUserId ? { body: JSON.stringify({ forUserId }) } : {}) }),
+  /** costCoins: the price the page showed (the server refuses with `price_changed` if it's no longer right);
+   *  forUserId: a parent buying for someone else (ENH-16) */
+  redeemReward: (id: number, opts: { costCoins?: number; forUserId?: number } = {}) =>
+    apiFetch<{ redemption: any; coins: number }>(`/rewards/${id}/redeem`, { method: 'POST', body: JSON.stringify(opts) }),
 
   cancelCompletion: (completionId: number) =>
     apiFetch<{ success: boolean; coinsDeducted: number }>(`/completions/${completionId}`, { method: 'DELETE' }),

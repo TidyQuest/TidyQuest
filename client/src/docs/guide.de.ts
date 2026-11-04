@@ -651,6 +651,11 @@ export const GUIDE_DE: GuideSection[] = [
           'Einstellungen → Zuletzt gelöscht kann Aufgaben und Belohnungen 30 Tage lang samt Verlauf zurückbringen. Bei einer Aufgabe, deren Raum gelöscht wurde, wirst du gefragt, in welchen Raum sie soll.',
           'Eine aus Versehen als erledigt markierte Aufgabe lässt sich unter Aktivität rückgängig machen oder mit ↩️ Rückgängig in ihrem Raum (Eltern).',
         ] },
+        { q: 'Ein Kind sieht noch den alten Preis einer Belohnung', a: [
+          'Einen anderen Preis pro Person stellst du unter Einstellungen → Belohnungskatalog → Regeln ein, mit dem Speichern in diesem Kasten (daneben erscheint „Gespeichert“). Das Speichern unter Bearbeiten ändert nur den normalen Preis.',
+          'Die Seite Belohnungen des Kindes zeigt die Änderung innerhalb von 15 Sekunden, oder sobald die App wieder geöffnet wird.',
+          'Ändert sich der Preis, während das Kauffenster offen ist, zeigt es den neuen Preis, statt zu kaufen: tippe auf Bestätigen, um ihn zu zahlen, oder auf Abbrechen.',
+        ] },
         { q: 'Eine gelöschte Belohnung erscheint noch in der Auswertung', a: [
           'Das ist Absicht: Was schon gekauft wurde, zählt weiter, damit vergangene Wochen stimmen. Unter Belohnungen und im Belohnungskatalog ist sie weg, und unter „nie gekauft“ steht sie nicht.',
           'Doch behalten? Einstellungen → Zuletzt gelöscht holt sie 30 Tage lang zurück.',

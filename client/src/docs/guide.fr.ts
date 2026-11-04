@@ -651,6 +651,11 @@ export const GUIDE_FR: GuideSection[] = [
           'Paramètres → Supprimés récemment peut ramener des tâches et des récompenses pendant 30 jours, avec leur historique. Une tâche dont la pièce a été supprimée demande dans quelle pièce la remettre.',
           'Une tâche marquée comme faite par erreur peut être annulée depuis Activité, ou avec ↩️ Annuler dans sa pièce (parents).',
         ] },
+        { q: 'Un enfant voit encore l’ancien prix d’une récompense', a: [
+          'Un prix différent par personne se règle dans Paramètres → Catalogue des récompenses → Règles, avec le bouton Enregistrer de ce cadre (« Enregistré » s’affiche à côté). Le bouton Enregistrer de Modifier ne change que le prix habituel.',
+          'La page Récompenses de l’enfant se met à jour en 15 secondes, ou dès que l’app est rouverte.',
+          'Si le prix change pendant que la fenêtre d’achat est ouverte, elle affiche le nouveau prix au lieu d’acheter : touche Confirmer pour payer ce prix, ou Annuler.',
+        ] },
         { q: 'Une récompense supprimée apparaît encore dans Statistiques', a: [
           'C’est voulu : ce qui a été acheté compte toujours, pour que les semaines passées restent justes. Elle n’est plus dans Récompenses ni dans le Catalogue des récompenses, ni dans Jamais achetées.',
           'Changement d’avis ? Paramètres → Supprimés récemment la ramène pendant 30 jours.',

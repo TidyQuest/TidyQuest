@@ -651,6 +651,11 @@ export const GUIDE_NL: GuideSection[] = [
           'Via Instellingen → Onlangs verwijderd kun je klusjes en beloningen 30 dagen lang terughalen, met hun historie. Bij een klusje waarvan de kamer is verwijderd wordt gevraagd in welke kamer het moet.',
           'Een klusje dat per ongeluk op klaar is gezet kun je ongedaan maken via Activiteit, of met ↩️ Ongedaan in de kamer (ouders).',
         ] },
+        { q: 'Een kind ziet nog de oude prijs van een beloning', a: [
+          'Een andere prijs per persoon stel je in bij Instellingen → Beloningen Winkel → Regels, met de knop Opslaan in dat vak (ernaast verschijnt “Opgeslagen!”). Opslaan onder Aanpassen verandert alleen de gewone prijs.',
+          'De pagina Beloningen van het kind toont de wijziging binnen 15 seconden, of zodra de app weer wordt geopend.',
+          'Verandert de prijs terwijl het koopvenster open is, dan toont het de nieuwe prijs in plaats van te kopen: tik op Ja, kopen! om die te betalen, of op Annuleren.',
+        ] },
         { q: 'Een verwijderde beloning staat nog in Inzichten', a: [
           'Dat is expres: wat eerder gekocht is, telt nog mee, zodat eerdere weken kloppen. Hij staat niet meer bij Beloningen of in de Beloningen Winkel, en niet bij Nooit gekocht.',
           'Toch terug? Instellingen → Onlangs verwijderd haalt hem 30 dagen lang terug.',

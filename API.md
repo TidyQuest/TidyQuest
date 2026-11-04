@@ -883,6 +883,14 @@ Or reset to defaults:
 
 **Endpoint**: `POST /api/rewards/:id/redeem`
 
+**Request body** (optional):
+```json
+{ "costCoins": 40 }
+```
+The price the app showed. When it no longer matches what this person pays (a parent changed the price or set their
+own price since), nothing is charged and the server answers `409` with `{ "error": "price_changed", "costCoins": 55 }`.
+Leave it out to pay whatever the current price is.
+
 **Response** (200):
 ```json
 {
@@ -901,6 +909,7 @@ Or reset to defaults:
 **Errors**:
 - `400`: Insufficient coins
 - `404`: Reward not found or inactive
+- `409`: `price_changed` (see the request body)
 
 ---
 

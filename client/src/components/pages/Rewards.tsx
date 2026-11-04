@@ -55,7 +55,8 @@ interface RewardsProps {
   isAdmin?: boolean;
   pendingRequests?: PendingRequest[];
   onRewardRequestAction?: (id: number, status: 'approved' | 'rejected') => Promise<void>;
-  onRedeem: (rewardId: number) => Promise<void>;
+  /** costCoins: the price shown in the confirm box */
+  onRedeem: (rewardId: number, costCoins: number) => Promise<void>;
   onCancel: (redemptionId: number) => Promise<void>;
   /** Chip coins into a shared reward (Family Goals) */
   onContribute?: (rewardId: number, amount: number) => Promise<void>;
@@ -133,6 +134,7 @@ export function Rewards({ language, rewards: ownRewards, mine: ownMine, userCoin
   const mine = buyingFor ? shopFor?.mine ?? [] : ownMine;
   const userCoins = buyingFor ? shopFor?.coins ?? 0 : ownCoins;
   const [pendingRewardId, setPendingRewardId] = useState<number | null>(null);
+  const [redeemError, setRedeemError] = useState('');
   const [spendFx, setSpendFx] = useState<{ amount: number; key: number } | null>(null);
   const [refundFx, setRefundFx] = useState<{ amount: number; key: number } | null>(null);
   // The request whose Cancel just failed (e.g. a parent approved it meanwhile, or the phone is offline)
@@ -170,11 +172,26 @@ export function Rewards({ language, rewards: ownRewards, mine: ownMine, userCoin
 
   const confirmRedeem = async () => {
     if (!pendingReward) return;
-    if (forId !== null) {
-      await api.redeemReward(pendingReward.id, forId);
-      await loadFor(forId);
-      onBoughtFor?.();
-    } else await onRedeem(pendingReward.id);
+    setRedeemError('');
+    try {
+      if (forId !== null) {
+        try {
+          await api.redeemReward(pendingReward.id, { costCoins: pendingReward.costCoins, forUserId: forId });
+        } catch (err) {
+          // A changed price: load that person's shop again so the box shows the new one
+          if ((err as { body?: { error?: string } }).body?.error === 'price_changed') await loadFor(forId);
+          throw err;
+        }
+        await loadFor(forId);
+        onBoughtFor?.();
+      } else await onRedeem(pendingReward.id, pendingReward.costCoins);
+    } catch (err) {
+      // The price changed since the page loaded: the box now shows the new one, so ask again (BUG-13)
+      const body = (err as { body?: { error?: string; costCoins?: number } }).body;
+      setRedeemError(body?.error === 'price_changed' ? t('rewards.priceChanged').replace('{coins}', String(body.costCoins))
+        : body?.error === 'Not enough coins' ? t('rewards.notEnough') : t('common.actionFailed'));
+      return;
+    }
     setSpendFx({ amount: pendingReward.costCoins, key: Date.now() });
     setPendingRewardId(null);
   };
@@ -341,7 +358,7 @@ export function Rewards({ language, rewards: ownRewards, mine: ownMine, userCoin
                       className="tq-btn tq-btn-primary tq-btn-sm"
                       style={{ opacity: canBuy ? 1 : 0.6 }}
                       disabled={!canBuy}
-                      onClick={() => setPendingRewardId(r.id)}
+                      onClick={() => { setRedeemError(''); setPendingRewardId(r.id); }}
                     >
                       {usedUp ? t('rewardRules.usedUp') : canBuy ? t('rewards.redeem') : t('rewards.notEnough')}
                     </button>
@@ -398,6 +415,7 @@ export function Rewards({ language, rewards: ownRewards, mine: ownMine, userCoin
               {(buyingFor ? t('rewards.confirmTextFor').replace('{name}', forName) : t('rewards.confirmText'))
                 .replace('{reward}', rewardTitle(pendingReward)).replace('{coins}', String(pendingReward.costCoins))}
             </div>
+            {redeemError && <div role="alert" style={{ fontSize: 12, fontWeight: 700, color: 'var(--warm-danger)', marginBottom: 12 }}>{redeemError}</div>}
             <div className="rewards-confirm-actions" style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
               <button className="tq-btn tq-btn-secondary tq-btn-sm" onClick={() => setPendingRewardId(null)}>{t('common.cancel')}</button>
               <button className="tq-btn tq-btn-primary tq-btn-sm" onClick={confirmRedeem}>{t('rewards.confirmBuy')}</button>

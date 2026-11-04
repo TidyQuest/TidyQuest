@@ -429,7 +429,8 @@
       "buyingForHint": "Prices, limits and coins are {name}'s. What you buy is theirs and counts as handed over.",
       "theirRequests": "{name}'s rewards",
       "boughtBy": "bought by {name}",
-      "confirmTextFor": "Buy \"{reward}\" for {name}? It costs {coins} of their coins."
+      "confirmTextFor": "Buy \"{reward}\" for {name}? It costs {coins} of their coins.",
+      "priceChanged": "The price just changed to {coins} coins. Tap Confirm to pay that, or Cancel."
     },
     "rewardsPreset": {
       "movie_night": {

@@ -651,6 +651,11 @@ export const GUIDE_ES: GuideSection[] = [
           'Ajustes → Eliminados recientemente puede recuperar tareas y recompensas durante 30 días, con su historial. A una tarea cuya habitación se eliminó se le pregunta a qué habitación va.',
           'Una tarea marcada como hecha por error se puede deshacer desde Actividad, o con ↩️ Deshacer en su habitación (padres).',
         ] },
+        { q: 'Un niño todavía ve el precio antiguo de una recompensa', a: [
+          'Un precio distinto por persona se pone en Ajustes → Catálogo de recompensas → Reglas, con el botón Guardar de ese recuadro (al lado aparece «Guardado»). El Guardar de Editar solo cambia el precio normal.',
+          'La página Recompensas del niño muestra el cambio en 15 segundos, o en cuanto se vuelve a abrir la app.',
+          'Si el precio cambia mientras la ventana de compra está abierta, muestra el precio nuevo en lugar de comprar: toca Confirmar para pagarlo, o Cancelar.',
+        ] },
         { q: 'Una recompensa eliminada sigue saliendo en Estadísticas', a: [
           'Es a propósito: lo que se compró sigue contando, para que las semanas pasadas cuadren. Ya no está en Recompensas ni en el Catálogo de recompensas, ni en Nunca compradas.',
           '¿Cambiaste de idea? Ajustes → Eliminados recientemente la recupera durante 30 días.',

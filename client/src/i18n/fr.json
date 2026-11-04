@@ -429,7 +429,8 @@
       "buyingForHint": "Prix, limites et pièces de {name}. Ce que vous achetez est à {name} et compte comme remis.",
       "theirRequests": "Récompenses de {name}",
       "boughtBy": "acheté par {name}",
-      "confirmTextFor": "Acheter \"{reward}\" pour {name} ? Cela coûte {coins} de ses pièces."
+      "confirmTextFor": "Acheter \"{reward}\" pour {name} ? Cela coûte {coins} de ses pièces.",
+      "priceChanged": "Le prix vient de passer à {coins} pièces. Touche Confirmer pour payer ce prix, ou Annuler."
     },
     "rewardsPreset": {
       "movie_night": {
