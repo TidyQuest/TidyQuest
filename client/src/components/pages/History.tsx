@@ -242,7 +242,7 @@ export function History({ language, isAdmin, users = [], rooms = [], userId, mas
                     <Proof note={h.note} photoUrl={h.photoUrl} label={t('approvals.proofPhoto')} closeLabel={t('common.close')} />
                     {h.approvalNote && <div style={{ fontSize: 12, color: 'var(--warm-text-secondary)', fontWeight: 600, marginTop: 2, overflowWrap: 'anywhere' }}>💬 “{h.approvalNote}”</div>}
                     {h.cheers && (
-                      <CheerBar completionId={h.id} cheers={h.cheers} language={language} mascotName={mascotName}
+                      <CheerBar completionId={h.id} cheers={h.cheers} language={language} mascotName={h.mascotCheers ? mascotName : null}
                         canCheer={h.userId !== userId && !h.participants?.some((p: { id: number }) => p.id === userId)} />
                     )}
                   </>

@@ -9,6 +9,11 @@ What changed in each release, in plain language, newest first. Releases up to v0
 
 ## Unreleased
 
+### Fixed
+
+- The mascot's 🐾 cheer now shows only on chores of 3★ effort or more, in Activity and Home's "Completed today",
+  the same rule as its cookie-and-hop cheer. Smaller chores no longer get a paw.
+
 ## v0.15.4 (2026-11-03)
 
 ### Added
