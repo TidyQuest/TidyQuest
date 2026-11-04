@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { BrowserRouter, Routes, Route, useNavigate, useLocation, Navigate, useParams, useSearchParams } from 'react-router-dom';
 import { useAuth } from './hooks/useAuth';
-import { api } from './hooks/useApi';
+import { api, NEW_TOKEN_EVENT } from './hooks/useApi';
 import { Sidebar } from './components/layout/Sidebar';
 import { PageHeader } from './components/layout/PageHeader';
 import { ConfettiEffect } from './components/shared/ConfettiEffect';
@@ -38,6 +38,7 @@ import { activeSeason, useSeasonPreview } from './utils/seasons';
 import { CosmeticsContext, type Cosmetic } from './utils/unlocks';
 import { WeekStartContext } from './utils/week';
 import { setFamilyZone } from './utils/clock';
+import { syncPush } from './utils/pushSync';
 
 const NO_COSMETICS: Record<number, Cosmetic> = {};
 import { SeasonGreeting, SeasonParticles, SeasonStrip } from './components/shared/SeasonalDecor';
@@ -56,6 +57,15 @@ function AppContent() {
   useEffect(() => {
     if (hosted && user?.id) loadHostedAccount();
   }, [hosted, user?.id, loadHostedAccount]);
+  // Web push (NEW-5): keep this device's sign-up current when the app opens and after a fresh login
+  useEffect(() => {
+    if (!user?.id) return;
+    const id = user.id;
+    void syncPush(id);
+    const again = () => void syncPush(id);
+    window.addEventListener(NEW_TOKEN_EVENT, again);
+    return () => window.removeEventListener(NEW_TOKEN_EVENT, again);
+  }, [user?.id]);
   const browserLang = typeof navigator !== 'undefined' ? navigator.language.slice(0, 2) : 'en';
   // Always call useTranslation unconditionally (React hooks rule) — use user's language if known, else browser lang
   const { t, roomDisplayName } = useTranslation(user?.language ?? browserLang);

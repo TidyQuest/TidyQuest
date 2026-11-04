@@ -52,7 +52,7 @@ export const GUIDE_DE: GuideSection[] = [
       { ul: [
         'Updates kommen von selbst: Sie öffnet jedes Mal die neueste Version vom Server. Sieht sie nach einem Update alt aus, schließe sie ganz und öffne sie wieder.',
         'Entfernen wie jede andere App: Symbol gedrückt halten. Die Daten der Familie bleiben auf dem Server.',
-        'Nachrichten zu Aufgaben und Belohnungen kommen über ntfy, Telegram oder Home Assistant (siehe „Benachrichtigungen“), nicht von der App auf dem Home-Bildschirm.',
+        'Für Benachrichtigungen auf diesem Handy öffne TidyQuest vom Home-Bildschirm, dann Profil → Meine Benachrichtigungen → Für dieses Gerät einschalten. Nachrichten können auch über ntfy, Telegram oder Home Assistant kommen (siehe „Benachrichtigungen“).',
       ] },
     ],
   },
@@ -371,7 +371,15 @@ export const GUIDE_DE: GuideSection[] = [
         'Private Arten (freigegeben/abgelehnt, Zusammenfassungen, Hinweise, Anfeuern) gehen nur an den eigenen Kanal einer Person, nie an den Familienkanal.',
         'Das Benachrichtigungsprotokoll zeigt, was gesendet, eingereiht oder fehlgeschlagen ist, und warum.',
       ] },
-      { p: 'Auf tidyquest.org laufen Benachrichtigungen über ntfy.sh oder Telegram. Ein eigener ntfy-Server und Home Assistant funktionieren nur auf einem Server zu Hause.' },
+      { p: 'Auf tidyquest.org kommen Benachrichtigungen direkt aufs Handy (Web-Push) oder über ntfy.sh oder Telegram. Ein eigener ntfy-Server und Home Assistant funktionieren nur auf einem Server zu Hause.' },
+      { h: 'Benachrichtigungen aufs Handy (Web-Push)' },
+      { p: 'Jeder kann seine Benachrichtigungen direkt von TidyQuest auf das eigene Handy oder den eigenen Computer bekommen: ohne ntfy oder Telegram. Jeder schaltet es selbst ein, auf dem Gerät: Profil → Meine Benachrichtigungen → Für dieses Gerät einschalten. Das zählt als eigener Kanal: Die Nachrichten kommen in der eigenen Sprache und nicht mehr über den Familienkanal.' },
+      { ul: [
+        'Es braucht eine sichere Adresse (https://). Auf iPhone und iPad (iOS 16.4 oder neuer) füge TidyQuest zuerst zum Home-Bildschirm hinzu und schalte es von dort ein (siehe „Auf dem Handy“).',
+        'Wer bekommt was zeigt die Geräte jeder Person; Entfernen stoppt eines. Abmelden stoppt dieses Gerät, Auf allen Geräten abmelden alle Geräte der Person. Überall sonst abmelden und ein neues Passwort behalten nur das Gerät in deiner Hand.',
+        'Die Nachrichten laufen über den Push-Dienst des Browser-Herstellers (Google, Apple, Mozilla oder Microsoft), verschlüsselt, sodass nur das Gerät sie lesen kann.',
+        'Einstellungen → Funktionen → Benachrichtigungen aufs Handy (Web-Push) schaltet es für die ganze Familie aus.',
+      ] },
       { h: 'Home Assistant' },
       { p: 'Wenn deine Familie die Home-Assistant-App auf dem Handy hat, kann TidyQuest Nachrichten darüber schicken. Das geht nur auf einem Server zu Hause, nicht auf tidyquest.org.' },
       { ol: [
@@ -441,7 +449,7 @@ export const GUIDE_DE: GuideSection[] = [
         'Releases sind getaggt (zum Beispiel 0.9.0). Lege diese Nummer in docker-compose.yml fest und führe dann „docker compose pull && docker compose up -d“ aus. Das Image „:main“ ist der neueste Code, zum vorherigen Ausprobieren.',
         'Einstellungen → Allgemein zeigt die laufende Version. Um zurückzugehen, trage die vorherige Versionsnummer wieder ein und starte es erneut (mach vorher ein Backup: Die Datenbank geht nur vorwärts).',
         'Unter der Version öffnet Quellcode den Code genau dieser Version: TidyQuest ist freie Software (AGPL-3.0). Läuft bei dir geänderter Code? Setze SOURCE_URL auf die Adresse, unter der man deine Fassung bekommt; die Lizenz verlangt das.',
-        'Handy-Benachrichtigungen aus der App selbst und das Installieren als App brauchen eine sichere Adresse (https://); bis dahin nutze ntfy oder Telegram.',
+        'Benachrichtigungen aufs Handy (Web-Push) und das Installieren als App brauchen eine sichere Adresse (https://); bis dahin nutze ntfy oder Telegram. Der Server erzeugt seine Web-Push-Schlüssel, sobald er sie zum ersten Mal braucht, und legt sie im Datenordner ab (vapid-keys.json): Sichere ihn mit dem Rest, oder setze VAPID_PUBLIC_KEY und VAPID_PRIVATE_KEY selbst. Mit neuen Schlüsseln meldet sich jedes Gerät beim nächsten Öffnen der App neu an.',
       ] },
     ],
   },
@@ -508,6 +516,17 @@ export const GUIDE_DE: GuideSection[] = [
           'Private Arten (Ergebnisse, Zusammenfassungen, Hinweise, Anfeuern) brauchen den eigenen Kanal der Person.',
           'Ruhezeiten und Schulzeiten halten Nachrichten zurück, bis sie enden.',
           'Das Benachrichtigungsprotokoll zeigt jede Nachricht und jeden Fehler.',
+        ] },
+        { q: 'Benachrichtigungen aufs Handy lassen sich nicht einschalten', a: [
+          '„Braucht eine sichere Adresse“: Öffne TidyQuest über seine https://-Adresse, nicht über http:// oder eine Zahl wie 192.168…. Ein Server zu Hause braucht zuerst HTTPS.',
+          'Auf iPhone und iPad: Öffne TidyQuest über sein Symbol auf dem Home-Bildschirm, nicht in Safari, mit iOS 16.4 oder neuer.',
+          '„In diesem Browser blockiert“: Die Benachrichtigungen wurden abgelehnt, als gefragt wurde. Erlaube sie für TidyQuest in den Website-Einstellungen des Browsers (iPhone: Einstellungen → Mitteilungen → TidyQuest) und versuch es noch einmal.',
+          'Im Profil gibt es keinen Teil Benachrichtigungen aufs Handy: Ein Elternteil hat es unter Einstellungen → Funktionen ausgeschaltet.',
+        ] },
+        { q: 'Benachrichtigungen aufs Handy kommen nicht mehr', a: [
+          'Abmelden auf diesem Gerät, Auf allen Geräten abmelden oder ein neues Passwort von einem Elternteil stoppt sie. Melde dich an und tippe wieder auf Für dieses Gerät einschalten.',
+          'Prüfe das Handy selbst: Mitteilungen für TidyQuest (oder den Browser) erlaubt, und kein Fokus oder Nicht stören, der sie versteckt.',
+          'Ein Elternteil kann im Benachrichtigungsprotokoll nachsehen: Eine „push“-Zeile zeigt jede Nachricht und einen eventuellen Fehler. Ein zurückgesetztes Gerät oder eines ohne die App verschwindet nach der ersten fehlgeschlagenen Nachricht von selbst aus der Liste.',
         ] },
         { q: 'Der Home-Assistant-Test klappt nicht', a: [
           '„Could not reach Home Assistant“: Die URL stimmt nicht, oder der TidyQuest-Server erreicht sie nicht. In Docker geht homeassistant.local oft nicht: Nimm die IP-Adresse mit :8123.',

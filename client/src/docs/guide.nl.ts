@@ -52,7 +52,7 @@ export const GUIDE_NL: GuideSection[] = [
       { ul: [
         'Updates komen vanzelf: hij opent elke keer de nieuwste versie van de server. Ziet hij er na een update oud uit, sluit hem dan helemaal en open hem opnieuw.',
         'Verwijder hem zoals elke andere app: houd het icoon ingedrukt. De gegevens van het gezin blijven op de server.',
-        'Berichten over klusjes en beloningen komen via ntfy, Telegram of Home Assistant (zie "Meldingen"), niet van de app op het beginscherm.',
+        'Voor meldingen op deze telefoon open je TidyQuest vanaf het beginscherm en ga je naar Profiel → Mijn meldingen → Aanzetten op dit apparaat. Berichten kunnen ook via ntfy, Telegram of Home Assistant komen (zie "Meldingen").',
       ] },
     ],
   },
@@ -371,7 +371,15 @@ export const GUIDE_NL: GuideSection[] = [
         'Privésoorten (goedgekeurd/afgewezen, overzichten, duwtjes, aanmoedigingen) gaan alleen naar het eigen kanaal van een persoon, nooit naar het gezinskanaal.',
         'Het Meldingenlogboek toont wat er is verstuurd, in de wachtrij staat of mislukt is, en waarom.',
       ] },
-      { p: 'Op tidyquest.org gaan meldingen via ntfy.sh of Telegram. Een eigen ntfy-server en Home Assistant werken alleen op een server thuis.' },
+      { p: 'Op tidyquest.org komen meldingen rechtstreeks op de telefoon (web push), of via ntfy.sh of Telegram. Een eigen ntfy-server en Home Assistant werken alleen op een server thuis.' },
+      { h: 'Meldingen op je telefoon (web push)' },
+      { p: 'Iedereen kan zijn meldingen rechtstreeks van TidyQuest op zijn eigen telefoon of computer krijgen: zonder ntfy of Telegram. Ieder zet het zelf aan, op dat apparaat: Profiel → Mijn meldingen → Aanzetten op dit apparaat. Het telt als een eigen kanaal: de berichten komen in de eigen taal en gaan niet meer naar het gezinskanaal.' },
+      { ul: [
+        'Het werkt alleen via een beveiligd adres (https://). Op iPhone en iPad (iOS 16.4 of nieuwer) zet je TidyQuest eerst op je beginscherm en zet je het daar aan (zie "Op je telefoon").',
+        'Wie krijgt wat toont ieders apparaten; Verwijderen stopt er één. Uitloggen stopt dat apparaat, en Uitloggen op alle apparaten stopt ze allemaal voor die persoon. Overal anders uitloggen en een nieuw wachtwoord houden alleen het apparaat in je hand.',
+        'Berichten gaan via de pushdienst van de browsermaker (Google, Apple, Mozilla of Microsoft), versleuteld zodat alleen het apparaat ze kan lezen.',
+        'Instellingen → Functies → Meldingen op je telefoon (web push) zet het uit voor het hele gezin.',
+      ] },
       { h: 'Home Assistant' },
       { p: 'Heeft je gezin de Home Assistant-app op de telefoon, dan kan TidyQuest daar berichten via sturen. Dit werkt alleen op een server thuis, niet op tidyquest.org.' },
       { ol: [
@@ -441,7 +449,7 @@ export const GUIDE_NL: GuideSection[] = [
         'Releases krijgen een tag (bijvoorbeeld 0.9.0). Zet dat nummer vast in docker-compose.yml en voer dan "docker compose pull && docker compose up -d" uit. De ":main"-image is de nieuwste code, om dingen eerst uit te proberen.',
         'Instellingen → Algemeen toont de versie die draait. Om terug te gaan zet je het vorige versienummer terug en start je opnieuw (maak eerst een back-up: de database gaat alleen vooruit).',
         'Onder de versie opent Broncode de code van precies die versie: TidyQuest is vrije software (AGPL-3.0). Draai je code die je zelf hebt aangepast? Zet in SOURCE_URL het adres waar mensen jouw versie kunnen krijgen; de licentie vraagt dat.',
-        'Telefoonmeldingen vanuit de app zelf en de app installeren vereisen een beveiligd adres (https://); gebruik tot die tijd ntfy of Telegram.',
+        'Meldingen op je telefoon (web push) en de app installeren vereisen een beveiligd adres (https://); gebruik tot die tijd ntfy of Telegram. De server maakt zijn web-push-sleutels de eerste keer dat hij ze nodig heeft en bewaart ze in de datamap (vapid-keys.json): maak daar een back-up van met de rest, of stel zelf VAPID_PUBLIC_KEY en VAPID_PRIVATE_KEY in. Met nieuwe sleutels meldt elk apparaat zich opnieuw aan zodra de app weer opent.',
       ] },
     ],
   },
@@ -508,6 +516,17 @@ export const GUIDE_NL: GuideSection[] = [
           'Privésoorten (uitkomsten, overzichten, duwtjes, aanmoedigingen) hebben het eigen kanaal van de persoon nodig.',
           'Stille uren en schooltijden houden berichten vast tot ze afgelopen zijn.',
           'Het Meldingenlogboek toont elk bericht en eventuele fouten.',
+        ] },
+        { q: 'Meldingen op je telefoon gaan niet aan', a: [
+          '"Werkt alleen via een veilig adres": open TidyQuest via het https://-adres, niet via http:// of een nummer zoals 192.168…. Een server thuis heeft eerst HTTPS nodig.',
+          'Op iPhone en iPad: open TidyQuest via het icoon op je beginscherm, niet in Safari, met iOS 16.4 of nieuwer.',
+          '"Geblokkeerd in deze browser": de meldingen zijn geweigerd toen erom gevraagd werd. Sta ze toe voor TidyQuest in de site-instellingen van de browser (iPhone: Instellingen → Berichtgeving → TidyQuest) en probeer het opnieuw.',
+          'Geen onderdeel Meldingen op je telefoon in Profiel: een ouder heeft het uitgezet in Instellingen → Functies.',
+        ] },
+        { q: 'Meldingen op je telefoon komen niet meer', a: [
+          'Uitloggen op dat apparaat, Uitloggen op alle apparaten of een nieuw wachtwoord van een ouder stopt ze. Log in en tik opnieuw op Aanzetten op dit apparaat.',
+          'Kijk op de telefoon zelf: meldingen toegestaan voor TidyQuest (of de browser), en geen Focus of Niet storen die ze verbergt.',
+          'Een ouder kan kijken in het Meldingenlogboek: een "push"-regel toont elk bericht en een eventuele fout. Een apparaat dat is gereset of waar de app af is, verdwijnt na het eerste mislukte bericht vanzelf uit de lijst.',
         ] },
         { q: 'De Home Assistant-test mislukt', a: [
           '"Could not reach Home Assistant": de URL klopt niet, of de TidyQuest-server kan hem niet bereiken. In Docker werkt homeassistant.local vaak niet: gebruik het IP-adres met :8123.',

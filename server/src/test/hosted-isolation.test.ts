@@ -96,6 +96,11 @@ async function seed(familyId: string, db: Db, m: string): Promise<Family> {
   ids.user_goals = (await step('post', `/api/users/${k}/goals`, p,
     { title: `${m} goal`, goalCoins: 10, startAt: at(-HOUR), endAt: at(48 * HOUR), rewardCoins: 5 })).id;
   await step('put', `/api/notify/people/${k}`, p, { ntfyTopic: `${m.toLowerCase()}-topic` });
+  // A phone with web push turned on (NEW-5)
+  ids.push_subscriptions = (await step('post', '/api/notify/push/devices', kid.token, {
+    endpoint: `https://fcm.googleapis.com/fcm/send/${m}-device`, label: `${m} phone`,
+    keys: { p256dh: Buffer.alloc(65, 4).toString('base64url'), auth: Buffer.alloc(16, 7).toString('base64url') },
+  })).id;
 
   // Team-ups: one for anyone, declined; one with an invite, joined
   const teamupId = (body: any): number => body.id ?? body.teamup?.id;
@@ -172,6 +177,7 @@ function tableOf(route: string, param: string): string {
   if (param === 'roomId') return 'rooms';
   if (param === 'completionId') return 'task_completions';
   if (param === 'goalId') return 'user_goals';
+  if (param === 'deviceId') return 'push_subscriptions';
   if (route.includes('/redemptions/')) return 'reward_redemptions';
   const byPrefix: Record<string, string> = {
     rooms: 'rooms', zones: 'zones', tasks: 'tasks', users: 'users', achievements: 'custom_badges', rewards: 'rewards',

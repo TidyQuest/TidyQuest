@@ -155,6 +155,8 @@ export function linkSignature(purpose: string, value: string): string {
 /** Logs this person out on every device: their existing tokens stop working. */
 export function revokeTokens(userId: number): void {
   db.prepare('UPDATE users SET tokenVersion = tokenVersion + 1 WHERE id = ?').run(userId);
+  // Their phones stop getting notifications too (NEW-5); a device that stays signed in signs up again
+  db.prepare('DELETE FROM push_subscriptions WHERE userId = ?').run(userId);
 }
 
 // Operator-page tokens (hosted/operator.ts) are marked with their own audience and last 12 hours. The

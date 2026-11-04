@@ -4,6 +4,7 @@ import { AuthRequest, authMiddleware } from '../middleware/auth';
 import { ensureAdmin } from '../utils/adminHelpers';
 import { NOTIFICATION_KINDS } from '../utils/notifications';
 import { getPeople, personalChannels, sendPersonTest } from '../utils/notify';
+import { activeDevices, pushOn, removeDevice, removeDeviceByEndpoint, saveDevice, vapidKeys } from '../utils/push';
 import { SCHEDULE_DEFAULTS } from '../utils/notifySchedule';
 import { tr } from '../utils/i18n';
 import { isHosted } from '../hosted/context';
@@ -84,7 +85,9 @@ function personView(id: number) {
     id: p.id, displayName: p.displayName, role: p.role, language: p.language,
     ntfyTopic: p.ntfyTopic ?? '', telegramChatId: p.telegramChatId ?? '', haNotifyService: p.haNotifyService ?? '',
     prefs: Object.fromEntries(NOTIFICATION_KINDS.map((k) => [k, p.prefs[k] !== false])),
-    channels: personalChannels(p).map((c) => c.channel),
+    channels: [...new Set(personalChannels(p).map((c) => c.channel))],
+    // Phones and computers where they turned on web push (NEW-5)
+    devices: pushOn() ? activeDevices(p.id).map((d) => ({ id: d.id, label: d.label, createdAt: d.createdAt, lastOkAt: d.lastOkAt })) : [],
     // Can't log in (ENH-16): nothing is sent to them until a parent turns it back on
     canLogIn: p.canLogIn !== 0,
   };
@@ -138,6 +141,35 @@ router.post('/people/:id/test', async (req: AuthRequest, res: Response) => {
   const results = await sendPersonTest(id, tr(p.language, 'notify.test', { name: p.displayName }));
   if (results.length === 0) return res.status(400).json({ error: 'no_channels' });
   res.json({ results });
+});
+
+// Web push (NEW-5, utils/push.ts). The key a browser needs to sign up, and whether push can be used at all.
+router.get('/push', (_req: AuthRequest, res: Response) => {
+  res.json({ publicKey: vapidKeys().publicKey, on: pushOn(), notificationsOn: get('notificationsEnabled') === '1' });
+});
+
+// This device signs up (Profile → This device → Turn on), or again with a new login. Always for the person
+// signed in: the subscription comes from their own browser.
+router.post('/push/devices', (req: AuthRequest, res: Response) => {
+  if (!pushOn()) return res.status(403).json({ error: 'push_off' });
+  const b = req.body ?? {};
+  const device = saveDevice(req.userId!, { endpoint: b.endpoint, p256dh: b.keys?.p256dh, auth: b.keys?.auth, label: b.label });
+  if (!device) return res.status(400).json({ error: 'invalid_subscription' });
+  res.json({ id: device.id });
+});
+
+// This device turns it off, or signs out
+router.post('/push/devices/forget', (req: AuthRequest, res: Response) => {
+  if (typeof req.body?.endpoint === 'string') removeDeviceByEndpoint(req.userId!, req.body.endpoint);
+  res.json({ success: true });
+});
+
+// A parent (or the person) removes a device from the list
+router.delete('/people/:id/devices/:deviceId', (req: AuthRequest, res: Response) => {
+  const id = Number(req.params.id);
+  if (!canEdit(req, id)) return res.status(403).json({ error: 'Not allowed' });
+  if (!removeDevice(id, Number(req.params.deviceId))) return res.status(404).json({ error: 'not_found' });
+  res.json(personView(id));
 });
 
 router.get('/log', (req: AuthRequest, res: Response) => {

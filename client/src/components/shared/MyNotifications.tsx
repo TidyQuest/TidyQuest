@@ -7,12 +7,15 @@ import { PersonNotify } from './NotifyAdmin';
 export function MyNotifications({ userId, language }: { userId: number; language?: string }) {
   const { t } = useTranslation(language);
   const [me, setMe] = useState<NotifyPerson | null>(null);
+  // Phone notifications (NEW-5) come first when the family has them on
+  const [push, setPush] = useState(false);
   useEffect(() => { api.getNotifyPerson(userId).then(setMe).catch(() => setMe(null)); }, [userId]);
+  useEffect(() => { api.pushInfo().then((i) => setPush(i.on)).catch(() => setPush(false)); }, []);
   if (!me) return null;
   return (
     <div className="tq-card tq-card-padded" style={{ marginTop: 16, display: 'grid', gap: 8 }}>
       <h3 className="tq-card-title" style={{ margin: 0 }}>🔔 {t('notifyAdmin.mineTitle')}</h3>
-      <div style={{ fontSize: 11, color: 'var(--warm-text-light)', fontWeight: 600 }}>{t('notifyAdmin.mineDesc')}</div>
+      <div style={{ fontSize: 11, color: 'var(--warm-text-light)', fontWeight: 600 }}>{t(push ? 'notifyAdmin.mineDescPush' : 'notifyAdmin.mineDesc')}</div>
       <PersonNotify person={me} language={language} onSaved={setMe} own />
     </div>
   );

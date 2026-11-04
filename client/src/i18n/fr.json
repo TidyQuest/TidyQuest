@@ -1434,7 +1434,10 @@
       "kindDesc_rescue": "la tâche ×2 du jour, le matin",
       "kind_cheer": "Encouragements sur mes tâches",
       "kind_teamup": "Invitations d'équipe",
-      "peopleDescHosted": "Donne à chacun son propre canal (un sujet ntfy sur son téléphone ou un chat Telegram). Sans canal, il partage le canal familial ; les messages privés (résultats, résumés, rappels) ne vont que sur son propre canal."
+      "peopleDescHosted": "Donne à chacun son propre canal (un sujet ntfy sur son téléphone ou un chat Telegram). Sans canal, il partage le canal familial ; les messages privés (résultats, résumés, rappels) ne vont que sur son propre canal.",
+      "mineDescPush": "Reçois les messages TidyQuest sur ce téléphone ou cet ordinateur : active les notifications sur le téléphone. Ou utilise l'app ntfy : abonne-toi à un sujet que toi seul connais et saisis-le ci-dessous.",
+      "peopleDescPush": "Donne à chacun son propre canal : les notifications sur le téléphone qu'il active dans Profil, un sujet ntfy sur son téléphone, un chat Telegram ou son téléphone Home Assistant. Sans canal, il partage le canal familial ; les messages privés (résultats, résumés, rappels) ne vont que sur son propre canal.",
+      "peopleDescHostedPush": "Donne à chacun son propre canal : les notifications sur le téléphone qu'il active dans Profil, un sujet ntfy sur son téléphone ou un chat Telegram. Sans canal, il partage le canal familial ; les messages privés (résultats, résumés, rappels) ne vont que sur son propre canal."
     },
     "todos": {
       "roomName": "À faire",
@@ -1505,7 +1508,9 @@
       "shieldsDesc": "Gagnés tous les 7 jours d'affilée, ou achetés avec des pièces (2 au maximum). Un bouclier sauve la série un jour manqué.",
       "shieldPrice": "Prix",
       "proofPhotos": "Photos de preuve",
-      "proofPhotosDesc": "Les enfants peuvent ajouter une photo à une tâche qui attend la validation d'un parent. Désactivé : une note seulement."
+      "proofPhotosDesc": "Les enfants peuvent ajouter une photo à une tâche qui attend la validation d'un parent. Désactivé : une note seulement.",
+      "webPush": "📲 Notifications sur le téléphone (web push)",
+      "webPushDesc": "Chacun peut recevoir ses notifications sur son propre téléphone ou ordinateur, à activer dans Profil. Nécessite une adresse https://."
     },
     "seasons": {
       "halloween": "Halloween",
@@ -2120,6 +2125,27 @@
       "turnOn": "Activer",
       "chip": "Sans connexion",
       "noNotifications": "Sans connexion : rien n'est envoyé"
+    },
+    "push": {
+      "title": "Notifications sur le téléphone",
+      "onHere": "Activé : cet appareil reçoit tes notifications.",
+      "offHere": "Reçois tes notifications sur ce téléphone ou cet ordinateur, comme pour n'importe quelle autre appli.",
+      "familyOff": "Les notifications sont désactivées pour toute la famille (Paramètres → Notifications).",
+      "block_insecure": "Il faut une adresse sécurisée : ouvre TidyQuest à son adresse https:// pour l'activer ici.",
+      "block_iosInstall": "Sur iPhone et iPad, ajoute d'abord TidyQuest à l'écran d'accueil (Partager → Sur l'écran d'accueil), puis ouvre-le depuis là et active ceci.",
+      "block_unsupported": "Ce navigateur ne peut pas afficher les notifications des applis web. Essaie Chrome, Edge, Firefox ou Safari.",
+      "block_denied": "Les notifications de TidyQuest sont bloquées dans ce navigateur. Autorise-les dans les réglages du site, puis reviens ici.",
+      "turnOn": "Activer sur cet appareil",
+      "turnOff": "Désactiver sur cet appareil",
+      "turnedOn": "C'est activé ! Appuie sur « Envoyer une notification test » pour essayer.",
+      "turnedOff": "Désactivé sur cet appareil.",
+      "denied": "Le navigateur n'a pas autorisé les notifications. Autorise-les dans les réglages du site et réessaie.",
+      "failed": "Ça n'a pas marché. Réessaie.",
+      "none": "Aucun appareil pour l'instant. Chacun l'active dans Profil, sur son propre téléphone.",
+      "device": "Appareil",
+      "thisDevice": "cet appareil",
+      "added": "ajouté le {date}",
+      "remove": "Retirer"
     }
   }
 }

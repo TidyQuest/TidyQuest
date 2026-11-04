@@ -3,6 +3,7 @@ import { api, type NotifyPerson, type NotifySettings, type NotifyKind } from '..
 import { useTranslation } from '../../hooks/useTranslation';
 import { localeFor } from '../../utils/locale';
 import { useHosted } from '../../utils/hosted';
+import { PushDevices } from './PushDevices';
 
 const KINDS: NotifyKind[] = ['taskDue', 'reminder', 'outcome', 'summary', 'nudge', 'achievementUnlocked', 'choreApproval', 'rewardRequest', 'coinBoost', 'cheer', 'teamup'];
 const label: CSSProperties = { fontSize: 11, fontWeight: 700, color: 'var(--warm-text-muted)' };
@@ -113,6 +114,10 @@ export function PersonNotify({ person, language, onSaved, own }: { person: Notif
   };
   return (
     <div style={{ display: 'grid', gap: 8 }}>
+      <PushDevices person={p} own={own} language={language} onChange={(next) => {
+        const merged = { ...p, devices: next.devices, channels: next.channels };
+        setP(merged); onSaved?.(merged);
+      }} />
       {([
         ['ntfyTopic', 'ntfy', 'notifyAdmin.ntfyTopic'],
         ['telegramChatId', 'Telegram', 'notifyAdmin.telegramChat'],
@@ -149,10 +154,12 @@ export function PeopleNotifyAdmin({ language }: { language?: string }) {
   const [people, setPeople] = useState<NotifyPerson[]>([]);
   const [open, setOpen] = useState<number | null>(null);
   const hosted = useHosted();
+  const [push, setPush] = useState(false);
   useEffect(() => { api.getNotifyPeople().then(setPeople).catch(() => setPeople([])); }, []);
+  useEffect(() => { api.pushInfo().then((i) => setPush(i.on)).catch(() => setPush(false)); }, []);
   return (
     <div style={{ display: 'grid', gap: 8 }}>
-      <div style={{ fontSize: 11, color: 'var(--warm-text-light)', fontWeight: 600 }}>{t(hosted ? 'notifyAdmin.peopleDescHosted' : 'notifyAdmin.peopleDesc')}</div>
+      <div style={{ fontSize: 11, color: 'var(--warm-text-light)', fontWeight: 600 }}>{t(`notifyAdmin.${hosted ? 'peopleDescHosted' : 'peopleDesc'}${push ? 'Push' : ''}`)}</div>
       {people.map((p) => p.canLogIn === false ? (
         // Can't log in (ENH-16): nothing goes to them; their settings come back with their login
         <div key={p.id} style={{ ...box, ...row, justifyContent: 'space-between' }}>

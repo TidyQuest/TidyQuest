@@ -9,6 +9,19 @@ What changed in each release, in plain language, newest first. Releases up to v0
 
 ## Unreleased
 
+### Added
+
+- **Phone notifications from the app itself (web push).** Everyone can get their notifications on their own phone
+  or computer like any other app, without ntfy or Telegram: open **Profile → My notifications** on that device and
+  tap **Turn on for this device**. It counts as the person's own channel, so messages come in their language,
+  follow quiet hours and show in the Notification log. Parents see each person's devices under **Who gets what**
+  and can remove one. Signing out on a device stops its notifications; **Log out of all devices** and a new password
+  set by a parent stop all of that person's. It needs the app opened at an `https://` address, and on iPhone and
+  iPad (iOS 16.4 or newer) TidyQuest added to the Home Screen first. Messages travel through the browser maker's
+  push service, encrypted so only the device can read them. **Settings → Features → Phone notifications** switches
+  it off for the family. Self-hosters: the server makes its signing keys on first use and keeps them in the data
+  folder (`vapid-keys.json`); back it up with the database, or set `VAPID_PUBLIC_KEY` and `VAPID_PRIVATE_KEY`.
+
 ## v0.16.0 (2026-11-04)
 
 ### Added
