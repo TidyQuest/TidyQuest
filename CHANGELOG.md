@@ -9,6 +9,8 @@ What changed in each release, in plain language, newest first. Releases up to v0
 
 ## Unreleased
 
+## v0.15.6 (2026-11-04)
+
 ### Added
 
 - **Family members who don't log in.** In Settings → Family Members, switch off **Can log in** when adding someone

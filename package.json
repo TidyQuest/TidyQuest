@@ -1,6 +1,6 @@
 {
   "name": "tidyquest",
-  "version": "0.15.5",
+  "version": "0.15.6",
   "private": true,
   "description": "Self-hosted web app that gamifies household chores",
   "scripts": {
