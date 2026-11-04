@@ -9,6 +9,8 @@ What changed in each release, in plain language, newest first. Releases up to v0
 
 ## Unreleased
 
+## v0.16.2 (2026-11-04)
+
 ### Fixed
 
 - **Notifications can be turned on with phone notifications alone.** Settings → General → Notifications used to
