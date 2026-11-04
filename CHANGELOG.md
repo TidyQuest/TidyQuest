@@ -9,6 +9,8 @@ What changed in each release, in plain language, newest first. Releases up to v0
 
 ## Unreleased
 
+## v0.16.1 (2026-11-04)
+
 ### Added
 
 - **Phone notifications from the app itself (web push).** Everyone can get their notifications on their own phone
