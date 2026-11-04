@@ -15,6 +15,13 @@ What changed in each release, in plain language, newest first. Releases up to v0
   `scripts/dev-build.sh`, is published as `ghcr.io/tidyquest/tidyquest:dev`. It's for test servers: a server
   people rely on should stay on `:latest` or a version number. (`:main` still follows `main`.)
 
+### Fixed
+
+- **Notifications turn off again.** In v0.16.2 the Notifications switch in Settings → General kept turning itself
+  back on when ntfy or Telegram had been left switched on without a topic or bot (an older refused save could do
+  that). A channel like that never sent anything, so it's now switched off along the way. Switching ntfy or
+  Telegram off saves straight away, and if the Notifications switch can't save, the reason shows right under it.
+
 ## v0.16.2 (2026-11-04)
 
 ### Fixed
