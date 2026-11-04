@@ -522,11 +522,20 @@ export const GUIDE_FR: GuideSection[] = [
           'Sur iPhone et iPad : ouvre TidyQuest depuis son icône sur l’écran d’accueil, pas dans Safari, avec iOS 16.4 ou plus récent.',
           '« Bloquées dans ce navigateur » : les notifications ont été refusées quand il a demandé. Autorise-les pour TidyQuest dans les réglages du site du navigateur (iPhone : Réglages → Notifications → TidyQuest), puis réessaie.',
           'Pas de partie Notifications sur le téléphone dans Profil : un parent l’a désactivée dans Paramètres → Fonctionnalités.',
+          '« Brave a désactivé les messages push » : ouvre brave://settings/privacy, active Use Google services for push messaging et redémarre Brave.',
+          '« Ce navigateur ne peut pas s’inscrire aux notifications ici » : c’est une fenêtre privée, ou un navigateur basé sur Chromium sans service push. Utilise une fenêtre normale de Chrome, Edge, Firefox ou Safari.',
+          '« Les notifications n’ont pas été autorisées » : la question a été fermée, ou Chrome ou Edge ont affiché une cloche dans la barre d’adresse au lieu de demander. Appuie de nouveau sur Activer sur cet appareil et choisis Autoriser.',
+          'Les fenêtres privées ne reçoivent pas de notifications : ouvre TidyQuest dans une fenêtre normale.',
         ] },
         { q: 'Les notifications sur le téléphone n’arrivent plus', a: [
           'Se déconnecter sur cet appareil, Déconnecter de tous les appareils ou un nouveau mot de passe choisi par un parent les arrête. Reconnecte-toi et appuie de nouveau sur Activer sur cet appareil.',
           'Vérifie le téléphone lui-même : notifications autorisées pour TidyQuest (ou le navigateur), et pas de mode Concentration ou Ne pas déranger qui les cache.',
           'Un parent peut regarder le Journal des notifications : une ligne « push » montre chaque message et l’erreur éventuelle. Un appareil réinitialisé ou dont l’appli a été supprimée sort de la liste après son premier message raté.',
+        ] },
+        { q: 'Envoyer une notification test affiche ✓ mais rien n’apparaît sur l’ordinateur', a: [
+          'Le navigateur doit tourner pour les recevoir. Sous Windows, Chrome, Edge et Brave peuvent continuer à tourner après la fermeture de leur dernière fenêtre (dans leurs paramètres → Système → Continuer à exécuter les applications en arrière-plan) ; Firefox seulement tant qu’il est ouvert.',
+          'Autorise les notifications pour le navigateur lui-même : sous Windows, Paramètres → Système → Notifications ; sur Mac, Réglages Système → Notifications → le navigateur.',
+          'Désactive Ne pas déranger ou Concentration : ils cachent les notifications.',
         ] },
         { q: 'Le test Home Assistant échoue', a: [
           '« Could not reach Home Assistant » : l’URL est fausse, ou le serveur TidyQuest ne peut pas l’atteindre. Dans Docker, homeassistant.local ne marche souvent pas : mets l’adresse IP avec :8123.',

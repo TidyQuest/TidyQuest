@@ -522,11 +522,20 @@ export const GUIDE_DE: GuideSection[] = [
           'Auf iPhone und iPad: Öffne TidyQuest über sein Symbol auf dem Home-Bildschirm, nicht in Safari, mit iOS 16.4 oder neuer.',
           '„In diesem Browser blockiert“: Die Benachrichtigungen wurden abgelehnt, als gefragt wurde. Erlaube sie für TidyQuest in den Website-Einstellungen des Browsers (iPhone: Einstellungen → Mitteilungen → TidyQuest) und versuch es noch einmal.',
           'Im Profil gibt es keinen Teil Benachrichtigungen aufs Handy: Ein Elternteil hat es unter Einstellungen → Funktionen ausgeschaltet.',
+          '„Brave hat Push-Nachrichten ausgeschaltet“: Öffne brave://settings/privacy, schalte Use Google services for push messaging ein und starte Brave neu.',
+          '„Dieser Browser kann sich hier nicht für Benachrichtigungen anmelden“: Das ist ein privates (Inkognito-)Fenster oder ein Browser auf Chromium-Basis ohne Push-Dienst. Nimm ein normales Fenster in Chrome, Edge, Firefox oder Safari.',
+          '„Benachrichtigungen wurden nicht erlaubt“: Die Frage wurde geschlossen, oder Chrome bzw. Edge haben statt der Frage eine Glocke in der Adressleiste gezeigt. Tippe noch einmal auf Für dieses Gerät einschalten und wähle Zulassen.',
+          'Private Fenster bekommen keine Benachrichtigungen: Öffne TidyQuest in einem normalen Fenster.',
         ] },
         { q: 'Benachrichtigungen aufs Handy kommen nicht mehr', a: [
           'Abmelden auf diesem Gerät, Auf allen Geräten abmelden oder ein neues Passwort von einem Elternteil stoppt sie. Melde dich an und tippe wieder auf Für dieses Gerät einschalten.',
           'Prüfe das Handy selbst: Mitteilungen für TidyQuest (oder den Browser) erlaubt, und kein Fokus oder Nicht stören, der sie versteckt.',
           'Ein Elternteil kann im Benachrichtigungsprotokoll nachsehen: Eine „push“-Zeile zeigt jede Nachricht und einen eventuellen Fehler. Ein zurückgesetztes Gerät oder eines ohne die App verschwindet nach der ersten fehlgeschlagenen Nachricht von selbst aus der Liste.',
+        ] },
+        { q: 'Testbenachrichtigung senden zeigt ✓, aber auf dem Computer erscheint nichts', a: [
+          'Der Browser muss laufen, um sie zu bekommen. Unter Windows können Chrome, Edge und Brave weiterlaufen, wenn das letzte Fenster zu ist (in ihren Einstellungen → System → Apps im Hintergrund weiter ausführen); Firefox nur, solange er offen ist.',
+          'Erlaube Mitteilungen für den Browser selbst: unter Windows Einstellungen → System → Benachrichtigungen; auf dem Mac Systemeinstellungen → Mitteilungen → der Browser.',
+          'Schalte Nicht stören oder Fokus aus: Sie verstecken Benachrichtigungen.',
         ] },
         { q: 'Der Home-Assistant-Test klappt nicht', a: [
           '„Could not reach Home Assistant“: Die URL stimmt nicht, oder der TidyQuest-Server erreicht sie nicht. In Docker geht homeassistant.local oft nicht: Nimm die IP-Adresse mit :8123.',

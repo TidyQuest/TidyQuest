@@ -522,11 +522,20 @@ export const GUIDE_NL: GuideSection[] = [
           'Op iPhone en iPad: open TidyQuest via het icoon op je beginscherm, niet in Safari, met iOS 16.4 of nieuwer.',
           '"Geblokkeerd in deze browser": de meldingen zijn geweigerd toen erom gevraagd werd. Sta ze toe voor TidyQuest in de site-instellingen van de browser (iPhone: Instellingen → Berichtgeving → TidyQuest) en probeer het opnieuw.',
           'Geen onderdeel Meldingen op je telefoon in Profiel: een ouder heeft het uitgezet in Instellingen → Functies.',
+          '"Brave heeft pushberichten uitgezet": open brave://settings/privacy, zet Use Google services for push messaging aan en start Brave opnieuw.',
+          '"Deze browser kan zich hier niet aanmelden voor meldingen": dit is een privévenster (incognito), of een browser op basis van Chromium zonder pushdienst. Gebruik een gewoon venster in Chrome, Edge, Firefox of Safari.',
+          '"Meldingen zijn niet toegestaan": de vraag is gesloten, of Chrome of Edge toonde een belletje in de adresbalk in plaats van het te vragen. Tik nog eens op Aanzetten op dit apparaat en kies Toestaan.',
+          'Privévensters krijgen geen meldingen: open TidyQuest in een gewoon venster.',
         ] },
         { q: 'Meldingen op je telefoon komen niet meer', a: [
           'Uitloggen op dat apparaat, Uitloggen op alle apparaten of een nieuw wachtwoord van een ouder stopt ze. Log in en tik opnieuw op Aanzetten op dit apparaat.',
           'Kijk op de telefoon zelf: meldingen toegestaan voor TidyQuest (of de browser), en geen Focus of Niet storen die ze verbergt.',
           'Een ouder kan kijken in het Meldingenlogboek: een "push"-regel toont elk bericht en een eventuele fout. Een apparaat dat is gereset of waar de app af is, verdwijnt na het eerste mislukte bericht vanzelf uit de lijst.',
+        ] },
+        { q: 'Testbericht sturen toont ✓ maar op de computer verschijnt niets', a: [
+          'De browser moet draaien om ze te krijgen. Op Windows kunnen Chrome, Edge en Brave blijven draaien als het laatste venster dicht is (in hun Instellingen → Systeem → Apps op de achtergrond blijven uitvoeren); Firefox alleen zolang hij open is.',
+          'Sta meldingen toe voor de browser zelf: op Windows Instellingen → Systeem → Meldingen; op een Mac Systeeminstellingen → Berichtgeving → de browser.',
+          'Zet Niet storen of Focus uit: die verbergen meldingen.',
         ] },
         { q: 'De Home Assistant-test mislukt', a: [
           '"Could not reach Home Assistant": de URL klopt niet, of de TidyQuest-server kan hem niet bereiken. In Docker werkt homeassistant.local vaak niet: gebruik het IP-adres met :8123.',

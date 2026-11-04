@@ -546,11 +546,20 @@ export const GUIDE_EN: GuideSection[] = [
           'On iPhone and iPad: open TidyQuest from its Home Screen icon, not in Safari, on iOS 16.4 or newer.',
           '“Blocked in this browser”: notifications were refused when it asked. Allow them for TidyQuest in the browser’s site settings (iPhone: Settings → Notifications → TidyQuest), then try again.',
           'No Phone notifications part in Profile: a parent switched it off in Settings → Features.',
+          '“Brave has push messaging turned off”: open brave://settings/privacy, turn on Use Google services for push messaging, and restart Brave.',
+          '“This browser can’t sign up for notifications here”: it’s a private (incognito) window, or a browser built on Chromium without a push service. Use a normal window in Chrome, Edge, Firefox or Safari.',
+          '“Notifications weren’t allowed”: the question was closed, or Chrome or Edge showed a bell in the address bar instead of asking. Tap Turn on for this device again and choose Allow.',
+          'Private windows can’t get notifications: open TidyQuest in a normal window.',
         ] },
         { q: 'Phone notifications stopped coming', a: [
           'Log out on that device, Log out of all devices or a new password set by a parent stops them. Sign in and tap Turn on for this device again.',
           'Check the phone itself: notifications allowed for TidyQuest (or the browser), and no Focus or Do Not Disturb hiding them.',
           'A parent can look in the Notification log: a "push" line shows each message and any error. A device that was reset or had the app removed drops off the list after its first failed message.',
+        ] },
+        { q: 'Send test notification shows ✓ but nothing appears on the computer', a: [
+          'The browser has to be running to get them. On Windows, Chrome, Edge and Brave can keep running after their last window closes (their Settings → System → Continue running background apps); Firefox only while it’s open.',
+          'Allow notifications for the browser itself: on Windows, Settings → System → Notifications; on a Mac, System Settings → Notifications → the browser.',
+          'Turn off Do Not Disturb or Focus: they hide notifications.',
         ] },
         { q: 'The Home Assistant test fails', a: [
           '“Could not reach Home Assistant”: the URL is wrong, or the TidyQuest server can’t reach it. In Docker, homeassistant.local often doesn’t work: use the IP address with :8123.',

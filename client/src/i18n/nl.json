@@ -2133,7 +2133,7 @@
       "familyOff": "Meldingen staan uit voor het hele gezin (Instellingen → Meldingen).",
       "block_insecure": "Werkt alleen via een veilig adres: open TidyQuest via het https://-adres om dit hier aan te zetten.",
       "block_iosInstall": "Op iPhone en iPad zet je TidyQuest eerst op je beginscherm (Deel → Zet op beginscherm). Open het daarna vanaf daar en zet dit aan.",
-      "block_unsupported": "Deze browser kan geen meldingen van web-apps tonen. Probeer Chrome, Edge, Firefox of Safari.",
+      "block_unsupported": "Deze browser kan geen meldingen van web-apps tonen, of dit is een privévenster. Probeer Chrome, Edge, Firefox of Safari in een gewoon venster.",
       "block_denied": "Meldingen van TidyQuest zijn geblokkeerd in deze browser. Sta ze toe in de site-instellingen van de browser en kom dan terug.",
       "turnOn": "Aanzetten op dit apparaat",
       "turnOff": "Uitzetten op dit apparaat",
@@ -2145,7 +2145,10 @@
       "device": "Apparaat",
       "thisDevice": "dit apparaat",
       "added": "toegevoegd op {date}",
-      "remove": "Verwijderen"
+      "remove": "Verwijderen",
+      "dismissed": "Meldingen zijn niet toegestaan. Tik nog eens op Aanzetten en kies Toestaan (Chrome en Edge tonen soms een belletje in de adresbalk in plaats van het te vragen).",
+      "braveOff": "Brave heeft pushberichten uitgezet. Open brave://settings/privacy, zet Use Google services for push messaging (Google-services voor pushberichten) aan, start Brave opnieuw en probeer het nog eens.",
+      "noPushService": "Deze browser kan zich hier niet aanmelden voor meldingen: dit is een privévenster (incognito), of de browser heeft geen pushdienst (sommige op basis van Chromium laten die weg). Gebruik een gewoon venster in Chrome, Edge, Firefox of Safari."
     }
   }
 }
