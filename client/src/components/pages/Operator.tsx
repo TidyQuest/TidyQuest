@@ -4,7 +4,7 @@ import { AuthCard, AuthField } from '../shared/AuthCard';
 import { authError, authLink } from '../shared/authStyles';
 
 // The operator page (/operator, hosted mode only, NEW-13): the families on this server, with suspend,
-// resume, delete and resend, the History of what was done (NEW-24), and the switch that opens or closes new
+// resume, delete, restore (NEW-23) and resend, the History of what was done (NEW-24), and the switch that opens or closes new
 // sign-ups with the waitlist families join while it's closed (NEW-30). It has its own sign-in and token,
 // kept apart from a family login in the same browser. English only: families never see it.
 
@@ -21,6 +21,7 @@ interface Family {
   createdAt: string; lastActiveAt: string | null; deletedAt: string | null;
   people: number | null; filesBytes: number | null; dataBytes: number | null;
   parents: { email: string; confirmed: boolean }[];
+  canRestore?: boolean; // deleted families: their folder is still kept
 }
 interface FamilyList {
   totals: Record<Status | 'newThisWeek', number>;
@@ -29,7 +30,7 @@ interface FamilyList {
   keepDeletedDays: number;
   families: Family[];
 }
-type Action = 'suspend' | 'resume' | 'delete' | 'resend-confirmation' | 'trial-delete' | 'unconfirmed-delete' | 'inactive-delete'
+type Action = 'suspend' | 'resume' | 'delete' | 'restore' | 'resend-confirmation' | 'trial-delete' | 'unconfirmed-delete' | 'inactive-delete'
   | 'parent-delete' | 'news'
   | 'sign-in' | 'wrong-password' | 'password' | 'sign-out' | 'env-account' | 'env-password'
   | 'signups-open' | 'signups-closed' | 'waitlist-remove';
@@ -38,6 +39,11 @@ interface Entry {
   familyId: string | null; familyName: string | null; detail: string | null; ip: string | null;
 }
 interface EntryList { found: number; entries: Entry[] }
+/** What a restore brought back (NEW-23), and what new sign-ups took meanwhile */
+interface Restored {
+  status: Status; code: string; codeTaken: string | null; emails: string[]; emailsTaken: string[]; nothingSaved: boolean;
+  again: string | null;
+}
 type Kind = 'families' | 'sign-ins' | 'sign-ups';
 interface SignUps { open: boolean; waiting: number }
 interface Waiting {
@@ -103,6 +109,7 @@ function happened(e: Entry, onCard: boolean): string {
     case 'suspend': return `Paused${family}`;
     case 'resume': return `Resumed${family}`;
     case 'delete': return `Deleted${family}`;
+    case 'restore': return `Restored${family}${e.detail ? ` (${e.detail})` : ''}`;
     case 'trial-delete': return `Deleted${family} after the trial ended`;
     case 'unconfirmed-delete': return `Deleted${family}: no parent confirmed their email in 30 days`;
     case 'inactive-delete': return `Deleted${family}: unused for a year`;
@@ -129,7 +136,23 @@ const failedLine: React.CSSProperties = { ...line, color: 'var(--warm-danger)' }
 
 /** The last action's message, also shown on its family's card (the top of the page can be off-screen). */
 interface CardResult { id: string; name: string; index: number; text: string; failed: boolean }
-type Act = (path: string, body: object, done: string) => Promise<boolean>;
+/** done: the message, or one made from the server's answer */
+type Act = (path: string, body: object, done: string | ((answer: unknown) => string)) => Promise<boolean>;
+
+/** What came back with a restored family, and what the operator should tell its parents. */
+function restoredText(name: string, r: Restored): string {
+  const parts = [`Restored ${name} as ${LABELS[r.status]}, with the family code ${r.code}.`];
+  if (r.nothingSaved) {
+    parts.push("It was deleted before restores kept parents' emails, so its code is new and nobody signs in by email: parents sign in with the code and their username, then add their email in Settings.");
+  } else {
+    if (r.codeTaken) parts.push(`Its old code ${r.codeTaken} went to another family meanwhile, so tell the family the new one.`);
+    if (r.emailsTaken.length) {
+      parts.push(`Another family signs in with ${r.emailsTaken.join(', ')} now, so ${r.emailsTaken.length === 1 ? "that email wasn't" : "those emails weren't"} restored: that parent signs in with the family code and their username, then adds a new email in Settings.`);
+    }
+  }
+  if (r.again) parts.push(r.again);
+  return parts.join(' ');
+}
 
 export default function OperatorPage() {
   const hosted = useHosted();
@@ -257,15 +280,16 @@ function Families({ token, onToken, onSignedOut }: { token: string; onToken: (to
     }, failed);
   };
 
-  const act = async (f: Family, index: number, path: string, body: object, done: string) => {
+  const act = async (f: Family, index: number, path: string, body: object, done: Parameters<Act>[2]) => {
     setError('');
     setNotice('');
     setResult(null);
     const card = { id: f.id, name: f.name, index };
     try {
-      await call(path, token, body);
-      setNotice(done);
-      setResult({ ...card, text: done, failed: false });
+      const answer = await call<unknown>(path, token, body);
+      const text = typeof done === 'string' ? done : done(answer);
+      setNotice(text);
+      setResult({ ...card, text, failed: false });
       setReload((n) => n + 1);
       return true;
     } catch (err) {
@@ -409,6 +433,11 @@ function FamilyCard({ family: f, list, result, onAct, token, version, onFailed }
   const remove = async () => {
     if (await onAct(`${base}/delete`, { name: typed }, `Deleted ${f.name}. Its folder is kept for ${list.keepDeletedDays} days.`)) setDeleting(false);
   };
+  const restore = () => {
+    if (window.confirm(`Restore ${f.name}? Everyone in it can sign in again, with the same family code and emails unless a new sign-up took them meanwhile.`)) {
+      void onAct(`${base}/restore`, {}, (answer) => restoredText(f.name, answer as Restored));
+    }
+  };
 
   const status = f.status === 'trial' && f.trialEndsAt ? `Trial · ends ${day(f.trialEndsAt)}` : LABELS[f.status];
   return (
@@ -434,12 +463,13 @@ function FamilyCard({ family: f, list, result, onAct, token, version, onFailed }
       <div style={line}>Plan: {f.plan ?? 'none'}</div>
       {f.parents.length > 0 && (
         <div style={{ marginTop: 6 }}>
+          {f.status === 'deleted' && <div style={{ ...muted, marginTop: 2 }}>Parents' emails when it was deleted</div>}
           {f.parents.map((p) => (
             <div key={p.email} style={{ ...line, marginTop: 2, display: 'flex', flexWrap: 'wrap', alignItems: 'center', columnGap: 8 }}>
               <span style={{ overflowWrap: 'anywhere' }}>{p.email}</span>
               {p.confirmed
                 ? <span style={{ ...muted, color: 'var(--warm-streak-text)' }}>✓ confirmed</span>
-                : (
+                : f.status === 'deleted' ? <span style={muted}>not confirmed</span> : (
                   <>
                     <span style={muted}>not confirmed</span>
                     <button type="button" style={{ ...authLink, fontSize: 12, padding: 0 }}
@@ -462,6 +492,9 @@ function FamilyCard({ family: f, list, result, onAct, token, version, onFailed }
                 : <button type="button" className="tq-btn tq-btn-secondary tq-btn-sm" onClick={suspend}>Suspend</button>}
               <button type="button" className="tq-btn tq-btn-secondary tq-btn-sm" style={{ color: 'var(--warm-danger)' }} onClick={() => setDeleting(true)}>Delete</button>
             </>
+          )}
+          {f.status === 'deleted' && f.canRestore && (
+            <button type="button" className="tq-btn tq-btn-secondary tq-btn-sm" onClick={restore}>Restore</button>
           )}
           <button type="button" className="tq-btn tq-btn-secondary tq-btn-sm" aria-expanded={showHistory} onClick={() => setShowHistory((v) => !v)}>
             {showHistory ? 'Hide history' : 'History'}
@@ -487,6 +520,7 @@ function FamilyCard({ family: f, list, result, onAct, token, version, onFailed }
           </div>
         </div>
       )}
+      {f.status === 'deleted' && !f.canRestore && <div style={line}>Its folder is gone, so it can't be restored.</div>}
       {result && <div style={result.failed ? failedLine : okLine}>{result.text}</div>}
       {showHistory && <History token={token} familyId={f.id} version={version} onFailed={onFailed} />}
     </div>

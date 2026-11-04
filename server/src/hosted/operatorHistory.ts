@@ -9,6 +9,8 @@ export type OperatorAction =
   // On a family, by an operator or by the server's clean-up: an expired trial, a parent who never
   // confirmed, a year unused (NEW-34)
   | 'suspend' | 'resume' | 'delete' | 'resend-confirmation' | 'trial-delete' | 'unconfirmed-delete' | 'inactive-delete'
+  // A deleted family brought back (NEW-23); detail lists the emails and family code new sign-ups took meanwhile
+  | 'restore'
   // A parent deleted their own family (NEW-25); detail is their email
   | 'parent-delete'
   // A news email went out (NEW-34); detail is its subject and how many got it

@@ -9,6 +9,15 @@ What changed in each release, in plain language, newest first. Releases up to v0
 
 ## Unreleased
 
+### Added
+
+- **Hosted service: restore a deleted family.** The operator page has a **Restore** button on deleted families for
+  the 30 days their folder is kept. The family comes back as it was: same status, family code and parents' sign-in
+  emails. If a new sign-up took an email or the code in the meantime, that one is skipped (the family gets a new
+  code) and the page says so. A family that one of the automatic clean-ups deleted gets that clean-up's warning
+  email again, with the usual notice, before it can be deleted again. Deleted families now show their parents'
+  emails on the operator page, so you can find one by the address a parent writes from.
+
 ## v0.15.6 (2026-11-04)
 
 ### Added

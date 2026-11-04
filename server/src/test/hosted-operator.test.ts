@@ -4,13 +4,16 @@ import path from 'path';
 import supertest from 'supertest';
 import { setHosted } from '../hosted/context';
 import { setEmailTransport, type Email } from '../hosted/email';
-import { purgeDeletedFamilies } from '../hosted/families';
+import db from '../database';
+import { runInFamily } from '../hosted/context';
+import { createFamily, deleteFamily, familyDir, openFamily, purgeDeletedFamilies } from '../hosted/families';
+import { recordOperatorAction } from '../hosted/operatorHistory';
 import { dataDir, mainDb } from '../hosted/mainDb';
 import { operatorFromEnv } from '../hosted/operator';
 import { HOSTED_RUN, addTestFamily, createAdmin, createTestApp, createUser } from './setup';
 
 // Hosted step 7 (NEW-13): the operator page's accounts, its own tokens, the family list and its actions;
-// the History of those actions (NEW-24).
+// the History of those actions (NEW-24); restoring a deleted family (NEW-23).
 const auth = (token: string) => ({ Authorization: `Bearer ${token}` });
 const DAY = 24 * 60 * 60 * 1000;
 const OP_EMAIL = 'op@tidyquest.example';
@@ -179,7 +182,10 @@ describe('The family list', () => {
     const list = await families(op);
     expect(list.families.map((f: any) => f.id)).toEqual([B]);
     expect(list.totals.deleted).toBe(1);
-    expect((await familyOf(op, A, '?status=deleted'))).toMatchObject({ status: 'deleted', people: null, parents: [] });
+    // Its parents' emails come from its folder, so the operator can find it by the address a parent writes from
+    expect((await familyOf(op, A, `?status=deleted&q=admin@${A}`))).toMatchObject({
+      status: 'deleted', people: null, canRestore: true, parents: [{ email: `admin@${A}.example`, confirmed: false }],
+    });
     expect((await agent.post(`/api/operator/families/${A}/suspend`).set(auth(op))).status).toBe(404);
   });
 
@@ -194,6 +200,95 @@ describe('The family list', () => {
     mainDb().prepare("UPDATE accounts SET emailConfirmedAt = '2026-10-29T00:00:00Z' WHERE email = ?").run(email);
     expect((await agent.post(`/api/operator/families/${A}/resend-confirmation`).set(auth(op)).send({ email })).status).toBe(400);
     expect(sent).toHaveLength(1);
+  });
+});
+
+describe('Restoring a deleted family (NEW-23)', () => {
+  let op: string;
+  let C: string;
+  const email = () => `parent@${C}.example`;
+  const deleted = () => fs.readdirSync(path.join(dataDir(), 'deleted'));
+  const restore = (id: string) => agent.post(`/api/operator/families/${id}/restore`).set(auth(op));
+  const codeOf = (id: string) => (mainDb().prepare('SELECT code FROM families WHERE id = ?').get(id) as { code: string | null }).code;
+  const login = (body: object) => agent.post('/api/auth/login').send({ password: 'parent123', ...body });
+
+  beforeEach(async () => {
+    makeOperator();
+    op = await operatorToken();
+    C = createFamily('The Carters'); // with its database in its folder, like a real family
+    await createAdmin(agent, 'parent', 'parent123', 'Parent C', C);
+    runInFamily(openFamily(C)!, () => db.prepare("INSERT INTO app_settings (key, value) VALUES ('marker', 'kept')").run());
+  });
+
+  it('brings back the folder, the status, the family code and the emails', async () => {
+    mainDb().prepare("UPDATE accounts SET emailConfirmedAt = '2026-11-01T00:00:00Z', newsAt = '2026-11-01T00:00:00Z' WHERE email = ?").run(email());
+    await agent.post(`/api/operator/families/${C}/suspend`).set(auth(op));
+    const code = codeOf(C);
+    await agent.post(`/api/operator/families/${C}/delete`).set(auth(op)).send({ name: 'The Carters' });
+    expect((await login({ email: email() })).status).toBe(401);
+
+    const res = await restore(C);
+    expect(res.status).toBe(200);
+    expect(res.body).toMatchObject({ status: 'suspended', code, codeTaken: null, emails: [email()], emailsTaken: [], nothingSaved: false, again: null });
+    expect(fs.existsSync(path.join(familyDir(C), 'tidyquest.db'))).toBe(true);
+    expect(fs.existsSync(path.join(familyDir(C), 'restore.json'))).toBe(false);
+    expect(deleted().some((name) => name.startsWith(`${C}-`))).toBe(false);
+    expect(mainDb().prepare('SELECT emailConfirmedAt, newsAt FROM accounts WHERE email = ?').get(email()))
+      .toEqual({ emailConfirmedAt: '2026-11-01T00:00:00Z', newsAt: '2026-11-01T00:00:00Z' });
+    expect(await familyOf(op, C)).toMatchObject({ status: 'suspended', code, deletedAt: null, parents: [{ email: email(), confirmed: true }] });
+
+    await agent.post(`/api/operator/families/${C}/resume`).set(auth(op));
+    const back = await login({ email: email() });
+    expect(back.status).toBe(200);
+    expect(runInFamily(openFamily(C)!, () => db.prepare("SELECT value FROM app_settings WHERE key = 'marker'").get())).toEqual({ value: 'kept' });
+    expect(actions(await history(op, `?family=${C}`)).slice(0, 3)).toEqual(['resume', 'restore', 'delete']);
+    expect((await restore(C)).status).toBe(404);
+    expect((await restore(A)).status).toBe(404);
+  });
+
+  it('skips an email and a family code a new sign-up took meanwhile, and says so', async () => {
+    const code = codeOf(C)!;
+    await agent.post(`/api/operator/families/${C}/delete`).set(auth(op)).send({ name: 'The Carters' });
+    mainDb().prepare('UPDATE families SET code = ?, codeKey = ? WHERE id = ?').run(code, code.replace(/-/g, ''), B);
+    mainDb().prepare('INSERT INTO accounts (email, familyId, userId, createdAt) VALUES (?, ?, 1, ?)').run(email(), B, new Date().toISOString());
+
+    const res = await restore(C);
+    expect(res.body).toMatchObject({ status: 'trial', codeTaken: code, emails: [], emailsTaken: [email()] });
+    expect(res.body.code).not.toBe(code);
+    expect(codeOf(C)).toBe(res.body.code);
+    expect(codeOf(B)).toBe(code);
+    // That parent still gets in with the family code and their username, and can add a new email in Settings
+    expect((await login({ username: 'parent', familyCode: res.body.code })).status).toBe(200);
+    expect((await history(op, `?family=${C}`)).entries[0]).toMatchObject({ action: 'restore', detail: `taken meanwhile: ${email()}, code ${code}` });
+  });
+
+  it("starts a clean-up job's warning over, and says what happens next", async () => {
+    const warned = '2026-10-01T00:00:00Z';
+    mainDb().prepare('UPDATE families SET trialWarnedAt = ?, consentRemindedAt = ?, inactiveWarnedAt = ? WHERE id = ?').run(warned, warned, warned, C);
+    deleteFamily(C);
+    recordOperatorAction({ action: 'inactive-delete', family: { id: C, name: 'The Carters' } });
+
+    const res = await restore(C);
+    expect(res.body.again).toMatch(/warned again .* deleted 30 days later/);
+    expect(mainDb().prepare('SELECT trialWarnedAt, consentRemindedAt, inactiveWarnedAt FROM families WHERE id = ?').get(C))
+      .toEqual({ trialWarnedAt: null, consentRemindedAt: null, inactiveWarnedAt: null });
+  });
+
+  it('brings back a family deleted before NEW-23 with a new code, but not once its folder is gone', async () => {
+    const code = codeOf(C);
+    deleteFamily(C);
+    const kept = deleted().find((name) => name.startsWith(`${C}-`))!;
+    fs.rmSync(path.join(dataDir(), 'deleted', kept, 'restore.json'));
+    expect(await familyOf(op, C, '?status=deleted')).toMatchObject({ canRestore: true, parents: [] });
+    const res = await restore(C);
+    expect(res.body).toMatchObject({ status: 'trial', codeTaken: null, emails: [], emailsTaken: [], nothingSaved: true });
+    expect(res.body.code).not.toBe(code);
+
+    deleteFamily(C);
+    fs.rmSync(path.join(dataDir(), 'deleted', deleted().find((name) => name.startsWith(`${C}-`))!), { recursive: true });
+    expect(await familyOf(op, C, '?status=deleted')).toMatchObject({ canRestore: false, parents: [] });
+    expect((await restore(C)).status).toBe(410);
+    expect((await familyOf(op, C, '?status=deleted')).status).toBe('deleted');
   });
 });
 

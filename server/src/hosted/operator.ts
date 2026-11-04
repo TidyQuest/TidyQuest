@@ -9,7 +9,7 @@ import { RATE_LIMIT_MAX, addFailure, checkRateLimit, clearFailures, failuresOf }
 import { accountByEmail, cleanEmail } from './accounts';
 import { runInFamily } from './context';
 import { codeKey } from './familyCode';
-import { KEEP_DELETED_DAYS, deleteFamily, familyDir, familyStatus, openFamily, type FamilyStatus } from './families';
+import { KEEP_DELETED_DAYS, deleteFamily, familyDir, familyStatus, openFamily, restoreFamily, savedFamily, type FamilyStatus } from './families';
 import { filesBytes } from './files';
 import { limits } from './limits';
 import { mainDb } from './mainDb';
@@ -18,10 +18,13 @@ import { removeFromWaitlist, setSignupsOpen, signupsOpen, waitlist, waitlistCoun
 import { sendConfirmation } from './routes';
 import { sendEmail } from './email';
 import { newsBlocked, newsRecipients, sendNews, writeNews } from './news';
+import { INACTIVE_WARN_DAYS, REMIND_DAYS } from './privacy';
+import { WARN_DAYS } from './trials';
 
 // The operator page (/operator, NEW-13): the people running the server see each family's name, dates,
 // size, status and plan, and can suspend, resume or delete a family, or resend a confirmation email. The
-// History (NEW-24) keeps every action and sign-in. It also opens or closes new sign-ups and lists the
+// History (NEW-24) keeps every action and sign-in. A deleted family can be restored while its folder is
+// kept (NEW-23). It also opens or closes new sign-ups and lists the
 // waitlist families join while they're closed (NEW-30). It never shows what's inside a family and can't
 // sign in as one (decision 6). English only: families never see it.
 const router = Router();
@@ -177,6 +180,15 @@ router.get('/families', (req: OperatorRequest, res: Response) => {
   for (const a of main.prepare('SELECT familyId, email, emailConfirmedAt FROM accounts ORDER BY createdAt').all() as { familyId: string; email: string; emailConfirmedAt: string | null }[]) {
     parents.set(a.familyId, [...(parents.get(a.familyId) ?? []), { email: a.email, confirmed: !!a.emailConfirmedAt }]);
   }
+  // A deleted family's emails are in its folder (NEW-23), so the operator can find it by the address its
+  // parent writes from. canRestore: the folder is still there.
+  const restorable = new Set<string>();
+  for (const row of rows.filter((r) => r.status === 'deleted')) {
+    const saved = savedFamily(row.id);
+    if (!saved) continue;
+    restorable.add(row.id);
+    parents.set(row.id, (saved.accounts ?? []).map((a) => ({ email: a.email, confirmed: !!a.emailConfirmedAt })));
+  }
 
   const totals: Record<string, number> = Object.fromEntries(STATUSES.map((s) => [s, 0]));
   for (const row of rows) totals[row.status]++;
@@ -204,7 +216,7 @@ router.get('/families', (req: OperatorRequest, res: Response) => {
     families: found.slice(offset, offset + limit).map(({ codeKey: _key, ...row }) => ({
       ...row,
       parents: parents.get(row.id) ?? [],
-      ...(row.status === 'deleted' ? { people: null, filesBytes: null, dataBytes: null } : familySize(row.id, now)),
+      ...(row.status === 'deleted' ? { people: null, filesBytes: null, dataBytes: null, canRestore: restorable.has(row.id) } : familySize(row.id, now)),
     })),
   });
 });
@@ -232,7 +244,7 @@ router.get('/history', (req: OperatorRequest, res: Response) => {
 
 const liveFamily = (id: unknown) =>
   mainDb().prepare('SELECT id, name, status, plan FROM families WHERE id = ? AND deletedAt IS NULL').get(String(id)) as Pick<FamilyRow, 'id' | 'name' | 'status' | 'plan'> | undefined;
-const DID = { suspend: 'suspended', resume: 'resumed', delete: 'deleted', 'resend-confirmation': 'resent the confirmation email in' };
+const DID = { suspend: 'suspended', resume: 'resumed', delete: 'deleted', restore: 'restored', 'resend-confirmation': 'resent the confirmation email in' };
 /** To the server log and the History. */
 function logAction(req: OperatorRequest, action: keyof typeof DID, family: { id: string; name: string }, detail?: string) {
   console.log(`[operator] ${req.operatorEmail} ${DID[action]} family ${family.id} (${JSON.stringify(family.name)})${detail ? `: ${detail}` : ''}`);
@@ -269,6 +281,31 @@ router.post('/families/:id/delete', (req: OperatorRequest, res: Response) => {
   deleteFamily(family.id);
   logAction(req, 'delete', family);
   res.json({ ok: true });
+});
+
+/** What happens next to a family a clean-up job deleted and an operator restored: the job's warning starts over. */
+const AGAIN: Record<string, string> = {
+  'trial-delete': `Its trial has ended: unless it gets a plan, the parents are warned again with the next daily clean-up, and it's deleted ${WARN_DAYS} days later.`,
+  'unconfirmed-delete': `No parent has confirmed their email: the reminder goes out again with the next daily clean-up, and it's deleted ${REMIND_DAYS} days later unless one confirms.`,
+  'inactive-delete': `Unless someone signs in, the parents are warned again with the next daily clean-up, and it's deleted ${INACTIVE_WARN_DAYS} days later.`,
+};
+
+/**
+ * Brings a deleted family back while its folder is kept (NEW-23): the same status, family code and parents'
+ * emails, except an email or code a new sign-up took meanwhile, which the answer lists.
+ */
+router.post('/families/:id/restore', (req: OperatorRequest, res: Response) => {
+  const main = mainDb();
+  const family = main.prepare('SELECT id, name FROM families WHERE id = ? AND deletedAt IS NOT NULL').get(String(req.params.id)) as { id: string; name: string } | undefined;
+  if (!family) return res.status(404).json(NOT_FOUND);
+  const how = main.prepare(
+    "SELECT action FROM operator_history WHERE familyId = ? AND action IN ('delete', 'parent-delete', 'trial-delete', 'unconfirmed-delete', 'inactive-delete') ORDER BY id DESC LIMIT 1",
+  ).get(family.id) as { action: string } | undefined;
+  const restored = restoreFamily(family.id);
+  if (!restored) return res.status(410).json({ error: "This family's folder is gone, so it can't be restored" });
+  const taken = [...restored.emailsTaken, ...(restored.codeTaken ? [`code ${restored.codeTaken}`] : [])];
+  logAction(req, 'restore', family, taken.length ? `taken meanwhile: ${taken.join(', ')}` : undefined);
+  res.json({ ok: true, ...restored, again: (how && AGAIN[how.action]) ?? null });
 });
 
 /** The same email as the app's own Resend button, to one of the family's parents who hasn't confirmed. */
