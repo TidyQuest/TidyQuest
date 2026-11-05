@@ -695,7 +695,7 @@ export const GUIDE_IT: GuideSection[] = [
           'Una faccenda segnata come fatta per sbaglio si può annullare da Attività, oppure con ↩️ Annulla nella sua stanza (genitori).',
         ] },
         { q: 'Un bambino vede ancora il vecchio prezzo di una ricompensa', a: [
-          'Un prezzo diverso per persona si imposta in Impostazioni → Catalogo ricompense → Regole, con il pulsante Salva di quel riquadro (accanto compare “Salvato”). Il Salva di Modifica cambia solo il prezzo normale.',
+          'Un prezzo diverso per persona si imposta in Impostazioni → Catalogo ricompense → Regole, con il pulsante Salva di quel riquadro (il riquadro si chiude e sotto il nome della ricompensa compare “prezzi propri”). Il Salva di Modifica cambia solo il prezzo normale.',
           'La pagina Ricompense del bambino mostra la modifica entro 15 secondi, o appena l’app viene riaperta.',
           'Se il prezzo cambia mentre la finestra di acquisto è aperta, mostra il nuovo prezzo invece di comprare: tocca Conferma per pagarlo, oppure Annulla.',
         ] },

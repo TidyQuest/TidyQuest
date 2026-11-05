@@ -1047,7 +1047,8 @@
       "untilDate": "Bis {date}",
       "potSaved": "{saved} von {target} gespart",
       "potWaiting": "Der Topf ist voll — wartet auf ein Elternteil",
-      "chipIn": "Beisteuern"
+      "chipIn": "Beisteuern",
+      "usualShort": "normal"
     },
     "boosts": {
       "title": "Doppelte-Münzen-Aktionen",

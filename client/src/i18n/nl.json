@@ -1047,7 +1047,8 @@
       "untilDate": "Tot {date}",
       "potSaved": "{saved} van {target} gespaard",
       "potWaiting": "De pot is vol — wacht op een ouder",
-      "chipIn": "Bijleggen"
+      "chipIn": "Bijleggen",
+      "usualShort": "gewoon"
     },
     "boosts": {
       "title": "Dubbele-muntenacties",

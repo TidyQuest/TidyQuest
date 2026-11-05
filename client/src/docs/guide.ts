@@ -719,7 +719,7 @@ export const GUIDE_EN: GuideSection[] = [
           'A chore marked done by mistake can be undone from Activity, or with ↩️ Undo in its room (parents).',
         ] },
         { q: 'A kid still sees the old price of a reward', a: [
-          'A different price per person is set in Settings → Rewards Catalog → Rules, with the Save inside that box (“Saved” shows next to it). The Save under Edit only changes the usual price.',
+          'A different price per person is set in Settings → Rewards Catalog → Rules, with the Save inside that box (the box closes and “own prices” shows under the reward’s name). The Save under Edit only changes the usual price.',
           'The kid’s Rewards page picks up the change within 15 seconds, or as soon as the app is opened again.',
           'If the price changes while the buy box is open, the box shows the new price instead of buying: tap Confirm to pay that, or Cancel.',
         ] },

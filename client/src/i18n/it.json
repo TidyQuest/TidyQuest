@@ -1047,7 +1047,8 @@
       "untilDate": "Fino al {date}",
       "potSaved": "{saved} su {target} risparmiate",
       "potWaiting": "Il salvadanaio è pieno — in attesa di un genitore",
-      "chipIn": "Contribuisci"
+      "chipIn": "Contribuisci",
+      "usualShort": "normale"
     },
     "boosts": {
       "title": "Eventi monete doppie",

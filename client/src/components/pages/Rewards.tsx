@@ -334,7 +334,6 @@ export function Rewards({ language, rewards: ownRewards, mine: ownMine, userCoin
           {visibleRewards.map((r) => {
             const usedUp = !!r.availability && r.availability.remaining <= 0;
             const canBuy = userCoins >= r.costCoins && !usedUp;
-            const ownPrice = r.regularCostCoins !== undefined && r.regularCostCoins !== r.costCoins;
             return (
               <div key={r.id} style={{ border: '1.5px solid var(--warm-border)', borderRadius: 14, padding: 12, backgroundColor: 'var(--warm-bg-subtle)' }}>
                 <div style={{ fontSize: 14, fontWeight: 800, color: 'var(--warm-text)', marginBottom: 4 }}>{rewardTitle(r)}</div>
@@ -351,7 +350,6 @@ export function Rewards({ language, rewards: ownRewards, mine: ownMine, userCoin
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 8 }}>
                   <div style={{ fontSize: 13, fontWeight: 800, color: 'var(--warm-accent)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 4 }}>
                     <CoinIcon /> {formatCoins(r.costCoins, localeFor(language))}
-                    {ownPrice && <span style={{ fontSize: 11, color: 'var(--warm-text-light)', textDecoration: 'line-through', fontWeight: 700 }}>{formatCoins(r.regularCostCoins, localeFor(language))}</span>}
                   </div>
                   {!r.isShared && (
                     <button

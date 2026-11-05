@@ -1327,7 +1327,7 @@ export function Settings({
                 )}
                 {rulesOpenId === r.id && (
                   <div style={{ gridColumn: '1 / -1' }}>
-                    <RewardRulesEditor reward={r} family={family} language={user.language} onSaved={loadRewardsAdmin} />
+                    <RewardRulesEditor reward={r} family={family} language={user.language} onSaved={async () => { setRulesOpenId(null); await loadRewardsAdmin(); }} />
                   </div>
                 )}
               </div>

@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { BrowserRouter, Routes, Route, useNavigate, useLocation, Navigate, useParams, useSearchParams } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useNavigate, useLocation, useNavigationType, Navigate, useParams, useSearchParams } from 'react-router-dom';
 import { useAuth } from './hooks/useAuth';
 import { api, NEW_TOKEN_EVENT } from './hooks/useApi';
 import { Sidebar } from './components/layout/Sidebar';
@@ -170,6 +170,12 @@ function AppContent() {
     .then((data) => setRewardsData(data))
     .catch(() => setRewardsData({ rewards: [], mine: [] })), []);
 
+  // Search lists rewards with their prices, so fetch them fresh when it opens (a price just changed in Settings
+  // otherwise showed the old one until the Rewards page was opened)
+  useEffect(() => {
+    if (searchOpen && user) loadRewards();
+  }, [searchOpen]); // eslint-disable-line react-hooks/exhaustive-deps
+
   useEffect(() => {
     if (user) {
       loadDashboard();
@@ -213,10 +219,13 @@ function AppContent() {
   }, [user, location.pathname, loadDashboard, refreshRooms, loadRewards]);
 
   // Each page opens at the top. A room opened for one task (?task=) scrolls to that task
-  // itself, and a link with a #section (the guide) scrolls to that section; parent effects run
-  // after child effects, so skip both here or it would undo that.
+  // itself, a link with a #section (the guide) scrolls to that section, and Rooms reached by going
+  // back from a room returns to where it was (RoomsList); parent effects run after child effects,
+  // so skip those here or it would undo them.
+  const navType = useNavigationType();
   useEffect(() => {
     if (new URLSearchParams(location.search).has('task') || location.hash) return;
+    if (location.pathname === '/rooms' && (navType === 'POP' || (location.state as { fromRoom?: number } | null)?.fromRoom)) return;
     window.scrollTo(0, 0);
   }, [location.pathname]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -838,7 +847,7 @@ function RoomDetailWrapper({ rooms, roomsLoaded, strictMode, shieldsOn, allowOne
   return (
     <>
       <PageHeader title={roomDisplayName(room.name, room.roomType)} subtitle={room.isTodoRoom ? t('todos.countLine').replace('{n}', String(room.todoCount ?? 0)) : `${room.tasks?.length || 0} ${t('rooms.tasksTracked')}`} user={user} onCoinsClick={() => navigate('/rewards')} onStreakClick={() => navigate('/achievements')} gamificationEnabled={gamificationEnabled} shieldsOn={shieldsOn} />
-      <RoomDetail room={room} language={user?.language} isAdmin={user?.role === 'admin'} currentUserId={user?.id} currentUserRole={user?.role} users={users} coinsByEffort={coinsByEffort} onCompleteTask={onCompleteTask} onBack={() => navigate('/rooms')} onOpenRoom={(id) => navigate(`/rooms/${id}`)} allowOneTime={allowOneTime} allowPhotos={allowPhotos} focusTaskId={focusTaskId} strictMode={strictMode} onlyMine={user?.taskView === 'mineOnly' || !!user?.kidMode} onRefresh={onRefresh} onAchievementsUnlocked={onAchievementsUnlocked} />
+      <RoomDetail room={room} language={user?.language} isAdmin={user?.role === 'admin'} currentUserId={user?.id} currentUserRole={user?.role} users={users} coinsByEffort={coinsByEffort} onCompleteTask={onCompleteTask} onBack={() => navigate('/rooms', { state: { fromRoom: room.id } })} onOpenRoom={(id) => navigate(`/rooms/${id}`)} allowOneTime={allowOneTime} allowPhotos={allowPhotos} focusTaskId={focusTaskId} strictMode={strictMode} onlyMine={user?.taskView === 'mineOnly' || !!user?.kidMode} onRefresh={onRefresh} onAchievementsUnlocked={onAchievementsUnlocked} />
     </>
   );
 }

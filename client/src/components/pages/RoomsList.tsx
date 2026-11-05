@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useLocation, useNavigationType } from 'react-router-dom';
 import HealthBar from '../shared/HealthBar';
 import { getRoomIcon } from '../icons/RoomIcons';
 import { TaskIcon } from '../icons/TaskIcons';
@@ -100,6 +101,14 @@ interface RoomsListProps {
   viewer?: { id: number; role?: string; taskView?: 'all' | 'mine' | 'mineOnly'; kidMode?: number | boolean };
 }
 
+type Zone = { id: number; name: string; sortOrder: number; roomCount: number };
+// Where the page was when a room was opened from it, so coming back lands there again (FIX-28), and the zones from
+// the last visit, so the page has its final layout as soon as it comes back.
+let returnSpot: { roomId: number; y: number } | null = null;
+let zonesCache: Zone[] | null = null;
+const rememberSpot = (roomId: number) => { returnSpot = { roomId, y: window.scrollY }; };
+const cacheZones = (z: Zone[]) => { zonesCache = z; return z; };
+
 export function RoomsList({ rooms, language, isAdmin, users, onSelectRoom, onOpenTask, onCreateRoom, onDeleteRoom, onAssignRoom, onRenameRoom, onRoomsChanged, viewer }: RoomsListProps) {
   const { taskName, t, roomName: translateRoomName, roomDisplayName } = useTranslation(language);
   const [showModal, setShowModal] = useState(false);
@@ -119,7 +128,8 @@ export function RoomsList({ rooms, language, isAdmin, users, onSelectRoom, onOpe
   const [newTaskName, setNewTaskName] = useState('');
   const [renamingRoom, setRenamingRoom] = useState<number | null>(null);
   const [renameValue, setRenameValue] = useState('');
-  const [zones, setZones] = useState<Array<{ id: number; name: string; sortOrder: number; roomCount: number }>>([]);
+  const [zones, setZones] = useState<Zone[]>(() => zonesCache ?? []);
+  const [zonesReady, setZonesReady] = useState(zonesCache !== null);
   const [creatingZone, setCreatingZone] = useState(false);
   const [newZoneName, setNewZoneName] = useState('');
   const [renamingZone, setRenamingZone] = useState<number | null>(null);
@@ -127,10 +137,27 @@ export function RoomsList({ rooms, language, isAdmin, users, onSelectRoom, onOpe
   const [zoneMenuRoomId, setZoneMenuRoomId] = useState<number | null>(null);
 
   useEffect(() => {
-    api.getZones().then(setZones).catch(() => {});
+    api.getZones().then((z) => { setZones(cacheZones(z)); setZonesReady(true); }).catch(() => setZonesReady(true));
   }, []);
 
-  const refreshZones = () => api.getZones().then(setZones).catch(() => {});
+  const refreshZones = () => api.getZones().then((z) => setZones(cacheZones(z))).catch(() => {});
+
+  // Coming back from a room (its Back to Rooms button, or the phone's back button): scroll to where the page was
+  // when that room was opened, and make sure its card is on screen. App skips its scroll to the top for these.
+  const location = useLocation();
+  const navType = useNavigationType();
+  useEffect(() => {
+    if (!zonesReady) return;
+    const fromRoom = (location.state as { fromRoom?: number } | null)?.fromRoom ?? (navType === 'POP' ? returnSpot?.roomId : undefined);
+    if (fromRoom === undefined) {
+      if (navType === 'POP') window.scrollTo(0, 0);
+      return;
+    }
+    window.scrollTo(0, returnSpot?.roomId === fromRoom ? returnSpot.y : 0);
+    const card = document.querySelector(`[data-room-id="${fromRoom}"]`);
+    const box = card?.getBoundingClientRect();
+    if (card && box && (box.top < 0 || box.bottom > window.innerHeight)) card.scrollIntoView({ block: 'center' });
+  }, [zonesReady]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Mine: rooms the viewer owns or has at least one task in
   const { filter: roomFilter, setFilter: setRoomFilter, locked: roomFilterLocked } = useTaskView(viewer, 'tq-rooms-filter');
@@ -378,8 +405,8 @@ export function RoomsList({ rooms, language, isAdmin, users, onSelectRoom, onOpe
             const rh = room.health;
             const RoomIcon = getRoomIcon(room.roomType);
             return (
-              <div key={room.id} className="tq-card tq-card-hover tq-card-padded"
-                onClick={() => onSelectRoom(room.id)}
+              <div key={room.id} data-room-id={room.id} className="tq-card tq-card-hover tq-card-padded"
+                onClick={() => { rememberSpot(room.id); onSelectRoom(room.id); }}
                 style={{ cursor: 'pointer' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 16 }}>
                   <div style={{
@@ -478,7 +505,7 @@ export function RoomsList({ rooms, language, isAdmin, users, onSelectRoom, onOpe
                       </>
                     );
                     return canOpenTask(tk) ? (
-                      <button key={tk.id} type="button" onClick={(e) => { e.stopPropagation(); onOpenTask!(room.id, tk.id); }}
+                      <button key={tk.id} type="button" onClick={(e) => { e.stopPropagation(); rememberSpot(room.id); onOpenTask!(room.id, tk.id); }}
                         style={{ ...chipStyle, fontFamily: 'inherit', textAlign: 'left', cursor: 'pointer' }}>
                         {chip}
                       </button>
