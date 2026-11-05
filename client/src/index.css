@@ -1444,6 +1444,12 @@ html[data-theme='lava'] option {
     display: block !important;
   }
 
+  /* The page behind the open menu doesn't scroll (BUG-15: scrolling it hid the browser's toolbars and left a
+     strip of page under the menu) */
+  html.phone-menu-open {
+    overflow: hidden;
+  }
+
   /* Show mobile-only close button */
   .mobile-only {
     display: block !important;

@@ -27,7 +27,8 @@ What changed in each release, in plain language, newest first. Releases up to v0
 ### Fixed
 
 - **On phones, your profile card shows at the bottom of the side menu straight away.** Before, it sat under the
-  browser's address bar and only appeared once you scrolled.
+  browser's address bar and only appeared once you scrolled. The page behind the open menu no longer scrolls
+  either, which hid the browser's toolbars and left a strip of page showing under the menu.
 - **On phones, every button on a reward in Settings → Rewards Catalog fits.** The buttons now sit on their own line
   under the reward's name and share the card's width. Editing a reward puts the name, description and price one per
   line.
