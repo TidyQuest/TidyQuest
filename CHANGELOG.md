@@ -9,6 +9,8 @@ What changed in each release, in plain language, newest first. Releases up to v0
 
 ## Unreleased
 
+## v0.17.0 (2026-11-05)
+
 ### Added
 
 - **A setup wizard for new families.** A parent whose family has no rooms yet lands in it after signing in (Not now
