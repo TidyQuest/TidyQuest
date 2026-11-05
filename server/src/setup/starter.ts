@@ -86,7 +86,7 @@ export const STARTER_CHORES: StarterChore[] = [
   { id: 'kitchen.clean_counters', name: 'Clean Counters', room: 'kitchen', frequencyDays: 1, effort: 1, ages: [], adults: true, ticked: true },
   { id: 'kitchen.wipe_stovetop', name: 'Wipe Stovetop', room: 'kitchen', frequencyDays: 3, effort: 2, ages: [], adults: true, ticked: true },
   { id: 'kitchen.clean_microwave', name: 'Clean Microwave', room: 'kitchen', frequencyDays: 7, effort: 2, ages: ['9-12'], adults: true, ticked: false },
-  { id: 'kitchen.mop_floor', name: 'Mop Floor', room: 'kitchen', frequencyDays: 7, effort: 4, ages: ['13+'], adults: true, ticked: true },
+  { id: 'kitchen.mop_floor', name: 'Mop Floor', room: 'kitchen', frequencyDays: 7, effort: 4, ages: ['13+'], adults: true, ticked: false },
   { id: 'kitchen.clean_fridge', name: 'Clean Fridge', room: 'kitchen', frequencyDays: 14, effort: 3, ages: [], adults: true, ticked: true },
   { id: 'starter.cook_dinner', name: 'Cook dinner one night', room: 'kitchen', frequencyDays: 7, effort: 4, ages: ['13+'], ticked: false },
 
@@ -129,7 +129,7 @@ export const STARTER_CHORES: StarterChore[] = [
   { id: 'starter.walk_dog', name: 'Walk the dog (20 minutes)', room: 'pets', frequencyDays: 1, effort: 2, ages: ['9-12', '13+'], ticked: false, timerMinutes: 20 },
 
   // ── Garage ──
-  { id: 'garage.sweep_floor', name: 'Sweep Floor', room: 'garage', frequencyDays: 30, effort: 3, ages: ['13+'], adults: true, ticked: true },
+  { id: 'garage.sweep_floor', name: 'Sweep Floor', room: 'garage', frequencyDays: 30, effort: 3, ages: ['13+'], adults: true, ticked: false },
   { id: 'garage.clear_cobwebs', name: 'Clear Cobwebs', room: 'garage', frequencyDays: 30, effort: 2, ages: [], adults: true, ticked: false },
 
   // ── Office ──

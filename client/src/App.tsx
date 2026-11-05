@@ -768,7 +768,7 @@ function AppContent() {
           <Route path="/setup" element={user.role !== 'admin' ? <Navigate to="/" replace /> : (
             <>
               <PageHeader title={t('setup.title')} subtitle={t('setup.subtitle')} user={user} onCoinsClick={() => navigate('/rewards')} onStreakClick={() => navigate('/achievements')} onPointsClick={handlePointsClick} userPoints={myPoints} pointsPeriodLabel={pointsPeriodLabel} gamificationEnabled={gamificationEnabled} shieldsOn={!!dashboardData?.shields} />
-              <SetupWizard user={user} onSaved={() => Promise.all([loadDashboard(), loadRewards()])} onExit={() => { loadDashboard(); navigate('/', { replace: true }); }} />
+              <SetupWizard user={user} onSaved={() => Promise.all([loadDashboard(), loadRewards()])} onExit={() => { loadDashboard(); navigate('/', { replace: true }); }} onOpenGuide={() => navigate('/guide', { replace: true })} />
             </>
           )} />
           <Route path="/achievements" element={

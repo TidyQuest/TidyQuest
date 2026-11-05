@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { api, type SetupAge, type SetupCatalog, type SetupChoreDef, type SetupRewardDef, type SetupRoomId } from '../../hooks/useApi';
 import { useTranslation } from '../../hooks/useTranslation';
 import { rewardTitleText, rewardDescText } from '../../utils/presetRewards';
@@ -46,9 +46,11 @@ interface Props {
   onSaved: () => Promise<unknown> | void;
   /** Leave the wizard (Home) */
   onExit: () => void;
+  /** Leave it for Settings → Guide & help */
+  onOpenGuide: () => void;
 }
 
-export function SetupWizard({ user, onSaved, onExit }: Props) {
+export function SetupWizard({ user, onSaved, onExit, onOpenGuide }: Props) {
   const { t, taskName, roomName } = useTranslation(user.language);
   const [catalog, setCatalog] = useState<SetupCatalog | null>(null);
   const [loadFailed, setLoadFailed] = useState(false);
@@ -63,6 +65,7 @@ export function SetupWizard({ user, onSaved, onExit }: Props) {
   const [error, setError] = useState('');
   const [saving, setSaving] = useState(false);
   const [made, setMade] = useState<Made | null>(null);
+  const [slide, setSlide] = useState(0);
   const [nextRef, setNextRef] = useState(1);
 
   useEffect(() => {
@@ -303,6 +306,71 @@ export function SetupWizard({ user, onSaved, onExit }: Props) {
     );
   };
 
+  // The click-through tutorial after Finish: how to change what the wizard made. Button names come from the app's own
+  // labels, so each slide says exactly what's on the screen in every language.
+  const names: Record<string, string> = {
+    '{edit}': t('common.edit'), '{addTask}': t('roomDetail.addTask'), '{pause}': t('pause.pause'), '{deleteTask}': t('roomDetail.deleteTask'),
+    '{trash}': t('trash.title'), '{catalog}': t('settings.rewardsSection'), '{rules}': t('rewardRules.rules'),
+    '{ownPrices}': t('rewardRules.customPrices'), '{goals}': t('settings.goalsSection'), '{coins}': t('settings.coinsPerEffort'),
+    '{members}': t('settings.familyMembers'), '{wizard}': t('setup.open'), '{guide}': t('guide.title'), '{more}': t('roomDetail.moreOptions'),
+  };
+  const fill = (text: string) => Object.entries(names).reduce((out, [k, v]) => out.split(k).join(v), text);
+  const settingsPath = (...parts: string[]) => [t('settings.title'), ...parts].join(' → ');
+  const roomPath = (...parts: string[]) => [t('nav.rooms'), t('setup.tourARoom'), ...parts].join(' → ');
+  const mockChore = (hl?: 'edit' | 'more') => (
+    <div className="setup-mock-row">
+      <span className="setup-mock-name">🧽 {taskName('Clean Counters', 'kitchen.clean_counters')}</span>
+      <span className={`setup-mock-btn${hl === 'edit' ? ' hl' : ''}`}>{t('common.edit')}</span>
+      <span className={`setup-mock-btn${hl === 'more' ? ' hl' : ''}`}>⋯</span>
+    </div>
+  );
+  const SLIDES: Array<{ title: string; where: string; text: string; mock: ReactNode }> = [
+    { title: t('setup.tour1Title'), where: roomPath(t('common.edit')), text: fill(t('setup.tour1Text')), mock: mockChore('edit') },
+    {
+      title: t('setup.tour2Title'), where: roomPath(), text: fill(t('setup.tour2Text')),
+      mock: (
+        <>
+          <div className="setup-mock-row"><span className="setup-mock-btn hl">+ {t('roomDetail.addTask')}</span></div>
+          {mockChore('more')}
+          <div className="setup-mock-menu"><span className="setup-mock-btn hl">{t('pause.pause')}</span></div>
+        </>
+      ),
+    },
+    {
+      title: t('setup.tour3Title'), where: settingsPath(t('settings.rewardsSection')), text: fill(t('setup.tour3Text')),
+      mock: (
+        <div className="setup-mock-row">
+          <span className="setup-mock-name">{rewardTitleText('Movie Night Pick', t)}<small>25 🪙 · {t('rewardRules.customPrices')}</small></span>
+          <span className="setup-mock-btn hl">{t('rewardRules.rules')}</span>
+          <span className="setup-mock-btn">{t('common.edit')}</span>
+        </div>
+      ),
+    },
+    {
+      title: t('setup.tour4Title'), where: settingsPath(`${t('settings.goalsSection')} · ${t('settings.coinsPerEffort')}`), text: fill(t('setup.tour4Text')),
+      mock: (
+        <>
+          <div className="setup-mock-row">
+            <span className="setup-mock-name">{t('setup.goalTitle')}<small>100 🪙 · +15 🪙</small></span>
+            <span className="setup-mock-btn hl">{t('common.edit')}</span>
+          </div>
+          <div className="setup-mock-row setup-mock-scale">
+            {[1, 2, 3, 4, 5].map((e) => <span key={e} className="setup-mock-btn">{'★'.repeat(e)} {catalog.coinsByEffort[e]}</span>)}
+          </div>
+        </>
+      ),
+    },
+    {
+      title: t('setup.tour5Title'), where: settingsPath(`${t('settings.familyMembers')} · ${t('setup.open')}`), text: fill(t('setup.tour5Text')),
+      mock: (
+        <div className="setup-mock-row setup-mock-scale">
+          <span className="setup-mock-btn">📖 {t('guide.title')}</span>
+          <span className="setup-mock-btn hl">🧙 {t('setup.open')}</span>
+        </div>
+      ),
+    },
+  ];
+
   const kidsWithAllowance = kids.filter((k) => (Number(k.allowance.replace(',', '.')) || 0) > 0);
 
   return (
@@ -479,12 +547,42 @@ export function SetupWizard({ user, onSaved, onExit }: Props) {
         <div className="tq-card tq-card-padded setup-card">
           <div className="tq-card-title">{t('setup.doneTitle')}</div>
           <p>{t('setup.doneMade').replace('{people}', String(made.people)).replace('{rooms}', String(made.rooms)).replace('{chores}', String(made.chores)).replace('{rewards}', String(made.rewards))}</p>
+          <h4 className="setup-subhead">{t('setup.tipsTitle')}</h4>
           <ul className="setup-tips">
             <li>{t('setup.tipInstall')}</li>
             <li>{t('setup.tipNotify')}</li>
-            <li>{t('setup.tipChange')}</li>
           </ul>
-          <button type="button" className="tq-btn tq-btn-primary" onClick={onExit}>{t('setup.goHome')}</button>
+          <div className="setup-add">
+            <button type="button" className="tq-btn tq-btn-primary" onClick={() => { setStep(5); setSlide(0); }}>{t('setup.tourStart')}</button>
+            <button type="button" className="tq-btn tq-btn-secondary" onClick={onExit}>{t('setup.goHome')}</button>
+          </div>
+        </div>
+      )}
+
+      {step === 5 && (
+        <div className="tq-card tq-card-padded setup-card setup-tour" aria-live="polite">
+          <div className="setup-card-head">
+            <span className="setup-row-meta">{t('setup.tourTitle')}</span>
+            <span className="setup-row-meta">{slide + 1} / {SLIDES.length}</span>
+          </div>
+          <div className="tq-card-title">{SLIDES[slide].title}</div>
+          <div className="setup-where">{SLIDES[slide].where}</div>
+          <div className="setup-mock" aria-hidden="true">{SLIDES[slide].mock}</div>
+          <p className="setup-tour-text">{SLIDES[slide].text}</p>
+          <div className="setup-dots" aria-hidden="true">
+            {SLIDES.map((sl, i) => <span key={sl.title} className={i === slide ? 'on' : ''} />)}
+          </div>
+          <div className="setup-nav setup-tour-nav">
+            {slide > 0
+              ? <button type="button" className="tq-btn tq-btn-secondary" onClick={() => setSlide((n) => n - 1)}>{t('setup.back')}</button>
+              : <button type="button" className="tq-btn tq-btn-secondary" onClick={onExit}>{t('setup.tourSkip')}</button>}
+            {slide < SLIDES.length - 1
+              ? <button type="button" className="tq-btn tq-btn-primary" onClick={() => setSlide((n) => n + 1)}>{t('setup.next')}</button>
+              : <button type="button" className="tq-btn tq-btn-primary" onClick={onExit}>{t('setup.goHome')}</button>}
+          </div>
+          {slide === SLIDES.length - 1 && (
+            <button type="button" className="tq-btn tq-btn-sm setup-more" onClick={onOpenGuide}>📖 {t('guide.title')}</button>
+          )}
         </div>
       )}
 

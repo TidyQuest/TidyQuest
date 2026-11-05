@@ -47,6 +47,16 @@ export const GUIDE_EN: GuideSection[] = [
         'Download a backup in Settings → Data & Privacy once everything is set up, and now and then after that.',
       ] },
       { tip: 'Start small: a handful of chores per kid and a few cheap rewards they can earn in the first week. You can add more any time.' },
+      { h: 'The setup wizard' },
+      { ul: [
+        'A parent of a new family (no rooms yet) lands in it after signing in. Not now skips it, and Settings → Setup wizard (at the top of Settings) opens it any time.',
+        'Family: add kids by age group (3–5, 6–8, 9–12, 13+) and other grown-ups. Kids are optional, so couples and roommates can use it too. A kid can log in on their own (Kid mode makes the app simpler) or not log in, and a parent does it for them. Ages only pick the starter chores and aren’t saved.',
+        'Home: tick your rooms. Each kid also gets their own room.',
+        'Chores: a ticked starter list for each person, picked by age, with More ideas for extras. A chore several kids can do is shared: whoever does it first gets the coins. Chores no kid is old enough for go to the grown-ups.',
+        'Rewards: everyone pays about the same weeks of their own chores, so each person gets their own price (“own prices”). An optional weekly allowance adds cash rewards priced to match it. Weekly goals repeat at about 70% of each person’s chores, with a bonus for reaching them.',
+        'Finish makes everything at once. A short click-through tutorial then shows where to change chores, rewards, goals and coins.',
+        'Running it again only adds: it uses the rooms you already have, skips chores they already have, starts grown-up chores and rewards unticked, and leaves your rewards alone.',
+      ] },
     ],
   },
   {
@@ -717,6 +727,14 @@ export const GUIDE_EN: GuideSection[] = [
         { q: 'I deleted something by mistake', a: [
           'Settings → Recently deleted can bring chores and rewards back for 30 days, with their history. A chore whose room was deleted asks which room to go into.',
           'A chore marked done by mistake can be undone from Activity, or with ↩️ Undo in its room (parents).',
+        ] },
+        { q: 'The setup wizard didn’t open, or I want it again', a: [
+          'It opens by itself only for a parent, while the family has no rooms yet (the To-dos room doesn’t count), until someone finishes it or taps Not now.',
+          'Open it any time from the top of Settings → Setup wizard. Running it again only adds, so delete rooms (Rooms → 🗑) or rewards you don’t want yourself.',
+        ] },
+        { q: 'Each kid pays a different price for the same reward', a: [
+          'The setup wizard gave each person their own price, so everyone pays about the same weeks of their own chores: a kid with more chores earns more, so pays more. It shows as “own prices” under the reward.',
+          'Change or clear them in Settings → Rewards Catalog → Rules → Price per person (blank = usual price).',
         ] },
         { q: 'A kid still sees the old price of a reward', a: [
           'A different price per person is set in Settings → Rewards Catalog → Rules, with the Save inside that box (the box closes and “own prices” shows under the reward’s name). The Save under Edit only changes the usual price.',

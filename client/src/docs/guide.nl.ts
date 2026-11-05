@@ -23,6 +23,16 @@ export const GUIDE_NL: GuideSection[] = [
         'Download een back-up in Instellingen → Privacy & Gegevens als alles is ingesteld, en daarna af en toe weer.',
       ] },
       { tip: 'Begin klein: een handjevol klusjes per kind en een paar goedkope beloningen die ze in de eerste week kunnen verdienen. Je kunt altijd meer toevoegen.' },
+      { h: 'De instelhulp' },
+      { ul: [
+        'Een ouder van een nieuw gezin (nog geen kamers) komt er na het inloggen in terecht. Niet nu slaat hem over, en Instellingen → Instelhulp (bovenaan Instellingen) opent hem wanneer je wilt.',
+        'Gezin: voeg kinderen toe per leeftijdsgroep (3–5, 6–8, 9–12, 13+) en andere volwassenen. Kinderen zijn niet verplicht, dus stellen en huisgenoten kunnen hem ook gebruiken. Een kind kan zelf inloggen (Kindermodus maakt de app eenvoudiger) of niet, en dan doet een ouder het voor het kind. De leeftijd kiest alleen de startklusjes en wordt niet bewaard.',
+        'Huis: vink je kamers aan. Elk kind krijgt ook een eigen kamer.',
+        'Klusjes: een aangevinkte startlijst voor iedereen, gekozen op leeftijd, met Meer ideeën voor extra’s. Een klusje dat meerdere kinderen kunnen doen wordt gedeeld: wie het eerst doet, krijgt de munten. Klusjes waar geen kind oud genoeg voor is, gaan naar de volwassenen.',
+        'Beloningen: iedereen betaalt ongeveer evenveel weken van zijn eigen klusjes, dus iedereen krijgt een eigen prijs („eigen prijzen”). Optioneel zakgeld voegt geldbeloningen toe met een passende prijs. Weekdoelen komen elke week terug op ongeveer 70% van ieders klusjes, met een bonus als ze gehaald worden.',
+        'Klaar maakt alles in één keer. Daarna laat een korte klik-uitleg zien waar je klusjes, beloningen, doelen en munten aanpast.',
+        'Opnieuw gebruiken voegt alleen toe: hij gebruikt de kamers die je al hebt, slaat klusjes over die er al zijn, laat klusjes van volwassenen en beloningen uitgevinkt en laat je beloningen met rust.',
+      ] },
     ],
   },
   {
@@ -693,6 +703,14 @@ export const GUIDE_NL: GuideSection[] = [
         { q: 'Ik heb per ongeluk iets verwijderd', a: [
           'Via Instellingen → Onlangs verwijderd kun je klusjes en beloningen 30 dagen lang terughalen, met hun historie. Bij een klusje waarvan de kamer is verwijderd wordt gevraagd in welke kamer het moet.',
           'Een klusje dat per ongeluk op klaar is gezet kun je ongedaan maken via Activiteit, of met ↩️ Ongedaan in de kamer (ouders).',
+        ] },
+        { q: 'De instelhulp ging niet open, of ik wil hem nog een keer', a: [
+          'Hij gaat alleen vanzelf open voor een ouder, zolang het gezin nog geen kamers heeft (de kamer To-do’s telt niet), tot iemand hem afmaakt of op Niet nu tikt.',
+          'Open hem wanneer je wilt bovenaan Instellingen → Instelhulp. Opnieuw gebruiken voegt alleen toe, dus verwijder zelf kamers (Kamers → 🗑) of beloningen die je niet wilt.',
+        ] },
+        { q: 'Elk kind betaalt een andere prijs voor dezelfde beloning', a: [
+          'De instelhulp gaf iedereen een eigen prijs, zodat iedereen ongeveer evenveel weken van zijn eigen klusjes betaalt: een kind met meer klusjes verdient meer en betaalt dus meer. Onder de beloning staat dan „eigen prijzen”.',
+          'Pas ze aan of maak ze leeg in Instellingen → Beloningen Winkel → Regels → Prijs per persoon (leeg = gewone prijs).',
         ] },
         { q: 'Een kind ziet nog de oude prijs van een beloning', a: [
           'Een andere prijs per persoon stel je in bij Instellingen → Beloningen Winkel → Regels, met de knop Opslaan in dat vak (het vak sluit en onder de naam van de beloning staat “eigen prijzen”). Opslaan onder Aanpassen verandert alleen de gewone prijs.',
