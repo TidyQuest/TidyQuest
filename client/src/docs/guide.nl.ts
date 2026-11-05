@@ -166,7 +166,7 @@ export const GUIDE_NL: GuideSection[] = [
         'Maak een kamer aan op de pagina Kamers; een kamertype voegt voorgestelde klusjes toe waaruit je kunt kiezen.',
         'Zones groeperen kamers op de pagina Kamers (bijvoorbeeld "Boven" of "Ouderquests").',
         'De gezondheid van een kamer is het gemiddelde van de klusjes; de slechtste kamer is die waarvoor de mascotte om hulp vraagt.',
-        'De balk van een klusje wordt pas rood als het aan de beurt is. Een klusje dat nog niet kan (Vroegtijdig afronden toestaan uit) blijft geel.',
+        'De balk van een klusje wordt pas rood als het aan de beurt is. Een klusje dat nog niet kan (Vroegtijdig afronden toestaan uit) blijft geel, in de kamer en op zijn label op de pagina Kamers.',
       ] },
     ],
   },

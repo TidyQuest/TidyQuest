@@ -7,7 +7,7 @@ import { getRoomIcon } from '../icons/RoomIcons';
 import { TaskIcon } from '../icons/TaskIcons';
 import { IconPicker } from '../shared/IconPicker';
 import { CheckIcon, BackIcon, PlusIcon, CoinIcon } from '../icons/UIIcons';
-import { getRoomHealth } from '../../utils/health';
+import { getRoomHealth, notDueYet } from '../../utils/health';
 import { formatNextDue, isTaskForUser, taskNextDue } from '../../utils/tasks';
 import { TimerStartButton } from '../shared/ChoreTimer';
 import { useChoreTimer } from '../../hooks/useChoreTimer';
@@ -365,9 +365,6 @@ export function RoomDetail({ room, language, isAdmin, currentUserId, currentUser
       setTimeout(() => el.classList.remove('task-focus-flash'), 2000);
     }, 500);
   };
-
-  // Done stays locked until it's due again (the same rule as in getDoneButtonState), so its bar shouldn't turn red yet
-  const notDueYet = (task: Task) => !task.onDemand && !task.allowEarlyCompletion && task.health > 0 && !!task.lastCompletedAt;
 
   // Determine if Done button should be disabled for a task
   function getDoneButtonState(task: Task): { disabled: boolean; label: string } {

@@ -6,7 +6,7 @@ import { TaskIcon } from '../icons/TaskIcons';
 import { IconPicker } from '../shared/IconPicker';
 import { PlusIcon, TrashIcon } from '../icons/UIIcons';
 import UserAvatar from '../shared/UserAvatar';
-import { getHealthColor, getRoomHealth } from '../../utils/health';
+import { getHealthColor, getRoomHealth, notDueYet } from '../../utils/health';
 import { ROOM_COLORS } from '../../utils/colors';
 import { api } from '../../hooks/useApi';
 import { useTranslation } from '../../hooks/useTranslation';
@@ -79,7 +79,7 @@ interface RoomsListProps {
     zoneId?: number | null;
     assignedUserId?: number | null;
     assignedUser?: AssignedUser | null;
-    tasks: Array<{ id: number; name: string; translationKey?: string; iconKey?: string; health: number; effectiveAssignedUserIds?: number[]; assignedToChildren?: boolean }>;
+    tasks: Array<{ id: number; name: string; translationKey?: string; iconKey?: string; health: number; onDemand?: boolean | number; allowEarlyCompletion?: boolean | number; lastCompletedAt?: string | null; effectiveAssignedUserIds?: number[]; assignedToChildren?: boolean }>;
     /** The family's To-dos room (ENH-18): a to-do count instead of health */
     isTodoRoom?: boolean;
     todoCount?: number;
@@ -307,11 +307,12 @@ export function RoomsList({ rooms, language, isAdmin, users, onSelectRoom, onOpe
   const healthLabel = (h: number): string =>
     h >= 70 ? t('rooms.healthHealthy') : h >= 40 ? t('rooms.healthNeedsAttention') : t('rooms.healthCritical');
 
-  const taskBadgeStyle = (health: number): { bg: string; text: string; border: string } => {
+  // A chore that can't be done yet stays yellow instead of red (the same rule as its bar inside the room)
+  const taskBadgeStyle = (health: number, locked = false): { bg: string; text: string; border: string } => {
     if (health >= 70) {
       return { bg: 'var(--task-healthy-bg)', text: 'var(--task-healthy-text)', border: 'var(--task-healthy-border)' };
     }
-    if (health >= 40) {
+    if (health >= 40 || locked) {
       return { bg: 'var(--task-warning-bg)', text: 'var(--task-warning-text)', border: 'var(--task-warning-border)' };
     }
     return { bg: 'var(--task-critical-bg)', text: 'var(--task-critical-text)', border: 'var(--task-critical-border)' };
@@ -494,7 +495,7 @@ export function RoomsList({ rooms, language, isAdmin, users, onSelectRoom, onOpe
                 {!room.isTodoRoom && <HealthBar value={rh} height={10} showLabel={false} />}
                 <div style={{ display: 'flex', gap: 6, marginTop: room.isTodoRoom ? 0 : 14, flexWrap: 'wrap' }}>
                   {room.tasks.map((tk) => {
-                    const badge = taskBadgeStyle(tk.health);
+                    const badge = taskBadgeStyle(tk.health, notDueYet(tk));
                     const chipStyle = { fontSize: 11, fontWeight: 700, padding: '4px 10px 4px 6px', borderRadius: 10, backgroundColor: badge.bg, color: badge.text, border: `1px solid ${badge.border}`, display: 'inline-flex', alignItems: 'center', gap: 8 };
                     const chip = (
                       <>
