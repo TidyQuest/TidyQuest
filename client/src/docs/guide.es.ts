@@ -695,7 +695,7 @@ export const GUIDE_ES: GuideSection[] = [
           'Una tarea marcada como hecha por error se puede deshacer desde Actividad, o con ↩️ Deshacer en su habitación (padres).',
         ] },
         { q: 'Un niño todavía ve el precio antiguo de una recompensa', a: [
-          'Un precio distinto por persona se pone en Ajustes → Catálogo de recompensas → Reglas, con el botón Guardar de ese recuadro (al lado aparece «Guardado»). El Guardar de Editar solo cambia el precio normal.',
+          'Un precio distinto por persona se pone en Ajustes → Catálogo de recompensas → Reglas, con el botón Guardar de ese recuadro (el recuadro se cierra y bajo el nombre de la recompensa aparece «precios propios»). El Guardar de Editar solo cambia el precio normal.',
           'La página Recompensas del niño muestra el cambio en 15 segundos, o en cuanto se vuelve a abrir la app.',
           'Si el precio cambia mientras la ventana de compra está abierta, muestra el precio nuevo en lugar de comprar: toca Confirmar para pagarlo, o Cancelar.',
         ] },

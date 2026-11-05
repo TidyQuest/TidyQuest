@@ -170,6 +170,12 @@ function AppContent() {
     .then((data) => setRewardsData(data))
     .catch(() => setRewardsData({ rewards: [], mine: [] })), []);
 
+  // Search lists rewards with their prices, so fetch them fresh when it opens (a price just changed in Settings
+  // otherwise showed the old one until the Rewards page was opened)
+  useEffect(() => {
+    if (searchOpen && user) loadRewards();
+  }, [searchOpen]); // eslint-disable-line react-hooks/exhaustive-deps
+
   useEffect(() => {
     if (user) {
       loadDashboard();

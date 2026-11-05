@@ -30,6 +30,12 @@ What changed in each release, in plain language, newest first. Releases up to v0
   of the top. The phone's back button does the same; the menu's Rooms link still opens at the top.
 - **Blank "Price per person" boxes say "usual"** (in Settings → Rewards Catalog → Rules) instead of a grey number that
   looked like a typed price, and people who have their own price show in orange.
+- **Saving a reward's Rules closes the Rules box,** and the reward's line shows "own prices" when someone has one.
+  Before, the box stayed open until you tapped Rules again.
+- **Search shows a reward's current price** straight after it's changed in Settings, instead of the old one until the
+  Rewards page was opened.
+- **The Rewards page shows only the price you pay.** When you have your own price for a reward, the usual price is
+  no longer shown crossed out next to it.
 - **On phones, your profile card shows at the bottom of the side menu straight away.** Before, it sat under the
   browser's address bar and only appeared once you scrolled. The page behind the open menu no longer scrolls
   either, which hid the browser's toolbars and left a strip of page showing under the menu.

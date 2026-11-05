@@ -695,7 +695,7 @@ export const GUIDE_NL: GuideSection[] = [
           'Een klusje dat per ongeluk op klaar is gezet kun je ongedaan maken via Activiteit, of met ↩️ Ongedaan in de kamer (ouders).',
         ] },
         { q: 'Een kind ziet nog de oude prijs van een beloning', a: [
-          'Een andere prijs per persoon stel je in bij Instellingen → Beloningen Winkel → Regels, met de knop Opslaan in dat vak (ernaast verschijnt “Opgeslagen!”). Opslaan onder Aanpassen verandert alleen de gewone prijs.',
+          'Een andere prijs per persoon stel je in bij Instellingen → Beloningen Winkel → Regels, met de knop Opslaan in dat vak (het vak sluit en onder de naam van de beloning staat “eigen prijzen”). Opslaan onder Aanpassen verandert alleen de gewone prijs.',
           'De pagina Beloningen van het kind toont de wijziging binnen 15 seconden, of zodra de app weer wordt geopend.',
           'Verandert de prijs terwijl het koopvenster open is, dan toont het de nieuwe prijs in plaats van te kopen: tik op Ja, kopen! om die te betalen, of op Annuleren.',
         ] },
