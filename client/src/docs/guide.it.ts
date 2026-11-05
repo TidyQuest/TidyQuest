@@ -23,6 +23,16 @@ export const GUIDE_IT: GuideSection[] = [
         'Scarica un backup in Impostazioni → Dati e privacy quando tutto è pronto, e ogni tanto anche dopo.',
       ] },
       { tip: 'Parti in piccolo: una manciata di faccende per bambino e qualche ricompensa economica da guadagnare già nella prima settimana. Puoi aggiungerne altre quando vuoi.' },
+      { h: 'La configurazione guidata' },
+      { ul: [
+        'Il genitore di una nuova famiglia (ancora senza stanze) ci arriva dopo l’accesso. Non ora la salta, e Impostazioni → Configurazione guidata (in cima alle Impostazioni) la apre quando vuoi.',
+        'Famiglia: aggiungi i bambini per fascia d’età (3–5, 6–8, 9–12, 13+) e gli altri adulti. I bambini sono facoltativi, quindi possono usarla anche coppie e coinquilini. Un bambino può accedere da solo (la Modalità bambino rende l’app più semplice) oppure no, e lo fa un genitore per lui. L’età serve solo a scegliere le attività iniziali e non viene salvata.',
+        'Casa: spunta le tue stanze. Ogni bambino ha anche la sua stanza, e i bambini dai 6 anni possono avere una stanza Missioni per le routine quotidiane e la scuola (compiti, uscire in orario, lettura), come attività quando vuoi visibili nella Home.',
+        'Attività: una lista iniziale spuntata per ogni persona, scelta in base all’età, con Altre idee per gli extra. Un’attività che possono fare più bambini è condivisa: chi la fa per primo prende le monete. Le attività per cui nessun bambino ha l’età vanno agli adulti.',
+        'Ricompense: tutti pagano più o meno le stesse settimane delle proprie attività, quindi ognuno ha il suo prezzo («prezzi propri»). Una paghetta settimanale facoltativa aggiunge ricompense in denaro con il prezzo corrispondente. Gli obiettivi settimanali si ripetono a circa il 70% delle attività di ognuno, con un bonus quando vengono raggiunti.',
+        'Fine crea tutto in una volta. Poi un breve tutorial da sfogliare mostra come cambiare un’attività, ogni quanto torna (come ogni 3 mesi), i timer, le attività quando vuoi, dividere e fare a turno, le stanze Missioni, la lista delle cose da fare, le ricompense, gli obiettivi e le monete.',
+        'Riaprirla aggiunge soltanto: usa le stanze che hai già, salta le attività che ci sono già, lascia senza spunta le attività degli adulti e le ricompense, e non tocca le tue ricompense.',
+      ] },
     ],
   },
   {
@@ -693,6 +703,14 @@ export const GUIDE_IT: GuideSection[] = [
         { q: 'Ho eliminato qualcosa per sbaglio', a: [
           'Impostazioni → Eliminati di recente può riportare indietro faccende e ricompense per 30 giorni, con la loro cronologia. Una faccenda la cui stanza è stata eliminata chiede in quale stanza metterla.',
           'Una faccenda segnata come fatta per sbaglio si può annullare da Attività, oppure con ↩️ Annulla nella sua stanza (genitori).',
+        ] },
+        { q: 'La configurazione guidata non si è aperta, o voglio riaprirla', a: [
+          'Si apre da sola solo per un genitore, finché la famiglia non ha stanze (la stanza Da fare non conta), fino a quando qualcuno la completa o tocca Non ora.',
+          'Aprila quando vuoi in cima a Impostazioni → Configurazione guidata. Riaprirla aggiunge soltanto, quindi elimina tu le stanze (Stanze → 🗑) o le ricompense che non vuoi.',
+        ] },
+        { q: 'Ogni bambino paga un prezzo diverso per la stessa ricompensa', a: [
+          'La configurazione guidata ha dato a ognuno il suo prezzo, così tutti pagano più o meno le stesse settimane delle proprie attività: un bambino con più attività guadagna di più, quindi paga di più. Sotto la ricompensa si vede «prezzi propri».',
+          'Cambiali o cancellali in Impostazioni → Catalogo ricompense → Regole → Prezzo per persona (vuoto = prezzo normale).',
         ] },
         { q: 'Un bambino vede ancora il vecchio prezzo di una ricompensa', a: [
           'Un prezzo diverso per persona si imposta in Impostazioni → Catalogo ricompense → Regole, con il pulsante Salva di quel riquadro (il riquadro si chiude e sotto il nome della ricompensa compare “prezzi propri”). Il Salva di Modifica cambia solo il prezzo normale.',

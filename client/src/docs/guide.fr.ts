@@ -23,6 +23,16 @@ export const GUIDE_FR: GuideSection[] = [
         'Télécharge une sauvegarde dans Paramètres → Données et confidentialité une fois que tout est en place, puis de temps en temps.',
       ] },
       { tip: 'Commence petit : quelques tâches par enfant et quelques récompenses bon marché à gagner dès la première semaine. Tu pourras en ajouter à tout moment.' },
+      { h: 'L’assistant de configuration' },
+      { ul: [
+        'Le parent d’une nouvelle famille (sans pièces) y arrive après s’être connecté. Pas maintenant le passe, et Paramètres → Assistant de configuration (en haut des Paramètres) l’ouvre à tout moment.',
+        'Famille : ajoute les enfants par tranche d’âge (3–5, 6–8, 9–12, 13+) et les autres adultes. Les enfants sont facultatifs, donc les couples et les colocataires peuvent aussi l’utiliser. Un enfant peut se connecter tout seul (le Mode enfant simplifie l’appli) ou pas, et un parent le fait pour lui. L’âge sert seulement à choisir les tâches de départ et n’est pas enregistré.',
+        'Maison : coche tes pièces. Chaque enfant a aussi sa propre pièce, et les enfants de 6 ans et plus peuvent avoir une pièce Quêtes pour les routines du quotidien et l’école (devoirs, partir à l’heure, lecture), en tâches à tout moment affichées sur l’accueil.',
+        'Tâches : une liste de départ cochée pour chaque personne, choisie selon l’âge, avec Plus d’idées pour d’autres. Une tâche que plusieurs enfants peuvent faire est partagée : le premier qui la fait gagne les pièces. Les tâches pour lesquelles aucun enfant n’a l’âge vont aux adultes.',
+        'Récompenses : chacun paie à peu près les mêmes semaines de ses propres tâches, donc chaque personne a son propre prix (« prix personnalisés »). Un argent de poche facultatif ajoute des récompenses en argent au prix correspondant. Les objectifs de la semaine se répètent à environ 70 % des tâches de chacun, avec un bonus quand ils sont atteints.',
+        'Terminer crée tout d’un coup. Un court tutoriel à cliquer montre ensuite comment changer une tâche, sa fréquence (comme tous les 3 mois), les minuteurs, les tâches à tout moment, le partage et le tour de rôle, les pièces Quêtes, la liste à faire, les récompenses, les objectifs et les pièces.',
+        'Le relancer ne fait qu’ajouter : il utilise les pièces que tu as déjà, saute les tâches qu’elles ont déjà, laisse les tâches des adultes et les récompenses décochées, et ne touche pas à tes récompenses.',
+      ] },
     ],
   },
   {
@@ -693,6 +703,14 @@ export const GUIDE_FR: GuideSection[] = [
         { q: 'J’ai supprimé quelque chose par erreur', a: [
           'Paramètres → Supprimés récemment peut ramener des tâches et des récompenses pendant 30 jours, avec leur historique. Une tâche dont la pièce a été supprimée demande dans quelle pièce la remettre.',
           'Une tâche marquée comme faite par erreur peut être annulée depuis Activité, ou avec ↩️ Annuler dans sa pièce (parents).',
+        ] },
+        { q: 'L’assistant de configuration ne s’est pas ouvert, ou je veux le relancer', a: [
+          'Il s’ouvre tout seul seulement pour un parent, tant que la famille n’a pas de pièces (la pièce À faire ne compte pas), jusqu’à ce que quelqu’un le termine ou touche Pas maintenant.',
+          'Ouvre-le à tout moment en haut de Paramètres → Assistant de configuration. Le relancer ne fait qu’ajouter : supprime toi-même les pièces (Pièces → 🗑) ou les récompenses dont tu ne veux pas.',
+        ] },
+        { q: 'Chaque enfant paie un prix différent pour la même récompense', a: [
+          'L’assistant de configuration a donné à chacun son propre prix, pour que tout le monde paie à peu près les mêmes semaines de ses propres tâches : un enfant qui a plus de tâches gagne plus, donc paie plus. On le voit avec « prix personnalisés » sous la récompense.',
+          'Change-les ou efface-les dans Paramètres → Catalogue des récompenses → Règles → Prix par personne (vide = prix habituel).',
         ] },
         { q: 'Un enfant voit encore l’ancien prix d’une récompense', a: [
           'Un prix différent par personne se règle dans Paramètres → Catalogue des récompenses → Règles, avec le bouton Enregistrer de ce cadre (le cadre se ferme et « prix personnalisés » s’affiche sous le nom de la récompense). Le bouton Enregistrer de Modifier ne change que le prix habituel.',

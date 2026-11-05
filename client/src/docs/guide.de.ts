@@ -23,6 +23,16 @@ export const GUIDE_DE: GuideSection[] = [
         'Lade unter Einstellungen → Daten & Datenschutz ein Backup herunter, sobald alles eingerichtet ist, und danach ab und zu wieder.',
       ] },
       { tip: 'Fang klein an: ein paar Aufgaben pro Kind und ein paar günstige Belohnungen, die sie schon in der ersten Woche verdienen können. Mehr kannst du jederzeit hinzufügen.' },
+      { h: 'Der Einrichtungsassistent' },
+      { ul: [
+        'Ein Elternteil einer neuen Familie (noch keine Räume) landet nach der Anmeldung darin. Nicht jetzt überspringt ihn, und Einstellungen → Einrichtungsassistent (oben in den Einstellungen) öffnet ihn jederzeit.',
+        'Familie: Füge Kinder nach Altersgruppe (3–5, 6–8, 9–12, 13+) und weitere Erwachsene hinzu. Kinder sind optional, also können auch Paare und WGs ihn nutzen. Ein Kind kann sich selbst anmelden (der Kindermodus macht die App einfacher) oder nicht, dann macht es ein Elternteil. Das Alter wählt nur die Startaufgaben aus und wird nicht gespeichert.',
+        'Zuhause: Hake deine Räume an. Jedes Kind bekommt außerdem einen eigenen Raum, und Kinder ab 6 können einen Quests-Raum für tägliche Routinen und Schulsachen bekommen (Hausaufgaben, pünktlich los, Lesen), als Aufgaben für jederzeit auf der Startseite.',
+        'Aufgaben: eine angehakte Startliste für jede Person, nach Alter ausgewählt, mit Mehr Ideen für weitere. Eine Aufgabe, die mehrere Kinder machen können, wird geteilt: Wer sie zuerst erledigt, bekommt die Münzen. Aufgaben, für die kein Kind alt genug ist, gehen an die Erwachsenen.',
+        'Belohnungen: Alle zahlen etwa gleich viele Wochen ihrer eigenen Aufgaben, deshalb bekommt jede Person einen eigenen Preis („eigene Preise“). Ein optionales Taschengeld fügt Geld-Belohnungen mit passendem Preis hinzu. Wochenziele wiederholen sich bei etwa 70 % der Aufgaben jeder Person, mit einem Bonus, wenn sie erreicht werden.',
+        'Fertig legt alles auf einmal an. Danach zeigt eine kurze Klick-Anleitung, wie du eine Aufgabe änderst, wie oft sie anfällt (zum Beispiel alle 3 Monate), Timer, Aufgaben für jederzeit, Teilen und Abwechseln, Quests-Räume, die To-do-Liste, Belohnungen, Ziele und Münzen.',
+        'Ein neuer Durchlauf fügt nur hinzu: Er nutzt deine vorhandenen Räume, überspringt Aufgaben, die dort schon sind, lässt Aufgaben der Erwachsenen und Belohnungen ohne Haken und lässt deine Belohnungen in Ruhe.',
+      ] },
     ],
   },
   {
@@ -693,6 +703,14 @@ export const GUIDE_DE: GuideSection[] = [
         { q: 'Ich habe etwas aus Versehen gelöscht', a: [
           'Einstellungen → Zuletzt gelöscht kann Aufgaben und Belohnungen 30 Tage lang samt Verlauf zurückbringen. Bei einer Aufgabe, deren Raum gelöscht wurde, wirst du gefragt, in welchen Raum sie soll.',
           'Eine aus Versehen als erledigt markierte Aufgabe lässt sich unter Aktivität rückgängig machen oder mit ↩️ Rückgängig in ihrem Raum (Eltern).',
+        ] },
+        { q: 'Der Einrichtungsassistent hat sich nicht geöffnet, oder ich will ihn noch einmal', a: [
+          'Er öffnet sich nur für ein Elternteil von selbst, solange die Familie noch keine Räume hat (der Raum Erledigen zählt nicht), bis ihn jemand abschließt oder auf Nicht jetzt tippt.',
+          'Öffne ihn jederzeit oben in Einstellungen → Einrichtungsassistent. Ein neuer Durchlauf fügt nur hinzu, also lösche Räume (Räume → 🗑) oder Belohnungen, die du nicht willst, selbst.',
+        ] },
+        { q: 'Jedes Kind zahlt für dieselbe Belohnung einen anderen Preis', a: [
+          'Der Einrichtungsassistent hat jeder Person einen eigenen Preis gegeben, damit alle etwa gleich viele Wochen ihrer eigenen Aufgaben zahlen: Ein Kind mit mehr Aufgaben verdient mehr und zahlt deshalb mehr. Unter der Belohnung steht dann „eigene Preise“.',
+          'Ändere oder leere sie unter Einstellungen → Belohnungskatalog → Regeln → Preis pro Person (leer = normaler Preis).',
         ] },
         { q: 'Ein Kind sieht noch den alten Preis einer Belohnung', a: [
           'Einen anderen Preis pro Person stellst du unter Einstellungen → Belohnungskatalog → Regeln ein, mit dem Speichern in diesem Kasten (der Kasten schließt sich und unter dem Namen der Belohnung steht „eigene Preise“). Das Speichern unter Bearbeiten ändert nur den normalen Preis.',

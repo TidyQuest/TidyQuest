@@ -23,6 +23,16 @@ export const GUIDE_ES: GuideSection[] = [
         'Descarga una copia de seguridad en Ajustes → Datos y privacidad cuando todo esté listo, y de vez en cuando después.',
       ] },
       { tip: 'Empieza poco a poco: unas pocas tareas por peque y algunas recompensas baratas que puedan ganar la primera semana. Puedes añadir más cuando quieras.' },
+      { h: 'El asistente de configuración' },
+      { ul: [
+        'Un padre o una madre de una familia nueva (aún sin habitaciones) llega a él al iniciar sesión. Ahora no lo salta, y Ajustes → Asistente de configuración (arriba en Ajustes) lo abre cuando quieras.',
+        'Familia: añade a los niños por grupo de edad (3–5, 6–8, 9–12, 13+) y a otros adultos. Los niños son opcionales, así que parejas y compañeros de piso también pueden usarlo. Un niño puede iniciar sesión por su cuenta (el Modo niño simplifica la app) o no, y un padre o una madre lo hace por él. La edad solo elige las tareas iniciales y no se guarda.',
+        'Casa: marca tus habitaciones. Cada niño también tiene su propia habitación, y los niños de 6 años o más pueden tener una habitación de Misiones para sus rutinas diarias y las cosas del cole (deberes, salir a tiempo, lectura), como tareas para cuando sea que salen en Inicio.',
+        'Tareas: una lista inicial marcada para cada persona, elegida según la edad, con Más ideas para extras. Una tarea que pueden hacer varios niños se comparte: quien la hace primero se lleva las monedas. Las tareas para las que ningún niño tiene edad van a los adultos.',
+        'Recompensas: todos pagan más o menos las mismas semanas de sus propias tareas, así que cada persona tiene su propio precio («precios propios»). Una paga semanal opcional añade recompensas en dinero con el precio correspondiente. Los objetivos semanales se repiten en torno al 70 % de las tareas de cada persona, con un bonus al alcanzarlos.',
+        'Terminar lo crea todo a la vez. Después, un breve tutorial para ir pasando muestra cómo cambiar una tarea, cada cuánto vuelve (como cada 3 meses), los temporizadores, las tareas para cuando sea, compartir y turnarse, las habitaciones de Misiones, la lista de pendientes, las recompensas, los objetivos y las monedas.',
+        'Volver a usarlo solo añade: usa las habitaciones que ya tienes, se salta las tareas que ya tienen, deja sin marcar las tareas de los adultos y las recompensas, y no toca tus recompensas.',
+      ] },
     ],
   },
   {
@@ -693,6 +703,14 @@ export const GUIDE_ES: GuideSection[] = [
         { q: 'Eliminé algo por error', a: [
           'Ajustes → Eliminados recientemente puede recuperar tareas y recompensas durante 30 días, con su historial. A una tarea cuya habitación se eliminó se le pregunta a qué habitación va.',
           'Una tarea marcada como hecha por error se puede deshacer desde Actividad, o con ↩️ Deshacer en su habitación (padres).',
+        ] },
+        { q: 'El asistente de configuración no se abrió, o quiero volver a usarlo', a: [
+          'Solo se abre solo para un padre o una madre, mientras la familia no tiene habitaciones (la habitación Pendientes no cuenta), hasta que alguien lo termina o toca Ahora no.',
+          'Ábrelo cuando quieras desde arriba en Ajustes → Asistente de configuración. Volver a usarlo solo añade, así que elimina tú las habitaciones (Habitaciones → 🗑) o recompensas que no quieras.',
+        ] },
+        { q: 'Cada niño paga un precio distinto por la misma recompensa', a: [
+          'El asistente de configuración dio a cada persona su propio precio para que todos paguen más o menos las mismas semanas de sus propias tareas: un niño con más tareas gana más, así que paga más. Se ve como «precios propios» bajo la recompensa.',
+          'Cámbialos o bórralos en Ajustes → Catálogo de recompensas → Reglas → Precio por persona (vacío = precio normal).',
         ] },
         { q: 'Un niño todavía ve el precio antiguo de una recompensa', a: [
           'Un precio distinto por persona se pone en Ajustes → Catálogo de recompensas → Reglas, con el botón Guardar de ese recuadro (el recuadro se cierra y bajo el nombre de la recompensa aparece «precios propios»). El Guardar de Editar solo cambia el precio normal.',

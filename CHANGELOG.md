@@ -9,6 +9,20 @@ What changed in each release, in plain language, newest first. Releases up to v0
 
 ## Unreleased
 
+### Added
+
+- **A setup wizard for new families.** A parent whose family has no rooms yet lands in it after signing in (Not now
+  skips it). Four quick steps: who's in the household (kids by age group 3–5, 6–8, 9–12 or 13+, whether they log in,
+  and other grown-ups; a household without kids works too), which rooms you have (each kid also gets their own, and
+  kids 6 and up a Quests room for daily routines and school things like homework, shown on Home), a ticked list of
+  starter chores for each person picked by age, and rewards. Each person pays about the same number of weeks of
+  their own chores, so everyone gets their own price. An optional weekly allowance adds "$1 / $5 cash" rewards, and
+  each kid gets a repeating weekly goal with a bonus. Finish makes it all at once, then a 10-step click-through
+  tutorial shows how to change a chore, make one come back every few months (like an air filter), use timers,
+  anytime chores and taking turns, set up a Quests room, use the to-do list, and change rewards, goals and coins.
+  Settings → Setup wizard runs it again later, for example for a new kid: it only adds. In all six languages, with
+  a new part in the guide.
+
 ## v0.16.6 (2026-11-05)
 
 ### Fixed

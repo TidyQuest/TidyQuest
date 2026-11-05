@@ -1667,3 +1667,53 @@ html[data-theme='lava'] input[type='date'], html[data-season-dark] input[type='d
     }
   }
 }
+
+/* Setup wizard (NEW-17): one column, fits 390px phones */
+.setup-page { display: grid; gap: 12px; max-width: 720px; }
+.setup-card { display: grid; gap: 10px; }
+.setup-card-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.setup-card-head .tq-input { flex: 1; min-width: 0; }
+.setup-help { margin: 0; font-size: 13px; font-weight: 600; color: var(--warm-text-light); }
+.setup-steps { display: flex; flex-wrap: wrap; gap: 6px 12px; font-size: 12px; font-weight: 800; color: var(--warm-text-light); }
+.setup-step.current { color: var(--warm-accent); }
+.setup-step.done { color: var(--warm-text); }
+.setup-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.setup-chip {
+  border: 2px solid var(--warm-border); background: var(--warm-card); color: var(--warm-text);
+  border-radius: 999px; padding: 6px 14px; font-weight: 800; font-size: 14px; cursor: pointer; font-family: inherit;
+}
+.setup-chip.on { border-color: var(--warm-accent); background: var(--warm-accent-light); }
+.setup-row { display: flex; align-items: flex-start; gap: 10px; cursor: pointer; padding: 4px 0; }
+.setup-row input[type="checkbox"] { width: 20px; height: 20px; margin-top: 1px; flex-shrink: 0; accent-color: var(--warm-accent); }
+.setup-row-text { display: grid; gap: 2px; min-width: 0; font-weight: 700; overflow-wrap: anywhere; }
+.setup-row-meta { font-size: 12px; font-weight: 600; color: var(--warm-text-light); text-transform: none; letter-spacing: 0; }
+.setup-more { justify-self: start; }
+.setup-login { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.setup-login .tq-label, .setup-allowance, .setup-card > .tq-label { display: grid; gap: 4px; margin: 0; }
+.setup-add { display: flex; flex-wrap: wrap; gap: 8px; }
+.setup-nav { display: flex; justify-content: space-between; gap: 8px; position: sticky; bottom: 0; padding: 10px 0; background: var(--warm-bg); }
+.setup-error { margin: 0; color: #DC2626; font-weight: 700; }
+.setup-tips { margin: 0; padding-left: 20px; display: grid; gap: 6px; font-weight: 600; }
+.setup-subhead { margin: 6px 0 0; font-size: 15px; font-weight: 800; }
+.setup-mock { display: grid; gap: 8px; padding: 12px; border-radius: 14px; background: var(--warm-bg); border: 1.5px dashed var(--warm-border); }
+.setup-mock-row { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 12px; background: var(--warm-card); border: 1.5px solid var(--warm-border); flex-wrap: wrap; }
+.setup-mock-name { flex: 1; min-width: 0; display: grid; font-weight: 800; font-size: 14px; overflow-wrap: anywhere; }
+.setup-mock-name small { font-size: 11px; font-weight: 600; color: var(--warm-text-light); }
+.setup-mock-btn { border: 1.5px solid var(--warm-border); border-radius: 10px; padding: 4px 10px; font-size: 12px; font-weight: 700; color: var(--warm-text-muted); background: var(--warm-card); white-space: nowrap; }
+.setup-mock-btn.hl { border-color: var(--warm-accent); color: var(--warm-accent); box-shadow: 0 0 0 3px var(--warm-accent-light); animation: setup-pulse 1.6s ease-in-out infinite; }
+.setup-mock-menu { justify-self: end; }
+.setup-mock-scale { justify-content: flex-start; }
+.setup-tour-lead { margin: 0; font-weight: 600; color: var(--warm-text-light); }
+.setup-tour-steps { margin: 0; padding-left: 22px; display: grid; gap: 8px; font-weight: 700; line-height: 1.4; }
+.setup-tour-example { display: flex; gap: 8px; padding: 10px 12px; border-radius: 12px; background: var(--warm-accent-light); font-size: 14px; font-weight: 600; line-height: 1.4; }
+.setup-tour-example > div { display: grid; gap: 4px; }
+.setup-skip { align-self: center; }
+.setup-dots { display: flex; justify-content: center; gap: 6px; }
+.setup-dots span { width: 8px; height: 8px; border-radius: 50%; background: var(--warm-border); }
+.setup-dots span.on { background: var(--warm-accent); }
+.setup-tour-nav { position: static; padding: 0; background: none; align-items: center; }
+@keyframes setup-pulse { 50% { box-shadow: 0 0 0 6px var(--warm-accent-light); } }
+@media (prefers-reduced-motion: reduce) { .setup-mock-btn.hl { animation: none; } }
+@media (max-width: 480px) {
+  .setup-login { grid-template-columns: 1fr; }
+}

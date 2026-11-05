@@ -23,6 +23,7 @@ import { Insights } from './components/pages/Insights';
 import { Settings } from './components/pages/Settings';
 import { Profile } from './components/pages/Profile';
 import { Guide } from './components/pages/Guide';
+import { SetupWizard } from './components/pages/SetupWizard';
 import { Login } from './components/pages/Login';
 import { Register } from './components/pages/Register';
 import { SignUp } from './components/pages/SignUp';
@@ -169,6 +170,15 @@ function AppContent() {
   const loadRewards = useCallback(() => api.getRewards()
     .then((data) => setRewardsData(data))
     .catch(() => setRewardsData({ rewards: [], mine: [] })), []);
+
+  // A new family's parent lands in the setup wizard once (NEW-17); "Not now" or finishing it stops that
+  const setupOpened = useRef(false);
+  useEffect(() => {
+    if (dashboardData?.setupNeeded && location.pathname === '/' && !setupOpened.current) {
+      setupOpened.current = true;
+      navigate('/setup');
+    }
+  }, [dashboardData?.setupNeeded, location.pathname, navigate]);
 
   // Search lists rewards with their prices, so fetch them fresh when it opens (a price just changed in Settings
   // otherwise showed the old one until the Rewards page was opened)
@@ -755,6 +765,12 @@ function AppContent() {
               />
             </>
           } />
+          <Route path="/setup" element={user.role !== 'admin' ? <Navigate to="/" replace /> : (
+            <>
+              <PageHeader title={t('setup.title')} subtitle={t('setup.subtitle')} user={user} onCoinsClick={() => navigate('/rewards')} onStreakClick={() => navigate('/achievements')} onPointsClick={handlePointsClick} userPoints={myPoints} pointsPeriodLabel={pointsPeriodLabel} gamificationEnabled={gamificationEnabled} shieldsOn={!!dashboardData?.shields} />
+              <SetupWizard user={user} onSaved={() => Promise.all([loadDashboard(), loadRewards()])} onExit={() => { loadDashboard(); navigate('/', { replace: true }); }} onOpenGuide={() => navigate('/guide', { replace: true })} />
+            </>
+          )} />
           <Route path="/achievements" element={
             gamificationEnabled ? (
             <>
