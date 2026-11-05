@@ -183,6 +183,11 @@ export function applySetup(requesterId: number, raw: unknown): SetupResult {
     if (!goals.some((x) => x.ref === ref)) goals.push({ ref, title });
   }
 
+  // The first run (no rooms yet) also sizes the 8 starter rewards and clears the unwanted ones; later runs leave the
+  // family's rewards alone
+  const todo = Number((db.prepare("SELECT value FROM app_settings WHERE key = 'todoRoomId'").get() as { value: string } | undefined)?.value) || 0;
+  const firstRun = !db.prepare('SELECT 1 FROM rooms WHERE deletedAt IS NULL AND id != ?').get(todo);
+
   // ── Everything checked: make it ──
   const made = { people: 0, rooms: 0, chores: 0, rewards: 0, goals: 0, removedRewards: 0 };
   db.transaction(() => {
@@ -275,6 +280,7 @@ export function applySetup(requesterId: number, raw: unknown): SetupResult {
       if (!audience.length) continue;
       const { prices, base } = pricesFor(audience, (p) => rewardPrice(r.weeks, weekly.get(p.ref)!));
       const existing = r.presetTitle ? presetRow.get(r.presetTitle) as { id: number } | undefined : undefined;
+      if (existing && !firstRun) continue;
       let rewardId = existing?.id;
       if (rewardId) db.prepare('UPDATE rewards SET costCoins = ? WHERE id = ?').run(base, rewardId);
       else rewardId = Number(insertReward.run(r.title, r.description, base, r.presetTitle ? 1 : 0, requesterId).lastInsertRowid);
@@ -283,7 +289,7 @@ export function applySetup(requesterId: number, raw: unknown): SetupResult {
     }
     // A starter reward the family didn't tick goes to Recently deleted, unless someone already bought it
     const kept = new Set(rewards.map((r) => r.presetTitle).filter(Boolean));
-    for (const def of STARTER_REWARDS) {
+    for (const def of firstRun ? STARTER_REWARDS : []) {
       if (!def.presetTitle || kept.has(def.presetTitle)) continue;
       const row = presetRow.get(def.presetTitle) as { id: number } | undefined;
       if (!row || db.prepare('SELECT 1 FROM reward_redemptions WHERE rewardId = ?').get(row.id)) continue;

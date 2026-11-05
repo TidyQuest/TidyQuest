@@ -677,6 +677,8 @@ export function Settings({
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
           <button type="button" className="tq-btn tq-btn-primary tq-btn-sm" onClick={() => navigate('/guide')}>{t('guide.open')}</button>
           <button type="button" className="tq-btn tq-btn-secondary tq-btn-sm" onClick={() => navigate('/guide#troubleshooting')}>🧰 {t('guide.troubleshooting')}</button>
+          {/* Run the setup wizard again (NEW-17): it only adds */}
+          {isAdmin && <button type="button" className="tq-btn tq-btn-secondary tq-btn-sm" onClick={() => navigate('/setup')}>🧙 {t('setup.open')}</button>}
         </div>
       </div>
       {/* Two columns that each grow at their own height, grouped; one column on phones. Long lists go full width below. */}

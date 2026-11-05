@@ -6,6 +6,29 @@ import type { User } from './useAuth';
 const API_BASE = '/api';
 
 /** What the hosted sign-up page needs before it's filled in. signupsOpen false: it's the waitlist form (NEW-30). */
+/** GET /api/setup: the wizard's starter lists (server/src/setup/starter.ts) and what the family already has */
+export type SetupAge = '3-5' | '6-8' | '9-12' | '13+';
+export type SetupRoomId = 'kitchen' | 'bathroom' | 'living' | 'laundry' | 'bedroom' | 'yard' | 'pets' | 'garage' | 'office';
+export interface SetupChoreDef {
+  id: string; name: string; room: 'own' | SetupRoomId; frequencyDays: number; effort: number;
+  ages: SetupAge[]; adults?: boolean; ticked: boolean; timerMinutes?: number;
+}
+export interface SetupRewardDef { id: string; weeks: number; ages: Array<SetupAge | 'adult'>; ticked: boolean; presetTitle?: string }
+export interface SetupCatalog {
+  needed: boolean;
+  coinsByEffort: Record<number, number>;
+  ageGroups: SetupAge[];
+  rooms: Array<{ id: SetupRoomId; type: string; ticked: boolean; color: string; accent: string }>;
+  chores: SetupChoreDef[];
+  rewards: SetupRewardDef[];
+  cashAmounts: number[];
+  family: {
+    people: Array<{ id: number; displayName: string; role: string; isParticipant: number; canLogIn: number; avatarColor: string }>;
+    rooms: Array<{ id: number; name: string; roomType: string; assignedUserId: number | null }>;
+    presetRewards: string[];
+  };
+}
+
 export interface HostedConfig {
   turnstileSiteKey: string | null;
   termsUrl: string | null;
@@ -432,6 +455,11 @@ export const api = {
   updateZone: (id: number, data: { name?: string; sortOrder?: number }) =>
     apiFetch<any>(`/zones/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
   deleteZone: (id: number) => apiFetch<any>(`/zones/${id}`, { method: 'DELETE' }),
+  // The setup wizard (NEW-17): starter lists and what the family has, the one save, and "Not now"
+  getSetup: () => apiFetch<SetupCatalog>('/setup'),
+  saveSetup: (data: unknown) =>
+    apiFetch<{ people: number; rooms: number; chores: number; rewards: number; goals: number; removedRewards: number }>('/setup', { method: 'POST', body: JSON.stringify(data) }),
+  skipSetup: () => apiFetch<{ success: boolean }>('/setup/skip', { method: 'POST' }),
   getDefaultTasks: (roomType: string) =>
     apiFetch<Array<{ name: string; frequencyDays: number; effort: number; isSeasonal?: boolean }>>(`/rooms/defaults/${roomType}`),
   createRoom: (data: { name: string; roomType: string; color?: string; accentColor?: string; tasks?: any[]; assignedUserId?: number | null }) =>

@@ -186,6 +186,7 @@ describe('setup wizard (NEW-17)', () => {
 
   it('running it again only adds', async () => {
     const admin = await createAdmin(agent);
+    seedStarterRewards();
     expect((await agent.post('/api/setup').set(auth(admin.token)).send(familyWithKids())).status).toBe(201);
     const kitchen = db.prepare("SELECT id FROM rooms WHERE name = 'Kitchen'").get() as { id: number };
     const ava = db.prepare("SELECT id FROM users WHERE displayName = 'Ava'").get() as { id: number };
@@ -202,6 +203,11 @@ describe('setup wizard (NEW-17)', () => {
     expect(res.body).toMatchObject({ people: 0, rooms: 0, chores: 1 });
     expect(count("SELECT COUNT(*) AS n FROM tasks WHERE translationKey = 'kitchen.clean_counters'")).toBe(1);
     expect(count('SELECT COUNT(*) AS n FROM users')).toBe(3);
+    // The family's rewards are left alone: Movie night keeps its price and isn't removed
+    const movie = db.prepare("SELECT costCoins, deletedAt FROM rewards WHERE title = 'Movie Night Pick'").get();
+    expect(movie).toEqual({ costCoins: 25, deletedAt: null });
+    expect((await agent.post('/api/setup').set(auth(admin.token)).send({ ...familyWithKids(), people: [{ ref: 'me', kind: 'adult' }], rooms: [], chores: [], cashTitles: [], goals: [] })).body)
+      .toMatchObject({ rewards: 0, removedRewards: 0 });
   });
 
   it('keeps a starter reward someone already bought', async () => {
