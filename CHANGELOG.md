@@ -9,6 +9,8 @@ What changed in each release, in plain language, newest first. Releases up to v0
 
 ## Unreleased
 
+## v0.16.5 (2026-11-05)
+
 ### Changed
 
 - **The To-dos room is now a to-do list.** Its page is a checklist (earliest "Do by" date first, then the oldest
