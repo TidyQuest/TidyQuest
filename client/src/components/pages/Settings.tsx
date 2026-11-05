@@ -1305,8 +1305,9 @@ export function Settings({
                 )}
                 {editingRewardId === r.id ? (
                   <div className="rewards-row-actions" style={{ display: 'flex', gap: 6, justifyContent: 'flex-end' }}>
-                    <button className="tq-btn tq-btn-primary" onClick={async () => { await saveRewardEdit(r); }} style={{ padding: '4px 8px', fontSize: 10 }}>{t('common.save')}</button>
+                    <button className="tq-btn" onClick={async () => { cancelRewardEdit(); await deleteReward(r); }} style={{ padding: '4px 8px', fontSize: 10, background: 'none', color: 'var(--warm-danger)', border: '1.5px solid var(--warm-danger-border)', marginRight: 'auto' }}>{t('common.delete')}</button>
                     <button className="tq-btn" onClick={cancelRewardEdit} style={{ padding: '4px 8px', fontSize: 10 }}>{t('common.cancel')}</button>
+                    <button className="tq-btn tq-btn-primary" onClick={async () => { await saveRewardEdit(r); }} style={{ padding: '4px 8px', fontSize: 10 }}>{t('common.save')}</button>
                   </div>
                 ) : (
                   <div className="rewards-row-actions" style={{ display: 'flex', gap: 6, justifyContent: 'flex-end' }}>
@@ -1315,7 +1316,6 @@ export function Settings({
                     <button className="tq-btn" onClick={() => setRulesOpenId(rulesOpenId === r.id ? null : r.id)} style={{ padding: '4px 8px', fontSize: 10 }}>{t('rewardRules.rules')}</button>
                     <button className="tq-btn" onClick={() => toggleRewardHidden(r)} aria-pressed={r.isActive === false} style={{ padding: '4px 8px', fontSize: 10 }}>{r.isActive === false ? t('pause.show') : t('pause.hide')}</button>
                     <button className="tq-btn" onClick={() => startRewardEdit(r)} style={{ padding: '4px 8px', fontSize: 10 }}>{t('common.edit')}</button>
-                    <button className="tq-btn" onClick={() => deleteReward(r)} style={{ padding: '4px 8px', fontSize: 10, backgroundColor: 'var(--warm-danger-bg)', color: 'var(--warm-danger)', border: '1.5px solid var(--warm-danger-border)' }}>{t('common.delete')}</button>
                   </div>
                 )}
                 {editingRewardId === r.id && (

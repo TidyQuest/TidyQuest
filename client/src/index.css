@@ -1291,10 +1291,14 @@ html[data-theme='lava'] option {
     grid-template-columns: 1fr auto !important;
   }
 
-  /* Its buttons get their own line and wrap, so Delete isn't cut off (BUG-14) */
+  /* Its buttons get their own line, share the card's width, and wrap if a language's words are too long (BUG-14) */
   .rewards-list-row > .rewards-row-actions {
     grid-column: 1 / -1;
     flex-wrap: wrap;
+  }
+
+  .rewards-list-row > .rewards-row-actions > button {
+    flex: 1 1 0;
   }
 
   /* Editing a reward: name, description and price one per line, like the add form */

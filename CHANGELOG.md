@@ -21,14 +21,16 @@ What changed in each release, in plain language, newest first. Releases up to v0
   to-dos are no longer picked for the Rescue Mission.
 - The first "+ To-do" uses a room you already called "To-dos" instead of making a second one.
 - The guide has a new "To-do list" part under Chores, and two troubleshooting entries.
+- **A reward's Delete button is now inside Edit,** next to Cancel and Save, the same as chores, so it can't be tapped
+  by accident. A deleted reward can still be brought back with Undo or from Recently deleted.
 
 ### Fixed
 
 - **On phones, your profile card shows at the bottom of the side menu straight away.** Before, it sat under the
   browser's address bar and only appeared once you scrolled.
 - **On phones, every button on a reward in Settings → Rewards Catalog fits.** The buttons now sit on their own line
-  under the reward's name, so Delete is no longer cut off. Editing a reward puts the name, description and price
-  one per line.
+  under the reward's name and share the card's width. Editing a reward puts the name, description and price one per
+  line.
 
 ## v0.16.4 (2026-11-04)
 
