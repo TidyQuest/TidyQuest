@@ -19,6 +19,7 @@ import { sendCoinBoostNotificationsIfNeeded } from './utils/boosts';
 import { runScheduledNotifications } from './utils/notifySchedule';
 import notifyRoutes from './routes/notify';
 import todosRoutes from './routes/todos';
+import setupRoutes from './routes/setup';
 import rescueRoutes from './routes/rescue';
 import shieldsRoutes from './routes/shields';
 import featuresRoutes from './routes/features';
@@ -113,6 +114,7 @@ export function createApp() {
   app.use('/api/trash', trashRoutes);
   app.use('/api/notify', notifyRoutes);
   app.use('/api/todos', todosRoutes);
+  app.use('/api/setup', setupRoutes);
   app.use('/api/rescue', rescueRoutes);
   app.use('/api/shields', shieldsRoutes);
   app.use('/api/insights', insightsRoutes);

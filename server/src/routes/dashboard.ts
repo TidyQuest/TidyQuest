@@ -13,6 +13,7 @@ import { achievementsFor } from '../utils/achievementStats';
 import { forgottenTasks, usualTasks } from '../utils/homeSections';
 import { rescueCandidates, todaysMission } from '../utils/rescue';
 import { getFeatures, holidaysOff, isFeatureOn } from '../utils/features';
+import { setupNeeded } from '../setup/apply';
 import { weekStartDay } from '../utils/periods';
 import { daySql, familyZone, savedZone } from '../utils/clock';
 import { MAX_SHIELDS, SHIELD_EVERY, shieldPrice, shieldsOn } from '../utils/streaks';
@@ -373,6 +374,8 @@ router.get('/', (req: AuthRequest, res: Response) => {
     pendingRewardRequests,
     pendingCompletions: pendingCompletionsGrouped,
     strictMode: isStrictModeEnabled(),
+    // The setup wizard opens by itself for a parent until the family has rooms (NEW-17)
+    setupNeeded: user.role === 'admin' && setupNeeded(),
     // Double coins events running now (Home shows a banner and the boosted amounts)
     coinBoosts: getActiveBoosts().map((b) => ({ id: b.id, title: b.title, multiplier: b.multiplier, startAt: b.startAt, endAt: b.endAt, roomIds: b.roomIds, taskIds: b.taskIds, taskNames: boostTaskNames(b) })),
     currentUser: { ...user, homeLayout: parseHomeLayout(user.homeLayout) },
