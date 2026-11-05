@@ -166,7 +166,7 @@ export const GUIDE_FR: GuideSection[] = [
         'Crée une pièce sur la page Pièces ; un type de pièce ajoute des tâches suggérées parmi lesquelles choisir.',
         'Les zones regroupent les pièces sur la page Pièces (par exemple « À l’étage » ou « Quêtes des parents »).',
         'La santé d’une pièce est la moyenne de ses tâches ; la pire pièce est celle pour laquelle la mascotte demande de l’aide.',
-        'La barre d’une tâche ne devient rouge qu’à son échéance. Une tâche qu’on ne peut pas encore faire (Complétion anticipée désactivée) s’arrête au jaune.',
+        'La barre d’une tâche ne devient rouge qu’à son échéance. Une tâche qu’on ne peut pas encore faire (Complétion anticipée désactivée) s’arrête au jaune, dans sa pièce comme sur sa pastille de la page Pièces.',
       ] },
     ],
   },

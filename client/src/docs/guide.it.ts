@@ -166,7 +166,7 @@ export const GUIDE_IT: GuideSection[] = [
         'Crea una stanza nella pagina Stanze; un tipo di stanza aggiunge faccende suggerite tra cui scegliere.',
         'Le zone raggruppano le stanze nella pagina Stanze (per esempio "Piano di sopra" o "Missioni dei genitori").',
         'La salute di una stanza è la media delle sue faccende; la stanza messa peggio è quella per cui la mascotte chiede aiuto.',
-        'La barra di un’attività diventa rossa solo quando è in scadenza. Un’attività che non si può ancora svolgere (Completamento anticipato disattivato) si ferma al giallo.',
+        'La barra di un’attività diventa rossa solo quando è in scadenza. Un’attività che non si può ancora svolgere (Completamento anticipato disattivato) si ferma al giallo, sia nella sua stanza sia sulla sua etichetta nella pagina Stanze.',
       ] },
     ],
   },
