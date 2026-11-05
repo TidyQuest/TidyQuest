@@ -34,9 +34,9 @@ export interface SetupPerson {
 export interface SetupRoom {
   /** What chores point at: 'r:<id>' uses a room the family already has */
   key: string;
-  starter: StarterRoomId | 'own';
+  starter: StarterRoomId | 'own' | 'quests';
   name?: string;
-  /** A kid's own room: their person ref */
+  /** A kid's own room or Quests room: their person ref */
   owner?: string;
 }
 
@@ -122,7 +122,7 @@ export function applySetup(requesterId: number, raw: unknown): SetupResult {
   for (const r of body.rooms as SetupRoom[]) {
     const key = text(r?.key, 40);
     if (!key || rooms.has(key)) return refused('Each room needs its own key', 'bad_room');
-    const starter = r.starter === 'own' ? 'own' : STARTER_ROOMS.find((s) => s.id === r.starter)?.id;
+    const starter = r.starter === 'own' || r.starter === 'quests' ? r.starter : STARTER_ROOMS.find((s) => s.id === r.starter)?.id;
     if (!starter) return refused('Unknown room', 'bad_room');
     let roomId: number | undefined;
     if (key.startsWith('r:')) {
@@ -131,7 +131,7 @@ export function applySetup(requesterId: number, raw: unknown): SetupResult {
     } else if (!text(r.name, 60)) {
       return refused('Each new room needs a name', 'room_name_needed');
     }
-    if (starter === 'own') {
+    if (starter === 'own' || starter === 'quests') {
       const owner = people.get(text(r.owner, 40));
       if (!owner || owner.kind !== 'kid') return refused("A kid's room needs its kid", 'bad_room');
     }
@@ -147,7 +147,7 @@ export function applySetup(requesterId: number, raw: unknown): SetupResult {
     if (!def) return refused('Unknown chore', 'bad_chore');
     const refs = isList(c.people) ? [...new Set(c.people.map((r) => text(r, 40)))] : [];
     if (refs.some((r) => !people.has(r))) return refused('A chore points at an unknown person', 'bad_chore');
-    if (room.starter === 'own' && (refs.length !== 1 || refs[0] !== room.owner)) return refused("A kid's own chores are theirs", 'bad_chore');
+    if ((room.starter === 'own' || room.starter === 'quests') && (refs.length !== 1 || refs[0] !== room.owner)) return refused("A kid's own chores are theirs", 'bad_chore');
     chores.push({ def, room: room.key, people: refs });
   }
 
@@ -219,11 +219,11 @@ export function applySetup(requesterId: number, raw: unknown): SetupResult {
     const insertRoom = db.prepare('INSERT INTO rooms (name, roomType, color, accentColor, assignedUserId, sortOrder) VALUES (?, ?, ?, ?, ?, ?)');
     for (const r of rooms.values()) {
       if (r.roomId) continue;
-      const starter = r.starter === 'own' ? null : STARTER_ROOMS.find((s) => s.id === r.starter)!;
+      const starter = r.starter === 'own' || r.starter === 'quests' ? null : STARTER_ROOMS.find((s) => s.id === r.starter)!;
       const colors = starter ?? KID_ROOM_COLORS[kidRooms++ % KID_ROOM_COLORS.length];
       const result = insertRoom.run(
-        text(r.name, 60), starter?.type ?? 'bedroom', colors.color, colors.accent,
-        r.starter === 'own' ? uid(r.owner!) : null, sortOrder++,
+        text(r.name, 60), starter?.type ?? (r.starter === 'quests' ? 'other' : 'bedroom'), colors.color, colors.accent,
+        r.owner ? uid(r.owner) : null, sortOrder++,
       );
       r.roomId = Number(result.lastInsertRowid);
       made.rooms++;
@@ -235,20 +235,23 @@ export function applySetup(requesterId: number, raw: unknown): SetupResult {
     // Spread first due dates so a new family doesn't see every chore due on day one: daily ones are due now,
     // the rest of each frequency come due spread over its first period (health h = due in h% of the period)
     const perFrequency = new Map<number, number>();
-    for (const c of toMake) perFrequency.set(c.def.frequencyDays, (perFrequency.get(c.def.frequencyDays) ?? 0) + 1);
+    for (const c of toMake) if (!c.def.perWeek) perFrequency.set(c.def.frequencyDays, (perFrequency.get(c.def.frequencyDays) ?? 0) + 1);
     const seen = new Map<number, number>();
     const setExtras = db.prepare('UPDATE tasks SET translationKey = ?, timerMinutes = ? WHERE id = ?');
     for (const c of toMake) {
       const f = c.def.frequencyDays;
       const i = seen.get(f) ?? 0;
-      seen.set(f, i + 1);
+      if (!c.def.perWeek) seen.set(f, i + 1);
+      // Anytime chores (homework, reading) have no schedule: they show on Home and count once a day
+      const anytime = c.def.perWeek
+        ? { onDemand: true, showInDashboard: true, repeatLimit: 1, repeatPeriod: 'day' }
+        : { health: f <= 1 ? 0 : Math.round((100 * i) / perFrequency.get(f)!), allowEarlyCompletion: f > 1 && f <= 7 };
       const result = createTask(rooms.get(c.room)!.roomId!, {
         name: c.def.name,
         frequencyDays: f,
         effort: c.def.effort,
-        health: f <= 1 ? 0 : Math.round((100 * i) / perFrequency.get(f)!),
         assignedUserIds: c.people.map(uid),
-        allowEarlyCompletion: f > 1 && f <= 7,
+        ...anytime,
       });
       if (result.status !== 201) throw new Error(`setup: chore ${c.def.id} refused (${JSON.stringify(result.body)})`);
       setExtras.run(c.def.id, c.def.timerMinutes ?? null, (result.body as { id: number }).id);

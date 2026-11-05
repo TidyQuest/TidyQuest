@@ -27,10 +27,10 @@ export const GUIDE_IT: GuideSection[] = [
       { ul: [
         'Il genitore di una nuova famiglia (ancora senza stanze) ci arriva dopo l’accesso. Non ora la salta, e Impostazioni → Configurazione guidata (in cima alle Impostazioni) la apre quando vuoi.',
         'Famiglia: aggiungi i bambini per fascia d’età (3–5, 6–8, 9–12, 13+) e gli altri adulti. I bambini sono facoltativi, quindi possono usarla anche coppie e coinquilini. Un bambino può accedere da solo (la Modalità bambino rende l’app più semplice) oppure no, e lo fa un genitore per lui. L’età serve solo a scegliere le attività iniziali e non viene salvata.',
-        'Casa: spunta le tue stanze. Ogni bambino ha anche la sua stanza.',
+        'Casa: spunta le tue stanze. Ogni bambino ha anche la sua stanza, e i bambini dai 6 anni possono avere una stanza Missioni per le routine quotidiane e la scuola (compiti, uscire in orario, lettura), come attività quando vuoi visibili nella Home.',
         'Attività: una lista iniziale spuntata per ogni persona, scelta in base all’età, con Altre idee per gli extra. Un’attività che possono fare più bambini è condivisa: chi la fa per primo prende le monete. Le attività per cui nessun bambino ha l’età vanno agli adulti.',
         'Ricompense: tutti pagano più o meno le stesse settimane delle proprie attività, quindi ognuno ha il suo prezzo («prezzi propri»). Una paghetta settimanale facoltativa aggiunge ricompense in denaro con il prezzo corrispondente. Gli obiettivi settimanali si ripetono a circa il 70% delle attività di ognuno, con un bonus quando vengono raggiunti.',
-        'Fine crea tutto in una volta. Poi un breve tutorial da sfogliare mostra dove cambiare attività, ricompense, obiettivi e monete.',
+        'Fine crea tutto in una volta. Poi un breve tutorial da sfogliare mostra come cambiare un’attività, ogni quanto torna (come ogni 3 mesi), i timer, le attività quando vuoi, dividere e fare a turno, le stanze Missioni, la lista delle cose da fare, le ricompense, gli obiettivi e le monete.',
         'Riaprirla aggiunge soltanto: usa le stanze che hai già, salta le attività che ci sono già, lascia senza spunta le attività degli adulti e le ricompense, e non tocca le tue ricompense.',
       ] },
     ],

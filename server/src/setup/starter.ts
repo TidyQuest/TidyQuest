@@ -11,7 +11,8 @@ export const AGE_GROUPS: AgeGroup[] = ['3-5', '6-8', '9-12', '13+'];
 /** Rewards also have a set for grown-ups who take part, so a household without kids gets rewards too */
 export type Audience = AgeGroup | 'adult';
 
-/** Where a chore goes: 'own' = the kid's own room; anything else is one of STARTER_ROOMS */
+/** Where a chore goes: 'own' = the kid's own room, 'quests' = their Quests room (routines and school; their own room
+ * when the family doesn't want Quests rooms); anything else is one of STARTER_ROOMS */
 export type StarterRoomId = 'kitchen' | 'bathroom' | 'living' | 'laundry' | 'bedroom' | 'yard' | 'pets' | 'garage' | 'office';
 
 export interface StarterRoom {
@@ -51,7 +52,8 @@ export interface StarterChore {
   id: string;
   /** English name, stored as the task name */
   name: string;
-  room: 'own' | StarterRoomId;
+  room: 'own' | 'quests' | StarterRoomId;
+  /** On-demand chores: 1 (they have no schedule) */
   frequencyDays: number;
   effort: 1 | 2 | 3 | 4 | 5;
   /** Age groups it's suggested for. Kids in more than one of them share it: whoever does it first gets the coins. */
@@ -61,14 +63,23 @@ export interface StarterChore {
   /** Ticked when the wizard opens (otherwise it's under "More ideas") */
   ticked: boolean;
   timerMinutes?: number;
+  /** Anytime (on demand, shown on Home, once a day), done about this many times a week */
+  perWeek?: number;
 }
 
 export const STARTER_CHORES: StarterChore[] = [
-  // ── Their own room: routines (each kid gets their own copy) ──
-  { id: 'starter.morning_routine', name: 'Morning: get dressed · brush teeth · make the bed', room: 'own', frequencyDays: 1, effort: 1, ages: ['3-5', '6-8', '9-12'], ticked: true },
-  { id: 'starter.bedtime_routine', name: 'Bedtime: bath or shower · teeth · clothes in the hamper', room: 'own', frequencyDays: 1, effort: 1, ages: ['3-5', '6-8', '9-12'], ticked: true },
+  // ── Their Quests room: daily routines and school (each kid gets their own copy) ──
+  { id: 'starter.morning_routine', name: 'Morning: get dressed · brush teeth · make the bed', room: 'quests', frequencyDays: 1, effort: 1, ages: ['3-5', '6-8', '9-12'], ticked: true },
+  { id: 'starter.bedtime_routine', name: 'Bedtime: bath or shower · teeth · clothes in the hamper', room: 'quests', frequencyDays: 1, effort: 1, ages: ['3-5', '6-8', '9-12'], ticked: true },
+  { id: 'starter.backpack_ready', name: 'Backpack and shoes by the door', room: 'quests', frequencyDays: 1, effort: 1, ages: ['6-8', '9-12'], ticked: true },
+  { id: 'starter.homework_done', name: 'Homework done', room: 'quests', frequencyDays: 1, effort: 1, ages: ['6-8', '9-12', '13+'], ticked: true, perWeek: 5 },
+  { id: 'starter.school_on_time', name: 'Out the door for school on time', room: 'quests', frequencyDays: 1, effort: 1, ages: ['6-8', '9-12', '13+'], ticked: true, perWeek: 5 },
+  { id: 'starter.reading_time', name: 'Reading (20 minutes)', room: 'quests', frequencyDays: 1, effort: 2, ages: ['6-8', '9-12'], ticked: true, timerMinutes: 20, perWeek: 5 },
+  { id: 'starter.pack_lunch', name: 'Pack your lunch', room: 'quests', frequencyDays: 1, effort: 1, ages: ['9-12', '13+'], ticked: false, perWeek: 5 },
+  { id: 'starter.practice', name: 'Practice an instrument or sport (20 minutes)', room: 'quests', frequencyDays: 1, effort: 2, ages: ['9-12', '13+'], ticked: false, timerMinutes: 20, perWeek: 3 },
+
+  // ── Their own room: keeping it clean ──
   { id: 'starter.toys_away', name: 'Put the toys away (5 minutes)', room: 'own', frequencyDays: 1, effort: 1, ages: ['3-5'], ticked: true, timerMinutes: 5 },
-  { id: 'starter.backpack_ready', name: 'Backpack and shoes by the door', room: 'own', frequencyDays: 1, effort: 1, ages: ['6-8', '9-12'], ticked: true },
   { id: 'starter.room_tidy', name: '10-minute room tidy', room: 'own', frequencyDays: 3, effort: 2, ages: ['6-8', '9-12'], ticked: true, timerMinutes: 10 },
   { id: 'starter.put_away_laundry', name: 'Put away your clean laundry', room: 'own', frequencyDays: 7, effort: 2, ages: ['6-8', '9-12'], ticked: true },
   { id: 'bedroom.make_bed', name: 'Make Bed', room: 'own', frequencyDays: 1, effort: 1, ages: ['13+'], ticked: true },
@@ -195,8 +206,8 @@ export const CASH_AMOUNTS = [1, 5];
 // ── The math (shared by the server's save step and its tests; the client repeats weeklyCoins for its preview) ──
 
 /** Coins a chore pays a week when it's done every time it's due, split between the people sharing it */
-export function choreWeeklyCoins(chore: { frequencyDays: number; effort: number }, coinsByEffort: Record<number, number>, sharedBy = 1): number {
-  return (coinsByEffort[chore.effort] ?? 0) * (7 / chore.frequencyDays) / Math.max(1, sharedBy);
+export function choreWeeklyCoins(chore: { frequencyDays: number; effort: number; perWeek?: number }, coinsByEffort: Record<number, number>, sharedBy = 1): number {
+  return (coinsByEffort[chore.effort] ?? 0) * (chore.perWeek ?? 7 / chore.frequencyDays) / Math.max(1, sharedBy);
 }
 
 /** A friendly price: 5s under 50, 10s under 200, 25s above; never under 5 */
@@ -220,8 +231,9 @@ export function coinsPerMoney(weekly: number, allowance: number): number {
   return allowance > 0 ? weekly / allowance : 0;
 }
 
+/** A starter chore by id for a room; a Quests chore also fits a kid's own room (a family without Quests rooms) */
 export function starterChore(id: string, room: StarterChore['room']): StarterChore | undefined {
-  return STARTER_CHORES.find((c) => c.id === id && c.room === room);
+  return STARTER_CHORES.find((c) => c.id === id && (c.room === room || (room === 'own' && c.room === 'quests')));
 }
 
 export function starterReward(id: string): StarterReward | undefined {

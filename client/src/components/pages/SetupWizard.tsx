@@ -62,6 +62,7 @@ export function SetupWizard({ user, onSaved, onExit, onOpenGuide }: Props) {
   const [moreOpen, setMoreOpen] = useState<Record<string, boolean>>({});
   const [currency, setCurrency] = useState(defaultCurrency(user.language));
   const [goalsOn, setGoalsOn] = useState(true);
+  const [questsOn, setQuestsOn] = useState(true);
   const [error, setError] = useState('');
   const [saving, setSaving] = useState(false);
   const [made, setMade] = useState<Made | null>(null);
@@ -116,13 +117,19 @@ export function SetupWizard({ user, onSaved, onExit, onOpenGuide }: Props) {
     if (!def || !REUSED_TYPES.includes(def.type)) return undefined;
     return catalog!.family.rooms.find((r) => r.roomType === def.type && !r.assignedUserId);
   };
-  const ownRoomOf = (p: Person) => (p.existingId ? catalog?.family.rooms.find((r) => r.assignedUserId === p.existingId) : undefined);
+  // Kids 6 and up can have a Quests room: daily routines and school things (homework, reading), apart from cleaning
+  const questsName = (p: Person) => t('setup.questsRoom').replace('{name}', p.displayName.trim());
+  const hasQuests = (p: Person) => questsOn && p.kind === 'kid' && !!p.ageGroup && p.ageGroup !== '3-5';
+  const questsRoomOf = (p: Person) => (p.existingId ? catalog?.family.rooms.find((r) => r.assignedUserId === p.existingId && r.name === questsName(p)) : undefined);
+  const ownRoomOf = (p: Person) => (p.existingId ? catalog?.family.rooms.find((r) => r.assignedUserId === p.existingId && r.name !== questsName(p)) : undefined);
+  /** A chore that's one kid's own: in their room or their Quests room */
+  const personal = (c: SetupChoreDef) => c.room === 'own' || c.room === 'quests';
 
   // Each chore on offer, per card (a kid, or the grown-ups together), with whether it's ticked
   const tickKey = (owner: string, c: SetupChoreDef) => `${owner}|${c.room}|${c.id}`;
   const isTicked = (owner: string, c: SetupChoreDef) => choreTicks[tickKey(owner, c)] ?? (c.ticked && (firstRun || owner !== ADULTS));
-  const kidChores = (p: Person) => (catalog?.chores ?? []).filter((c) => p.ageGroup && c.ages.includes(p.ageGroup) && (c.room === 'own' || picked.has(c.room)));
-  const adultChores = (catalog?.chores ?? []).filter((c) => c.room !== 'own' && picked.has(c.room) && c.adults
+  const kidChores = (p: Person) => (catalog?.chores ?? []).filter((c) => p.ageGroup && c.ages.includes(p.ageGroup) && (personal(c) || picked.has(c.room as SetupRoomId)));
+  const adultChores = (catalog?.chores ?? []).filter((c) => !personal(c) && picked.has(c.room as SetupRoomId) && c.adults
     && !kids.some((k) => c.ages.includes(k.ageGroup!)));
 
   // Who shares each shared-room chore, and what everyone earns a week if they do everything
@@ -130,7 +137,7 @@ export function SetupWizard({ user, onSaved, onExit, onOpenGuide }: Props) {
     const map = new Map<string, string[]>();
     for (const k of kids) {
       for (const c of kidChores(k)) {
-        if (c.room === 'own' || !isTicked(k.ref, c)) continue;
+        if (personal(c) || !isTicked(k.ref, c)) continue;
         const key = `${c.room}|${c.id}`;
         map.set(key, [...(map.get(key) ?? []), k.ref]);
       }
@@ -141,10 +148,10 @@ export function SetupWizard({ user, onSaved, onExit, onOpenGuide }: Props) {
     return map;
   })();
   const coinsOf = (c: SetupChoreDef) => catalog?.coinsByEffort[c.effort] ?? 0;
-  const weeklyOf = (c: SetupChoreDef, n: number) => (coinsOf(c) * 7) / c.frequencyDays / Math.max(1, n);
+  const weeklyOf = (c: SetupChoreDef, n: number) => (coinsOf(c) * (c.perWeek ?? 7 / c.frequencyDays)) / Math.max(1, n);
   const weekly = (p: Person) => {
     let sum = 0;
-    if (p.kind === 'kid') for (const c of kidChores(p)) if (c.room === 'own' && isTicked(p.ref, c)) sum += weeklyOf(c, 1);
+    if (p.kind === 'kid') for (const c of kidChores(p)) if (personal(c) && isTicked(p.ref, c)) sum += weeklyOf(c, 1);
     for (const [key, refs] of sharers) {
       if (!refs.includes(p.ref)) continue;
       const [room, id] = key.split('|');
@@ -216,6 +223,8 @@ export function SetupWizard({ user, onSaved, onExit, onOpenGuide }: Props) {
     setError('');
     const roomKey = (id: SetupRoomId) => (existingRoom(id) ? `r:${existingRoom(id)!.id}` : id);
     const ownKey = (p: Person) => (ownRoomOf(p) ? `r:${ownRoomOf(p)!.id}` : `own:${p.ref}`);
+    const questsKey = (p: Person) => (questsRoomOf(p) ? `r:${questsRoomOf(p)!.id}` : `quests:${p.ref}`);
+    const choreRoom = (p: Person, c: SetupChoreDef) => (c.room === 'quests' && hasQuests(p) ? questsKey(p) : ownKey(p));
     const body = {
       people: included.map((p) => ({
         ref: p.ref, kind: p.kind, displayName: p.displayName.trim(), ageGroup: p.ageGroup ?? undefined,
@@ -227,9 +236,10 @@ export function SetupWizard({ user, onSaved, onExit, onOpenGuide }: Props) {
           key: roomKey(r.id), starter: r.id, name: SPECIAL_ROOM_NAMES[r.id] ? t(SPECIAL_ROOM_NAMES[r.id]!) : roomName(r.type),
         })),
         ...kids.map((p) => ({ key: ownKey(p), starter: 'own', owner: p.ref, name: t('setup.kidRoom').replace('{name}', p.displayName.trim()) })),
+        ...kids.filter(hasQuests).map((p) => ({ key: questsKey(p), starter: 'quests', owner: p.ref, name: questsName(p) })),
       ],
       chores: [
-        ...kids.flatMap((p) => kidChores(p).filter((c) => c.room === 'own' && isTicked(p.ref, c)).map((c) => ({ id: c.id, room: ownKey(p), people: [p.ref] }))),
+        ...kids.flatMap((p) => kidChores(p).filter((c) => personal(c) && isTicked(p.ref, c)).map((c) => ({ id: c.id, room: choreRoom(p, c), people: [p.ref] }))),
         ...[...sharers].map(([key, refs]) => {
           const [room, id] = key.split('|') as [SetupRoomId, string];
           return { id, room: roomKey(room), people: refs };
@@ -272,8 +282,9 @@ export function SetupWizard({ user, onSaved, onExit, onOpenGuide }: Props) {
       <span className="setup-row-text">
         <span>{taskName(c.name, c.id)}</span>
         <span className="setup-row-meta">
-          {freqLabel(c.frequencyDays)} · {t('setup.coinsEach').replace('{n}', String(coinsOf(c)))}
-          {c.room !== 'own' && owner !== ADULTS ? ` · ${roomLabel(c.room)}` : ''}
+          {c.perWeek ? t('setup.anytime') : freqLabel(c.frequencyDays)} · {t('setup.coinsEach').replace('{n}', String(coinsOf(c)))}
+          {!personal(c) && owner !== ADULTS ? ` · ${roomLabel(c.room as SetupRoomId)}` : ''}
+          {c.room === 'quests' && people.some((p) => p.ref === owner && hasQuests(p)) ? ` · ${questsName(people.find((p) => p.ref === owner)!)}` : ''}
           {c.timerMinutes ? ` · ⏱️ ${t('setup.timer').replace('{n}', String(c.timerMinutes))}` : ''}
         </span>
       </span>
@@ -306,70 +317,51 @@ export function SetupWizard({ user, onSaved, onExit, onOpenGuide }: Props) {
     );
   };
 
-  // The click-through tutorial after Finish: how to change what the wizard made. Button names come from the app's own
-  // labels, so each slide says exactly what's on the screen in every language.
+  // The click-through tutorial after Finish: what each thing is for, the taps, and an example. Button names come from
+  // the app's own labels ({edit}, {rules}…), so each slide says exactly what's on the screen in every language.
+  const kidName = kids[0]?.displayName.trim() || 'Ava';
   const names: Record<string, string> = {
-    '{edit}': t('common.edit'), '{addTask}': t('roomDetail.addTask'), '{pause}': t('pause.pause'), '{deleteTask}': t('roomDetail.deleteTask'),
-    '{trash}': t('trash.title'), '{catalog}': t('settings.rewardsSection'), '{rules}': t('rewardRules.rules'),
+    '{edit}': t('common.edit'), '{save}': t('common.save'), '{addTask}': t('roomDetail.addTask'), '{pause}': t('pause.pause'),
+    '{deleteTask}': t('roomDetail.deleteTask'), '{trash}': t('trash.title'), '{more}': t('roomDetail.moreOptions'),
+    '{rooms}': t('nav.rooms'), '{home}': t('nav.home'), '{settings}': t('settings.title'), '{effort}': t('roomDetail.effort'),
+    '{assigned}': t('roomDetail.assigned'), '{dueMode}': t('schedule.dueMode'), '{every}': t('roomDetail.every'),
+    '{months}': t('units.months'), '{onDays}': t('schedule.onDays'), '{monthly}': t('schedule.monthly'), '{timer}': t('timer.setting'),
+    '{onDemand}': t('roomDetail.onDemand'), '{showInDashboard}': t('roomDetail.showInDashboard'), '{limit}': t('repeat.limit'),
+    '{perDay}': t('repeat.perDay'), '{first}': t('rooms.modeFirst'), '{shared}': t('rooms.modeShared'), '{rotating}': t('roomDetail.rotating'),
+    '{addRoom}': t('rooms.addRoom'), '{other}': roomName('other'), '{assignRoom}': t('rooms.assignRoom'),
+    '{questsName}': t('setup.questsRoom').replace('{name}', kidName), '{todoList}': t('todos.title'), '{todo}': t('todos.add'),
+    '{doBy}': t('todos.doBy'), '{create}': t('todos.create'), '{catalog}': t('settings.rewardsSection'), '{rules}': t('rewardRules.rules'),
     '{ownPrices}': t('rewardRules.customPrices'), '{goals}': t('settings.goalsSection'), '{coins}': t('settings.coinsPerEffort'),
-    '{members}': t('settings.familyMembers'), '{wizard}': t('setup.open'), '{guide}': t('guide.title'), '{more}': t('roomDetail.moreOptions'),
+    '{members}': t('settings.familyMembers'), '{wizard}': t('setup.open'), '{guide}': t('guide.title'), '{kid}': kidName, '{done}': t('roomDetail.done'),
   };
   const fill = (text: string) => Object.entries(names).reduce((out, [k, v]) => out.split(k).join(v), text);
-  const settingsPath = (...parts: string[]) => [t('settings.title'), ...parts].join(' → ');
-  const roomPath = (...parts: string[]) => [t('nav.rooms'), t('setup.tourARoom'), ...parts].join(' → ');
-  const mockChore = (hl?: 'edit' | 'more') => (
-    <div className="setup-mock-row">
-      <span className="setup-mock-name">🧽 {taskName('Clean Counters', 'kitchen.clean_counters')}</span>
-      <span className={`setup-mock-btn${hl === 'edit' ? ' hl' : ''}`}>{t('common.edit')}</span>
-      <span className={`setup-mock-btn${hl === 'more' ? ' hl' : ''}`}>⋯</span>
-    </div>
-  );
-  const SLIDES: Array<{ title: string; where: string; text: string; mock: ReactNode }> = [
-    { title: t('setup.tour1Title'), where: roomPath(t('common.edit')), text: fill(t('setup.tour1Text')), mock: mockChore('edit') },
-    {
-      title: t('setup.tour2Title'), where: roomPath(), text: fill(t('setup.tour2Text')),
-      mock: (
-        <>
-          <div className="setup-mock-row"><span className="setup-mock-btn hl">+ {t('roomDetail.addTask')}</span></div>
-          {mockChore('more')}
-          <div className="setup-mock-menu"><span className="setup-mock-btn hl">{t('pause.pause')}</span></div>
-        </>
-      ),
-    },
-    {
-      title: t('setup.tour3Title'), where: settingsPath(t('settings.rewardsSection')), text: fill(t('setup.tour3Text')),
-      mock: (
-        <div className="setup-mock-row">
-          <span className="setup-mock-name">{rewardTitleText('Movie Night Pick', t)}<small>25 🪙 · {t('rewardRules.customPrices')}</small></span>
-          <span className="setup-mock-btn hl">{t('rewardRules.rules')}</span>
-          <span className="setup-mock-btn">{t('common.edit')}</span>
-        </div>
-      ),
-    },
-    {
-      title: t('setup.tour4Title'), where: settingsPath(`${t('settings.goalsSection')} · ${t('settings.coinsPerEffort')}`), text: fill(t('setup.tour4Text')),
-      mock: (
-        <>
-          <div className="setup-mock-row">
-            <span className="setup-mock-name">{t('setup.goalTitle')}<small>100 🪙 · +15 🪙</small></span>
-            <span className="setup-mock-btn hl">{t('common.edit')}</span>
-          </div>
-          <div className="setup-mock-row setup-mock-scale">
-            {[1, 2, 3, 4, 5].map((e) => <span key={e} className="setup-mock-btn">{'★'.repeat(e)} {catalog.coinsByEffort[e]}</span>)}
-          </div>
-        </>
-      ),
-    },
-    {
-      title: t('setup.tour5Title'), where: settingsPath(`${t('settings.familyMembers')} · ${t('setup.open')}`), text: fill(t('setup.tour5Text')),
-      mock: (
-        <div className="setup-mock-row setup-mock-scale">
-          <span className="setup-mock-btn">📖 {t('guide.title')}</span>
-          <span className="setup-mock-btn hl">🧙 {t('setup.open')}</span>
-        </div>
-      ),
-    },
+  const lines = (key: string) => fill(t(key)).split('\n').filter(Boolean);
+  const chip = (label: string, hl = false) => <span className={`setup-mock-btn${hl ? ' hl' : ''}`}>{label}</span>;
+  const row = (...children: ReactNode[]) => <div className="setup-mock-row">{children}</div>;
+  const name = (text: string, small?: string) => <span className="setup-mock-name">{text}{small && <small>{small}</small>}</span>;
+  const tick = (label: string) => <span className="setup-mock-btn hl">☑ {label}</span>;
+  const tidy = taskName('10-minute room tidy', 'starter.room_tidy');
+  const MOCKS: ReactNode[] = [
+    row(name(`🧽 ${taskName('Clean Counters', 'kitchen.clean_counters')}`), chip(t('common.edit'), true), chip('⋯')),
+    <>{row(name(t('setup.mockAirFilter')))}{row(chip(t('schedule.dueMode')), chip(`${t('roomDetail.every')} ▾`, true), chip('3', true), chip(`${t('units.months')} ▾`, true))}</>,
+    <>{row(chip(t('timer.setting')), chip(`10 ${t('timer.minutes')}`, true))}{row(name(`🧹 ${tidy}`), chip(`▶ 10 ${t('timer.min')}`, true))}</>,
+    <>{row(tick(t('roomDetail.onDemand')), tick(t('roomDetail.showInDashboard')))}{row(chip(t('repeat.limit')), chip(`1 ${t('repeat.perDay')}`, true))}</>,
+    <>{row(chip(t('roomDetail.assigned')), chip(`✓ ${kidName}`, true), chip(`✓ ${kids[1]?.displayName.trim() || 'Max'}`, true))}{row(chip(t('rooms.modeFirst')), chip(t('rooms.modeShared')), chip(t('roomDetail.rotating'), true))}</>,
+    <>{row(name(`🎒 ${t('setup.questsRoom').replace('{name}', kidName)}`, t('rooms.assignedTo').replace('{name}', kidName)))}{row(name(taskName('Homework done', 'starter.homework_done'), t('roomDetail.onDemand')), chip(t('common.edit')))}</>,
+    <>{row(name(`🌱 ${taskName('Mow the lawn', 'starter.mow_lawn')}`), chip(t('common.edit')), chip('⋯', true))}<div className="setup-mock-menu">{chip(t('pause.pause'), true)}</div>{row(chip(`🗑 ${t('roomDetail.deleteTask')}`, true))}</>,
+    <>{row(name(`📝 ${t('todos.title')}`))}{row(name(`☐ ${t('setup.mockTodo')}`, `${t('todos.doBy')} …`))}{row(chip(`+ ${t('todos.add')}`, true))}</>,
+    row(name(rewardTitleText('Movie Night Pick', t), `25 🪙 · ${t('rewardRules.customPrices')}`), chip(t('rewardRules.rules'), true), chip(t('common.edit'))),
+    <>{row(name(t('setup.goalTitle'), '100 🪙 · +15 🪙'), chip(t('common.edit')))}{row(chip(`📖 ${t('guide.title')}`), chip(`🧙 ${t('setup.open')}`, true))}</>,
   ];
+  const SLIDES = MOCKS.map((mock, i) => ({
+    title: t(`setup.tour${i + 1}Title`),
+    lead: fill(t(`setup.tour${i + 1}For`)),
+    steps: lines(`setup.tour${i + 1}Steps`),
+    example: lines(`setup.tour${i + 1}Example`),
+    mock,
+    // The last slide lists places, not taps
+    numbered: i < MOCKS.length - 1,
+  }));
 
   const kidsWithAllowance = kids.filter((k) => (Number(k.allowance.replace(',', '.')) || 0) > 0);
 
@@ -467,8 +459,20 @@ export function SetupWizard({ user, onSaved, onExit, onOpenGuide }: Props) {
               );
             })}
           </div>
+          {kids.some((k) => k.ageGroup !== '3-5') && (
+            <label className="setup-row">
+              <input type="checkbox" checked={questsOn} onChange={(e) => setQuestsOn(e.target.checked)} />
+              <span className="setup-row-text">
+                <span>{t('setup.questsToggle')}</span>
+                <span className="setup-row-meta">{t('setup.questsHelp').replace('{example}', questsName(kids.find((k) => k.ageGroup !== '3-5')!))}</span>
+              </span>
+            </label>
+          )}
           {kids.length > 0 && (
-            <p className="setup-help">{t('setup.kidRoomsHelp').replace('{rooms}', kids.map((k) => ownRoomOf(k)?.name ?? t('setup.kidRoom').replace('{name}', k.displayName.trim())).join(', '))}</p>
+            <p className="setup-help">{t('setup.kidRoomsHelp').replace('{rooms}', kids.flatMap((k) => [
+              ownRoomOf(k)?.name ?? t('setup.kidRoom').replace('{name}', k.displayName.trim()),
+              ...(hasQuests(k) ? [questsName(k)] : []),
+            ]).join(', '))}</p>
           )}
         </div>
       )}
@@ -566,16 +570,23 @@ export function SetupWizard({ user, onSaved, onExit, onOpenGuide }: Props) {
             <span className="setup-row-meta">{slide + 1} / {SLIDES.length}</span>
           </div>
           <div className="tq-card-title">{SLIDES[slide].title}</div>
-          <div className="setup-where">{SLIDES[slide].where}</div>
+          <p className="setup-tour-lead">{SLIDES[slide].lead}</p>
           <div className="setup-mock" aria-hidden="true">{SLIDES[slide].mock}</div>
-          <p className="setup-tour-text">{SLIDES[slide].text}</p>
+          {SLIDES[slide].numbered
+            ? <ol className="setup-tour-steps">{SLIDES[slide].steps.map((x) => <li key={x}>{x}</li>)}</ol>
+            : <ul className="setup-tour-steps">{SLIDES[slide].steps.map((x) => <li key={x}>{x}</li>)}</ul>}
+          <div className="setup-tour-example">
+            <span aria-hidden="true">💡</span>
+            <div>{SLIDES[slide].example.map((x) => <div key={x}>{x}</div>)}</div>
+          </div>
           <div className="setup-dots" aria-hidden="true">
             {SLIDES.map((sl, i) => <span key={sl.title} className={i === slide ? 'on' : ''} />)}
           </div>
           <div className="setup-nav setup-tour-nav">
             {slide > 0
               ? <button type="button" className="tq-btn tq-btn-secondary" onClick={() => setSlide((n) => n - 1)}>{t('setup.back')}</button>
-              : <button type="button" className="tq-btn tq-btn-secondary" onClick={onExit}>{t('setup.tourSkip')}</button>}
+              : <span />}
+            {slide < SLIDES.length - 1 && <button type="button" className="tq-btn tq-btn-sm setup-skip" onClick={onExit}>{t('setup.tourSkip')}</button>}
             {slide < SLIDES.length - 1
               ? <button type="button" className="tq-btn tq-btn-primary" onClick={() => setSlide((n) => n + 1)}>{t('setup.next')}</button>
               : <button type="button" className="tq-btn tq-btn-primary" onClick={onExit}>{t('setup.goHome')}</button>}

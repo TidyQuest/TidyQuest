@@ -134,6 +134,43 @@ describe('setup wizard (NEW-17)', () => {
     expect(goal(ava.id).endAt).toBeTruthy();
   });
 
+  it("a Quests room holds a kid's routines and anytime chores", async () => {
+    const admin = await createAdmin(agent);
+    const res = await agent.post('/api/setup').set(auth(admin.token)).send({
+      people: [{ ref: 'me', kind: 'adult' }, { ref: 'ava', kind: 'kid', displayName: 'Ava', ageGroup: '9-12', logsIn: false }],
+      rooms: [
+        { key: 'own:ava', starter: 'own', name: "Ava's room", owner: 'ava' },
+        { key: 'quests:ava', starter: 'quests', name: "Ava's Quests", owner: 'ava' },
+      ],
+      chores: [
+        { id: 'starter.morning_routine', room: 'quests:ava', people: ['ava'] }, // daily, effort 1: 35 a week
+        { id: 'starter.homework_done', room: 'quests:ava', people: ['ava'] }, // anytime, about 5 a week: 25
+        { id: 'starter.room_tidy', room: 'own:ava', people: ['ava'] },
+        { id: 'starter.room_tidy', room: 'quests:ava', people: ['ava'] }, // not a Quests chore
+      ],
+      rewards: [],
+    });
+    expect([res.status, res.body.code]).toEqual([400, 'bad_chore']);
+    const body = {
+      people: [{ ref: 'me', kind: 'adult' }, { ref: 'ava', kind: 'kid', displayName: 'Ava', ageGroup: '9-12', logsIn: false }],
+      rooms: [{ key: 'quests:ava', starter: 'quests', name: "Ava's Quests", owner: 'ava' }],
+      chores: [
+        { id: 'starter.morning_routine', room: 'quests:ava', people: ['ava'] },
+        { id: 'starter.homework_done', room: 'quests:ava', people: ['ava'] },
+      ],
+      rewards: [],
+      goals: [{ person: 'ava', title: 'Weekly goal' }],
+    };
+    expect((await agent.post('/api/setup').set(auth(admin.token)).send(body)).status).toBe(201);
+    const ava = db.prepare("SELECT id FROM users WHERE displayName = 'Ava'").get() as { id: number };
+    const quests = db.prepare("SELECT roomType, assignedUserId FROM rooms WHERE name = 'Ava''s Quests'").get();
+    expect(quests).toEqual({ roomType: 'other', assignedUserId: ava.id });
+    const homework = db.prepare("SELECT onDemand, showInDashboard, repeatLimit, repeatPeriod FROM tasks WHERE translationKey = 'starter.homework_done'").get();
+    expect(homework).toEqual({ onDemand: 1, showInDashboard: 1, repeatLimit: 1, repeatPeriod: 'day' });
+    // 35 + 25 = 60 a week: a goal of 40 with a 5 bonus
+    expect(db.prepare('SELECT goalCoins, rewardCoins FROM user_goals WHERE userId = ?').get(ava.id)).toEqual({ goalCoins: 40, rewardCoins: 5 });
+  });
+
   it('works for a household without kids', async () => {
     const admin = await createAdmin(agent);
     const res = await agent.post('/api/setup').set(auth(admin.token)).send({
@@ -226,7 +263,8 @@ describe('setup wizard (NEW-17)', () => {
     for (const c of STARTER_CHORES) {
       expect(seen.has(`${c.room}/${c.id}`)).toBe(false);
       seen.add(`${c.room}/${c.id}`);
-      if (c.room === 'own') expect(c.ages.length).toBeGreaterThan(0);
+      if (c.room === 'own' || c.room === 'quests') expect(c.ages.length).toBeGreaterThan(0);
+      if (c.perWeek) expect(c.room).toBe('quests');
       else expect(c.ages.length > 0 || c.adults).toBeTruthy();
     }
     expect(new Set(STARTER_REWARDS.map((r) => r.id)).size).toBe(STARTER_REWARDS.length);

@@ -51,10 +51,10 @@ export const GUIDE_EN: GuideSection[] = [
       { ul: [
         'A parent of a new family (no rooms yet) lands in it after signing in. Not now skips it, and Settings → Setup wizard (at the top of Settings) opens it any time.',
         'Family: add kids by age group (3–5, 6–8, 9–12, 13+) and other grown-ups. Kids are optional, so couples and roommates can use it too. A kid can log in on their own (Kid mode makes the app simpler) or not log in, and a parent does it for them. Ages only pick the starter chores and aren’t saved.',
-        'Home: tick your rooms. Each kid also gets their own room.',
+        'Home: tick your rooms. Each kid also gets their own room, and kids 6 and up can get a Quests room for daily routines and school things (homework, out the door on time, reading), as anytime chores shown on Home.',
         'Chores: a ticked starter list for each person, picked by age, with More ideas for extras. A chore several kids can do is shared: whoever does it first gets the coins. Chores no kid is old enough for go to the grown-ups.',
         'Rewards: everyone pays about the same weeks of their own chores, so each person gets their own price (“own prices”). An optional weekly allowance adds cash rewards priced to match it. Weekly goals repeat at about 70% of each person’s chores, with a bonus for reaching them.',
-        'Finish makes everything at once. A short click-through tutorial then shows where to change chores, rewards, goals and coins.',
+        'Finish makes everything at once. A short click-through tutorial then shows how to change a chore, how often it comes back (like every 3 months), timers, anytime chores, sharing and taking turns, Quests rooms, the to-do list, rewards, goals and coins.',
         'Running it again only adds: it uses the rooms you already have, skips chores they already have, starts grown-up chores and rewards unticked, and leaves your rewards alone.',
       ] },
     ],

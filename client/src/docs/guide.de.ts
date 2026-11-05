@@ -27,10 +27,10 @@ export const GUIDE_DE: GuideSection[] = [
       { ul: [
         'Ein Elternteil einer neuen Familie (noch keine Räume) landet nach der Anmeldung darin. Nicht jetzt überspringt ihn, und Einstellungen → Einrichtungsassistent (oben in den Einstellungen) öffnet ihn jederzeit.',
         'Familie: Füge Kinder nach Altersgruppe (3–5, 6–8, 9–12, 13+) und weitere Erwachsene hinzu. Kinder sind optional, also können auch Paare und WGs ihn nutzen. Ein Kind kann sich selbst anmelden (der Kindermodus macht die App einfacher) oder nicht, dann macht es ein Elternteil. Das Alter wählt nur die Startaufgaben aus und wird nicht gespeichert.',
-        'Zuhause: Hake deine Räume an. Jedes Kind bekommt außerdem einen eigenen Raum.',
+        'Zuhause: Hake deine Räume an. Jedes Kind bekommt außerdem einen eigenen Raum, und Kinder ab 6 können einen Quests-Raum für tägliche Routinen und Schulsachen bekommen (Hausaufgaben, pünktlich los, Lesen), als Aufgaben für jederzeit auf der Startseite.',
         'Aufgaben: eine angehakte Startliste für jede Person, nach Alter ausgewählt, mit Mehr Ideen für weitere. Eine Aufgabe, die mehrere Kinder machen können, wird geteilt: Wer sie zuerst erledigt, bekommt die Münzen. Aufgaben, für die kein Kind alt genug ist, gehen an die Erwachsenen.',
         'Belohnungen: Alle zahlen etwa gleich viele Wochen ihrer eigenen Aufgaben, deshalb bekommt jede Person einen eigenen Preis („eigene Preise“). Ein optionales Taschengeld fügt Geld-Belohnungen mit passendem Preis hinzu. Wochenziele wiederholen sich bei etwa 70 % der Aufgaben jeder Person, mit einem Bonus, wenn sie erreicht werden.',
-        'Fertig legt alles auf einmal an. Danach zeigt eine kurze Klick-Anleitung, wo du Aufgaben, Belohnungen, Ziele und Münzen änderst.',
+        'Fertig legt alles auf einmal an. Danach zeigt eine kurze Klick-Anleitung, wie du eine Aufgabe änderst, wie oft sie anfällt (zum Beispiel alle 3 Monate), Timer, Aufgaben für jederzeit, Teilen und Abwechseln, Quests-Räume, die To-do-Liste, Belohnungen, Ziele und Münzen.',
         'Ein neuer Durchlauf fügt nur hinzu: Er nutzt deine vorhandenen Räume, überspringt Aufgaben, die dort schon sind, lässt Aufgaben der Erwachsenen und Belohnungen ohne Haken und lässt deine Belohnungen in Ruhe.',
       ] },
     ],

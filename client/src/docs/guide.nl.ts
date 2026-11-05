@@ -27,10 +27,10 @@ export const GUIDE_NL: GuideSection[] = [
       { ul: [
         'Een ouder van een nieuw gezin (nog geen kamers) komt er na het inloggen in terecht. Niet nu slaat hem over, en Instellingen → Instelhulp (bovenaan Instellingen) opent hem wanneer je wilt.',
         'Gezin: voeg kinderen toe per leeftijdsgroep (3–5, 6–8, 9–12, 13+) en andere volwassenen. Kinderen zijn niet verplicht, dus stellen en huisgenoten kunnen hem ook gebruiken. Een kind kan zelf inloggen (Kindermodus maakt de app eenvoudiger) of niet, en dan doet een ouder het voor het kind. De leeftijd kiest alleen de startklusjes en wordt niet bewaard.',
-        'Huis: vink je kamers aan. Elk kind krijgt ook een eigen kamer.',
+        'Huis: vink je kamers aan. Elk kind krijgt ook een eigen kamer, en kinderen vanaf 6 kunnen een Quests-kamer krijgen voor dagelijkse routines en schooldingen (huiswerk, op tijd de deur uit, lezen), als klusjes voor wanneer je wilt die op Home staan.',
         'Klusjes: een aangevinkte startlijst voor iedereen, gekozen op leeftijd, met Meer ideeën voor extra’s. Een klusje dat meerdere kinderen kunnen doen wordt gedeeld: wie het eerst doet, krijgt de munten. Klusjes waar geen kind oud genoeg voor is, gaan naar de volwassenen.',
         'Beloningen: iedereen betaalt ongeveer evenveel weken van zijn eigen klusjes, dus iedereen krijgt een eigen prijs („eigen prijzen”). Optioneel zakgeld voegt geldbeloningen toe met een passende prijs. Weekdoelen komen elke week terug op ongeveer 70% van ieders klusjes, met een bonus als ze gehaald worden.',
-        'Klaar maakt alles in één keer. Daarna laat een korte klik-uitleg zien waar je klusjes, beloningen, doelen en munten aanpast.',
+        'Klaar maakt alles in één keer. Daarna laat een korte klik-uitleg zien hoe je een klusje aanpast, hoe vaak het terugkomt (zoals elke 3 maanden), timers, klusjes voor wanneer je wilt, delen en om de beurt, Quests-kamers, de to-dolijst, beloningen, doelen en munten.',
         'Opnieuw gebruiken voegt alleen toe: hij gebruikt de kamers die je al hebt, slaat klusjes over die er al zijn, laat klusjes van volwassenen en beloningen uitgevinkt en laat je beloningen met rust.',
       ] },
     ],

@@ -27,10 +27,10 @@ export const GUIDE_FR: GuideSection[] = [
       { ul: [
         'Le parent d’une nouvelle famille (sans pièces) y arrive après s’être connecté. Pas maintenant le passe, et Paramètres → Assistant de configuration (en haut des Paramètres) l’ouvre à tout moment.',
         'Famille : ajoute les enfants par tranche d’âge (3–5, 6–8, 9–12, 13+) et les autres adultes. Les enfants sont facultatifs, donc les couples et les colocataires peuvent aussi l’utiliser. Un enfant peut se connecter tout seul (le Mode enfant simplifie l’appli) ou pas, et un parent le fait pour lui. L’âge sert seulement à choisir les tâches de départ et n’est pas enregistré.',
-        'Maison : coche tes pièces. Chaque enfant a aussi sa propre pièce.',
+        'Maison : coche tes pièces. Chaque enfant a aussi sa propre pièce, et les enfants de 6 ans et plus peuvent avoir une pièce Quêtes pour les routines du quotidien et l’école (devoirs, partir à l’heure, lecture), en tâches à tout moment affichées sur l’accueil.',
         'Tâches : une liste de départ cochée pour chaque personne, choisie selon l’âge, avec Plus d’idées pour d’autres. Une tâche que plusieurs enfants peuvent faire est partagée : le premier qui la fait gagne les pièces. Les tâches pour lesquelles aucun enfant n’a l’âge vont aux adultes.',
         'Récompenses : chacun paie à peu près les mêmes semaines de ses propres tâches, donc chaque personne a son propre prix (« prix personnalisés »). Un argent de poche facultatif ajoute des récompenses en argent au prix correspondant. Les objectifs de la semaine se répètent à environ 70 % des tâches de chacun, avec un bonus quand ils sont atteints.',
-        'Terminer crée tout d’un coup. Un court tutoriel à cliquer montre ensuite où changer les tâches, les récompenses, les objectifs et les pièces.',
+        'Terminer crée tout d’un coup. Un court tutoriel à cliquer montre ensuite comment changer une tâche, sa fréquence (comme tous les 3 mois), les minuteurs, les tâches à tout moment, le partage et le tour de rôle, les pièces Quêtes, la liste à faire, les récompenses, les objectifs et les pièces.',
         'Le relancer ne fait qu’ajouter : il utilise les pièces que tu as déjà, saute les tâches qu’elles ont déjà, laisse les tâches des adultes et les récompenses décochées, et ne touche pas à tes récompenses.',
       ] },
     ],

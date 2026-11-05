@@ -27,10 +27,10 @@ export const GUIDE_ES: GuideSection[] = [
       { ul: [
         'Un padre o una madre de una familia nueva (aún sin habitaciones) llega a él al iniciar sesión. Ahora no lo salta, y Ajustes → Asistente de configuración (arriba en Ajustes) lo abre cuando quieras.',
         'Familia: añade a los niños por grupo de edad (3–5, 6–8, 9–12, 13+) y a otros adultos. Los niños son opcionales, así que parejas y compañeros de piso también pueden usarlo. Un niño puede iniciar sesión por su cuenta (el Modo niño simplifica la app) o no, y un padre o una madre lo hace por él. La edad solo elige las tareas iniciales y no se guarda.',
-        'Casa: marca tus habitaciones. Cada niño también tiene su propia habitación.',
+        'Casa: marca tus habitaciones. Cada niño también tiene su propia habitación, y los niños de 6 años o más pueden tener una habitación de Misiones para sus rutinas diarias y las cosas del cole (deberes, salir a tiempo, lectura), como tareas para cuando sea que salen en Inicio.',
         'Tareas: una lista inicial marcada para cada persona, elegida según la edad, con Más ideas para extras. Una tarea que pueden hacer varios niños se comparte: quien la hace primero se lleva las monedas. Las tareas para las que ningún niño tiene edad van a los adultos.',
         'Recompensas: todos pagan más o menos las mismas semanas de sus propias tareas, así que cada persona tiene su propio precio («precios propios»). Una paga semanal opcional añade recompensas en dinero con el precio correspondiente. Los objetivos semanales se repiten en torno al 70 % de las tareas de cada persona, con un bonus al alcanzarlos.',
-        'Terminar lo crea todo a la vez. Después, un breve tutorial para ir pasando muestra dónde cambiar tareas, recompensas, objetivos y monedas.',
+        'Terminar lo crea todo a la vez. Después, un breve tutorial para ir pasando muestra cómo cambiar una tarea, cada cuánto vuelve (como cada 3 meses), los temporizadores, las tareas para cuando sea, compartir y turnarse, las habitaciones de Misiones, la lista de pendientes, las recompensas, los objetivos y las monedas.',
         'Volver a usarlo solo añade: usa las habitaciones que ya tienes, se salta las tareas que ya tienen, deja sin marcar las tareas de los adultos y las recompensas, y no toca tus recompensas.',
       ] },
     ],

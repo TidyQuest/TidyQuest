@@ -1695,7 +1695,6 @@ html[data-theme='lava'] input[type='date'], html[data-season-dark] input[type='d
 .setup-error { margin: 0; color: #DC2626; font-weight: 700; }
 .setup-tips { margin: 0; padding-left: 20px; display: grid; gap: 6px; font-weight: 600; }
 .setup-subhead { margin: 6px 0 0; font-size: 15px; font-weight: 800; }
-.setup-where { font-size: 12px; font-weight: 800; color: var(--warm-accent); }
 .setup-mock { display: grid; gap: 8px; padding: 12px; border-radius: 14px; background: var(--warm-bg); border: 1.5px dashed var(--warm-border); }
 .setup-mock-row { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 12px; background: var(--warm-card); border: 1.5px solid var(--warm-border); flex-wrap: wrap; }
 .setup-mock-name { flex: 1; min-width: 0; display: grid; font-weight: 800; font-size: 14px; overflow-wrap: anywhere; }
@@ -1704,11 +1703,15 @@ html[data-theme='lava'] input[type='date'], html[data-season-dark] input[type='d
 .setup-mock-btn.hl { border-color: var(--warm-accent); color: var(--warm-accent); box-shadow: 0 0 0 3px var(--warm-accent-light); animation: setup-pulse 1.6s ease-in-out infinite; }
 .setup-mock-menu { justify-self: end; }
 .setup-mock-scale { justify-content: flex-start; }
-.setup-tour-text { margin: 0; font-weight: 600; line-height: 1.45; }
+.setup-tour-lead { margin: 0; font-weight: 600; color: var(--warm-text-light); }
+.setup-tour-steps { margin: 0; padding-left: 22px; display: grid; gap: 8px; font-weight: 700; line-height: 1.4; }
+.setup-tour-example { display: flex; gap: 8px; padding: 10px 12px; border-radius: 12px; background: var(--warm-accent-light); font-size: 14px; font-weight: 600; line-height: 1.4; }
+.setup-tour-example > div { display: grid; gap: 4px; }
+.setup-skip { align-self: center; }
 .setup-dots { display: flex; justify-content: center; gap: 6px; }
 .setup-dots span { width: 8px; height: 8px; border-radius: 50%; background: var(--warm-border); }
 .setup-dots span.on { background: var(--warm-accent); }
-.setup-tour-nav { position: static; padding: 0; background: none; }
+.setup-tour-nav { position: static; padding: 0; background: none; align-items: center; }
 @keyframes setup-pulse { 50% { box-shadow: 0 0 0 6px var(--warm-accent-light); } }
 @media (prefers-reduced-motion: reduce) { .setup-mock-btn.hl { animation: none; } }
 @media (max-width: 480px) {

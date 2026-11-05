@@ -10,8 +10,8 @@ const API_BASE = '/api';
 export type SetupAge = '3-5' | '6-8' | '9-12' | '13+';
 export type SetupRoomId = 'kitchen' | 'bathroom' | 'living' | 'laundry' | 'bedroom' | 'yard' | 'pets' | 'garage' | 'office';
 export interface SetupChoreDef {
-  id: string; name: string; room: 'own' | SetupRoomId; frequencyDays: number; effort: number;
-  ages: SetupAge[]; adults?: boolean; ticked: boolean; timerMinutes?: number;
+  id: string; name: string; room: 'own' | 'quests' | SetupRoomId; frequencyDays: number; effort: number;
+  ages: SetupAge[]; adults?: boolean; ticked: boolean; timerMinutes?: number; perWeek?: number;
 }
 export interface SetupRewardDef { id: string; weeks: number; ages: Array<SetupAge | 'adult'>; ticked: boolean; presetTitle?: string }
 export interface SetupCatalog {
