@@ -16,10 +16,14 @@ const parseStored = (v: string) => new Date(v.includes('T') ? v : `${v.replace('
 
 export interface RescueRow { day: string; taskId: number | null; multiplier: number; completedBy: number | null; completionId: number | null; skipped: number }
 
-/** How many of its own intervals a chore is behind (1+ = forgotten); a to-do counts weeks past its date. */
+/**
+ * How many of its own intervals a chore is behind (1+ = forgotten); a to-do counts weeks past its
+ * date (one without a date is never behind).
+ */
 function behind(t: any, now: Date): number {
   if (t.oneTime) {
-    const late = (now.getTime() - oneTimeDeadline(t, now).getTime()) / DAY_MS;
+    const deadline = oneTimeDeadline(t);
+    const late = deadline ? (now.getTime() - deadline.getTime()) / DAY_MS : 0;
     return late > 0 ? 1 + late / 7 : 0;
   }
   const due = nextDueAt(t, now) ?? (t.createdAt ? parseStored(t.createdAt) : now);

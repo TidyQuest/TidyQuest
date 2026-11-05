@@ -15,6 +15,7 @@ import { DueOnPicker, ReminderPicker, RotationPeriodPicker, SeasonPicker, Starts
 import { EMPTY_SCHEDULE, monthlyLabel, schedulePayload, scheduleFromTask, seasonLabel, startsLater, todayIso, weekdaysLabel, type ScheduledTaskFields, type ScheduleValue } from '../../utils/schedule';
 import { api } from '../../hooks/useApi';
 import { TakeBackButton } from '../shared/TakeBackButton';
+import { TodoQuickAdd } from '../shared/TodoQuickAdd';
 import { localeFor } from '../../utils/locale';
 import { useTranslation } from '../../hooks/useTranslation';
 import { AdminCompleteModal } from '../shared/AdminCompleteModal';
@@ -111,6 +112,7 @@ interface Task extends ScheduledTaskFields {
   outOfSeason?: boolean;
   /** Pinned by the viewer to "Your usual" on Home */
   pinned?: boolean;
+  createdAt?: string | null;
 }
 
 interface RoomDetailProps {
@@ -118,6 +120,12 @@ interface RoomDetailProps {
     id: number; name: string; roomType: string; color: string; accentColor: string;
     assignedUserId?: number | null;
     tasks: Task[];
+    /** From the server: one-time chores, paused ones and (for the To-dos room) everything left out */
+    health?: number;
+    /** The family's To-dos room (ENH-18): a checklist, with no health */
+    isTodoRoom?: boolean;
+    todoCount?: number;
+    todoOverdue?: number;
   };
   language?: string;
   isAdmin: boolean;
@@ -260,7 +268,7 @@ export function RoomDetail({ room, language, isAdmin, currentUserId, currentUser
     return result;
   };
 
-  const health = getRoomHealth(room.tasks);
+  const health = room.health ?? getRoomHealth(room.tasks);
   const RoomIcon = getRoomIcon(room.roomType);
 
   // Same rule the server uses when paying out: a custom amount wins over the effort default
@@ -542,62 +550,82 @@ export function RoomDetail({ room, language, isAdmin, currentUserId, currentUser
     color: sortKey === key ? 'var(--warm-accent)' : 'var(--warm-text-light)',
   });
 
-  return (
-    <>
-    <div className="page-enter">
-      {/* Header */}
-      <div className="tq-card room-detail-hero" style={{
-        padding: 28, marginBottom: 20, display: 'flex', alignItems: 'center', gap: 28,
-        background: `linear-gradient(135deg, ${room.color}88, ${room.color}33)`,
-        borderColor: `${room.accentColor}44`,
-      }}>
-        <RingGauge value={health} size={110} strokeWidth={10} />
-        <div style={{ flex: 1 }}>
-          <div style={{ marginBottom: 6 }}><RoomIcon /></div>
-          <h2 style={{ fontSize: 24, fontWeight: 900, color: 'var(--warm-text)', margin: '0 0 4px' }}>{roomDisplayName(room.name, room.roomType)}</h2>
-          <div style={{ fontSize: 13, color: 'var(--warm-text-muted)', fontWeight: 600 }}>{room.tasks.length} {t('rooms.tasksTracked')}</div>
-        </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 8, alignSelf: 'stretch', justifyContent: 'center' }}>
-          <button onClick={onBack} className="tq-btn tq-btn-secondary tq-btn-md">
-            <BackIcon /> {t('rooms.backToRooms')}
-          </button>
-          {isAdmin && (
-            <button onClick={() => setShowDuplicate((v) => !v)} className="tq-btn tq-btn-secondary tq-btn-sm">
-              {t('duplicateRoom.button')}
-            </button>
-          )}
-        </div>
-      </div>
+  const shortDate = (day: string) => new Date(`${day}T12:00:00`).toLocaleDateString(localeFor(language), { weekday: 'short', month: 'short', day: 'numeric' });
+  const repeatLabel = (task: Task) => monthlyLabel(task, t, language)
+    || (task.scheduleWeekdays ? weekdaysLabel(task.scheduleWeekdays, language, weekStart) : `${t('roomDetail.every')} ${formatFreq(task.frequencyDays, t)}`);
 
-      {isAdmin && showDuplicate && (
-        <DuplicateRoom room={room} displayName={roomDisplayName(room.name, room.roomType)} users={users || []} language={language}
-          onCancel={() => setShowDuplicate(false)}
-          onDone={(id) => { setShowDuplicate(false); onRefresh?.(); onOpenRoom?.(id); }} />
-      )}
-
-      {/* Task Table */}
-      <div className="tq-card tq-card-padded">
-        <div className="room-table-scroll room-detail-scroll">
-        {/* Column Headers (sortable) */}
-        <div className="room-table-header" style={{
-          display: 'grid', gridTemplateColumns: TASK_COLUMNS,
-          gap: 12, padding: '0 8px 14px', borderBottom: '1.5px solid var(--warm-border)',
-          fontSize: 11, fontWeight: 800, textTransform: 'uppercase', letterSpacing: 1,
-        }}>
-          <div style={colStyle('name')} onClick={() => handleSort('name')}>{t('history.task')}{sortIndicator('name')}</div>
-          <div style={colStyle('health')} onClick={() => handleSort('health')}>{t('rooms.health')}{sortIndicator('health')}</div>
-          <div style={colStyle('frequency')} onClick={() => handleSort('frequency')}>{t('roomDetail.frequency')}{sortIndicator('frequency')}</div>
-          <div style={colStyle('effort')} onClick={() => handleSort('effort')}>{t('roomDetail.effort')}{sortIndicator('effort')}</div>
-          <div style={colStyle('coins')} onClick={() => handleSort('coins')}>{t('roomDetail.coins')}{sortIndicator('coins')}</div>
-          <div style={colStyle('dueDate')} onClick={() => handleSort('dueDate')}>{t('roomDetail.nextDue')}{sortIndicator('dueDate')}</div>
-          <div style={colStyle('assigned')} onClick={() => handleSort('assigned')}>{t('roomDetail.assigned')}{sortIndicator('assigned')}</div>
-          <div style={{ textAlign: 'right', color: 'var(--warm-text-light)' }}>{t('roomDetail.actions')}</div>
-        </div>
-
-        {sortedTasks.map((task) => (
+  // The To-dos room (ENH-18): a checklist instead of the chore table. Earliest do-by date first, then
+  // the oldest added; ticking one finishes it, with its coins.
+  const todoOrder = [...sortedTasks].sort((a, b) => (!!a.pausedAt !== !!b.pausedAt ? (a.pausedAt ? 1 : -1) : 0)
+    || String(a.doBy || '9999').localeCompare(String(b.doBy || '9999'))
+    || String(a.createdAt ?? '').localeCompare(String(b.createdAt ?? '')) || a.id - b.id);
+  const todoChecklist = () => (
+    <div className="todo-checklist" style={{ display: 'flex', flexDirection: 'column' }}>
+      {todoOrder.map((task) => {
+        const name = translateTask(task.name, task.translationKey);
+        const btn = getDoneButtonState(task);
+        const ticked = animatedTask === task.id;
+        const off = btn.disabled || !!task.pausedAt;
+        const overdue = !!task.oneTime && task.health <= 0 && !task.pausedAt;
+        const who = (task.assignedUsers ?? []).map((u) => u.displayName).join(' + ');
+        const details = [
+          overdue ? `⚠️ ${t('todos.overdue')}` : '',
+          task.doBy ? t('todos.byDate').replace('{date}', shortDate(task.doBy)) : '',
+          !task.oneTime ? `🔁 ${repeatLabel(task)}` : '',
+          who ? `${t('todos.forWho')} ${who}` : '',
+          task.pausedAt ? pausedLabel(task) : '',
+          btn.disabled && btn.label !== t('roomDetail.done') ? btn.label : '',
+        ].filter(Boolean).join(' · ');
+        return (
           <div key={task.id} data-task-id={task.id}>
-            {/* Edit opens in a pop-up (a bottom sheet on phones) so the list doesn't jump around */}
-            {editingTask === task.id && createPortal(
+            {taskEditor(task)}
+            <div className="todo-row" style={{
+              display: 'flex', alignItems: 'center', gap: 12, padding: '12px 6px', borderRadius: 12,
+              borderBottom: '1px solid var(--warm-border-subtle)', transition: 'background-color 0.3s ease',
+              backgroundColor: ticked ? 'var(--health-green-bg)' : 'transparent',
+            }}>
+              <button type="button" role="checkbox" aria-checked={ticked} aria-label={`${t('roomDetail.done')}: ${name}`}
+                title={off ? btn.label : t('roomDetail.done')} disabled={off} onClick={() => !off && handleComplete(task)}
+                style={{
+                  width: 30, height: 30, borderRadius: 9, flexShrink: 0, padding: 0,
+                  display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                  border: `2px solid ${overdue ? 'var(--health-red)' : 'var(--warm-accent)'}`,
+                  backgroundColor: ticked ? 'var(--warm-accent)' : 'var(--warm-bg-input)', color: '#fff',
+                  cursor: off ? 'default' : 'pointer', opacity: off && !ticked ? 0.45 : 1,
+                }}>
+                {ticked && <CheckIcon />}
+              </button>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ fontSize: 15, fontWeight: 800, color: 'var(--warm-text)', overflowWrap: 'anywhere', textDecoration: ticked ? 'line-through' : 'none' }}>{name}</div>
+                {task.notes && <div style={{ fontSize: 12, color: 'var(--warm-text-muted)', fontWeight: 600, marginTop: 2, overflowWrap: 'anywhere' }}>{task.notes}</div>}
+                {details && <div style={{ fontSize: 12, fontWeight: 700, marginTop: 2, color: overdue ? 'var(--health-red)' : 'var(--warm-text-muted)' }}>{details}</div>}
+              </div>
+              <span style={{ fontSize: 12, fontWeight: 800, color: 'var(--warm-accent)', display: 'inline-flex', alignItems: 'center', gap: 3, flexShrink: 0 }}>
+                <CoinIcon />{taskCoins(task)}
+              </span>
+              <TakeBackButton completionId={task.myPendingId} onDone={() => onRefresh?.()} language={language} />
+              {isAdmin && (
+                <button onClick={() => startEdit(task)} className="tq-btn-sm"
+                  style={{ background: 'none', border: '1.5px solid var(--warm-border)', borderRadius: 10, fontWeight: 700, color: 'var(--warm-text-muted)', cursor: 'pointer', fontFamily: 'Nunito', flexShrink: 0 }}>
+                  {t('common.edit')}
+                </button>
+              )}
+            </div>
+          </div>
+        );
+      })}
+      {todoOrder.length === 0 && (
+        <div className="tq-empty-state" style={{ padding: '24px 8px' }}>{t('todos.empty')}</div>
+      )}
+    </div>
+  );
+  const todoLine = [
+    t('todos.countLine').replace('{n}', String(room.todoCount ?? 0)),
+    room.todoOverdue ? t('todos.overdueCount').replace('{n}', String(room.todoOverdue)) : '',
+  ].filter(Boolean).join(' · ');
+
+  // The edit pop-up for one chore (a bottom sheet on phones), shared by the table and the to-do checklist
+  const taskEditor = (task: Task) => editingTask === task.id && createPortal(
               <div className="tq-modal-overlay task-edit-overlay" onClick={() => setEditingTask(null)}>
               <div className="tq-card tq-modal tq-modal-wide task-edit-sheet" role="dialog" aria-modal="true" onClick={(e) => e.stopPropagation()} style={{ overflowY: 'auto', padding: 12 }}>
               <div style={{
@@ -867,7 +895,77 @@ export function RoomDetail({ room, language, isAdmin, currentUserId, currentUser
               </div>
               </div>,
               document.body
-            )}
+  );
+
+  return (
+    <>
+    <div className="page-enter">
+      {/* Header */}
+      <div className="tq-card room-detail-hero" style={{
+        padding: 28, marginBottom: 20, display: 'flex', alignItems: 'center', gap: 28,
+        background: `linear-gradient(135deg, ${room.color}88, ${room.color}33)`,
+        borderColor: `${room.accentColor}44`,
+      }}>
+        {room.isTodoRoom ? (
+          <div aria-hidden="true" style={{ width: 110, height: 110, borderRadius: '50%', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', backgroundColor: 'var(--warm-card)', border: `3px solid ${room.todoOverdue ? 'var(--health-red)' : 'var(--warm-accent)'}` }}>
+            <span style={{ fontSize: 30 }}>📝</span>
+            <span style={{ fontSize: 22, fontWeight: 900, color: 'var(--warm-text)' }}>{room.todoCount ?? 0}</span>
+          </div>
+        ) : <RingGauge value={health} size={110} strokeWidth={10} />}
+        <div style={{ flex: 1 }}>
+          <div style={{ marginBottom: 6 }}><RoomIcon /></div>
+          <h2 style={{ fontSize: 24, fontWeight: 900, color: 'var(--warm-text)', margin: '0 0 4px' }}>{roomDisplayName(room.name, room.roomType)}</h2>
+          {room.isTodoRoom ? (
+            <>
+              <div style={{ fontSize: 13, color: room.todoOverdue ? 'var(--health-red)' : 'var(--warm-text-muted)', fontWeight: 700 }}>{todoLine}</div>
+              <div style={{ fontSize: 12, color: 'var(--warm-text-light)', fontWeight: 600, marginTop: 2 }}>{t('todos.noHealth')}</div>
+            </>
+          ) : (
+            <div style={{ fontSize: 13, color: 'var(--warm-text-muted)', fontWeight: 600 }}>{room.tasks.length} {t('rooms.tasksTracked')}</div>
+          )}
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8, alignSelf: 'stretch', justifyContent: 'center' }}>
+          <button onClick={onBack} className="tq-btn tq-btn-secondary tq-btn-md">
+            <BackIcon /> {t('rooms.backToRooms')}
+          </button>
+          {isAdmin && (
+            <button onClick={() => setShowDuplicate((v) => !v)} className="tq-btn tq-btn-secondary tq-btn-sm">
+              {t('duplicateRoom.button')}
+            </button>
+          )}
+        </div>
+      </div>
+
+      {isAdmin && showDuplicate && (
+        <DuplicateRoom room={room} displayName={roomDisplayName(room.name, room.roomType)} users={users || []} language={language}
+          onCancel={() => setShowDuplicate(false)}
+          onDone={(id) => { setShowDuplicate(false); onRefresh?.(); onOpenRoom?.(id); }} />
+      )}
+
+      {/* Task Table */}
+      <div className="tq-card tq-card-padded">
+        {room.isTodoRoom ? todoChecklist() : (
+        <div className="room-table-scroll room-detail-scroll">
+        {/* Column Headers (sortable) */}
+        <div className="room-table-header" style={{
+          display: 'grid', gridTemplateColumns: TASK_COLUMNS,
+          gap: 12, padding: '0 8px 14px', borderBottom: '1.5px solid var(--warm-border)',
+          fontSize: 11, fontWeight: 800, textTransform: 'uppercase', letterSpacing: 1,
+        }}>
+          <div style={colStyle('name')} onClick={() => handleSort('name')}>{t('history.task')}{sortIndicator('name')}</div>
+          <div style={colStyle('health')} onClick={() => handleSort('health')}>{t('rooms.health')}{sortIndicator('health')}</div>
+          <div style={colStyle('frequency')} onClick={() => handleSort('frequency')}>{t('roomDetail.frequency')}{sortIndicator('frequency')}</div>
+          <div style={colStyle('effort')} onClick={() => handleSort('effort')}>{t('roomDetail.effort')}{sortIndicator('effort')}</div>
+          <div style={colStyle('coins')} onClick={() => handleSort('coins')}>{t('roomDetail.coins')}{sortIndicator('coins')}</div>
+          <div style={colStyle('dueDate')} onClick={() => handleSort('dueDate')}>{t('roomDetail.nextDue')}{sortIndicator('dueDate')}</div>
+          <div style={colStyle('assigned')} onClick={() => handleSort('assigned')}>{t('roomDetail.assigned')}{sortIndicator('assigned')}</div>
+          <div style={{ textAlign: 'right', color: 'var(--warm-text-light)' }}>{t('roomDetail.actions')}</div>
+        </div>
+
+        {sortedTasks.map((task) => (
+          <div key={task.id} data-task-id={task.id}>
+            {/* Edit opens in a pop-up (a bottom sheet on phones) so the list doesn't jump around */}
+            {taskEditor(task)}
               <div className={`room-task-row${task.pausedAt ? ' room-task-paused' : ''}`} style={{
                 display: 'grid', gridTemplateColumns: TASK_COLUMNS,
                 gap: 12, padding: '16px 8px', alignItems: 'center',
@@ -1084,10 +1182,27 @@ export function RoomDetail({ room, language, isAdmin, currentUserId, currentUser
 
           </div>
         ))}
-        </div>{/* end room-table-scroll */}
+        </div>)}{/* end room-table-scroll */}
 
         {/* Add Task */}
-        {isAdmin && showAddTask ? (
+        {/* To-dos room: "+ To-do" opens the short to-do form (the server makes it one-time) */}
+        {isAdmin && room.isTodoRoom ? (
+          showAddTask ? (
+            <div style={{ marginTop: 12 }}>
+              <TodoQuickAdd language={language} roomId={room.id}
+                people={(users ?? []).map((u) => ({ id: u.id, displayName: u.displayName }))}
+                onCancel={() => setShowAddTask(false)}
+                onAdded={() => { setShowAddTask(false); onRefresh?.(); }} />
+            </div>
+          ) : (
+            <div style={{ padding: '14px 8px' }}>
+              <button onClick={() => setShowAddTask(true)} className="tq-btn-md"
+                style={{ width: '100%', background: 'none', border: '1.5px dashed var(--warm-border)', borderRadius: 12, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, fontWeight: 700, color: 'var(--warm-text-light)', fontFamily: 'Nunito' }}>
+                <PlusIcon /> {t('todos.add')}
+              </button>
+            </div>
+          )
+        ) : isAdmin && showAddTask ? (
           <div style={{
             padding: '16px 8px', borderTop: '1px solid var(--warm-border-subtle)',
             backgroundColor: 'var(--warm-bg-warm)', borderRadius: 12, marginTop: 4,

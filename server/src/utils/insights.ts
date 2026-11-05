@@ -1,3 +1,4 @@
+import { todoRoomId } from './todoRoom';
 import db from '../database';
 import { localDateStr } from './dateHelpers';
 import { startOfLocalDay, startOfLocalWeek } from './periods';
@@ -156,7 +157,9 @@ export function snapshotOverdueChores(now: Date = new Date()): number {
     ).all() as Array<ScheduledTask & { id: number; roomId: number; createdAt?: string | null }>;
     const insert = db.prepare('INSERT OR IGNORE INTO chore_overdue_days (day, taskId, roomId, dueAt, daysOverdue) VALUES (?, ?, ?, ?, ?)');
     const noon = dayAt(day, 12);
+    const todoRoom = todoRoomId();
     for (const t of tasks) {
+      if (t.roomId === todoRoom) continue; // the To-dos room doesn't count (ENH-18)
       if (!t.oneTime && isSeasonalNow(t, noon)) continue;
       if (beforeStart(t, at)) continue;
       const due = nextDueAt(t, at) ?? (t.createdAt ? parseDbTime(t.createdAt) : null);
@@ -226,7 +229,9 @@ export function skippedChores(start: Date, end: Date, now: Date = new Date()) {
     if (!(lastByTask.get(b.taskId)! > at)) lastByTask.set(b.taskId, at);
   }
 
-  const tasks = new Map((db.prepare('SELECT * FROM tasks').all() as ChoreRow[]).map((t) => [t.id, t]));
+  // Nothing in the To-dos room counts (ENH-18)
+  const todoRoom = todoRoomId();
+  const tasks = new Map((db.prepare('SELECT * FROM tasks').all() as ChoreRow[]).filter((t) => t.roomId !== todoRoom).map((t) => [t.id, t]));
   const assignees = new Map<number, number[]>();
   for (const a of db.prepare('SELECT taskId, userId FROM task_assignees ORDER BY userId').all() as Array<{ taskId: number; userId: number }>) {
     assignees.set(a.taskId, [...(assignees.get(a.taskId) ?? []), a.userId]);
@@ -286,7 +291,7 @@ export function skippedChores(start: Date, end: Date, now: Date = new Date()) {
       id: t.id, name: t.name, translationKey: t.translationKey, roomId: t.roomId, pool: isPool(t), assignees: assignees.get(t.id) ?? [],
     })),
     late: [...late.values()],
-    undone: undone.map((u) => [u.taskId, u.days, u.worst]),
+    undone: undone.filter((u) => tasks.has(u.taskId)).map((u) => [u.taskId, u.days, u.worst]),
     waits: [...waits.values()].map((w) => [w[0], w[1], round(w[2]), round(w[3])]),
     waitingNow: waitingNow.map((w) => [w[0], round(w[1])]),
   };

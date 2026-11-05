@@ -79,6 +79,10 @@ interface RoomsListProps {
     assignedUserId?: number | null;
     assignedUser?: AssignedUser | null;
     tasks: Array<{ id: number; name: string; translationKey?: string; iconKey?: string; health: number; effectiveAssignedUserIds?: number[]; assignedToChildren?: boolean }>;
+    /** The family's To-dos room (ENH-18): a to-do count instead of health */
+    isTodoRoom?: boolean;
+    todoCount?: number;
+    todoOverdue?: number;
   }>;
   language?: string;
   isAdmin: boolean;
@@ -136,9 +140,14 @@ export function RoomsList({ rooms, language, isAdmin, users, onSelectRoom, onOpe
   const onlyMine = !!viewer && (viewer.taskView === 'mineOnly' || !!viewer.kidMode);
   const canOpenTask = (task: RoomsListProps['rooms'][number]['tasks'][number]) => !!onOpenTask
     && (!onlyMine || isTaskForUser(task, viewer!.id, viewer!.role));
+  // Most urgent first; the To-dos room (no health) last
   const sortedRooms = [...rooms].filter((room) => roomFilter === 'all' || isMyRoom(room)).sort(
-    (a, b) => getRoomHealth(a.tasks as any) - getRoomHealth(b.tasks as any)
+    (a, b) => Number(!!a.isTodoRoom) - Number(!!b.isTodoRoom) || getRoomHealth(a.tasks as any) - getRoomHealth(b.tasks as any)
   );
+  const todoLine = (room: { todoCount?: number; todoOverdue?: number }) => [
+    t('todos.countLine').replace('{n}', String(room.todoCount ?? 0)),
+    room.todoOverdue ? t('todos.overdueCount').replace('{n}', String(room.todoOverdue)) : '',
+  ].filter(Boolean).join(' · ');
 
   // Step 2's suggested chores (the button that opens step 2 turns loadingTasks on)
   useEffect(() => {
@@ -403,9 +412,13 @@ export function RoomsList({ rooms, language, isAdmin, users, onSelectRoom, onOpe
                         )}
                       </div>
                     )}
-                    <div style={{ fontSize: 12, color: 'var(--warm-text-light)', fontWeight: 600 }}>
-                      {room.tasks.length} {t('rooms.tasks')} &middot; {healthLabel(rh)}
-                    </div>
+                    {room.isTodoRoom ? (
+                      <div style={{ fontSize: 12, color: room.todoOverdue ? 'var(--health-red)' : 'var(--warm-text-light)', fontWeight: 700 }}>{todoLine(room)}</div>
+                    ) : (
+                      <div style={{ fontSize: 12, color: 'var(--warm-text-light)', fontWeight: 600 }}>
+                        {room.tasks.length} {t('rooms.tasks')} &middot; {healthLabel(rh)}
+                      </div>
+                    )}
                     {room.assignedUser && (
                       <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, marginTop: 6, padding: '3px 8px 3px 4px', borderRadius: 20, backgroundColor: 'var(--warm-bg-subtle)', border: '1px solid var(--warm-border)' }}>
                         <UserAvatar name={room.assignedUser.displayName} color={room.assignedUser.avatarColor} size={18} avatarType={room.assignedUser.avatarType as any} avatarPreset={room.assignedUser.avatarPreset} avatarPhotoUrl={room.assignedUser.avatarPhotoUrl} />
@@ -414,7 +427,9 @@ export function RoomsList({ rooms, language, isAdmin, users, onSelectRoom, onOpe
                     )}
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
-                    <div style={{ fontSize: 26, fontWeight: 900, color: getHealthColor(rh) }}>{rh}%</div>
+                    {room.isTodoRoom
+                      ? <div aria-hidden="true" style={{ fontSize: 26 }}>📝</div>
+                      : <div style={{ fontSize: 26, fontWeight: 900, color: getHealthColor(rh) }}>{rh}%</div>}
                     {isAdmin && (
                       <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
                         {zones.length > 0 && (
@@ -449,8 +464,8 @@ export function RoomsList({ rooms, language, isAdmin, users, onSelectRoom, onOpe
                     )}
                   </div>
                 </div>
-                <HealthBar value={rh} height={10} showLabel={false} />
-                <div style={{ display: 'flex', gap: 6, marginTop: 14, flexWrap: 'wrap' }}>
+                {!room.isTodoRoom && <HealthBar value={rh} height={10} showLabel={false} />}
+                <div style={{ display: 'flex', gap: 6, marginTop: room.isTodoRoom ? 0 : 14, flexWrap: 'wrap' }}>
                   {room.tasks.map((tk) => {
                     const badge = taskBadgeStyle(tk.health);
                     const chipStyle = { fontSize: 11, fontWeight: 700, padding: '4px 10px 4px 6px', borderRadius: 10, backgroundColor: badge.bg, color: badge.text, border: `1px solid ${badge.border}`, display: 'inline-flex', alignItems: 'center', gap: 8 };

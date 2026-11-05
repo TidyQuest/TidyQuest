@@ -259,6 +259,14 @@ export const GUIDE_EN: GuideSection[] = [
         'A paused chore leaves Home, the Tasks page, the Calendar, reminders, the Rescue Mission, team-ups and house health. Parents still see it greyed in its room, marked ⏸️ Paused; kids don’t see it at all.',
         'Tap ⋯ → ▶️ Switch back on (or untick ⏸️ Paused). It comes back as if just done, so it isn’t overdue. Its history, coins and who it’s assigned to stay the same.',
       ] },
+      { h: 'To-do list' },
+      { ul: [
+        'The first time a parent taps "+ To-do" in Home’s 📝 To-do list card, a room called To-dos is made by itself. There’s one per family. Renaming it is fine; if you delete it, the next "+ To-do" makes a new one. A room you already called To-dos is used instead of making a second.',
+        'Its page is a checklist: the earliest "Do by" date first, then the oldest added. Tick one to finish it (with its coins); it disappears and stays in Activity. Parents add more with "+ To-do" at the bottom and change one with Edit.',
+        'Anything added to the To-dos room is a one-time to-do. Nothing in it counts toward room or house health, the mascot, the Tasks and Critical counts on Home or Insights, even a repeating chore moved there. On Rooms its card shows "3 to do · 1 overdue" instead of a health bar.',
+        'A to-do is Overdue only once its "Do by" date has passed. Without a date it’s never overdue.',
+        'To put a to-do in another room, add a chore there and pick One time.',
+      ] },
     ],
   },
   {
@@ -519,6 +527,13 @@ export const GUIDE_EN: GuideSection[] = [
           'Your Task view may be on "Mine" (the switch at the top), or a parent set it to "Only theirs".',
           'One-time chores are in the To-do card, and are gone once done.',
           'You may have snoozed it (💤 in Maybe you forgot): it comes back after 3 days, or tap Undo on the "Snoozed" message right away.',
+        ] },
+        { q: 'I can’t find where to add a to-do room', a: [
+          'There’s no room type for it: the To-dos room is made by itself the first time a parent taps "+ To-do" in Home’s 📝 To-do list card. After that it’s on the Rooms page.',
+          'No "+ To-do"? Only parents have it. The card may be hidden in Home → Customise, or To-dos switched off in Settings → Features.',
+        ] },
+        { q: 'A to-do says Overdue', a: [
+          'Its "Do by" date has passed. Tap Edit on it in the To-dos room to pick a later date or clear it: a to-do without a date is never overdue.',
         ] },
         { q: 'A chore or reward disappeared', a: [
           'It may be paused: parents see it greyed in its room, marked ⏸️ Paused. Tap ⋯ → ▶️ Switch back on.',

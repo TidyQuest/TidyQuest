@@ -9,6 +9,19 @@ What changed in each release, in plain language, newest first. Releases up to v0
 
 ## Unreleased
 
+### Changed
+
+- **The To-dos room is now a to-do list.** Its page is a checklist (earliest "Do by" date first, then the oldest
+  added): tick one to finish it, and parents add more with "+ To-do", the same short form as on Home. Anything
+  added there is a one-time to-do. On Rooms its card shows "3 to do · 1 overdue" instead of a health bar.
+- **Nothing in the To-dos room counts toward room or house health,** the mascot's mood and "needs some love", the
+  Tasks and Critical counts on Home, or Insights' late and skipped chores, even a repeating chore that ended up
+  there.
+- **A to-do without a "Do by" date is never overdue.** It used to turn Overdue a week after it was added. Undated
+  to-dos are no longer picked for the Rescue Mission.
+- The first "+ To-do" uses a room you already called "To-dos" instead of making a second one.
+- The guide has a new "To-do list" part under Chores, and two troubleshooting entries.
+
 ## v0.16.4 (2026-11-04)
 
 ### Fixed

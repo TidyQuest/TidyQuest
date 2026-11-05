@@ -47,6 +47,10 @@ interface Room {
   health: number;
   taskCount: number;
   criticalCount: number;
+  /** The To-dos room (ENH-18): a to-do count instead of health */
+  isTodoRoom?: boolean;
+  todoCount?: number;
+  todoOverdue?: number;
 }
 
 interface Quest {
@@ -520,7 +524,8 @@ const Dashboard: React.FC<DashboardProps> = ({
       {isExpanded(key) ? t('common.showLess') : t('common.showMore').replace('{n}', `${total - LIMIT}`)}
     </button>
   );
-  const sortedRooms = [...rooms].sort((a, b) => a.health - b.health);
+  // Most urgent first; the To-dos room (no health) last
+  const sortedRooms = [...rooms].sort((a, b) => Number(!!a.isTodoRoom) - Number(!!b.isTodoRoom) || a.health - b.health);
   const roomTypeById = new Map(rooms.map((r) => [r.id, r.roomType]));
   // "What should I do?": chores the mascot can suggest, best first (only ones you can do right now)
   const mascotIdeas: MascotSuggestion[] = [];
@@ -538,7 +543,8 @@ const Dashboard: React.FC<DashboardProps> = ({
     for (const q of due) if (q.roomId === data.mascot?.messiestRoom?.id) add(q, 'messiest');
     for (const q of [...due].sort((a, b) => a.effort - b.effort)) add(q, 'quick');
   }
-  const totalTasks = rooms.reduce((s, r) => s + r.taskCount, 0);
+  // House Health boxes: the To-dos room's to-dos aren't counted (ENH-18)
+  const totalTasks = rooms.reduce((s, r) => s + (r.isTodoRoom ? 0 : r.taskCount), 0);
   const totalCritical = rooms.reduce((s, r) => s + r.criticalCount, 0);
   const sortedFamily = [...family].sort((a, b) => b.points - a.points);
   const coinsSortedFamily = [...family].sort((a, b) => b.coins - a.coins);
@@ -1029,6 +1035,11 @@ const Dashboard: React.FC<DashboardProps> = ({
                       <div style={{ fontSize: 15, fontWeight: 800, color: 'var(--warm-text)' }}>
                         {roomDisplayName(room.name, room.roomType)}
                       </div>
+                      {room.isTodoRoom ? (
+                        <div style={{ fontSize: 11, color: room.todoOverdue ? 'var(--health-red)' : 'var(--warm-text-light)', fontWeight: 700 }}>
+                          {[t('todos.countLine').replace('{n}', String(room.todoCount ?? 0)), room.todoOverdue ? t('todos.overdueCount').replace('{n}', String(room.todoOverdue)) : ''].filter(Boolean).join(' · ')}
+                        </div>
+                      ) : (
                       <div style={{ fontSize: 11, color: 'var(--warm-text-light)', fontWeight: 600 }}>
                         {room.taskCount} {t('rooms.tasks')}
                         {room.criticalCount > 0 && (
@@ -1038,8 +1049,9 @@ const Dashboard: React.FC<DashboardProps> = ({
                           </span>
                         )}
                       </div>
+                      )}
                     </div>
-                    <div
+                    {room.isTodoRoom ? <div aria-hidden="true" style={{ fontSize: 20 }}>📝</div> : <div
                       style={{
                         fontSize: 20,
                         fontWeight: 900,
@@ -1047,9 +1059,9 @@ const Dashboard: React.FC<DashboardProps> = ({
                       }}
                     >
                       {room.health}%
-                    </div>
+                    </div>}
                   </div>
-                  <HealthBar value={room.health} height={8} showLabel={false} />
+                  {!room.isTodoRoom && <HealthBar value={room.health} height={8} showLabel={false} />}
                 </div>
               </div>
             );

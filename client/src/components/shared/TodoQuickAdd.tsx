@@ -4,11 +4,13 @@ import { useTranslation } from '../../hooks/useTranslation';
 
 /**
  * "+ To-do" on Home (parents): a one-time chore in a few taps, without opening a room. It goes into
- * the family's To-dos room; once done it disappears (it stays in Activity).
+ * the family's To-dos room (or `roomId`, from the To-dos room's own page); once done it disappears
+ * (it stays in Activity).
  */
-export function TodoQuickAdd({ people, language, onAdded, onCancel }: {
+export function TodoQuickAdd({ people, language, roomId, onAdded, onCancel }: {
   people: Array<{ id: number; displayName: string }>;
   language?: string;
+  roomId?: number;
   onAdded: (name: string) => void;
   onCancel: () => void;
 }) {
@@ -24,7 +26,7 @@ export function TodoQuickAdd({ people, language, onAdded, onCancel }: {
     if (!name.trim()) return;
     setBusy(true); setError('');
     try {
-      await api.createTodo({ name: name.trim(), assignedUserIds: who, doBy: doBy || null, customCoins: coins.trim() ? Math.max(1, Math.round(Number(coins))) : null });
+      await api.createTodo({ name: name.trim(), assignedUserIds: who, doBy: doBy || null, customCoins: coins.trim() ? Math.max(1, Math.round(Number(coins))) : null, ...(roomId ? { roomId } : {}) });
       onAdded(name.trim());
     } catch (err) {
       setError(err instanceof Error ? err.message : t('common.error'));

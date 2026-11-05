@@ -15,6 +15,7 @@ import { notifyChoreApproved, notifyChoreRejected, notifyChoreWaiting } from '..
 import { ensureAdmin, getCoinsByEffortConfig, getGlobalVacation, getUserVacation, resolveVacation, isStrictModeEnabled } from '../utils/adminHelpers';
 import { localDateStr } from '../utils/dateHelpers';
 import { dayAt, daySql, endOfDay as endOfDayOf, startOfDay } from '../utils/clock';
+import { isTodoRoom } from '../utils/todoRoom';
 import { hasFixedSchedule, isSeasonalNow, lastCompletedAtForHealth, nextDueAt, parseStored, readScheduleInput, rotationTurnUserId, saveScheduleInput, scheduleFields, taskHealth, type ScheduledTask } from '../utils/schedule';
 import { isNotificationTypeEnabled, sendNotification } from '../utils/notifications';
 import { countInPeriod, parseRepeatLimit, repeatLimitOf } from '../utils/repeatLimits';
@@ -333,7 +334,9 @@ router.get('/rooms/:roomId/tasks', (req: AuthRequest, res: Response) => {
 export interface TaskWriteResult { status: number; body: any }
 
 /** Create a task in a room (POST /rooms/:roomId/tasks; also used by the CSV import). */
-export function createTask(roomId: number | string, body: any): TaskWriteResult {
+export function createTask(roomId: number | string, input: any): TaskWriteResult {
+  // Anything added to the To-dos room is a one-time to-do (ENH-18)
+  const body = isTodoRoom(roomId) ? { ...input, oneTime: true, onDemand: false } : input;
   const { name, notes, frequencyDays, effort, isSeasonal, health, iconKey, assignedToChildren, assignedUserIds, assignmentMode, assignedUserPercentages, onDemand, showInDashboard, customCoins, allowEarlyCompletion } = body;
   if (!name) return { status: 400, body: { error: 'name is required' } };
 

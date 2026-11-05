@@ -1451,7 +1451,11 @@
       "create": "Toevoegen",
       "overdue": "Te laat",
       "byDate": "Voor {date}",
-      "added": "Toegevoegd: {name}"
+      "added": "Toegevoegd: {name}",
+      "countLine": "{n} te doen",
+      "overdueCount": "{n} te laat",
+      "noHealth": "To-do's tellen niet mee voor de gezondheid van het huis.",
+      "empty": "Niets te doen. 🎉"
     },
     "home": {
       "usualTitle": "Je vaste klusjes",

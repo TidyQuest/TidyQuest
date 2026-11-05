@@ -1,3 +1,4 @@
+import { todoCounts, todoRoomId } from '../utils/todoRoom';
 import { Router, Response } from 'express';
 import { pinnedTaskIds } from '../utils/homeSections';
 import db from '../database';
@@ -189,6 +190,7 @@ router.get('/', (req: AuthRequest, res: Response) => {
     assigneesByTask.get(a.taskId)!.push({ userId: a.userId, coinPercentage: a.coinPercentage ?? 0 });
   }
 
+  const todoRoom = todoRoomId();
   const roomsWithHealth = rooms.map((room) => {
     const tasks = tasksByRoom.get(room.id) || [];
     const roomAssignedUserId = room.assignedUserId || null;
@@ -229,6 +231,12 @@ router.get('/', (req: AuthRequest, res: Response) => {
       };
     });
 
+    const assignedUser = room.assignedUserId ? (usersById.get(room.assignedUserId) || null) : null;
+    // The To-dos room has a to-do count instead of health (ENH-18)
+    if (room.id === todoRoom) {
+      return { ...room, tasks: tasksWithHealth, health: 100, assignedUser, isTodoRoom: true, ...todoCounts(tasksWithHealth.filter((t: any) => !t.pausedAt)) };
+    }
+
     // One-time chores don't count toward health
     const regular = tasksWithHealth.filter((t: any) => !t.oneTime && !t.pausedAt);
     const nonSeasonal = regular.filter((t: any) => !t.isSeasonal);
@@ -238,8 +246,7 @@ router.get('/', (req: AuthRequest, res: Response) => {
       ? Math.round(forAvg.reduce((s, t) => s + t.health * t.effort, 0) / totalEffort)
       : 100;
 
-    const assignedUser = room.assignedUserId ? (usersById.get(room.assignedUserId) || null) : null;
-    return { ...room, tasks: tasksWithHealth, health, assignedUser };
+    return { ...room, tasks: tasksWithHealth, health, assignedUser, isTodoRoom: false };
   });
 
   res.json(roomsWithHealth);

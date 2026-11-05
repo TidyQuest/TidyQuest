@@ -235,6 +235,14 @@ export const GUIDE_IT: GuideSection[] = [
         'Una faccenda in pausa sparisce dalla Home, dalla pagina Compiti, dal Calendario, dai promemoria, dalla Missione di salvataggio, dalle squadre e dalla salute della casa. I genitori la vedono ancora in grigio nella sua stanza, con ⏸️ In pausa; i figli non la vedono affatto.',
         'Tocca ⋯ → ▶️ Riattiva (o togli la spunta a ⏸️ In pausa). Torna come appena fatta, quindi non è in ritardo. Cronologia, monete e assegnatari restano uguali.',
       ] },
+      { h: 'Lista delle cose da fare' },
+      { ul: [
+        'La prima volta che un genitore tocca "+ Da fare" nella scheda 📝 Lista delle cose da fare della Home, si crea da sola una stanza chiamata Da fare. Ce n’è una per famiglia. Puoi rinominarla; se la elimini, il prossimo "+ Da fare" ne crea una nuova. Se hai già una stanza chiamata Da fare, si usa quella invece di crearne una seconda.',
+        'La sua pagina è una lista da spuntare: prima la data "Da fare entro" più vicina, poi le più vecchie. Spuntane una per finirla (con le sue monete); sparisce e resta in Attività. I genitori ne aggiungono altre con "+ Da fare" in fondo e ne cambiano una con Modifica.',
+        'Tutto ciò che si aggiunge alla stanza Da fare è una cosa da fare una volta. Niente lì dentro conta per la salute delle stanze o della casa, la mascotte, i contatori Attività e Critiche della Home o le Statistiche, nemmeno una faccenda ripetuta spostata lì. In Stanze la sua scheda mostra "3 da fare · 1 in ritardo" invece di una barra della salute.',
+        'Una cosa da fare è In ritardo solo quando la sua data "Da fare entro" è passata. Senza data non è mai in ritardo.',
+        'Per mettere una cosa da fare in un’altra stanza, aggiungi lì una faccenda e scegli Una volta.',
+      ] },
     ],
   },
   {
@@ -495,6 +503,13 @@ export const GUIDE_IT: GuideSection[] = [
           'La tua Vista compiti potrebbe essere su "I miei" (l’interruttore in alto), oppure un genitore l’ha impostata su "Solo i suoi".',
           'Le faccende una tantum sono nella scheda Da fare e spariscono una volta fatte.',
           'Potresti averla rimandata (💤 in Forse hai dimenticato queste): torna dopo 3 giorni, oppure tocca Annulla subito sul messaggio di rinvio.',
+        ] },
+        { q: 'Non trovo come aggiungere una stanza delle cose da fare', a: [
+          'Non c’è un tipo di stanza apposta: la stanza Da fare si crea da sola la prima volta che un genitore tocca "+ Da fare" nella scheda 📝 Lista delle cose da fare della Home. Poi è nella pagina Stanze.',
+          'Niente "+ Da fare"? Ce l’hanno solo i genitori. La scheda può essere nascosta in Home → Personalizza, o Da fare disattivato in Impostazioni → Funzioni.',
+        ] },
+        { q: 'Una cosa da fare dice In ritardo', a: [
+          'La sua data "Da fare entro" è passata. Tocca Modifica su di essa nella stanza Da fare per scegliere una data più avanti o toglierla: una cosa da fare senza data non è mai in ritardo.',
         ] },
         { q: 'Una faccenda o una ricompensa è sparita', a: [
           'Forse è in pausa: i genitori la vedono in grigio nella sua stanza, con ⏸️ In pausa. Tocca ⋯ → ▶️ Riattiva.',

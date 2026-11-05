@@ -1451,7 +1451,11 @@
       "create": "Aggiungi",
       "overdue": "In ritardo",
       "byDate": "Entro il {date}",
-      "added": "Aggiunto: {name}"
+      "added": "Aggiunto: {name}",
+      "countLine": "{n} da fare",
+      "overdueCount": "{n} in ritardo",
+      "noHealth": "Le cose da fare non contano per la salute della casa.",
+      "empty": "Niente da fare. 🎉"
     },
     "home": {
       "usualTitle": "I tuoi soliti",

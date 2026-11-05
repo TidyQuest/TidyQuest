@@ -1451,7 +1451,11 @@
       "create": "Ajouter",
       "overdue": "En retard",
       "byDate": "Avant le {date}",
-      "added": "Ajouté : {name}"
+      "added": "Ajouté : {name}",
+      "countLine": "{n} à faire",
+      "overdueCount": "{n} en retard",
+      "noHealth": "Les tâches à faire ne comptent pas dans la santé de la maison.",
+      "empty": "Rien à faire. 🎉"
     },
     "home": {
       "usualTitle": "Tes habitudes",
