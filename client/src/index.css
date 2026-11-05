@@ -1286,9 +1286,24 @@ html[data-theme='lava'] option {
     grid-template-columns: 1fr !important;
   }
 
-  /* Rewards list row: name + cost + delete (hide description) */
+  /* Rewards list row: name + cost, buttons below (hide description) */
   .rewards-list-row {
-    grid-template-columns: 1fr auto auto !important;
+    grid-template-columns: 1fr auto !important;
+  }
+
+  /* Its buttons get their own line, share the card's width, and wrap if a language's words are too long (BUG-14) */
+  .rewards-list-row > .rewards-row-actions {
+    grid-column: 1 / -1;
+    flex-wrap: wrap;
+  }
+
+  .rewards-list-row > .rewards-row-actions > button {
+    flex: 1 1 0;
+  }
+
+  /* Editing a reward: name, description and price one per line, like the add form */
+  .rewards-list-row > input {
+    grid-column: 1 / -1;
   }
 
   .rewards-list-row > div:nth-child(2) {
@@ -1429,6 +1444,12 @@ html[data-theme='lava'] option {
     display: block !important;
   }
 
+  /* The page behind the open menu doesn't scroll (BUG-15: scrolling it hid the browser's toolbars and left a
+     strip of page under the menu) */
+  html.phone-menu-open {
+    overflow: hidden;
+  }
+
   /* Show mobile-only close button */
   .mobile-only {
     display: block !important;
@@ -1452,6 +1473,13 @@ html[data-theme='lava'] option {
     margin-left: 0 !important;
     padding: 72px 16px 24px 16px !important;
   }
+}
+
+/* The side menu fills the screen you can see. On phones 100vh counts the space under the address bar too, which
+   hid the profile card at the bottom until you scrolled (BUG-15); browsers without dvh keep 100vh. */
+.sidebar {
+  height: 100vh;
+  height: 100dvh;
 }
 
 /* Desktop - ensure sidebar is always visible */

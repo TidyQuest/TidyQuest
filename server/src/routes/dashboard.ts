@@ -3,7 +3,8 @@ import { focusLine, focusModeFor, OPEN_PER_DAY } from '../utils/focus';
 import { parseHomeLayout } from '../utils/homeLayout';
 import db from '../database';
 import { AuthRequest, authMiddleware } from '../middleware/auth';
-import { calendarDaysUntil, beforeStart, hasFixedSchedule, isSeasonalNow, nextDueAt, oneTimeDeadline, scheduleFields, taskHealth } from '../utils/schedule';
+import { todoCounts, todoRoomId } from '../utils/todoRoom';
+import { calendarDaysUntil, beforeStart, hasFixedSchedule, isSeasonalNow, nextDueAt, oneTimeOverdue, scheduleFields, taskHealth } from '../utils/schedule';
 import { getGlobalVacation, getUserVacation, hiddenRoomIdsFor, isStrictModeEnabled, resolveVacation } from '../utils/adminHelpers';
 import { syncPrimaryGoal } from '../utils/goals';
 import { repeatCountsFor } from '../utils/repeatLimits';
@@ -84,6 +85,7 @@ router.get('/', (req: AuthRequest, res: Response) => {
   }
 
   const nowTs = Date.now();
+  const todoRoom = todoRoomId();
   const roomsWithHealth = rooms.map((room) => {
     const tasks = tasksByRoom.get(room.id) || [];
     const tasksWithHealth = tasks.map((t) => {
@@ -132,6 +134,9 @@ router.get('/', (req: AuthRequest, res: Response) => {
       return taskWithHealth;
     });
 
+    // The To-dos room has a to-do count instead of health (ENH-18)
+    if (room.id === todoRoom) return { ...room, health: 100, taskCount: tasks.length, criticalCount: 0, isTodoRoom: true, ...todoCounts(tasks) };
+
     // One-time chores don't count toward health
     const regular = tasksWithHealth.filter((t) => !t.oneTime);
     const nonSeasonal = regular.filter((t) => !t.isSeasonal);
@@ -141,11 +146,11 @@ router.get('/', (req: AuthRequest, res: Response) => {
       ? Math.round(forAvg.reduce((s, t) => s + t.health * t.effort, 0) / totalEffort)
       : 100;
 
-    return { ...room, health, taskCount: tasks.length, criticalCount: tasksWithHealth.filter((t) => t.health < 30).length };
+    return { ...room, health, taskCount: tasks.length, criticalCount: tasksWithHealth.filter((t) => t.health < 30).length, isTodoRoom: false };
   });
 
   // House health
-  const regularTasks = allTasks.filter((t) => !t.oneTime);
+  const regularTasks = allTasks.filter((t) => !t.oneTime && t.roomId !== todoRoom);
   const nonSeasonal = regularTasks.filter((t) => !t.isSeasonal);
   const forHouseAvg = nonSeasonal.length > 0 ? nonSeasonal : regularTasks;
   const totalEffort = forHouseAvg.reduce((s, t) => s + t.effort, 0);
@@ -173,7 +178,7 @@ router.get('/', (req: AuthRequest, res: Response) => {
   // One-time chores still to do (the To-do card): overdue first, then by do-by date, then oldest
   const todoQuests = !getFeatures().todos ? [] : allTasks
     .filter((t) => t.oneTime)
-    .map((t) => ({ ...t, overdue: Date.now() > oneTimeDeadline(t).getTime() }))
+    .map((t) => ({ ...t, overdue: oneTimeOverdue(t) }))
     .sort((a, b) => Number(b.overdue) - Number(a.overdue) || String(a.doBy ?? '9999').localeCompare(String(b.doBy ?? '9999')) || a.id - b.id);
 
   // Your usual (pins, then what this person does most) and Maybe you forgot (overdue by a whole interval)
@@ -358,7 +363,7 @@ router.get('/', (req: AuthRequest, res: Response) => {
     // Today's team-ups you're on or could join
     teamups: features.teamups ? teamupsFor(req.userId!) : [],
     // The house mascot (Settings → Features)
-    mascot: features.mascot ? mascotFor({ houseHealth, rooms: roomsWithHealth, rescueDone: !!missionRow?.completedBy }) : null,
+    mascot: features.mascot ? mascotFor({ houseHealth, rooms: roomsWithHealth.filter((r) => !r.isTodoRoom), rescueDone: !!missionRow?.completedBy }) : null,
     nextUnlock: unlocksFor(req.userId!).next,
     onDemandQuests,
     nextTasks,

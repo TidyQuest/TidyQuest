@@ -1451,7 +1451,11 @@
       "create": "Add",
       "overdue": "Overdue",
       "byDate": "By {date}",
-      "added": "Added: {name}"
+      "added": "Added: {name}",
+      "countLine": "{n} to do",
+      "overdueCount": "{n} overdue",
+      "noHealth": "To-dos don't count toward house health.",
+      "empty": "Nothing to do. 🎉"
     },
     "home": {
       "usualTitle": "Your usual",

@@ -235,6 +235,14 @@ export const GUIDE_DE: GuideSection[] = [
         'Eine pausierte Aufgabe verschwindet von der Startseite, der Aufgaben-Seite, dem Kalender, den Erinnerungen, der Rettungsmission, den Team-ups und der Hausgesundheit. Eltern sehen sie weiter ausgegraut in ihrem Raum, markiert mit ⏸️ Pausiert; Kinder sehen sie gar nicht.',
         'Tippe auf ⋯ → ▶️ Wieder einschalten (oder entferne den Haken bei ⏸️ Pausiert). Sie kommt zurück, als wäre sie gerade erledigt, also nicht überfällig. Verlauf, Münzen und Zuständige bleiben gleich.',
       ] },
+      { h: 'To-do-Liste' },
+      { ul: [
+        'Wenn ein Elternteil zum ersten Mal auf „+ To-do“ in der Karte 📝 To-do-Liste auf der Startseite tippt, entsteht von selbst ein Raum namens Erledigen. Es gibt einen pro Familie. Umbenennen ist kein Problem; wenn du ihn löschst, legt das nächste „+ To-do“ einen neuen an. Ein Raum, den du schon Erledigen genannt hast, wird verwendet, statt einen zweiten anzulegen.',
+        'Seine Seite ist eine Checkliste: das früheste Datum bei „Erledigen bis“ zuerst, dann die ältesten. Hake eins ab, um es zu erledigen (mit seinen Münzen); es verschwindet und bleibt unter Aktivität. Eltern fügen mit „+ To-do“ unten weitere hinzu und ändern eins mit Bearbeiten.',
+        'Alles, was im Raum Erledigen hinzugefügt wird, ist ein einmaliges To-do. Nichts darin zählt zur Raum- oder Hausgesundheit, zum Maskottchen, zu den Zahlen Aufgaben und Kritisch auf der Startseite oder zur Auswertung, auch keine wiederkehrende Aufgabe, die dorthin verschoben wurde. Unter Räume zeigt seine Karte „3 zu erledigen · 1 überfällig“ statt eines Gesundheitsbalkens.',
+        'Ein To-do ist erst Überfällig, wenn sein Datum bei „Erledigen bis“ vorbei ist. Ohne Datum ist es nie überfällig.',
+        'Für ein To-do in einem anderen Raum füge dort eine Aufgabe hinzu und wähle Einmalig.',
+      ] },
     ],
   },
   {
@@ -495,6 +503,13 @@ export const GUIDE_DE: GuideSection[] = [
           'Deine Aufgabenansicht steht vielleicht auf „Meine“ (der Schalter oben), oder ein Elternteil hat sie auf „Nur eigene“ gestellt.',
           'Einmalige Aufgaben sind in der To-do-Karte und verschwinden, sobald sie erledigt sind.',
           'Du hast sie vielleicht pausiert (💤 in Vielleicht vergessen): Sie kommt nach 3 Tagen zurück, oder tippe sofort auf Rückgängig in der Meldung „Pausiert“.',
+        ] },
+        { q: 'Ich finde nicht, wie ich einen To-do-Raum anlege', a: [
+          'Dafür gibt es keinen Raumtyp: Der Raum Erledigen entsteht von selbst, wenn ein Elternteil zum ersten Mal auf „+ To-do“ in der Karte 📝 To-do-Liste auf der Startseite tippt. Danach ist er auf der Seite Räume.',
+          'Kein „+ To-do“? Nur Eltern haben es. Die Karte ist vielleicht unter Startseite → Anpassen ausgeblendet oder To-dos unter Einstellungen → Funktionen ausgeschaltet.',
+        ] },
+        { q: 'Ein To-do zeigt Überfällig', a: [
+          'Sein Datum bei „Erledigen bis“ ist vorbei. Tippe im Raum Erledigen bei ihm auf Bearbeiten, um ein späteres Datum zu wählen oder es zu löschen: Ein To-do ohne Datum ist nie überfällig.',
         ] },
         { q: 'Eine Aufgabe oder Belohnung ist verschwunden', a: [
           'Sie ist vielleicht pausiert: Eltern sehen sie ausgegraut in ihrem Raum, markiert mit ⏸️ Pausiert. Tippe auf ⋯ → ▶️ Wieder einschalten.',

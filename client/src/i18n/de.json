@@ -1451,7 +1451,11 @@
       "create": "Hinzufügen",
       "overdue": "Überfällig",
       "byDate": "Bis {date}",
-      "added": "Hinzugefügt: {name}"
+      "added": "Hinzugefügt: {name}",
+      "countLine": "{n} zu erledigen",
+      "overdueCount": "{n} überfällig",
+      "noHealth": "To-dos zählen nicht zur Hausgesundheit.",
+      "empty": "Nichts zu erledigen. 🎉"
     },
     "home": {
       "usualTitle": "Deine Klassiker",

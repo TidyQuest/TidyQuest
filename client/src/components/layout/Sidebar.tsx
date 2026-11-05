@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { HomeIcon, RoomsIcon, TasksIcon, TrophyIcon, CalendarIcon, ActivityIcon, AchievementsIcon, SettingsIcon, RewardsIcon, InsightsIcon } from '../icons/NavIcons';
 import { FireIcon, CoinIcon, SparkleIcon } from '../icons/UIIcons';
@@ -36,6 +37,15 @@ export function Sidebar({ user, isMobileOpen = false, onClose, gamificationEnabl
   const { t } = useTranslation(user.language);
   const effectiveCollapsed = isMobileOpen ? false : collapsed;
 
+  // While the phone menu is open, the page behind it doesn't scroll. Scrolling it hid the browser's toolbars, and
+  // the menu and its shade kept their old, shorter height, leaving a strip of page at the bottom (BUG-15).
+  useEffect(() => {
+    // (index.css applies it only in the phone layout, so turning the phone sideways never leaves the page stuck.)
+    if (!isMobileOpen) return;
+    document.documentElement.classList.add('phone-menu-open');
+    return () => document.documentElement.classList.remove('phone-menu-open');
+  }, [isMobileOpen]);
+
   const handleNavClick = () => {
     if (window.innerWidth <= 768 && onClose) {
       onClose();
@@ -54,6 +64,7 @@ export function Sidebar({ user, isMobileOpen = false, onClose, gamificationEnabl
             right: 0,
             bottom: 0,
             backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            touchAction: 'none',
             zIndex: 49,
             display: 'none',
           }}
@@ -64,7 +75,6 @@ export function Sidebar({ user, isMobileOpen = false, onClose, gamificationEnabl
       <nav
         style={{
           width: effectiveCollapsed ? 60 : 240,
-          height: '100vh',
           backgroundColor: 'var(--warm-sidebar)',
           borderRight: '1.5px solid var(--warm-sidebar-border)',
           padding: effectiveCollapsed ? '24px 8px' : '24px 0',
@@ -170,7 +180,7 @@ export function Sidebar({ user, isMobileOpen = false, onClose, gamificationEnabl
           )}
         </div>
 
-        <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 2, padding: effectiveCollapsed ? '0 8px' : '0 12px' }}>
+        <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', overscrollBehavior: 'contain', display: 'flex', flexDirection: 'column', gap: 2, padding: effectiveCollapsed ? '0 8px' : '0 12px' }}>
           {navItems.filter((item) => (gamificationEnabled || !GAMIFICATION_ROUTES.has(item.to)) && (!item.adminOnly || user.role === 'admin')).map((item) => (
             <NavLink
               key={item.to}

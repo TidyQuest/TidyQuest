@@ -173,13 +173,17 @@ function previousScheduledDay(rule: FixedRule, before: Date): Date {
 export const parseStored = (v: string) => new Date(v.includes('T') ? v : `${v.replace(' ', 'T')}Z`);
 
 /**
- * A one-time chore is due from its do-by day (or from when it was added) and overdue once that day
- * ends (without a date: a week after it was added).
+ * A one-time chore (a to-do) is overdue once its do-by day ends. Without a date it's never overdue
+ * (null), however long ago it was added (ENH-18).
  */
-export function oneTimeDeadline(task: ScheduledTask, now: Date = new Date()): Date {
-  if (task.doBy && /^\d{4}-\d{2}-\d{2}$/.test(task.doBy)) return dayAt(task.doBy, 23, 59, 59, 999);
-  const added = task.createdAt ? parseStored(task.createdAt) : now;
-  return new Date(added.getTime() + 7 * DAY_MS);
+export function oneTimeDeadline(task: ScheduledTask): Date | null {
+  return task.doBy && /^\d{4}-\d{2}-\d{2}$/.test(task.doBy) ? dayAt(task.doBy, 23, 59, 59, 999) : null;
+}
+
+/** A to-do whose do-by day has ended */
+export function oneTimeOverdue(task: ScheduledTask, now: Date = new Date()): boolean {
+  const deadline = oneTimeDeadline(task);
+  return !!deadline && now.getTime() > deadline.getTime();
 }
 
 /** Counts toward room and house health (not out of season, not a one-time chore). Before its start date a chore counts as clean. */
@@ -209,7 +213,7 @@ export function nextDueAt(task: ScheduledTask, now: Date = new Date()): Date | n
 
 /** Health 0–100 for either kind of schedule (frozen at the vacation start, like calculateHealth). */
 export function taskHealth(task: ScheduledTask, vacation: Vacation = NO_VACATION, now: Date = new Date()): number {
-  if (task.oneTime) return now.getTime() > oneTimeDeadline(task, now).getTime() ? 0 : 100;
+  if (task.oneTime) return oneTimeOverdue(task, now) ? 0 : 100;
   const at = vacation.isVacation && vacation.startDate ? new Date(vacation.startDate) : now;
   if (beforeStart(task, at)) return 100;
   const rule = fixedRule(task);

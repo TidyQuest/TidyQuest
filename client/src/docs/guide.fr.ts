@@ -235,6 +235,14 @@ export const GUIDE_FR: GuideSection[] = [
         'Une tâche en pause quitte l’accueil, la page Tâches, le calendrier, les rappels, la mission de sauvetage, les équipes et la santé de la maison. Les parents la voient encore grisée dans sa pièce, marquée ⏸️ En pause ; les enfants ne la voient pas du tout.',
         'Touche ⋯ → ▶️ Réactiver (ou décoche ⏸️ En pause). Elle revient comme si elle venait d’être faite, donc pas en retard. Son historique, ses pièces et les personnes assignées ne changent pas.',
       ] },
+      { h: 'Liste à faire' },
+      { ul: [
+        'La première fois qu’un parent touche « + À faire » dans la carte 📝 Liste à faire d’Accueil, une pièce appelée À faire est créée toute seule. Il y en a une par famille. Tu peux la renommer ; si tu la supprimes, le prochain « + À faire » en crée une nouvelle. Une pièce que tu as déjà appelée À faire est utilisée au lieu d’en créer une deuxième.',
+        'Sa page est une liste à cocher : la date « À faire avant » la plus proche d’abord, puis les plus anciennes. Coche-en une pour la terminer (avec ses pièces) ; elle disparaît et reste dans Activité. Les parents en ajoutent avec « + À faire » en bas et en changent une avec Modifier.',
+        'Tout ce qui est ajouté dans la pièce À faire est une tâche unique. Rien dedans ne compte dans la santé des pièces ou de la maison, la mascotte, les compteurs Tâches et Critiques d’Accueil ou les Statistiques, même une tâche répétée déplacée là. Dans Pièces, sa carte affiche « 3 à faire · 1 en retard » au lieu d’une barre de santé.',
+        'Une tâche à faire n’est En retard qu’une fois sa date « À faire avant » passée. Sans date, elle n’est jamais en retard.',
+        'Pour mettre une tâche à faire dans une autre pièce, ajoute une tâche là-bas et choisis Une seule fois.',
+      ] },
     ],
   },
   {
@@ -495,6 +503,13 @@ export const GUIDE_FR: GuideSection[] = [
           'Ton Affichage des tâches est peut-être sur « Les miennes » (l’interrupteur en haut), ou un parent l’a mis sur « Seulement les siennes ».',
           'Les tâches uniques sont dans la carte À faire, et disparaissent une fois faites.',
           'Tu l’as peut-être mise en pause (💤 dans Tu as peut-être oublié ceux-ci) : elle revient après 3 jours, ou appuie tout de suite sur Annuler dans le message « mis en pause ».',
+        ] },
+        { q: 'Je ne trouve pas comment ajouter une pièce À faire', a: [
+          'Il n’y a pas de type de pièce pour ça : la pièce À faire est créée toute seule la première fois qu’un parent touche « + À faire » dans la carte 📝 Liste à faire d’Accueil. Ensuite, elle est sur la page Pièces.',
+          'Pas de « + À faire » ? Seuls les parents l’ont. La carte est peut-être masquée dans Accueil → Personnaliser, ou À faire désactivé dans Paramètres → Fonctionnalités.',
+        ] },
+        { q: 'Une tâche à faire est marquée En retard', a: [
+          'Sa date « À faire avant » est passée. Touche Modifier dessus dans la pièce À faire pour choisir une date plus tard ou l’effacer : sans date, une tâche à faire n’est jamais en retard.',
         ] },
         { q: 'Une tâche ou une récompense a disparu', a: [
           'Elle est peut-être en pause : les parents la voient grisée dans sa pièce, marquée ⏸️ En pause. Touche ⋯ → ▶️ Réactiver.',

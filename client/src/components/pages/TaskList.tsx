@@ -37,6 +37,8 @@ export interface ListRoom {
   accentColor: string;
   zoneId?: number | null;
   tasks: ListTask[];
+  /** The To-dos room (ENH-18): nothing in it counts as critical */
+  isTodoRoom?: boolean;
 }
 
 interface ListUser {
@@ -125,7 +127,7 @@ export function TaskList({ rooms, users, currentUserId, coinsByEffort, language,
       if (status === 'due' && !isTaskDue(task)) return false;
       if (status === 'upcoming' && (task.onDemand || task.isSeasonal || isTaskDue(task))) return false;
       // Same as Home's House Health "Critical" box (server dashboard.ts)
-      if (status === 'critical' && !(task.health < 30)) return false;
+      if (status === 'critical' && (room.isTodoRoom || !(task.health < 30))) return false;
       if (status === 'ondemand' && !task.onDemand) return false;
       if (status === 'onetime' && !task.oneTime) return false;
       if (status === 'timer' && !task.timerMinutes) return false;

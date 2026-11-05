@@ -235,6 +235,14 @@ export const GUIDE_ES: GuideSection[] = [
         'Una tarea en pausa sale de Inicio, la página de Tareas, el Calendario, los recordatorios, la Misión de rescate, los equipos y la salud de la casa. Los padres la siguen viendo en gris en su sala, marcada ⏸️ En pausa; los niños no la ven.',
         'Toca ⋯ → ▶️ Reactivar (o desmarca ⏸️ En pausa). Vuelve como recién hecha, así que no está atrasada. Su historial, sus monedas y a quién está asignada no cambian.',
       ] },
+      { h: 'Lista de pendientes' },
+      { ul: [
+        'La primera vez que un padre toca "+ Pendiente" en la tarjeta 📝 Lista de pendientes de Inicio, se crea sola una habitación llamada Pendientes. Hay una por familia. Puedes cambiarle el nombre; si la borras, el siguiente "+ Pendiente" crea una nueva. Si ya tienes una habitación llamada Pendientes, se usa esa en vez de crear otra.',
+        'Su página es una lista para marcar: primero la fecha "Hacer antes del" más cercana, luego las más antiguas. Marca una para terminarla (con sus monedas); desaparece y queda en Actividad. Los padres añaden más con "+ Pendiente" abajo y cambian una con Editar.',
+        'Todo lo que se añade a la habitación Pendientes es un pendiente de una vez. Nada de ella cuenta para la salud de las habitaciones o de la casa, la mascota, los contadores Tareas y Críticas de Inicio ni las Estadísticas, ni siquiera una tarea repetida movida allí. En Habitaciones su tarjeta muestra "3 por hacer · 1 con retraso" en vez de una barra de salud.',
+        'Un pendiente solo está Atrasado cuando ha pasado su fecha "Hacer antes del". Sin fecha, nunca está atrasado.',
+        'Para poner un pendiente en otra habitación, añade una tarea allí y elige Una vez.',
+      ] },
     ],
   },
   {
@@ -495,6 +503,13 @@ export const GUIDE_ES: GuideSection[] = [
           'Tu Vista de tareas puede estar en "Mías" (el interruptor de arriba), o un padre o una madre la puso en "Solo las suyas".',
           'Las tareas únicas están en la tarjeta de Pendientes y desaparecen al hacerlas.',
           'Puede que la hayas pospuesto (💤 en Quizá olvidaste estas): vuelve después de 3 días, o pulsa Deshacer en el mensaje de "Pospuesta" enseguida.',
+        ] },
+        { q: 'No encuentro cómo añadir una habitación de pendientes', a: [
+          'No hay un tipo de habitación para eso: la habitación Pendientes se crea sola la primera vez que un padre toca "+ Pendiente" en la tarjeta 📝 Lista de pendientes de Inicio. Después está en la página Habitaciones.',
+          '¿No hay "+ Pendiente"? Solo lo tienen los padres. La tarjeta puede estar oculta en Inicio → Personalizar, o Pendientes desactivado en Ajustes → Funciones.',
+        ] },
+        { q: 'Un pendiente dice Atrasado', a: [
+          'Ya pasó su fecha "Hacer antes del". Toca Editar en él dentro de la habitación Pendientes para elegir una fecha posterior o quitarla: un pendiente sin fecha nunca está atrasado.',
         ] },
         { q: 'Una tarea o recompensa desapareció', a: [
           'Puede estar en pausa: los padres la ven en gris en su sala, marcada ⏸️ En pausa. Toca ⋯ → ▶️ Reactivar.',

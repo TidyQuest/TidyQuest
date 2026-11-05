@@ -1,3 +1,4 @@
+import { todoRoomId } from './todoRoom';
 import db from '../database';
 import { ACHIEVEMENTS, buildAchievements, type AchievementStats } from './achievements';
 import { badgeAppliesTo, customBadgeKey, customBadgeValue, levelFor, listCustomBadges, longestWeekRun } from './badges';
@@ -32,6 +33,7 @@ export function getAchievementStats(userId: number, now: Date = new Date()): Ach
     tasksByRoom.get(t.roomId)!.push(t);
   }
   let roomsClean = 0;
+  tasksByRoom.delete(todoRoomId() ?? 0); // the To-dos room has no health (ENH-18)
   for (const tasks of tasksByRoom.values()) {
     const inSeason = tasks.filter((t) => !isSeasonalNow(t, now));
     const forAvg = inSeason.length > 0 ? inSeason : tasks;

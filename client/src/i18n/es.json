@@ -1451,7 +1451,11 @@
       "create": "Añadir",
       "overdue": "Atrasado",
       "byDate": "Antes del {date}",
-      "added": "Añadido: {name}"
+      "added": "Añadido: {name}",
+      "countLine": "{n} por hacer",
+      "overdueCount": "{n} con retraso",
+      "noHealth": "Los pendientes no cuentan para la salud de la casa.",
+      "empty": "Nada pendiente. 🎉"
     },
     "home": {
       "usualTitle": "Lo de siempre",

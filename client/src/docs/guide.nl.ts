@@ -235,6 +235,14 @@ export const GUIDE_NL: GuideSection[] = [
         'Een gepauzeerd klusje verdwijnt van Home, de Taken-pagina, de kalender, herinneringen, de reddingsmissie, team-ups en de gezondheid van het huis. Ouders zien het nog grijs in zijn kamer, met ⏸️ Gepauzeerd; kinderen zien het helemaal niet.',
         'Tik op ⋯ → ▶️ Weer aanzetten (of vink ⏸️ Gepauzeerd uit). Het komt terug alsof het net gedaan is, dus niet te laat. De geschiedenis, munten en wie het doet blijven hetzelfde.',
       ] },
+      { h: 'To-dolijst' },
+      { ul: [
+        'De eerste keer dat een ouder op "+ To-do" tikt in de kaart 📝 To-dolijst op Home, wordt vanzelf een kamer To-do\'s gemaakt. Er is er één per gezin. Hernoemen mag; verwijder je hem, dan maakt de volgende "+ To-do" een nieuwe. Een kamer die je al To-do\'s noemde, wordt gebruikt in plaats van een tweede te maken.',
+        'De pagina is een afvinklijst: de vroegste "Doen voor"-datum eerst, daarna de oudste. Vink er een af om hem af te ronden (met zijn munten); hij verdwijnt en blijft in Activiteit staan. Ouders voegen er meer toe met "+ To-do" onderaan en passen er een aan met Aanpassen.',
+        'Alles wat in de kamer To-do\'s wordt toegevoegd, is een eenmalige to-do. Niets erin telt mee voor de gezondheid van kamers of het huis, de mascotte, de tellers Klusjes en Dringend! op Home of Inzichten, ook geen terugkerend klusje dat erheen is verplaatst. Bij Kamers toont de kaart "3 te doen · 1 te laat" in plaats van een gezondheidsbalk.',
+        'Een to-do is pas Te laat als de "Doen voor"-datum voorbij is. Zonder datum is hij nooit te laat.',
+        'Wil je een to-do in een andere kamer, voeg daar dan een klusje toe en kies Eenmalig.',
+      ] },
     ],
   },
   {
@@ -495,6 +503,13 @@ export const GUIDE_NL: GuideSection[] = [
           'Je Klusjesweergave staat misschien op "Mijn klusjes" (de schakelaar bovenaan), of een ouder heeft hem op "Alleen eigen" gezet.',
           'Eenmalige klusjes staan in de To-do-kaart en zijn weg zodra ze gedaan zijn.',
           'Misschien heb je het uitgesteld (💤 bij Misschien vergeten): het komt na 3 dagen terug, of tik meteen op Ongedaan maken in de melding "Uitgesteld".',
+        ] },
+        { q: 'Ik kan niet vinden hoe ik een to-do-kamer toevoeg', a: [
+          'Daar is geen kamertype voor: de kamer To-do\'s wordt vanzelf gemaakt de eerste keer dat een ouder op "+ To-do" tikt in de kaart 📝 To-dolijst op Home. Daarna staat hij op de pagina Kamers.',
+          'Geen "+ To-do"? Alleen ouders hebben die. De kaart is misschien verborgen via Home → Aanpassen, of To-do\'s staat uit in Instellingen → Functies.',
+        ] },
+        { q: 'Een to-do staat op Te laat', a: [
+          'De "Doen voor"-datum is voorbij. Tik in de kamer To-do\'s op Aanpassen bij die to-do om een latere datum te kiezen of de datum te wissen: een to-do zonder datum is nooit te laat.',
         ] },
         { q: 'Een klusje of beloning is verdwenen', a: [
           'Misschien is het gepauzeerd: ouders zien het grijs in zijn kamer, met ⏸️ Gepauzeerd. Tik op ⋯ → ▶️ Weer aanzetten.',
