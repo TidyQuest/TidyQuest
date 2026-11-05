@@ -9,6 +9,8 @@ What changed in each release, in plain language, newest first. Releases up to v0
 
 ## Unreleased
 
+## v0.16.6 (2026-11-05)
+
 ### Fixed
 
 - **The Rooms page no longer shows a chore in red before it can be done** (#172). A chore whose Done button is still
