@@ -2314,7 +2314,8 @@
       "tour10Title": "Doelen, munten en mensen",
       "tour10For": "De laatste instellingen, allemaal in {settings}.",
       "tour10Steps": "{goals}: ieders weekdoel en de bonus.\n{coins}: hoeveel munten elk niveau van moeite oplevert.\n{members}: mensen toevoegen of aanpassen.\n{wizard}: opnieuw gebruiken. Die voegt alleen toe, zoals startklusjes voor een nieuw kind.",
-      "tour10Example": "{guide}, ook in {settings}, legt de rest uit."
+      "tour10Example": "{guide}, ook in {settings}, legt de rest uit.",
+      "errSaveFailed": "Er is niets opgeslagen. Probeer het opnieuw. Gebeurt het weer, tik dan op Terug en controleer de namen en gebruikersnamen."
     },
     "setupRewards": {
       "sticker": "Een sticker of klein cadeautje kiezen",

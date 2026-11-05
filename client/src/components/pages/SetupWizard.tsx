@@ -249,18 +249,22 @@ export function SetupWizard({ user, onSaved, onExit, onOpenGuide }: Props) {
       cashTitles: catalog.cashAmounts.map((a) => t('setup.cashTitle').replace('{amount}', fmtMoney(a))),
       goals: goalsOn ? (kids.length ? kids : adults).filter((p) => p.plays).map((p) => ({ person: p.ref, title: t('setup.goalTitle') })) : [],
     };
+    let result: Made;
     try {
-      const result = await api.saveSetup(body);
-      await onSaved();
-      setMade(result);
-      setStep(4);
-      window.scrollTo({ top: 0 });
+      result = await api.saveSetup(body);
     } catch (e) {
       const code = (e as { body?: { code?: string } }).body?.code;
-      setError(code === 'username_taken' ? t('setup.errUsernameTaken') : (e as Error).message || t('common.actionFailed'));
-    } finally {
+      setError(code === 'username_taken' ? t('setup.errUsernameTaken')
+        : code === 'save_failed' || !code ? t('setup.errSaveFailed') : (e as Error).message);
       setSaving(false);
+      return;
     }
+    // Saved: a hiccup reloading Home afterwards mustn't look like a failed save (Finish again would add it all twice)
+    await Promise.resolve(onSaved()).catch(() => undefined);
+    setSaving(false);
+    setMade(result);
+    setStep(4);
+    window.scrollTo({ top: 0 });
   };
 
   const skip = async () => {

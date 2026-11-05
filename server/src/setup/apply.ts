@@ -190,9 +190,11 @@ export function applySetup(requesterId: number, raw: unknown): SetupResult {
 
   // ── Everything checked: make it ──
   const made = { people: 0, rooms: 0, chores: 0, rewards: 0, goals: 0, removedRewards: 0 };
-  db.transaction(() => {
+  const save = db.transaction(() => {
     const usedColors = new Set((db.prepare('SELECT avatarColor FROM users').all() as Array<{ avatarColor: string }>).map((u) => u.avatarColor));
     const nextColor = () => AVATAR_COLORS.find((c) => !usedColors.has(c) && usedColors.add(c)) ?? '#F97316';
+    // Usernames picked in this setup are reserved, so a kid without a login can't take one before its owner is added
+    const reserve = (name: string) => { newNames.add(name.toLowerCase()); return name; };
     const insertUser = db.prepare(
       'INSERT INTO users (username, displayName, passwordHash, role, avatarColor, language, canLogIn, kidMode) VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
     );
@@ -200,7 +202,7 @@ export function applySetup(requesterId: number, raw: unknown): SetupResult {
       const displayName = text(p.displayName, 40);
       const logsIn = p.kind === 'adult' || p.logsIn !== false;
       const result = insertUser.run(
-        logsIn ? text(p.username, 40) : freeUsername(displayName),
+        logsIn ? text(p.username, 40) : reserve(freeUsername(displayName, newNames)),
         displayName,
         logsIn ? bcrypt.hashSync(p.password as string, 10) : unusableHash(),
         p.kind === 'adult' ? 'admin' : 'child',
@@ -324,7 +326,14 @@ export function applySetup(requesterId: number, raw: unknown): SetupResult {
     }
 
     db.prepare("INSERT OR REPLACE INTO app_settings (key, value, updatedAt) VALUES ('setupDone', ?, datetime('now'))").run(new Date().toISOString());
-  })();
+  });
+  try {
+    save();
+  } catch (err) {
+    // Nothing was saved (the transaction rolled back); say so in JSON rather than a bare 500
+    console.error('[setup] save failed:', err);
+    return refused('Nothing was saved. Please try again.', 'save_failed', 500);
+  }
   return { ok: true, made };
 }
 

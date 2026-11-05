@@ -2314,7 +2314,8 @@
       "tour10Title": "Goals, coins and people",
       "tour10For": "The last few settings, all in {settings}.",
       "tour10Steps": "{goals}: each person's weekly goal and its bonus.\n{coins}: how many coins each effort level pays.\n{members}: add or change people.\n{wizard}: run this again. It only adds, like starter chores for a new kid.",
-      "tour10Example": "{guide}, also in {settings}, explains everything else."
+      "tour10Example": "{guide}, also in {settings}, explains everything else.",
+      "errSaveFailed": "Nothing was saved. Please try again. If it keeps happening, tap Back and check the names and usernames."
     },
     "setupRewards": {
       "sticker": "Pick a sticker or small prize",

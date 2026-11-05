@@ -221,6 +221,21 @@ describe('setup wizard (NEW-17)', () => {
     expect(count('SELECT COUNT(*) AS n FROM tasks')).toBe(0);
   });
 
+  it("a login name that a no-login kid's name would make doesn't clash", async () => {
+    const admin = await createAdmin(agent);
+    const res = await agent.post('/api/setup').set(auth(admin.token)).send({
+      people: [
+        { ref: 'me', kind: 'adult' },
+        { ref: 'kid', kind: 'kid', displayName: 'Sam', ageGroup: '6-8', logsIn: false }, // would get "sam"
+        { ref: 'sam', kind: 'adult', displayName: 'Sam', username: 'sam', password: 'sam1' },
+      ],
+      rooms: [], chores: [], rewards: [],
+    });
+    expect(res.status).toBe(201);
+    const names = (db.prepare("SELECT username FROM users WHERE displayName = 'Sam' ORDER BY id").all() as Array<{ username: string }>).map((u) => u.username);
+    expect(names).toEqual(['sam2', 'sam']);
+  });
+
   it('running it again only adds', async () => {
     const admin = await createAdmin(agent);
     seedStarterRewards();

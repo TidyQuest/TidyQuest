@@ -2314,7 +2314,8 @@
       "tour10Title": "Ziele, Münzen und Personen",
       "tour10For": "Die letzten Einstellungen, alle unter {settings}.",
       "tour10Steps": "{goals}: das Wochenziel jeder Person und der Bonus.\n{coins}: wie viele Münzen jede Aufwandsstufe bringt.\n{members}: Personen hinzufügen oder ändern.\n{wizard}: noch einmal starten. Er fügt nur hinzu, zum Beispiel Startaufgaben für ein neues Kind.",
-      "tour10Example": "{guide}, auch unter {settings}, erklärt alles andere."
+      "tour10Example": "{guide}, auch unter {settings}, erklärt alles andere.",
+      "errSaveFailed": "Es wurde nichts gespeichert. Versuch es noch einmal. Wenn es wieder passiert, tippe auf Zurück und prüfe die Namen und Benutzernamen."
     },
     "setupRewards": {
       "sticker": "Einen Sticker oder ein kleines Geschenk aussuchen",

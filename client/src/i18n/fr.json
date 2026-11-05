@@ -2314,7 +2314,8 @@
       "tour10Title": "Objectifs, pièces et personnes",
       "tour10For": "Les derniers réglages, tous dans {settings}.",
       "tour10Steps": "{goals} : l'objectif de la semaine de chacun et son bonus.\n{coins} : combien de pièces rapporte chaque niveau d'effort.\n{members} : ajouter ou modifier des personnes.\n{wizard} : le relancer. Il ne fait qu'ajouter, comme des tâches de départ pour un nouvel enfant.",
-      "tour10Example": "{guide}, aussi dans {settings}, explique tout le reste."
+      "tour10Example": "{guide}, aussi dans {settings}, explique tout le reste.",
+      "errSaveFailed": "Rien n'a été enregistré. Réessaie. Si ça continue, touche Retour et vérifie les prénoms et les noms d'utilisateur."
     },
     "setupRewards": {
       "sticker": "Choisir un autocollant ou un petit cadeau",

@@ -105,10 +105,11 @@ router.put('/coins-config', (req: AuthRequest, res: Response) => {
 /** A password hash nobody can match, for someone who doesn't log in (ENH-16) */
 export const unusableHash = () => bcrypt.hashSync(crypto.randomBytes(32).toString('hex'), 10);
 
-/** A free username from a display name, for someone added without a login: "Grandma Jo" -> grandmajo, grandmajo2… */
-export function freeUsername(displayName: string): string {
+/** A free username from a display name, for someone added without a login: "Grandma Jo" -> grandmajo, grandmajo2…
+ *  `reserved` (lowercase) holds names about to be used by others added at the same time (the setup wizard) */
+export function freeUsername(displayName: string, reserved: Set<string> = new Set()): string {
   const base = displayName.normalize('NFKD').replace(/[^A-Za-z0-9]/g, '').toLowerCase().slice(0, 24) || 'member';
-  const taken = (name: string) => !!db.prepare('SELECT 1 FROM users WHERE username = ? COLLATE NOCASE').get(name);
+  const taken = (name: string) => reserved.has(name) || !!db.prepare('SELECT 1 FROM users WHERE username = ? COLLATE NOCASE').get(name);
   let name = base;
   for (let i = 2; taken(name); i++) name = `${base}${i}`;
   return name;

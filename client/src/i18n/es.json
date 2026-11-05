@@ -2314,7 +2314,8 @@
       "tour10Title": "Objetivos, monedas y personas",
       "tour10For": "Los últimos ajustes, todos en {settings}.",
       "tour10Steps": "{goals}: el objetivo semanal de cada persona y su bonus.\n{coins}: cuántas monedas da cada nivel de esfuerzo.\n{members}: añadir o cambiar personas.\n{wizard}: volver a usarlo. Solo añade, por ejemplo tareas iniciales para un niño nuevo.",
-      "tour10Example": "{guide}, también en {settings}, explica todo lo demás."
+      "tour10Example": "{guide}, también en {settings}, explica todo lo demás.",
+      "errSaveFailed": "No se ha guardado nada. Inténtalo de nuevo. Si sigue pasando, toca Atrás y revisa los nombres y los usuarios."
     },
     "setupRewards": {
       "sticker": "Elegir una pegatina o un premio pequeño",
