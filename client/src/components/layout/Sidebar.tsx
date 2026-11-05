@@ -64,7 +64,6 @@ export function Sidebar({ user, isMobileOpen = false, onClose, gamificationEnabl
       <nav
         style={{
           width: effectiveCollapsed ? 60 : 240,
-          height: '100vh',
           backgroundColor: 'var(--warm-sidebar)',
           borderRight: '1.5px solid var(--warm-sidebar-border)',
           padding: effectiveCollapsed ? '24px 8px' : '24px 0',

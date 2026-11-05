@@ -22,6 +22,14 @@ What changed in each release, in plain language, newest first. Releases up to v0
 - The first "+ To-do" uses a room you already called "To-dos" instead of making a second one.
 - The guide has a new "To-do list" part under Chores, and two troubleshooting entries.
 
+### Fixed
+
+- **On phones, your profile card shows at the bottom of the side menu straight away.** Before, it sat under the
+  browser's address bar and only appeared once you scrolled.
+- **On phones, every button on a reward in Settings → Rewards Catalog fits.** The buttons now sit on their own line
+  under the reward's name, so Delete is no longer cut off. Editing a reward puts the name, description and price
+  one per line.
+
 ## v0.16.4 (2026-11-04)
 
 ### Fixed
