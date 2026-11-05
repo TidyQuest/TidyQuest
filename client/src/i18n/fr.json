@@ -1047,7 +1047,8 @@
       "untilDate": "Jusqu'au {date}",
       "potSaved": "{saved} sur {target} économisées",
       "potWaiting": "La cagnotte est pleine — en attente d'un parent",
-      "chipIn": "Contribuer"
+      "chipIn": "Contribuer",
+      "usualShort": "habituel"
     },
     "boosts": {
       "title": "Événements pièces doublées",

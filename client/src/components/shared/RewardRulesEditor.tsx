@@ -80,10 +80,13 @@ export function RewardRulesEditor({ reward, family, language, onSaved }: {
           <div style={label}>{t('rewardRules.pricePerPerson')}</div>
           <div style={row}>
             {people.filter((m) => visibleTo.length === 0 || visibleTo.includes(m.id)).map((m) => (
-              <label key={m.id} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 700, color: 'var(--warm-text)' }}>
+              // A blank box says "usual" (a grey number looked like a typed price); people with their own price stand out
+              <label key={m.id} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 700,
+                color: prices[m.id]?.trim() ? 'var(--warm-accent)' : 'var(--warm-text)' }}>
                 {m.displayName}
-                <input type="number" min={1} className="tq-input-compact" value={prices[m.id] ?? ''} placeholder={String(reward.costCoins)}
-                  onChange={(e) => setPrices((p) => ({ ...p, [m.id]: e.target.value }))} style={{ width: 80 }} />
+                <input type="number" min={1} className="tq-input-compact" value={prices[m.id] ?? ''} placeholder={t('rewardRules.usualShort')}
+                  onChange={(e) => setPrices((p) => ({ ...p, [m.id]: e.target.value }))}
+                  style={{ width: 80, ...(prices[m.id]?.trim() ? { borderColor: 'var(--warm-accent)', fontWeight: 800 } : {}) }} />
               </label>
             ))}
           </div>

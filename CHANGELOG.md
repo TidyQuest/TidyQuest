@@ -26,6 +26,10 @@ What changed in each release, in plain language, newest first. Releases up to v0
 
 ### Fixed
 
+- **Back to Rooms takes you back to where you were** on the Rooms page, with the room you opened on screen, instead
+  of the top. The phone's back button does the same; the menu's Rooms link still opens at the top.
+- **Blank "Price per person" boxes say "usual"** (in Settings → Rewards Catalog → Rules) instead of a grey number that
+  looked like a typed price, and people who have their own price show in orange.
 - **On phones, your profile card shows at the bottom of the side menu straight away.** Before, it sat under the
   browser's address bar and only appeared once you scrolled. The page behind the open menu no longer scrolls
   either, which hid the browser's toolbars and left a strip of page showing under the menu.

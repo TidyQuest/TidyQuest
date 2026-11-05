@@ -1047,7 +1047,8 @@
       "untilDate": "Hasta el {date}",
       "potSaved": "{saved} de {target} ahorradas",
       "potWaiting": "El bote está lleno — esperando a un padre",
-      "chipIn": "Aportar"
+      "chipIn": "Aportar",
+      "usualShort": "normal"
     },
     "boosts": {
       "title": "Eventos de monedas dobles",

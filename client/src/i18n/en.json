@@ -1047,7 +1047,8 @@
       "untilDate": "Until {date}",
       "potSaved": "{saved} of {target} saved",
       "potWaiting": "The pot is full — waiting for a parent",
-      "chipIn": "Chip in"
+      "chipIn": "Chip in",
+      "usualShort": "usual"
     },
     "boosts": {
       "title": "Double coins events",
