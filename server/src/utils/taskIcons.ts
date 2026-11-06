@@ -1,20 +1,108 @@
-export type TaskIconKey =
-  | 'sparkle' | 'dishes' | 'sink' | 'stove' | 'counter' | 'fridge' | 'oven'
-  | 'microwave' | 'kettle' | 'rangehood' | 'pantry' | 'cabinet'
-  | 'bed' | 'pillow' | 'sheets' | 'mattress' | 'nightstand'
-  | 'toilet' | 'shower' | 'mirror' | 'towel' | 'drain' | 'bathmat'
-  | 'showerhead' | 'toothbrush' | 'grout'
-  | 'vacuum' | 'mop' | 'dust' | 'sweep'
-  | 'window' | 'curtain' | 'lightswitch'
-  | 'sofa' | 'tv' | 'lamp' | 'furniture' | 'rug'
-  | 'desk' | 'keyboard' | 'monitor' | 'cable' | 'chair'
-  | 'trash' | 'broom'
-  | 'washer' | 'dryer' | 'detergent' | 'iron' | 'clothes'
-  | 'tools' | 'cobweb' | 'chemicals' | 'garagedoor'
-  | 'shelf' | 'drawer' | 'closet';
+/** Every icon a chore can have (the client draws them: TaskIcons.tsx and TaskIconsExtra.tsx). */
+export const TASK_ICON_KEYS = [
+  'sparkle', 'dishes', 'sink', 'stove', 'counter', 'fridge', 'oven',
+  'microwave', 'kettle', 'rangehood', 'pantry', 'cabinet',
+  'bed', 'pillow', 'sheets', 'mattress', 'nightstand',
+  'toilet', 'shower', 'mirror', 'towel', 'drain', 'bathmat',
+  'showerhead', 'toothbrush', 'grout',
+  'vacuum', 'mop', 'dust', 'sweep',
+  'window', 'curtain', 'lightswitch',
+  'sofa', 'tv', 'lamp', 'furniture', 'rug',
+  'desk', 'keyboard', 'monitor', 'cable', 'chair',
+  'trash', 'broom',
+  'washer', 'dryer', 'detergent', 'iron', 'clothes',
+  'tools', 'cobweb', 'chemicals', 'garagedoor',
+  'shelf', 'drawer', 'closet',
+  // Round 3: family activities (client/src/components/icons/TaskIconsExtra.tsx draws these)
+  'dog', 'cat', 'petfood', 'litter', 'poop', 'leash', 'petbed', 'petmeds', 'fishtank',
+  'mower', 'rake', 'wateringcan', 'plant', 'pool', 'skimmer', 'hose', 'shovel', 'weeds',
+  'car', 'carwash', 'bike',
+  'smokealarm', 'extinguisher', 'airfilter', 'waterfilter', 'battery', 'lightbulb', 'recycling', 'mail',
+  'groceries', 'cart', 'bills', 'piggybank', 'calendar',
+  'cooking', 'lunchbox', 'table', 'folding', 'hanger',
+  'homework', 'backpack', 'reportcard', 'bus', 'alarmclock', 'bedtime', 'hairbrush', 'shoes', 'toys', 'reading',
+  'briefcase', 'phone', 'trophy', 'star', 'streak', 'medal', 'heart',
+  // v0.15.4 (ENH-17): more chores
+  'dishwasher', 'grill', 'coffee', 'wipetable', 'wheeliebin', 'boxes', 'baseboard', 'ceilingfan', 'stairs', 'door', 'timer',
+  'gutter', 'waterheater', 'pressurewasher', 'paint', 'fireplace', 'thermostat', 'hedge', 'leafblower', 'garden', 'chickens',
+  'birdcage', 'smallpet', 'reptile', 'horse', 'baby', 'medicine', 'music', 'sports', 'bath', 'morning', 'screentime',
+] as const;
+
+export type TaskIconKey = typeof TASK_ICON_KEYS[number];
+
+/**
+ * Family activities, checked before the room-by-room rules below (so "Wash Dog & Cat Beds" is a pet
+ * bed, not a bed, and "Smoke Alarm Batteries" a smoke alarm). English words, matched as whole words.
+ */
+const ACTIVITY_RULES: Array<[RegExp, TaskIconKey]> = [
+  [/\blitter\b/, 'litter'], [/\bpoop\b|\bpooper/, 'poop'], [/\bflea|\bheartworm|\bpet meds?\b|\bvet\b/, 'petmeds'],
+  [/\bwalk\b.*\bdogs?\b|\bdogs?\b.*\bwalk/, 'leash'], [/\bfeed|\bpet food\b|\bpet bowls?\b/, 'petfood'],
+  [/\b(dog|cat|pet)s?\b.*\bbeds?\b/, 'petbed'], [/\baquarium\b|\bfish tank\b/, 'fishtank'],
+  [/\bdogs?\b|\bpupp(y|ies)\b/, 'dog'], [/\bcats?\b|\bkitten/, 'cat'],
+  [/\bskim/, 'skimmer'], [/\bpool\b/, 'pool'], [/\bmow/, 'mower'], [/\brake\b|\bleaves\b/, 'rake'],
+  [/\bwater\b.*\bplants?\b/, 'wateringcan'], [/\bhose\b/, 'hose'], [/\bweed/, 'weeds'], [/\bplants?\b|\bgarden/, 'plant'], [/\bsnow\b|\bshovel/, 'shovel'],
+  [/\bcars?\b.*\bwash|\bwash\b.*\bcars?\b/, 'carwash'], [/\bcars?\b|\bvacuum the car/, 'car'], [/\bbikes?\b|\bbicycle/, 'bike'],
+  [/\bsmoke\b|\bco alarm/, 'smokealarm'], [/\bextinguisher/, 'extinguisher'], [/\bhvac\b|\bair filter|\bfurnace filter/, 'airfilter'],
+  [/\bwater filter/, 'waterfilter'], [/\bbatter(y|ies)\b/, 'battery'], [/\blight ?bulbs?\b|\bbulbs?\b/, 'lightbulb'], [/\bmail\b|\bpost office\b/, 'mail'],
+  [/\bgrocer/, 'groceries'], [/\bshopping\b|\berrand/, 'cart'], [/\bbills?\b|\bbudget/, 'bills'], [/\bsav(e|ing)s?\b|\bpiggy/, 'piggybank'], [/\bcalendar\b|\bplanner\b/, 'calendar'],
+  [/\bcook|\bmeal\b|\bdinner prep/, 'cooking'], [/\blunch/, 'lunchbox'], [/\bset\b.*\btable\b|\btable\b.*\bset\b/, 'table'],
+  [/\bfold(s|ing|ed)?\b/, 'folding'], [/\bhang\b|\bhangers?\b/, 'hanger'],
+  [/\bbedtime\b|\bbed time\b/, 'bedtime'], [/\bteeth\b|\btooth/, 'toothbrush'],
+  [/\bhomework\b|\bstudy|\bschoolwork/, 'homework'], [/\bbackpack|\blaunch pad\b/, 'backpack'], [/\breport card|\bgrades?\b|\btest scores?\b/, 'reportcard'],
+  [/\bbus\b/, 'bus'], [/\bstreak/, 'streak'], [/\bwake\b|\bon time\b|\balarm clock/, 'alarmclock'],
+  [/\bhair\b/, 'hairbrush'], [/\bshoes?\b/, 'shoes'], [/\btoys?\b/, 'toys'], [/\bread(ing)?\b|\bbooks?\b/, 'reading'],
+  [/\bwork\b|\bjob\b|\bshift\b/, 'briefcase'], [/\bphone\b|\bcheck[- ]in\b/, 'phone'],
+  [/\bmedal\b/, 'medal'], [/\btroph|\bwin\b|\bwinner|\baward/, 'trophy'], [/\bawesome\b|\bstar\b/, 'star'], [/\bkind(ness)?\b|\bhelp(ed|ing)? (a |your )?(sibling|brother|sister)/, 'heart'],
+];
+
+/**
+ * ENH-17 icons, in all six languages (prefixes, since \b doesn't see accented letters as word letters).
+ * Animals and babies come first, so "Feed the chickens" isn't a pet bowl and "vegetable garden" isn't a
+ * potted plant; everything else comes after the activity rules above.
+ */
+const FIRST_RULES: Array<[RegExp, TaskIconKey]> = [
+  [/\bvegetable|\bveggie|\bgarden beds?\b|\bharvest|\bpotager|\blégumes|\bgemüse|\bgemuese|\bhuert[oa]|\borto\b|\bmoestuin|\bgroente/, 'garden'],
+  [/\bchickens\b|\bhens?\b|\bcoop\b|\bcollect (the )?eggs|\bpoules?\b|\bpoulailler|\bhühner|\bhuehner|\bhuhn\b|\bgallin[ae]|\bpollaio|\bkip(pen)?\b|\bkippenhok/, 'chickens'],
+  [/\bbirds?\b|\bbird ?cage|\bparrot|\bbudgie|\bparakeet|\bcanar(y|ies)|\boiseau|\bperruche|\bperroquet|\bvogel|\bvögel|\bwellensittich|\bpájaro|\bpajaro|\bperiquito|\buccell|\bpappagall|\bparkiet/, 'birdcage'],
+  [/\bhamster|\bguinea pig|\brabbit|\bbunn(y|ies)|\bgerbil|\bferret|\bchinchilla|\bcochon d'inde|\blapin|\bmeerschwein|\bkaninchen|\bconejo|\bcobaya|\bconigli|\bcricet|\bporcellin|\bkonijn|\bcavia/, 'smallpet'],
+  [/\breptile|\blizard|\bgecko|\bsnake|\bturtle|\btortoise|\biguana|\bbearded dragon|\bterrari|\breptil|\blézard|\blezard|\btortue|\beidechse|\bschlange|\bschildkröte|\bschildkroete|\blagart|\bserpient|\btortuga|\brettil|\blucertol|\btartarug|\bhagedis|\bschildpad/, 'reptile'],
+  [/\bhorses?\b|\bpon(y|ies)\b|\bmuck out|\bcheva(l|ux)\b|\bponey|\bécurie|\bpferd|\bcaball|\bestablo|\bcuadra\b|\bcaval(lo|li)\b|\bscuderia|\bstalla\b|\bpaard/, 'horse'],
+  [/\bbab(y|ies)\b|\bdiaper|\bnapp(y|ies)\b|\bpott(y|ies)\b|\bbébé|\bbebe\b|\bchanger (les |la )?couches?|\bbiberon|\bwindel|\bwickeln|\bfläschchen|\bbebé|\bpañal|\bpanal|\bbiberón|\bneonat|\bpannolin|\bluier/, 'baby'],
+];
+
+const MORE_RULES: Array<[RegExp, TaskIconKey]> = [
+  [/\bdishwasher|\blave-vaisselle|\bgeschirrspüler|\bgeschirrspueler|\bspülmaschine|\bspuelmaschine|\blavavajillas|\blavaplatos|\blavastoviglie|\bvaatwas/, 'dishwasher'],
+  [/\bgrill(?!e-pain)|\bbbq\b|\bbarbecue|\bbarbacoa|\bparrilla|\bgriglia/, 'grill'],
+  [/\bcoffee(?! table)|\bkaffee|\bcafeti|\bcafetera|\bmachine à café|\bcaffè|\bcaffe\b|\bcaffettiera|\bkoffie(?!tafel)|\bespresso/, 'coffee'],
+  [/\b(wipe|clean)\b.*\btables?\b|\btables?\b.*\bwipe|\b(essuyer|nettoyer)\b.*\btable|\btisch\b.*\b(ab)?(wisch|putz)|\b(wisch|putz)\w*\b.*\btisch\b|\blimpiar\b.*\bmesa|\bpulire\b.*\btavol|\btafel\b.*\b(afnemen|afvegen|schoon)/, 'wipetable'],
+  [/\bwheelie|\bbins?\b.*\b(curb|kerb|out|back|street|road)\b|\b(curb|kerb)\b|\bbin (day|night)|\b(trash|garbage|rubbish) (day|night)\b|\bpoubelles?\b.*\b(sortir|rentrer|rue)\b|\b(sortir|rentrer)\b.*\bpoubelles?|\bmülltonne|\bmuelltonne|\btonnen?\b.*\b(raus|rein|straße|strasse)|\bcontenedor|\bbidon[ei]\b|\bcassonett|\bkliko|\bvuilnisbak|\bcontainer/, 'wheeliebin'],
+  [/\bboxes\b|\bcardboard|\bcartons?\b|\bkartons?\b|\bcajas\b|\bcartón|\bscatol|\bcartone\b|\bdozen (plat|vouwen)/, 'boxes'],
+  [/\bbaseboard|\bskirting|\bplinthe|\bsockelleiste|\bfußleiste|\bfussleiste|\bzócalo|\bzocalo|\brodapié|\brodapie|\bbattiscopa|\bplinten\b/, 'baseboard'],
+  [/\bceiling fans?\b|\bfan blades?\b|\bfans\b|\bventilateur|\bventilator|\bdeckenventilator|\bplafondventilator|\bventilador|\bventilatore/, 'ceilingfan'],
+  [/\bstairs?\b|\bstaircase|\bsteps\b|\bescalier|\btreppe|\bescaleras?\b|\bgradini|\bscalinat|\ble scale\b|\btrappen\b|\bde trap\b/, 'stairs'],
+  [/\bfront door|\bentry(way)?\b|\bfoyer|\bdoormat|\bporch\b|\bmudroom|\bentrance|\bhallway|\bentrée|\bpaillasson|\bhaustür|\bhaustuer|\beingang|\bflur\b|\bfußmatte|\bfussmatte|\bpuerta de (la )?(entrada|calle)|\brecibidor|\bentrada\b|\bfelpudo|\bingresso|\bzerbino|\bvoordeur|\bdeurmat|\bhal\b/, 'door'],
+  [/\bgutter|\bgouttière|\bgouttiere|\bdachrinne|\bregenrinne|\bcanal[óo]n|\bcanalones|\bgrondai|\bdakgoot/, 'gutter'],
+  [/\bwater heater|\bhot water tank|\bboiler\b|\bchauffe-eau|\bballon d'eau|\bwarmwasser|\bcalentador|\btermo\b|\bscaldabagno|\bgeiser\b/, 'waterheater'],
+  [/\bpressure[- ]?wash|\bpower[- ]?wash|\bjet ?wash|\bhaute pression|\bkärcher|\bkaercher|\bkarcher|\bhochdruck|\bhidrolimpiadora|\bidropulitrice|\bhogedruk/, 'pressurewasher'],
+  [/\b(re)?paint|\bpeinture|\b(re)?peindre|streichen\b|\bmalen\b|\bpintar|\bpintura|\bpittur|\bverniciar|\bschilder|\bverven\b/, 'paint'],
+  [/\bfireplace|\bchimney|\bwood ?stove|\bfirewood|\bashes\b|\bcheminée|\bcheminee|\bbois de chauffage|\bkamin|\bbrennholz|\bchimenea|\bleña\b|\blena\b|\bcaminett|\bcamino\b|\blegna\b|\bopen ?haard|\bhaard\b|\bhaardhout|\bbrandhout/, 'fireplace'],
+  [/\bthermostat|\btermostat|\bheating\b|\bchauffage|\bheizung|\bcalefacci|\briscaldament|\bverwarming/, 'thermostat'],
+  [/\bhedges?\b|\bbush(es)?\b|\bshrubs?\b|\bhaies?\b|\barbuste|\bhecken?\b|\bsetos?\b|\barbusto|\bsiep[ei]\b|\bcespugl|\bheg(gen)?\b|\bstruik/, 'hedge'],
+  [/\bleaf ?blow|\bsouffleur|\blaubbläser|\blaubblaeser|\bsoplador|\bsoffiator|\bbladblazer/, 'leafblower'],
+  [/\bmedicine|\bmedication|\bmeds?\b|\bpills?\b|\bvitamins?\b|\binhaler|\bmédicament|\bmedicament|\bvitamine|\bmedikament|\btabletten|\barznei|\bmedicin|\bpastillas?\b|\bfarmac|\bpillol|\bmedicijn|\bpillen\b/, 'medicine'],
+  [/\bmusic|\bmusique|\bmusik|\bmúsica|\bmusica|\bmuziek|\bpiano|\bklavier|\bguitar|\bgitarre|\bchitarra|\bgitaar|\bviolin|\bviolon|\bgeige|\bviolín|\bviool|\bdrums?\b|\binstrument|\bsing(ing)?\b|\bchoir|\bchorale|\bchor\b|\bcoro\b|\bkoor\b|\bukulele|\bflute|\bflûte|\bflöte|\bflauta|\bflauto|\bfluit|\btrumpet|\bsaxophon/, 'music'],
+  [/\bsports?\b|\bexercis|\bworkout|\bgym\b|\btraining|\bsoccer|\bfootball|\bbasketball|\bbaseball|\bsoftball|\bhockey|\btennis|\bvolleyball|\bswim|\bjog|\bstretch|\byoga\b|\bpush[- ]?ups?|\bentraînement|\bentrainement|\bfoot\b|\bnatation|\bturnen|\bfußball|\bfussball|\bschwimm|\bdeporte|\bejercicio|\bentrenamiento|\bfútbol|\bfutbol|\bnataci|\besercizi|\ballenament|\bpalestra|\bcalcio\b|\bnuoto|\bvoetbal|\boefening|\btrainen|\bzwemmen/, 'sports'],
+  [/\bbath ?time\b|\bbubble bath|\bbath\b(?! ?mats?)|(?<!tapis de )\bbain\b|\bbadezeit|\bbaden\b|\bhora del baño|\bbañ(ar|o de)|\bbagnetto|\bfare il bagno|\bbadtijd|\bin bad\b/, 'bath'],
+  [/\bmorning|\bstarter\b|\bget dressed|\bdressed\b|\bmatin|\bmorgen|\bmañana|\bmanana\b|\bmattin|\bochtend/, 'morning'],
+  [/\bscreen ?time|\bscreens? off|\bno screens|\btablets?\b|\bipad|\bvideo ?games?|\bgaming\b|\bconsole|\bxbox|\bplaystation|\bnintendo|\btemps d'écran|\btemps d’écran|\bécrans? (éteint|off)|\bjeux? vidéo|\bbildschirmzeit|\bmedienzeit|\bkonsole|\btiempo de pantalla|\bpantallas\b|\bvideojueg|\bschermo|\bvideogioc|\bschermtijd|\bgamen\b/, 'screentime'],
+  // Last, so "Practice piano 15 minutes" is music: a set number of minutes, or a timer
+  [/⏱|\btimer\b|\bminuteur|\btemporizador|\b\d+[- ]?(minute|minutes|minuten|minutos|minuti|min)\b/, 'timer'],
+];
 
 export function suggestTaskIcon(name?: string | null, translationKey?: string | null): TaskIconKey {
   const s = `${name || ''} ${translationKey || ''}`.toLowerCase();
+
+  for (const rules of [FIRST_RULES, ACTIVITY_RULES, MORE_RULES]) for (const [re, key] of rules) if (re.test(s)) return key;
 
   // Kitchen
   if (s.includes('dish') || s.includes('dishwasher') || s.includes('vaisselle') || s.includes('geschirrspul') || s.includes('lavaplatos')) return 'dishes';

@@ -147,6 +147,87 @@ html[data-theme='rose'] {
   --warm-primary-shadow: rgba(236, 72, 153, 0.25);
 }
 
+html[data-theme='mint'] {
+  --warm-bg: #F2FBF6;
+  --warm-card: #FFFFFF;
+  --warm-border: #D5EFE1;
+  --warm-border-subtle: #E3F5EB;
+  --warm-text: #1E3B2F;
+  --warm-text-secondary: #365A4A;
+  --warm-text-muted: #577A69;
+  --warm-text-light: #7E9A8C;
+  --warm-accent: #10B981;
+  --warm-accent-light: #E3F8EE;
+  --warm-accent-hover: #059669;
+  --warm-bg-subtle: #F7FDF9;
+  --warm-bg-warm: #ECF9F2;
+  --warm-bg-input: #FFFFFF;
+  --warm-sidebar: #FFFFFF;
+  --warm-sidebar-active: #E3F8EE;
+  --warm-sidebar-border: #D5EFE1;
+  --warm-sidebar-user-bg: #E3F8EE;
+  --warm-sidebar-user-border: #A7F3D0;
+  --warm-streak-bg: linear-gradient(135deg, #E3F8EE, #D1FAE5);
+  --warm-streak-border: #A7F3D0;
+  --warm-streak-text: #065F46;
+  --warm-streak-subtext: #059669;
+  --warm-primary-shadow: rgba(16, 185, 129, 0.25);
+}
+
+html[data-theme='grape'] {
+  --warm-bg: #F7F4FF;
+  --warm-card: #FFFFFF;
+  --warm-border: #E4DCF7;
+  --warm-border-subtle: #EDE7FB;
+  --warm-text: #2E2149;
+  --warm-text-secondary: #4A3A6E;
+  --warm-text-muted: #6B5C8D;
+  --warm-text-light: #8E81AA;
+  --warm-accent: #8B5CF6;
+  --warm-accent-light: #EFE9FE;
+  --warm-accent-hover: #7C3AED;
+  --warm-bg-subtle: #FBF9FF;
+  --warm-bg-warm: #F3EEFF;
+  --warm-bg-input: #FFFFFF;
+  --warm-sidebar: #FFFFFF;
+  --warm-sidebar-active: #EFE9FE;
+  --warm-sidebar-border: #E4DCF7;
+  --warm-sidebar-user-bg: #EFE9FE;
+  --warm-sidebar-user-border: #C4B5FD;
+  --warm-streak-bg: linear-gradient(135deg, #EFE9FE, #EDE9FE);
+  --warm-streak-border: #C4B5FD;
+  --warm-streak-text: #5B21B6;
+  --warm-streak-subtext: #7C3AED;
+  --warm-primary-shadow: rgba(139, 92, 246, 0.25);
+}
+
+html[data-theme='sunny'] {
+  --warm-bg: #FFFBEA;
+  --warm-card: #FFFFFF;
+  --warm-border: #F2E6BC;
+  --warm-border-subtle: #F7EECC;
+  --warm-text: #3D3314;
+  --warm-text-secondary: #5E5022;
+  --warm-text-muted: #7E6E3A;
+  --warm-text-light: #9E8F5E;
+  --warm-accent: #CA8A04;
+  --warm-accent-light: #FEF6D3;
+  --warm-accent-hover: #A16207;
+  --warm-bg-subtle: #FFFDF4;
+  --warm-bg-warm: #FFF7DC;
+  --warm-bg-input: #FFFFFF;
+  --warm-sidebar: #FFFFFF;
+  --warm-sidebar-active: #FEF6D3;
+  --warm-sidebar-border: #F2E6BC;
+  --warm-sidebar-user-bg: #FEF6D3;
+  --warm-sidebar-user-border: #FDE68A;
+  --warm-streak-bg: linear-gradient(135deg, #FEF6D3, #FEF3C7);
+  --warm-streak-border: #FDE68A;
+  --warm-streak-text: #854D0E;
+  --warm-streak-subtext: #A16207;
+  --warm-primary-shadow: rgba(202, 138, 4, 0.25);
+}
+
 html[data-theme='night'] {
   --warm-bg: #0B0F19;
   --warm-card: #1C2436;
@@ -183,6 +264,66 @@ html[data-theme='night'] {
   --health-red-bg: #2E1A1A;
   --warm-shadow: rgba(0, 0, 0, 0.3);
   --warm-primary-shadow: rgba(96, 165, 250, 0.25);
+
+  /* Status badge colors — dark theme */
+  --status-approved-text: #4ADE80;
+  --status-approved-bg: #1A2E1A;
+  --status-approved-border: #166534;
+  --status-rejected-text: #FCA5A5;
+  --status-rejected-bg: #2A1F1F;
+  --status-rejected-border: #7F1D1D;
+  --status-cancelled-text: #94A3B8;
+  --status-cancelled-bg: #1E293B;
+  --status-cancelled-border: #475569;
+
+  /* Task health badge colors — dark theme */
+  --task-healthy-text: #4ADE80;
+  --task-healthy-bg: #1A2E1A;
+  --task-healthy-border: #166534;
+  --task-warning-text: #FBBF24;
+  --task-warning-bg: #2E2A1A;
+  --task-warning-border: #92400E;
+  --task-critical-text: #FCA5A5;
+  --task-critical-bg: #2E1A1A;
+  --task-critical-border: #7F1D1D;
+}
+
+html[data-theme='ocean'] {
+  --warm-bg: #071A1F;
+  --warm-card: #10272E;
+  --warm-border: #24464F;
+  --warm-border-subtle: #1D3B43;
+  --warm-text: #E2E8F0;
+  --warm-text-secondary: #CBD5E1;
+  --warm-text-muted: #94A3B8;
+  --warm-text-light: #64748B;
+  --warm-accent: #2DD4BF;
+  --warm-accent-light: #133A3D;
+  --warm-accent-hover: #14B8A6;
+  --warm-bg-subtle: #15343B;
+  --warm-bg-warm: #1A3E46;
+  --warm-bg-input: #0D2228;
+  --warm-sidebar: #0B2026;
+  --warm-sidebar-active: #15363C;
+  --warm-sidebar-border: #334155;
+  --warm-sidebar-user-bg: #15363C;
+  --warm-sidebar-user-border: #475569;
+  --warm-streak-bg: linear-gradient(135deg, #10272E, #15343B);
+  --warm-streak-border: #475569;
+  --warm-streak-text: #5EEAD4;
+  --warm-streak-subtext: #2DD4BF;
+  --warm-danger: #F87171;
+  --warm-danger-bg: #2A1F1F;
+  --warm-danger-border: #7F1D1D;
+  --warm-badge-bg: #2A1F1F;
+  --warm-badge-text: #F87171;
+  --warm-coin: #FBBF24;
+  --health-bar-track: #24464F;
+  --health-green-bg: #1A2E1A;
+  --health-yellow-bg: #2E2A1A;
+  --health-red-bg: #2E1A1A;
+  --warm-shadow: rgba(0, 0, 0, 0.3);
+  --warm-primary-shadow: rgba(45, 212, 191, 0.25);
 
   /* Status badge colors — dark theme */
   --status-approved-text: #4ADE80;
@@ -250,6 +391,7 @@ body {
   font-family: 'Nunito', sans-serif;
   font-weight: 700;
   border-radius: 14px;
+  padding: 10px 16px; /* the same as on phones; .tq-btn-sm/md/lg and inline styles override it (#151) */
   transition: all 0.15s ease;
   display: inline-flex;
   align-items: center;
@@ -408,25 +550,424 @@ body {
 }
 
 /* Settings grid — via CSS class, not inline */
-.settings-grid {
+/* Settings: grouped cards in two columns that each grow at their own height (no stretched cards) */
+.settings-page {
+  display: grid;
+  gap: var(--space-xl);
+}
+.settings-cols {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: var(--space-xl);
+  align-items: start;
+}
+.settings-col {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+  min-width: 0;
+}
+.settings-group-title {
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--warm-text-light);
+  margin: var(--space-sm) 2px calc(-1 * var(--space-sm));
+}
+.settings-col > .settings-group-title:first-child { margin-top: 0; }
+/* Kids only see a card or two: one column */
+.settings-cols.settings-cols-single { grid-template-columns: 1fr; }
+
+/* ========================================
+   UNLOCKABLE THEMES (levels 4, 7 and 10; utils/unlocks.ts)
+   ======================================== */
+html[data-theme='forest'] {
+  --warm-bg: #F3F8F1;
+  --warm-card: #FFFFFF;
+  --warm-border: #D9E7D3;
+  --warm-border-subtle: #E6F0E2;
+  --warm-text: #1F3324;
+  --warm-text-secondary: #3E5A44;
+  --warm-text-muted: #5F7A63;
+  --warm-text-light: #8BA38E;
+  --warm-accent: #2F855A;
+  --warm-accent-light: #E3F4EA;
+  --warm-accent-hover: #276749;
+  --warm-bg-subtle: #F8FBF7;
+  --warm-bg-warm: #EEF6EB;
+  --warm-bg-input: #FFFFFF;
+  --warm-sidebar: #FFFFFF;
+  --warm-sidebar-active: #E3F4EA;
+  --warm-sidebar-border: #D9E7D3;
+  --warm-sidebar-user-bg: #E3F4EA;
+  --warm-sidebar-user-border: #9AE6B4;
+  --warm-streak-bg: linear-gradient(135deg, #E3F4EA, #D5EEDC);
+  --warm-streak-border: #9AE6B4;
+  --warm-streak-text: #22543D;
+  --warm-streak-subtext: #276749;
+  --health-bar-track: #E6F0E2;
+  --warm-primary-shadow: rgba(47, 133, 90, 0.25);
+}
+
+/* Galaxy and Lava are dark: the same status colors as Night */
+html[data-theme='galaxy'], html[data-theme='lava'] {
+  --warm-danger: #F87171;
+  --warm-danger-bg: #2A1F1F;
+  --warm-danger-border: #7F1D1D;
+  --warm-badge-bg: #2A1F1F;
+  --warm-badge-text: #F87171;
+  --warm-coin: #FBBF24;
+  --health-green-bg: #1A2E1A;
+  --health-yellow-bg: #2E2A1A;
+  --health-red-bg: #2E1A1A;
+  --warm-shadow: rgba(0, 0, 0, 0.35);
+  --status-approved-text: #4ADE80;
+  --status-approved-bg: #1A2E1A;
+  --status-approved-border: #166534;
+  --status-rejected-text: #FCA5A5;
+  --status-rejected-bg: #2A1F1F;
+  --status-rejected-border: #7F1D1D;
+  --status-cancelled-text: #94A3B8;
+  --status-cancelled-bg: #1E293B;
+  --status-cancelled-border: #475569;
+  --task-healthy-text: #4ADE80;
+  --task-healthy-bg: #1A2E1A;
+  --task-healthy-border: #166534;
+  --task-warning-text: #FBBF24;
+  --task-warning-bg: #2E2A1A;
+  --task-warning-border: #92400E;
+  --task-critical-text: #FCA5A5;
+  --task-critical-bg: #2E1A1A;
+  --task-critical-border: #7F1D1D;
+}
+
+html[data-theme='galaxy'] {
+  --warm-bg: #0D0B1E;
+  --warm-card: #1A1735;
+  --warm-border: #332E5C;
+  --warm-border-subtle: #29244D;
+  --warm-text: #EDE9FE;
+  --warm-text-secondary: #D4CCF5;
+  --warm-text-muted: #A49BD1;
+  --warm-text-light: #8A80BD;
+  --warm-accent: #A78BFA;
+  --warm-accent-light: #2A2350;
+  --warm-accent-hover: #8B5CF6;
+  --warm-bg-subtle: #221D44;
+  --warm-bg-warm: #282152;
+  --warm-bg-input: #15122B;
+  --warm-sidebar: #120F27;
+  --warm-sidebar-active: #2A2350;
+  --warm-sidebar-border: #332E5C;
+  --warm-sidebar-user-bg: #2A2350;
+  --warm-sidebar-user-border: #5B51A0;
+  --warm-streak-bg: linear-gradient(135deg, #1A1735, #2A2350);
+  --warm-streak-border: #5B51A0;
+  --warm-streak-text: #C4B5FD;
+  --warm-streak-subtext: #A78BFA;
+  --health-bar-track: #332E5C;
+  --warm-primary-shadow: rgba(167, 139, 250, 0.3);
+}
+/* A few faint stars behind the page */
+html[data-theme='galaxy'] .main-content {
+  background-image: radial-gradient(1.5px 1.5px at 18px 24px, #FFFFFF66, transparent), radial-gradient(1px 1px at 70px 90px, #FFFFFF55, transparent),
+    radial-gradient(1.5px 1.5px at 110px 40px, #C4B5FD66, transparent), radial-gradient(1px 1px at 40px 120px, #FFFFFF44, transparent);
+  background-size: 140px 140px;
+}
+
+html[data-theme='lava'] {
+  --warm-bg: #170A08;
+  --warm-card: #2A1210;
+  --warm-border: #4E2219;
+  --warm-border-subtle: #3E1B14;
+  --warm-text: #FDECE6;
+  --warm-text-secondary: #F6CFC2;
+  --warm-text-muted: #D29A88;
+  --warm-text-light: #B07B6B;
+  --warm-accent: #F97316;
+  --warm-accent-light: #3D1A0E;
+  --warm-accent-hover: #FB923C;
+  --warm-bg-subtle: #34160F;
+  --warm-bg-warm: #3E1C12;
+  --warm-bg-input: #22100C;
+  --warm-sidebar: #1F0D0A;
+  --warm-sidebar-active: #3D1A0E;
+  --warm-sidebar-border: #4E2219;
+  --warm-sidebar-user-bg: #3D1A0E;
+  --warm-sidebar-user-border: #8C3A1F;
+  --warm-streak-bg: linear-gradient(135deg, #2A1210, #3D1A0E);
+  --warm-streak-border: #8C3A1F;
+  --warm-streak-text: #FDBA74;
+  --warm-streak-subtext: #FB923C;
+  --health-bar-track: #4E2219;
+  --warm-primary-shadow: rgba(249, 115, 22, 0.3);
+}
+
+/* ========================================
+   SEASONAL STYLING (utils/seasons.ts)
+   After the themes so a holiday's colors win; App.tsx sets data-season-colors unless the person turned
+   holiday colors off in Profile. Light holidays first reset the extras a dark theme changes.
+   ======================================== */
+html[data-season-colors]:not([data-season-dark]) {
+  --warm-danger: #EF4444;
+  --warm-danger-bg: #FFF1F1;
+  --warm-danger-border: #FECACA;
+  --warm-badge-bg: #FDECEC;
+  --warm-badge-text: #E25A5A;
+  --warm-coin: #F59E0B;
+  --health-green-bg: #EDF7ED;
+  --health-yellow-bg: #FFF8EC;
+  --health-red-bg: #FDECEC;
+  --warm-shadow: rgba(180, 150, 100, 0.1);
+  --status-approved-text: #15803D;
+  --status-approved-bg: #DCFCE7;
+  --status-approved-border: #86EFAC;
+  --status-rejected-text: #B91C1C;
+  --status-rejected-bg: #FEE2E2;
+  --status-rejected-border: #FCA5A5;
+  --status-cancelled-text: #374151;
+  --status-cancelled-bg: #E5E7EB;
+  --status-cancelled-border: #D1D5DB;
+  --task-healthy-text: #166534;
+  --task-healthy-bg: #E8F6EC;
+  --task-healthy-border: #86EFAC;
+  --task-warning-text: #92400E;
+  --task-warning-bg: #FFF7E6;
+  --task-warning-border: #FCD34D;
+  --task-critical-text: #991B1B;
+  --task-critical-bg: #FDECEC;
+  --task-critical-border: #FCA5A5;
+}
+
+/* Halloween: dark purple night, pumpkin orange */
+html[data-season-colors='halloween'] {
+  --warm-bg: #120E1A;
+  --warm-card: #1F1830;
+  --warm-border: #3B2F52;
+  --warm-border-subtle: #2E2442;
+  --warm-text: #F3EDE4;
+  --warm-text-secondary: #D9CFE6;
+  --warm-text-muted: #A99BBE;
+  --warm-text-light: #8A7CA3;
+  --warm-accent: #F97316;
+  --warm-accent-light: #3A2418;
+  --warm-accent-hover: #FB923C;
+  --warm-bg-subtle: #261D3A;
+  --warm-bg-warm: #2C2142;
+  --warm-bg-input: #1A1426;
+  --warm-sidebar: #171222;
+  --warm-sidebar-active: #2E2140;
+  --warm-sidebar-border: #3B2F52;
+  --warm-sidebar-user-bg: #2E2140;
+  --warm-sidebar-user-border: #5B4780;
+  --warm-streak-bg: linear-gradient(135deg, #1F1830, #2E2140);
+  --warm-streak-border: #5B4780;
+  --warm-streak-text: #FDBA74;
+  --warm-streak-subtext: #F97316;
+  --warm-danger: #F87171;
+  --warm-danger-bg: #2A1F1F;
+  --warm-danger-border: #7F1D1D;
+  --warm-badge-bg: #2A1F1F;
+  --warm-badge-text: #F87171;
+  --warm-coin: #FBBF24;
+  --health-bar-track: #3B2F52;
+  --health-green-bg: #1A2E1A;
+  --health-yellow-bg: #2E2A1A;
+  --health-red-bg: #2E1A1A;
+  --warm-shadow: rgba(0, 0, 0, 0.35);
+  --warm-primary-shadow: rgba(249, 115, 22, 0.3);
+  --status-approved-text: #4ADE80;
+  --status-approved-bg: #1A2E1A;
+  --status-approved-border: #166534;
+  --status-rejected-text: #FCA5A5;
+  --status-rejected-bg: #2A1F1F;
+  --status-rejected-border: #7F1D1D;
+  --status-cancelled-text: #A99BBE;
+  --status-cancelled-bg: #261D3A;
+  --status-cancelled-border: #5B4780;
+  --task-healthy-text: #4ADE80;
+  --task-healthy-bg: #1A2E1A;
+  --task-healthy-border: #166534;
+  --task-warning-text: #FBBF24;
+  --task-warning-bg: #2E2A1A;
+  --task-warning-border: #92400E;
+  --task-critical-text: #FCA5A5;
+  --task-critical-bg: #2E1A1A;
+  --task-critical-border: #7F1D1D;
+}
+
+/* Thanksgiving: warm cream, amber and brown */
+html[data-season-colors='thanksgiving'] {
+  --warm-bg: #FBF3E6;
+  --warm-card: #FFFDF8;
+  --warm-border: #EAD9BF;
+  --warm-border-subtle: #F2E6D2;
+  --warm-text: #3B2414;
+  --warm-text-secondary: #5E3D24;
+  --warm-text-muted: #82603F;
+  --warm-text-light: #A88763;
+  --warm-accent: #C2410C;
+  --warm-accent-light: #FCEBDC;
+  --warm-accent-hover: #9A3412;
+  --warm-bg-subtle: #FDF8EF;
+  --warm-bg-warm: #F8EBD6;
+  --warm-bg-input: #FFFFFF;
+  --warm-sidebar: #FFFDF8;
+  --warm-sidebar-active: #FCEBDC;
+  --warm-sidebar-border: #EAD9BF;
+  --warm-sidebar-user-bg: #FCEBDC;
+  --warm-sidebar-user-border: #F6C99A;
+  --warm-streak-bg: linear-gradient(135deg, #FCEBDC, #F8DDBF);
+  --warm-streak-border: #F6C99A;
+  --warm-streak-text: #7C2D12;
+  --warm-streak-subtext: #9A3412;
+  --health-bar-track: #F2E6D2;
+  --warm-primary-shadow: rgba(194, 65, 12, 0.25);
+}
+
+/* Christmas: snow white, red accent, green details */
+html[data-season-colors='christmas'] {
+  --warm-bg: #F7FAFC;
+  --warm-card: #FFFFFF;
+  --warm-border: #DDE7EE;
+  --warm-border-subtle: #EAF0F4;
+  --warm-text: #1F2A24;
+  --warm-text-secondary: #3F4D45;
+  --warm-text-muted: #5F6F66;
+  --warm-text-light: #8A9A91;
+  --warm-accent: #C81E1E;
+  --warm-accent-light: #FEECEC;
+  --warm-accent-hover: #A31515;
+  --warm-bg-subtle: #FAFCFD;
+  --warm-bg-warm: #F0F7F2;
+  --warm-bg-input: #FFFFFF;
+  --warm-sidebar: #FFFFFF;
+  --warm-sidebar-active: #E9F6EE;
+  --warm-sidebar-border: #DDE7EE;
+  --warm-sidebar-user-bg: #E9F6EE;
+  --warm-sidebar-user-border: #A7DDB9;
+  --warm-streak-bg: linear-gradient(135deg, #E9F6EE, #FEECEC);
+  --warm-streak-border: #A7DDB9;
+  --warm-streak-text: #166534;
+  --warm-streak-subtext: #15803D;
+  --health-bar-track: #EAF0F4;
+  --warm-primary-shadow: rgba(200, 30, 30, 0.22);
+}
+
+/* The faint pattern behind the page (App.tsx sets --season-pattern from the holiday's entry) */
+html[data-season] .main-content {
+  background-image: var(--season-pattern);
+  background-size: 140px 140px;
+}
+
+/* Decoration strip under the header */
+.season-strip {
+  display: flex;
+  flex-wrap: wrap; /* extra emoji wrap onto hidden lines, so the strip never widens the page */
+  justify-content: space-between;
+  gap: 0 6px;
+  height: 30px;
+  overflow: hidden;
+  font-size: 18px;
+  line-height: 1;
+  margin: -8px 0 14px;
+  padding-top: 4px;
+  user-select: none;
+}
+.season-strip span { display: inline-block; transform-origin: 50% 0; animation: seasonSway 4s ease-in-out infinite alternate; }
+.season-strip span:nth-child(even) { margin-top: 5px; animation-delay: -2s; }
+
+/* Falling leaves and snow, flying bats */
+.season-particles { position: fixed; inset: 0; overflow: hidden; pointer-events: none; z-index: 40; }
+.season-particles span { position: absolute; top: 0; left: 0; opacity: 0.55; will-change: transform; }
+.season-particles.fall span { animation: seasonFall linear infinite; }
+.season-particles.fly span { animation: seasonFly linear infinite; }
+
+@keyframes seasonSway { from { transform: rotate(-6deg); } to { transform: rotate(6deg); } }
+@keyframes seasonFall {
+  0% { transform: translate(0, -8vh) rotate(0deg); }
+  25% { transform: translate(18px, 22vh) rotate(60deg); }
+  50% { transform: translate(-12px, 50vh) rotate(150deg); }
+  75% { transform: translate(14px, 78vh) rotate(240deg); }
+  100% { transform: translate(0, 108vh) rotate(330deg); }
+}
+@keyframes seasonFly {
+  0% { transform: translate(-10vw, 0); }
+  25% { transform: translate(22vw, -24px); }
+  50% { transform: translate(50vw, 10px); }
+  75% { transform: translate(78vw, -18px); }
+  100% { transform: translate(112vw, 0); }
+}
+
+/* The house mascot: bounces when the house is clean, sways when it's fine, droops when it's sad */
+.mascot-bounce { animation: mascotBounce 1.6s ease-in-out infinite; transform-origin: 50% 100%; }
+.mascot-sway { animation: mascotSway 3.2s ease-in-out infinite alternate; transform-origin: 50% 100%; }
+.mascot-droop { animation: mascotDroop 4s ease-in-out infinite alternate; transform-origin: 50% 100%; }
+.mascot-party { animation: mascotBounce 0.9s ease-in-out infinite; transform-origin: 50% 100%; }
+.mascot-hop { animation: mascotHop 0.6s ease-out; transform-origin: 50% 100%; }
+/* A treat (a bigger chore): two happy hops while the 🍪 drops in */
+.mascot-cheer { animation: mascotHop 0.6s ease-out 0.9s 2; transform-origin: 50% 100%; }
+.mascot-spin { animation: mascotSpin 0.7s ease-in-out; transform-origin: 50% 60%; }
+.mascot-sleep { animation: mascotBreathe 3.6s ease-in-out infinite; transform-origin: 50% 100%; }
+.mascot-zzz { position: absolute; top: -4px; right: 0; font-size: 22px; animation: mascotFloat 2.4s ease-in-out infinite; }
+.mascot-fed { position: absolute; top: 30%; left: 50%; font-size: 22px; pointer-events: none; animation: mascotFed 1.6s ease-out forwards; }
+@keyframes mascotHop { 0% { transform: translateY(0); } 35% { transform: translateY(-18px) scale(1.04); } 70% { transform: translateY(0) scale(1.06, 0.94); } 100% { transform: translateY(0); } }
+@keyframes mascotSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+@keyframes mascotBreathe { 0%, 100% { transform: scale(1, 1); } 50% { transform: scale(1.02, 0.98); } }
+@keyframes mascotFloat { 0%, 100% { transform: translateY(0); opacity: 0.7; } 50% { transform: translateY(-8px); opacity: 1; } }
+@keyframes mascotFed { 0% { transform: translate(40px, -30px) scale(1); opacity: 1; } 70% { transform: translate(-50%, 0) scale(0.8); opacity: 1; } 100% { transform: translate(-50%, 10px) scale(0.2); opacity: 0; } }
+.mascot-confetti { position: absolute; top: -6px; right: -6px; font-size: 22px; animation: mascotSway 0.8s ease-in-out infinite alternate; }
+.mascot-bubble::before { content: ''; position: absolute; left: -7px; top: 18px; border: 7px solid transparent; border-left: 0; border-right-color: var(--warm-border); }
+@keyframes mascotBounce { 0%, 100% { transform: translateY(0) scale(1, 1); } 45% { transform: translateY(-8px) scale(0.98, 1.03); } 60% { transform: translateY(0) scale(1.04, 0.96); } }
+@keyframes mascotSway { from { transform: rotate(-3deg); } to { transform: rotate(3deg); } }
+@keyframes mascotDroop { from { transform: translateY(0) rotate(-1deg); } to { transform: translateY(2px) rotate(1deg); } }
+
+/* Gentle on motion: no moving decorations or confetti for people who ask for less motion */
+@media (prefers-reduced-motion: reduce) {
+  .season-particles, .tq-confetti { display: none; }
+  .season-strip span, .mascot-bounce, .mascot-sway, .mascot-droop, .mascot-party, .mascot-confetti,
+  .mascot-hop, .mascot-cheer, .mascot-spin, .mascot-sleep, .mascot-zzz, .mascot-fed { animation: none; }
+  .mascot-fed { display: none; }
 }
 
 /* Night theme: ensure inputs and selects are readable */
 html[data-theme='night'] input,
 html[data-theme='night'] textarea,
-html[data-theme='night'] select {
+html[data-theme='night'] select,
+html[data-theme='ocean'] input,
+html[data-theme='ocean'] textarea,
+html[data-theme='ocean'] select,
+html[data-season-dark] input,
+html[data-season-dark] textarea,
+html[data-season-dark] select,
+html[data-theme='galaxy'] input,
+html[data-theme='galaxy'] textarea,
+html[data-theme='galaxy'] select,
+html[data-theme='lava'] input,
+html[data-theme='lava'] textarea,
+html[data-theme='lava'] select {
   background-color: var(--warm-bg-input) !important;
   color: var(--warm-text) !important;
   border-color: var(--warm-border) !important;
 }
 html[data-theme='night'] input::placeholder,
-html[data-theme='night'] textarea::placeholder {
+html[data-theme='night'] textarea::placeholder,
+html[data-theme='ocean'] input::placeholder,
+html[data-theme='ocean'] textarea::placeholder,
+html[data-season-dark] input::placeholder,
+html[data-season-dark] textarea::placeholder,
+html[data-theme='galaxy'] input::placeholder,
+html[data-theme='galaxy'] textarea::placeholder,
+html[data-theme='lava'] input::placeholder,
+html[data-theme='lava'] textarea::placeholder {
   color: var(--warm-text-light) !important;
 }
-html[data-theme='night'] option {
+html[data-theme='night'] option,
+html[data-theme='ocean'] option,
+html[data-season-dark] option,
+html[data-theme='galaxy'] option,
+html[data-theme='lava'] option {
   background-color: var(--warm-card);
   color: var(--warm-text);
 }
@@ -527,7 +1068,7 @@ html[data-theme='night'] option {
   }
 
   /* Page-specific responsive grids */
-  .settings-grid {
+  .settings-cols {
     grid-template-columns: 1fr;
   }
 
@@ -642,14 +1183,42 @@ html[data-theme='night'] option {
     min-width: 0 !important;
   }
 
+  /* Small tools on the left, Done on its own side with room between them */
   .room-task-actions {
-    justify-content: stretch !important;
+    justify-content: space-between !important;
     flex-wrap: wrap;
+    gap: 8px 16px !important;
   }
 
-  .room-task-actions > button,
-  .room-task-actions .tq-btn {
-    flex: 1 1 120px;
+  /* The tools sit on the left here, so the ⋯ menu opens rightward from their left edge and stays on the card */
+  .room-task-tools {
+    position: relative;
+  }
+
+  .room-task-more {
+    position: static !important;
+  }
+
+  .room-task-menu {
+    left: 0;
+    right: auto !important;
+  }
+
+  .room-task-tools > button,
+  .room-task-more-btn,
+  .room-task-done > button,
+  .room-task-done .tq-btn {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  .room-task-done {
+    flex: 1 1 160px;
+    justify-content: flex-end;
+  }
+
+  .room-task-done > button:last-child {
+    flex: 1 1 auto;
   }
 
   .task-add-form {
@@ -717,9 +1286,24 @@ html[data-theme='night'] option {
     grid-template-columns: 1fr !important;
   }
 
-  /* Rewards list row: name + cost + delete (hide description) */
+  /* Rewards list row: name + cost, buttons below (hide description) */
   .rewards-list-row {
-    grid-template-columns: 1fr auto auto !important;
+    grid-template-columns: 1fr auto !important;
+  }
+
+  /* Its buttons get their own line, share the card's width, and wrap if a language's words are too long (BUG-14) */
+  .rewards-list-row > .rewards-row-actions {
+    grid-column: 1 / -1;
+    flex-wrap: wrap;
+  }
+
+  .rewards-list-row > .rewards-row-actions > button {
+    flex: 1 1 0;
+  }
+
+  /* Editing a reward: name, description and price one per line, like the add form */
+  .rewards-list-row > input {
+    grid-column: 1 / -1;
   }
 
   .rewards-list-row > div:nth-child(2) {
@@ -860,9 +1444,23 @@ html[data-theme='night'] option {
     display: block !important;
   }
 
+  /* The page behind the open menu doesn't scroll (BUG-15: scrolling it hid the browser's toolbars and left a
+     strip of page under the menu) */
+  html.phone-menu-open {
+    overflow: hidden;
+  }
+
   /* Show mobile-only close button */
   .mobile-only {
     display: block !important;
+  }
+
+  /* The menu's close button: a 44px tap target. Collapsing is a desktop thing, so its button hides on phones */
+  .sidebar .sidebar-close {
+    display: flex !important;
+  }
+  .sidebar .sidebar-collapse {
+    display: none !important;
   }
 
   /* Show hamburger menu on mobile */
@@ -877,6 +1475,13 @@ html[data-theme='night'] option {
   }
 }
 
+/* The side menu fills the screen you can see. On phones 100vh counts the space under the address bar too, which
+   hid the profile card at the bottom until you scrolled (BUG-15); browsers without dvh keep 100vh. */
+.sidebar {
+  height: 100vh;
+  height: 100dvh;
+}
+
 /* Desktop - ensure sidebar is always visible */
 @media (min-width: 769px) {
   .sidebar {
@@ -886,4 +1491,229 @@ html[data-theme='night'] option {
   .mobile-overlay {
     display: none !important;
   }
+}
+
+/* Task opened from search or the task list (RoomDetail adds this briefly) */
+[data-task-id] {
+  border-radius: 12px;
+  transition: box-shadow 0.3s ease, background-color 0.3s ease;
+}
+
+.task-focus-flash {
+  box-shadow: 0 0 0 2px var(--warm-accent);
+  background-color: var(--warm-accent-light);
+}
+
+/* The running chore timer, pinned to the top of every page (ChoreTimer.tsx) */
+.chore-timer-bar {
+  position: sticky;
+  top: 8px;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  margin-bottom: 14px;
+  padding: 10px 14px;
+  border-radius: 14px;
+  border: 2px solid var(--warm-accent);
+  background-color: var(--warm-accent-light);
+  color: var(--warm-accent);
+  font-family: Nunito, sans-serif;
+  font-size: 15px;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+  box-sizing: border-box;
+}
+
+/* Task edit pop-up: a bottom sheet on phones */
+@media (max-width: 768px) {
+  .task-edit-overlay {
+    align-items: flex-end !important;
+  }
+  .task-edit-sheet {
+    width: 100vw !important;
+    max-width: 100vw !important;
+    max-height: 88vh !important;
+    border-radius: 20px 20px 0 0 !important;
+  }
+}
+
+/* Kid mode: bigger, easier targets on the task lists */
+.kid-mode [data-task-id] {
+  padding: 16px !important;
+}
+.kid-mode [data-task-id] .tq-btn {
+  font-size: 15px !important;
+  padding: 12px 18px !important;
+  border-radius: 14px !important;
+}
+.kid-mode [data-task-id] > div:nth-child(2) > div:first-child {
+  font-size: 16px !important;
+}
+/* Same inset as the padded chores, so the room table's header lines up with them */
+.kid-mode .room-table-header {
+  margin: 0 16px;
+}
+
+/* Achievement pop-up: centred on phones, top-right on wider screens */
+@media (min-width: 769px) {
+  .achievement-toast {
+    left: auto !important;
+    right: 16px;
+    transform: none !important;
+  }
+}
+
+
+/* One thing at a time (Focus.tsx): big buttons that share a row */
+.focus-big-btn {
+  flex: 1 1 140px;
+  padding: 16px 20px !important;
+  font-size: 18px !important;
+  border-radius: 16px !important;
+}
+.focus-page {
+  max-width: 640px;
+  margin: 0 auto;
+}
+.focus-card {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  cursor: pointer;
+  font-family: Nunito, sans-serif;
+  border: 2px solid var(--warm-accent) !important;
+  background: var(--warm-accent-light) !important;
+  box-sizing: border-box;
+}
+
+/* Insights charts (NEW-7). Categorical slots and the blue ramp are the dataviz reference palette,
+   validated for colorblind separation on the light card (#FFFFFF) and the dark theme cards. */
+:root {
+  --viz-1: #2a78d6; --viz-2: #eb6834; --viz-3: #1baf7a; --viz-4: #eda100;
+  --viz-5: #e87ba4; --viz-6: #008300; --viz-7: #6250d6; --viz-8: #e34948;
+  --viz-other: #a9a7a0;
+  --viz-grid: rgba(0, 0, 0, 0.08);
+  --viz-heat-0: rgba(0, 0, 0, 0.05);
+  --viz-heat-1: #cde2fb; --viz-heat-2: #9ec5f4; --viz-heat-3: #6da7ec;
+  --viz-heat-4: #3987e5; --viz-heat-5: #256abf; --viz-heat-6: #184f95;
+  --viz-heat-ink-low: #0b0b0b; --viz-heat-ink-high: #ffffff;
+}
+html[data-theme='night'], html[data-theme='ocean'], html[data-theme='galaxy'], html[data-theme='lava'], html[data-season-dark] {
+  --viz-1: #3987e5; --viz-2: #d95926; --viz-3: #199e70; --viz-4: #c98500;
+  --viz-5: #d55181; --viz-6: #008300; --viz-7: #9085e9; --viz-8: #e66767;
+  --viz-other: #6f6e69;
+  --viz-grid: rgba(255, 255, 255, 0.09);
+  --viz-heat-0: rgba(255, 255, 255, 0.05);
+  --viz-heat-1: #104281; --viz-heat-2: #1c5cab; --viz-heat-3: #2a78d6;
+  --viz-heat-4: #5598e7; --viz-heat-5: #86b6ef; --viz-heat-6: #b7d3f6;
+  --viz-heat-ink-low: #f0efec; --viz-heat-ink-high: #0b0b0b;
+}
+/* Dark themes: the browser's own date picker and its calendar icon in dark too */
+html[data-theme='night'] input[type='date'], html[data-theme='ocean'] input[type='date'], html[data-theme='galaxy'] input[type='date'],
+html[data-theme='lava'] input[type='date'], html[data-season-dark] input[type='date'] {
+  color-scheme: dark;
+}
+
+/* A paused chore (ENH-1): greyed in its room; its buttons (Edit, ⋯ to switch it back on) stay clear */
+.room-task-paused > :not(.room-task-actions) {
+  opacity: 0.5;
+}
+
+/* Room task table on a computer narrower than its columns' minimums (TASK_COLUMNS in RoomDetail.tsx, BUG-11): each
+   chore wraps instead, name on top, then health through assigned with the buttons at the right. The header stays as
+   a row of sort links. Phones keep their own layout above. */
+.room-table-scroll {
+  container: room-table / inline-size;
+}
+
+@media (min-width: 769px) {
+  /* Extra buttons (📎, 📅, timer, team-up) wrap above Done instead of spilling out of the column */
+  .room-task-done {
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+
+  @container room-table (max-width: 953px) {
+    .room-table-header {
+      display: flex !important;
+      flex-wrap: wrap;
+      gap: 6px 20px !important;
+    }
+
+    .room-table-header > :last-child {
+      display: none;
+    }
+
+    .room-task-row {
+      display: flex !important;
+      flex-wrap: wrap;
+      gap: 10px 20px !important;
+    }
+
+    .room-task-main {
+      flex: 1 1 100%;
+    }
+
+    .room-task-health {
+      flex: 0 1 150px;
+    }
+
+    .room-task-actions {
+      margin-left: auto;
+    }
+  }
+}
+
+/* Setup wizard (NEW-17): one column, fits 390px phones */
+.setup-page { display: grid; gap: 12px; max-width: 720px; }
+.setup-card { display: grid; gap: 10px; }
+.setup-card-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.setup-card-head .tq-input { flex: 1; min-width: 0; }
+.setup-help { margin: 0; font-size: 13px; font-weight: 600; color: var(--warm-text-light); }
+.setup-steps { display: flex; flex-wrap: wrap; gap: 6px 12px; font-size: 12px; font-weight: 800; color: var(--warm-text-light); }
+.setup-step.current { color: var(--warm-accent); }
+.setup-step.done { color: var(--warm-text); }
+.setup-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.setup-chip {
+  border: 2px solid var(--warm-border); background: var(--warm-card); color: var(--warm-text);
+  border-radius: 999px; padding: 6px 14px; font-weight: 800; font-size: 14px; cursor: pointer; font-family: inherit;
+}
+.setup-chip.on { border-color: var(--warm-accent); background: var(--warm-accent-light); }
+.setup-row { display: flex; align-items: flex-start; gap: 10px; cursor: pointer; padding: 4px 0; }
+.setup-row input[type="checkbox"] { width: 20px; height: 20px; margin-top: 1px; flex-shrink: 0; accent-color: var(--warm-accent); }
+.setup-row-text { display: grid; gap: 2px; min-width: 0; font-weight: 700; overflow-wrap: anywhere; }
+.setup-row-meta { font-size: 12px; font-weight: 600; color: var(--warm-text-light); text-transform: none; letter-spacing: 0; }
+.setup-more { justify-self: start; }
+.setup-login { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.setup-login .tq-label, .setup-allowance, .setup-card > .tq-label { display: grid; gap: 4px; margin: 0; }
+.setup-add { display: flex; flex-wrap: wrap; gap: 8px; }
+.setup-nav { display: flex; justify-content: space-between; gap: 8px; position: sticky; bottom: 0; padding: 10px 0; background: var(--warm-bg); }
+.setup-error { margin: 0; color: #DC2626; font-weight: 700; }
+.setup-tips { margin: 0; padding-left: 20px; display: grid; gap: 6px; font-weight: 600; }
+.setup-subhead { margin: 6px 0 0; font-size: 15px; font-weight: 800; }
+.setup-mock { display: grid; gap: 8px; padding: 12px; border-radius: 14px; background: var(--warm-bg); border: 1.5px dashed var(--warm-border); }
+.setup-mock-row { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 12px; background: var(--warm-card); border: 1.5px solid var(--warm-border); flex-wrap: wrap; }
+.setup-mock-name { flex: 1; min-width: 0; display: grid; font-weight: 800; font-size: 14px; overflow-wrap: anywhere; }
+.setup-mock-name small { font-size: 11px; font-weight: 600; color: var(--warm-text-light); }
+.setup-mock-btn { border: 1.5px solid var(--warm-border); border-radius: 10px; padding: 4px 10px; font-size: 12px; font-weight: 700; color: var(--warm-text-muted); background: var(--warm-card); white-space: nowrap; }
+.setup-mock-btn.hl { border-color: var(--warm-accent); color: var(--warm-accent); box-shadow: 0 0 0 3px var(--warm-accent-light); animation: setup-pulse 1.6s ease-in-out infinite; }
+.setup-mock-menu { justify-self: end; }
+.setup-mock-scale { justify-content: flex-start; }
+.setup-tour-lead { margin: 0; font-weight: 600; color: var(--warm-text-light); }
+.setup-tour-steps { margin: 0; padding-left: 22px; display: grid; gap: 8px; font-weight: 700; line-height: 1.4; }
+.setup-tour-example { display: flex; gap: 8px; padding: 10px 12px; border-radius: 12px; background: var(--warm-accent-light); font-size: 14px; font-weight: 600; line-height: 1.4; }
+.setup-tour-example > div { display: grid; gap: 4px; }
+.setup-skip { align-self: center; }
+.setup-dots { display: flex; justify-content: center; gap: 6px; }
+.setup-dots span { width: 8px; height: 8px; border-radius: 50%; background: var(--warm-border); }
+.setup-dots span.on { background: var(--warm-accent); }
+.setup-tour-nav { position: static; padding: 0; background: none; align-items: center; }
+@keyframes setup-pulse { 50% { box-shadow: 0 0 0 6px var(--warm-accent-light); } }
+@media (prefers-reduced-motion: reduce) { .setup-mock-btn.hl { animation: none; } }
+@media (max-width: 480px) {
+  .setup-login { grid-template-columns: 1fr; }
 }

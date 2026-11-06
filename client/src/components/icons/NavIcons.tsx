@@ -55,6 +55,18 @@ export function RoomsIcon({ active }: NavIconProps) {
   );
 }
 
+export function TasksIcon({ active }: NavIconProps) {
+  const stroke = active ? "var(--warm-accent)" : "var(--warm-text-light)";
+  return (
+    <svg width="26" height="26" viewBox="0 0 26 26" fill="none">
+      <rect x="3" y="3" width="20" height="20" rx="5" fill={active ? "var(--warm-accent)" : "none"} stroke={stroke} strokeWidth="2" />
+      <path d="M7.5 9l1.5 1.5L11.5 8" stroke={active ? "#fff" : stroke} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M7.5 16l1.5 1.5L11.5 15" stroke={active ? "#fff" : stroke} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M14 9.5h4.5M14 16.5h4.5" stroke={active ? "#fff" : stroke} strokeWidth="2" strokeLinecap="round" />
+    </svg>
+  );
+}
+
 export function TrophyIcon({ active }: NavIconProps) {
   return (
     <svg width="26" height="26" viewBox="0 0 26 26" fill="none">
@@ -182,6 +194,18 @@ export function RewardsIcon({ active }: NavIconProps) {
       <circle cx="13" cy="14.5" r="1.8" fill={active ? "#fff" : "var(--warm-text-light)"} />
       <path d="M8 8C8 6.5 9.2 5.5 10.6 5.8C11.8 6 12.4 7 13 8" stroke={active ? "var(--warm-accent)" : "var(--warm-text-light)"} strokeWidth="2" strokeLinecap="round" />
       <path d="M18 8C18 6.5 16.8 5.5 15.4 5.8C14.2 6 13.6 7 13 8" stroke={active ? "var(--warm-accent)" : "var(--warm-text-light)"} strokeWidth="2" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+export function InsightsIcon({ active }: NavIconProps) {
+  const ink = active ? "var(--warm-accent)" : "var(--warm-text-light)";
+  return (
+    <svg width="26" height="26" viewBox="0 0 26 26" fill="none">
+      <path d="M4 22H22" stroke={ink} strokeWidth="2" strokeLinecap="round" />
+      <rect x="6" y="13" width="3.5" height="6" rx="1.2" fill={active ? ink : "none"} stroke={ink} strokeWidth="2" />
+      <rect x="11.25" y="6" width="3.5" height="13" rx="1.2" fill={active ? ink : "none"} stroke={ink} strokeWidth="2" />
+      <rect x="16.5" y="10" width="3.5" height="9" rx="1.2" fill={active ? ink : "none"} stroke={ink} strokeWidth="2" />
     </svg>
   );
 }

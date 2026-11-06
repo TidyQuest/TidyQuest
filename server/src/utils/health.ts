@@ -2,11 +2,12 @@ export function calculateHealth(
   lastCompletedAt: string | null,
   frequencyDays: number,
   isVacationMode: boolean = false,
-  vacationStartDate: string | null = null
+  vacationStartDate: string | null = null,
+  nowMs: number = Date.now()
 ): number {
   if (!lastCompletedAt) return 0;
 
-  let now = Date.now();
+  let now = nowMs;
 
   // If vacation mode is on, freeze time at vacation start
   if (isVacationMode && vacationStartDate) {

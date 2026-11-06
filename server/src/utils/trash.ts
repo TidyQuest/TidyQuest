@@ -1,0 +1,226 @@
+import db from '../database';
+import { currentFamily } from '../hosted/context';
+import { removeFile } from '../hosted/files';
+
+/**
+ * Trash for deleted tasks and rewards. A deleted task or reward keeps its row (deletedAt set), so its
+ * history stays in Activity, the Board, goals and Insights; the trash entry is what lets it be restored,
+ * and expiring it only takes it off the list. Coins are never touched: deleting doesn't change anyone's
+ * balance.
+ */
+
+export const TRASH_DAYS = 30;
+
+export type TrashKind = 'task' | 'reward';
+
+interface ColumnInfo { name: string; notnull: number; dflt_value: unknown; pk: number }
+
+/**
+ * Items older than TRASH_DAYS are removed for good (runs whenever the trash is used, and hourly as a
+ * background job). A chore's proof photos go with its trash entry (NEW-34).
+ */
+export function purgeOldTrash() {
+  const age = `-${TRASH_DAYS} days`;
+  const tasks = db.prepare(`SELECT itemId FROM trash WHERE kind = 'task' AND deletedAt < datetime('now', ?)`).all(age) as { itemId: number }[];
+  dropProofPhotos(tasks.map((t) => t.itemId));
+  db.prepare(`DELETE FROM trash WHERE deletedAt < datetime('now', ?)`).run(age);
+}
+
+/**
+ * Deleted chores that can't come back lose their proof photos: the files, and the links on their completions.
+ * Who did them, when, and the coins stay (PRIVACY.md decision 8). Chores that were restored are skipped.
+ */
+export function dropProofPhotos(taskIds: number[]) {
+  for (const id of taskIds) {
+    if (!db.prepare('SELECT 1 FROM tasks WHERE id = ? AND deletedAt IS NOT NULL').get(id)) continue;
+    const rows = db.prepare('SELECT photoUrl FROM task_completions WHERE taskId = ? AND photoUrl IS NOT NULL').all(id) as { photoUrl: string }[];
+    if (!rows.length) continue;
+    for (const r of rows) removeFile('proofs', r.photoUrl);
+    db.prepare('UPDATE task_completions SET photoUrl = NULL WHERE taskId = ?').run(id);
+  }
+}
+
+const HOUR = 60 * 60 * 1000;
+const lastExpired = new Map<string, number>();
+
+/** The background job: expires old trash once an hour per family, so photos go even if nobody opens the trash. */
+export function expireTrash(now = new Date()) {
+  const key = currentFamily()?.familyId ?? '';
+  if (now.getTime() - (lastExpired.get(key) ?? 0) < HOUR) return;
+  lastExpired.set(key, now.getTime());
+  purgeOldTrash();
+}
+
+/** Hide a task (keeping its row and history) and list it in the trash. Open team-ups on it are cancelled. */
+export function trashTask(taskId: number, deletedBy: number | undefined): number | null {
+  const task = db.prepare('SELECT * FROM tasks WHERE id = ? AND deletedAt IS NULL').get(taskId) as any;
+  if (!task) return null;
+  const room = db.prepare('SELECT name FROM rooms WHERE id = ?').get(task.roomId) as { name: string } | undefined;
+  const snapshot = {
+    soft: true,
+    task,
+    assignees: db.prepare('SELECT * FROM task_assignees WHERE taskId = ?').all(taskId),
+    completions: db.prepare('SELECT * FROM task_completions WHERE taskId = ?').all(taskId),
+  };
+  return db.transaction(() => {
+    purgeOldTrash();
+    const id = Number(db.prepare(
+      'INSERT INTO trash (kind, itemId, title, roomId, roomName, snapshot, deletedBy) VALUES (?, ?, ?, ?, ?, ?, ?)'
+    ).run('task', taskId, task.name, task.roomId, room?.name ?? null, JSON.stringify(snapshot), deletedBy ?? null).lastInsertRowid);
+    softDeleteTasks('id = ?', taskId);
+    return id;
+  })();
+}
+
+/** Mark tasks deleted (keeping their rows and history) and cancel their open team-ups. */
+export function softDeleteTasks(where: string, ...params: unknown[]) {
+  const ids = (db.prepare(`SELECT id FROM tasks WHERE deletedAt IS NULL AND ${where}`).all(...params) as { id: number }[]).map((t) => t.id);
+  for (const id of ids) {
+    db.prepare("UPDATE tasks SET deletedAt = datetime('now') WHERE id = ?").run(id);
+    db.prepare("UPDATE teamups SET status = 'cancelled' WHERE taskId = ? AND status = 'open'").run(id);
+  }
+  return ids.length;
+}
+
+/**
+ * Hide a reward (keeping its row, so its purchases stay in Insights and a waiting request stays in
+ * Approvals) and list it in the trash. An open shared pot must be refunded first.
+ */
+export function trashReward(rewardId: number, deletedBy: number | undefined): number | null {
+  const reward = db.prepare('SELECT * FROM rewards WHERE id = ? AND deletedAt IS NULL').get(rewardId) as any;
+  if (!reward) return null;
+  return db.transaction(() => {
+    purgeOldTrash();
+    const id = Number(db.prepare(
+      'INSERT INTO trash (kind, itemId, title, snapshot, deletedBy) VALUES (?, ?, ?, ?, ?)'
+    ).run('reward', rewardId, reward.title, JSON.stringify({ soft: true, reward }), deletedBy ?? null).lastInsertRowid);
+    db.prepare("UPDATE rewards SET deletedAt = datetime('now') WHERE id = ?").run(rewardId);
+    return id;
+  })();
+}
+
+/**
+ * Rebuild a reward deleted before FIX-22 from its trash snapshot, with its redemptions, who can see it,
+ * per-person prices and the pot contributions that were spent. People who are gone are skipped.
+ * Returns the reward's id (its old one when still free).
+ */
+function rebuildReward(snapshot: any, deletedAt: string | null): number {
+  const rewardId = insertSnapshotRow('rewards', { ...snapshot.reward, deletedAt });
+  const redemptionIds = new Map<number, number>();
+  for (const r of snapshot.redemptions || []) {
+    if (userExists(r.userId)) redemptionIds.set(r.id, insertSnapshotRow('reward_redemptions', { ...r, rewardId }));
+  }
+  for (const v of snapshot.visibility || []) {
+    if (userExists(v.userId)) insertSnapshotRow('reward_visibility', { ...v, rewardId });
+  }
+  for (const pr of snapshot.prices || []) {
+    if (userExists(pr.userId)) insertSnapshotRow('reward_prices', { ...pr, rewardId });
+  }
+  for (const c of snapshot.contributions || []) {
+    if (userExists(c.userId)) insertSnapshotRow('reward_contributions', { ...c, rewardId, redemptionId: c.redemptionId == null ? null : redemptionIds.get(c.redemptionId) ?? null });
+  }
+  return rewardId;
+}
+
+/**
+ * Rewards deleted before FIX-22 lost their row (and their purchases with it). On startup, put each one
+ * still in the trash back as a deleted row, so its purchases return to Insights; the trash entry then
+ * restores it like any other. Coins are not touched.
+ */
+export function keepTrashedRewardHistory() {
+  const old = (db.prepare("SELECT id, snapshot, deletedAt FROM trash WHERE kind = 'reward'").all() as { id: number; snapshot: string; deletedAt: string }[])
+    .map((t) => ({ ...t, snapshot: JSON.parse(t.snapshot) }))
+    .filter((t) => !t.snapshot.soft && t.snapshot.reward);
+  if (old.length === 0) return 0;
+  db.transaction(() => {
+    for (const t of old) {
+      const rewardId = rebuildReward(t.snapshot, t.deletedAt);
+      const reward = db.prepare('SELECT * FROM rewards WHERE id = ?').get(rewardId);
+      db.prepare('UPDATE trash SET itemId = ?, snapshot = ? WHERE id = ?').run(rewardId, JSON.stringify({ soft: true, reward }), t.id);
+    }
+  })();
+  return old.length;
+}
+
+/**
+ * Insert a row from a snapshot using the columns the table has today. The original id is kept when
+ * it's still free (links such as Home Assistant entities keep working); otherwise a new one is given.
+ * Optional links to rows that are gone (e.g. a deleted person) are cleared. Returns the row's id.
+ */
+function insertSnapshotRow(table: string, original: Record<string, unknown>): number {
+  const cols = db.prepare(`PRAGMA table_info(${table})`).all() as ColumnInfo[];
+  const row: Record<string, unknown> = { ...original };
+  if (row.id != null && db.prepare(`SELECT 1 FROM ${table} WHERE id = ?`).get(row.id)) delete row.id;
+  const links = db.prepare(`PRAGMA foreign_key_list(${table})`).all() as { table: string; from: string; to: string | null }[];
+  for (const fk of links) {
+    if (row[fk.from] == null || cols.find((c) => c.name === fk.from)?.notnull) continue;
+    if (!db.prepare(`SELECT 1 FROM ${fk.table} WHERE ${fk.to ?? 'id'} = ?`).get(row[fk.from])) row[fk.from] = null;
+  }
+  const present = cols.filter((c) => row[c.name] !== undefined && !(row[c.name] === null && c.notnull && c.dflt_value !== null));
+  const result = db.prepare(
+    `INSERT INTO ${table} (${present.map((c) => c.name).join(', ')}) VALUES (${present.map(() => '?').join(', ')})`
+  ).run(...present.map((c) => row[c.name] as any));
+  return Number(row.id ?? result.lastInsertRowid);
+}
+
+const userExists = (id: unknown) => id != null && !!db.prepare('SELECT 1 FROM users WHERE id = ?').get(id);
+
+export class TrashError extends Error {
+  constructor(public status: number, public code: string, message: string, public extra: Record<string, unknown> = {}) {
+    super(message);
+  }
+}
+
+/**
+ * Put a trashed item back. A task goes back into its room, or into `roomId` when given; if its room
+ * is gone and no other room was chosen this fails with 'room_missing'.
+ */
+export function restoreFromTrash(trashId: number, options: { roomId?: number } = {}) {
+  purgeOldTrash();
+  const item = db.prepare('SELECT * FROM trash WHERE id = ?').get(trashId) as any;
+  if (!item) throw new TrashError(404, 'not_found', 'Not in the trash (it may have been emptied after 30 days)');
+  const snapshot = JSON.parse(item.snapshot);
+
+  return db.transaction(() => {
+    let restored: { kind: TrashKind; id: number; roomId?: number };
+    if (item.kind === 'task') {
+      const roomId = options.roomId ?? snapshot.task.roomId;
+      if (!db.prepare('SELECT 1 FROM rooms WHERE id = ? AND deletedAt IS NULL').get(roomId)) {
+        if (options.roomId != null) throw new TrashError(404, 'room_not_found', 'That room does not exist');
+        throw new TrashError(409, 'room_missing', `The room "${item.roomName ?? '?'}" no longer exists. Choose another room to restore this task into.`, { roomName: item.roomName });
+      }
+      let taskId: number;
+      if (snapshot.soft && db.prepare('SELECT 1 FROM tasks WHERE id = ? AND deletedAt IS NOT NULL').get(item.itemId)) {
+        // Kept row (deleted since soft-delete): its assignees and history never left
+        db.prepare('UPDATE tasks SET deletedAt = NULL, roomId = ? WHERE id = ?').run(roomId, item.itemId);
+        taskId = item.itemId;
+      } else {
+        // Older trash entries deleted the row: rebuild it from the snapshot
+        taskId = insertSnapshotRow('tasks', { ...snapshot.task, roomId, deletedAt: null });
+        for (const a of snapshot.assignees || []) {
+          if (userExists(a.userId)) insertSnapshotRow('task_assignees', { ...a, taskId });
+        }
+        // History comes back as it was; balances were never changed by deleting, so nothing is paid again
+        for (const c of snapshot.completions || []) {
+          if (userExists(c.userId)) insertSnapshotRow('task_completions', { ...c, taskId });
+        }
+      }
+      restored = { kind: 'task', id: taskId, roomId };
+    } else if (item.kind === 'reward') {
+      let rewardId: number;
+      if (snapshot.soft && db.prepare('SELECT 1 FROM rewards WHERE id = ? AND deletedAt IS NOT NULL').get(item.itemId)) {
+        // Kept row: its purchases, rules and prices never left
+        db.prepare('UPDATE rewards SET deletedAt = NULL WHERE id = ?').run(item.itemId);
+        rewardId = item.itemId;
+      } else {
+        // Older trash entries deleted the row: rebuild it from the snapshot
+        rewardId = rebuildReward(snapshot, null);
+      }
+      restored = { kind: 'reward', id: rewardId };
+    } else {
+      throw new TrashError(400, 'unknown_kind', 'Unknown item type');
+    }
+    db.prepare('DELETE FROM trash WHERE id = ?').run(trashId);
+    return restored;
+  })();
+}

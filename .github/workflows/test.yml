@@ -32,3 +32,20 @@ jobs:
       - name: Run tests
         working-directory: server
         run: npm test
+
+      # The family's time zone (Settings → Time zone) far from the server's: every "today" and "this week"
+      # must come from the family's clock, not the server's
+      - name: Run tests with the family in another time zone
+        working-directory: server
+        run: npm test
+        env:
+          TZ: UTC
+          TEST_TIME_ZONE: Pacific/Auckland
+
+      # Hosted mode (HOSTED=1): many families on one server. The whole suite runs as one family, every
+      # request through its family's database, and test/hosted.test.ts checks families stay apart
+      - name: Run tests in hosted mode
+        working-directory: server
+        run: npm test
+        env:
+          HOSTED: '1'

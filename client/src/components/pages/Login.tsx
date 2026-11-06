@@ -1,8 +1,13 @@
 import { useState, useEffect, useRef } from 'react';
 import { SparkleIcon } from '../icons/UIIcons';
 import { useTranslation } from '../../hooks/useTranslation';
-import { api } from '../../hooks/useApi';
+import { api, type LoginDetails } from '../../hooks/useApi';
 import UserAvatar from '../shared/UserAvatar';
+import { authLanguage, hostedError, rememberFamily, rememberedFamily } from '../../utils/hosted';
+import { SourceFooter } from '../shared/SourceLink';
+
+// The README's steps for resetting the first parent's password (ADMIN_RESET_PASSWORD)
+const RECOVERY_URL = 'https://github.com/TidyQuest/TidyQuest#admin-password-recovery';
 
 interface LoginUser {
   username: string;
@@ -14,27 +19,36 @@ interface LoginUser {
 }
 
 interface LoginProps {
-  onLogin: (username: string, password: string) => Promise<void>;
+  onLogin: (details: LoginDetails) => Promise<void>;
   onSwitchToRegister: () => void;
+  /** Hosted mode: parents sign in with their email, kids with the family code (no one is listed) */
+  hosted?: boolean;
+  onSignUp?: () => void;
 }
 
-export function Login({ onLogin, onSwitchToRegister }: LoginProps) {
-  const initialLang = (() => {
-    const saved = typeof localStorage !== 'undefined' ? localStorage.getItem('tidyquest_auth_lang') : null;
-    if (saved && ['en', 'fr', 'de', 'es', 'it', 'nl'].includes(saved)) return saved;
-    const browser = typeof navigator !== 'undefined' ? navigator.language.slice(0, 2) : 'en';
-    return ['en', 'fr', 'de', 'es', 'it', 'nl'].includes(browser) ? browser : 'en';
-  })();
-  const [authLanguage, setAuthLanguage] = useState(initialLang);
-  const { t } = useTranslation(authLanguage);
+const linkButton: React.CSSProperties = {
+  background: 'none', border: 'none', color: 'var(--warm-accent)', fontSize: 13,
+  fontWeight: 700, cursor: 'pointer', fontFamily: 'Nunito', padding: '6px 2px',
+};
+
+export function Login({ onLogin, onSwitchToRegister, hosted = false, onSignUp }: LoginProps) {
+  const [language, setLanguage] = useState(authLanguage);
+  const { t } = useTranslation(language);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [showForgot, setShowForgot] = useState(false);
   const [loading, setLoading] = useState(false);
   const [registrationEnabled, setRegistrationEnabled] = useState(true);
   const [avatarUsers, setAvatarUsers] = useState<LoginUser[]>([]);
   const [selectedUser, setSelectedUser] = useState<string | null>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
+  // Hosted: the family this device remembers (from the family link or the last kid login)
+  const [familyCode, setFamilyCode] = useState(rememberedFamily);
+  const [editingCode, setEditingCode] = useState(() => !rememberedFamily());
+  const [forgotEmail, setForgotEmail] = useState('');
+  const [forgotState, setForgotState] = useState<'idle' | 'sending' | 'sent'>('idle');
+  const byEmail = hosted && username.includes('@');
 
   useEffect(() => {
     api.getRegistrationStatus()
@@ -58,10 +72,18 @@ export function Login({ onLogin, onSwitchToRegister }: LoginProps) {
     setError('');
     setLoading(true);
     try {
-      await onLogin(username.trim(), password);
+      if (!hosted) await onLogin({ username: username.trim(), password });
+      else if (byEmail) await onLogin({ email: username.trim(), password });
+      else {
+        await onLogin({ familyCode: familyCode.trim(), username: username.trim(), password });
+        rememberFamily(familyCode.trim().toLowerCase());
+      }
       window.location.href = '/';
     } catch (err: any) {
-      setError(err.message || t('auth.loginFailed'));
+      // A wrong name or password, in the page's language
+      if (err?.message === 'Invalid credentials') setError(t(!hosted ? 'auth.loginFailed' : byEmail ? 'hosted.loginFailedEmail' : 'hosted.loginFailed'));
+      // A kid or member whose parent hasn't confirmed their email yet (NEW-34)
+      else setError(hostedError(err, t, err.message || t('auth.loginFailed')));
     } finally {
       setLoading(false);
     }
@@ -85,10 +107,10 @@ export function Login({ onLogin, onSwitchToRegister }: LoginProps) {
           <h1 style={{ fontSize: 24, fontWeight: 900, color: 'var(--warm-text)', margin: 0 }}>TidyQuest</h1>
           <p style={{ fontSize: 12, color: 'var(--warm-text-light)', fontWeight: 600, marginTop: 4 }}>{t('auth.welcomeBack')}</p>
           <select
-            value={authLanguage}
+            value={language}
             onChange={(e) => {
               const v = e.target.value;
-              setAuthLanguage(v);
+              setLanguage(v);
               localStorage.setItem('tidyquest_auth_lang', v);
             }}
             style={{
@@ -200,13 +222,29 @@ export function Login({ onLogin, onSwitchToRegister }: LoginProps) {
 
             {!selectedUser && (
               <div style={{ marginBottom: 14 }}>
-                <label className="tq-label" style={{ textTransform: 'none' }}>{t('auth.username')}</label>
+                <label className="tq-label" style={{ textTransform: 'none' }}>{t(hosted ? 'hosted.emailOrUsername' : 'auth.username')}</label>
                 <input value={username} onChange={(e) => setUsername(e.target.value)}
                   className="tq-input" style={{ backgroundColor: 'var(--warm-bg-subtle)' }}
-                  placeholder={t('auth.usernamePlaceholder')}
+                  placeholder={t(hosted ? 'hosted.emailOrUsernamePlaceholder' : 'auth.usernamePlaceholder')}
+                  autoComplete="username" autoCapitalize="none"
                 />
               </div>
             )}
+            {hosted && !byEmail && (editingCode ? (
+              <div style={{ marginBottom: 14 }}>
+                <label className="tq-label" style={{ textTransform: 'none' }}>{t('hosted.familyCode')}</label>
+                <input value={familyCode} onChange={(e) => setFamilyCode(e.target.value)}
+                  className="tq-input" style={{ backgroundColor: 'var(--warm-bg-subtle)' }}
+                  placeholder={t('hosted.familyCodePlaceholder')} autoCapitalize="none" autoCorrect="off" spellCheck={false}
+                />
+                <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--warm-text-light)', marginTop: 4 }}>{t('hosted.familyCodeHelp')}</div>
+              </div>
+            ) : (
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, marginBottom: 14, fontSize: 12, fontWeight: 700, color: 'var(--warm-text-secondary)' }}>
+                <span style={{ overflowWrap: 'anywhere' }}>{t('hosted.familyCodeShown').replace('{code}', familyCode)}</span>
+                <button type="button" style={linkButton} onClick={() => setEditingCode(true)}>{t('hosted.change')}</button>
+              </div>
+            ))}
             <div style={{ marginBottom: 20 }}>
               <label className="tq-label" style={{ textTransform: 'none' }}>{t('auth.password')}</label>
               <input type="password" value={password} onChange={(e) => setPassword(e.target.value)}
@@ -214,6 +252,59 @@ export function Login({ onLogin, onSwitchToRegister }: LoginProps) {
                 className="tq-input" style={{ backgroundColor: 'var(--warm-bg-subtle)' }}
                 placeholder={t('auth.passwordPlaceholder')}
               />
+              <div style={{ textAlign: 'right', marginTop: 4 }}>
+                <button type="button" onClick={() => setShowForgot((v) => !v)}
+                  aria-expanded={showForgot} aria-controls="forgot-password-help"
+                  style={{
+                    background: 'none', border: 'none', color: 'var(--warm-accent)', fontSize: 13,
+                    fontWeight: 700, cursor: 'pointer', fontFamily: 'Nunito', padding: '6px 2px',
+                  }}>
+                  {t('auth.forgotPassword')}
+                </button>
+              </div>
+              {showForgot && hosted && (
+                <div id="forgot-password-help" style={{
+                  marginTop: 4, padding: '10px 12px', borderRadius: 12, backgroundColor: 'var(--warm-bg-subtle)',
+                  border: '1.5px solid var(--warm-border)', fontSize: 12, fontWeight: 600,
+                  color: 'var(--warm-text-secondary)', lineHeight: 1.5, display: 'grid', gap: 8,
+                }}>
+                  <p style={{ margin: 0 }}>{t('hosted.forgotParents')}</p>
+                  {forgotState === 'sent' ? (
+                    <p role="status" style={{ margin: 0, color: 'var(--warm-text)', fontWeight: 700 }}>{t('hosted.forgotSent')}</p>
+                  ) : (
+                    <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                      <input type="email" value={forgotEmail} onChange={(e) => setForgotEmail(e.target.value)}
+                        className="tq-input" style={{ flex: '1 1 160px', minWidth: 0 }} placeholder={t('hosted.emailPlaceholder')}
+                        aria-label={t('hosted.email')} autoComplete="email" />
+                      <button type="button" className="tq-btn tq-btn-secondary tq-btn-sm" disabled={forgotState === 'sending' || !forgotEmail.includes('@')}
+                        onClick={() => {
+                          setForgotState('sending');
+                          api.forgotPassword(forgotEmail.trim())
+                            .then(() => setForgotState('sent'))
+                            .catch((err) => { setForgotState('idle'); setError(err?.message || t('common.actionFailed')); });
+                        }}>
+                        {forgotState === 'sending' ? t('hosted.sending') : t('hosted.sendLink')}
+                      </button>
+                    </div>
+                  )}
+                  <p style={{ margin: 0 }}>{t('auth.forgotAskParent')}</p>
+                </div>
+              )}
+              {showForgot && !hosted && (
+                <div id="forgot-password-help" style={{
+                  marginTop: 4, padding: '10px 12px', borderRadius: 12, backgroundColor: 'var(--warm-bg-subtle)',
+                  border: '1.5px solid var(--warm-border)', fontSize: 12, fontWeight: 600,
+                  color: 'var(--warm-text-secondary)', lineHeight: 1.5,
+                }}>
+                  <p style={{ margin: 0 }}>{t('auth.forgotAskParent')}</p>
+                  <p style={{ margin: '6px 0 0' }}>
+                    {t('auth.forgotNoParent')}{' '}
+                    <a href={RECOVERY_URL} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--warm-accent)', fontWeight: 700 }}>
+                      {t('auth.forgotHowTo')}
+                    </a>
+                  </p>
+                </div>
+              )}
             </div>
 
             {error && <div style={{ fontSize: 12, color: 'var(--warm-badge-text)', fontWeight: 700, marginBottom: 14, textAlign: 'center' }}>{error}</div>}
@@ -226,7 +317,13 @@ export function Login({ onLogin, onSwitchToRegister }: LoginProps) {
           </form>
         )}
 
-        {registrationEnabled && (
+        {hosted && onSignUp && (
+          <div style={{ textAlign: 'center', marginTop: 18 }}>
+            <button type="button" onClick={onSignUp} style={linkButton}>{t('hosted.createFamilyLink')}</button>
+          </div>
+        )}
+
+        {registrationEnabled && !hosted && (
           <div style={{ textAlign: 'center', marginTop: 18 }}>
             <button onClick={onSwitchToRegister}
               style={{
@@ -237,6 +334,8 @@ export function Login({ onLogin, onSwitchToRegister }: LoginProps) {
             </button>
           </div>
         )}
+
+        <SourceFooter language={language} />
       </div>
     </div>
   );

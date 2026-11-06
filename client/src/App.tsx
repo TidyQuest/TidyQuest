@@ -1,47 +1,105 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { BrowserRouter, Routes, Route, useNavigate, useLocation, Navigate, useParams } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useNavigate, useLocation, useNavigationType, Navigate, useParams, useSearchParams } from 'react-router-dom';
 import { useAuth } from './hooks/useAuth';
-import { api } from './hooks/useApi';
+import { api, NEW_TOKEN_EVENT } from './hooks/useApi';
 import { Sidebar } from './components/layout/Sidebar';
 import { PageHeader } from './components/layout/PageHeader';
 import { ConfettiEffect } from './components/shared/ConfettiEffect';
+import { ChoreTimerBar, ChoreTimerProvider } from './components/shared/ChoreTimer';
+import { SearchOverlay } from './components/shared/SearchOverlay';
+import { SearchContext } from './components/shared/searchContext';
+import type { Proof } from './components/shared/ProofModal';
+import { PhotoFailedNote, type PhotoProblem } from './components/shared/PhotoFailedNote';
 import { AchievementUnlockToast } from './components/ui/AchievementUnlockToast';
 import Dashboard from './components/pages/Dashboard';
+import { Focus, type FocusData } from './components/pages/Focus';
 import { RoomsList } from './components/pages/RoomsList';
 import { RoomDetail } from './components/pages/RoomDetail';
+import { TaskList } from './components/pages/TaskList';
 import { Calendar } from './components/pages/Calendar';
 import { Leaderboard } from './components/pages/Leaderboard';
 import { History } from './components/pages/History';
+import { Insights } from './components/pages/Insights';
 import { Settings } from './components/pages/Settings';
 import { Profile } from './components/pages/Profile';
+import { Guide } from './components/pages/Guide';
+import { SetupWizard } from './components/pages/SetupWizard';
 import { Login } from './components/pages/Login';
 import { Register } from './components/pages/Register';
+import { SignUp } from './components/pages/SignUp';
+import { ConfirmEmail, ResetPassword, Unsubscribe } from './components/pages/EmailLinks';
+import { AgreeScreen, ConfirmEmailBanner, LockedScreen } from './components/shared/HostedAccount';
+import { isShutOut, limitError, takeFamilyLink, useHosted, type HostedAccount } from './utils/hosted';
 import { Achievements } from './components/pages/Achievements';
 import { Rewards } from './components/pages/Rewards';
 import { useTranslation } from './hooks/useTranslation';
+import { localeFor } from './utils/locale';
+import { isTheme, type Theme } from './utils/themes';
+import { activeSeason, useSeasonPreview } from './utils/seasons';
+import { CosmeticsContext, type Cosmetic } from './utils/unlocks';
+import { WeekStartContext } from './utils/week';
+import { setFamilyZone } from './utils/clock';
+import { syncPush } from './utils/pushSync';
+
+const NO_COSMETICS: Record<number, Cosmetic> = {};
+import { SeasonGreeting, SeasonParticles, SeasonStrip } from './components/shared/SeasonalDecor';
+
+// Opened through a family link (app.tidyquest.org/<code>): this device remembers the family
+takeFamilyLink();
 
 function AppContent() {
-  const { user, loading, login, register, logout, refreshUser } = useAuth();
+  const { user, loading, login, signIn, register, logout, refreshUser } = useAuth();
+  const hosted = useHosted();
+  // Hosted mode: the family code, this person's sign-in email, and whether the family is locked
+  const [hostedAccount, setHostedAccount] = useState<HostedAccount | null>(null);
+  const loadHostedAccount = useCallback(() => {
+    api.hostedAccount().then(setHostedAccount).catch(() => {});
+  }, []);
+  useEffect(() => {
+    if (hosted && user?.id) loadHostedAccount();
+  }, [hosted, user?.id, loadHostedAccount]);
+  // Web push (NEW-5): keep this device's sign-up current when the app opens and after a fresh login
+  useEffect(() => {
+    if (!user?.id) return;
+    const id = user.id;
+    void syncPush(id);
+    const again = () => void syncPush(id);
+    window.addEventListener(NEW_TOKEN_EVENT, again);
+    return () => window.removeEventListener(NEW_TOKEN_EVENT, again);
+  }, [user?.id]);
   const browserLang = typeof navigator !== 'undefined' ? navigator.language.slice(0, 2) : 'en';
   // Always call useTranslation unconditionally (React hooks rule) — use user's language if known, else browser lang
-  const { t } = useTranslation(user?.language ?? browserLang);
+  const { t, roomDisplayName } = useTranslation(user?.language ?? browserLang);
   const [authView, setAuthView] = useState<'login' | 'register'>('login');
   const [dashboardData, setDashboardData] = useState<any>(null);
   const [rooms, setRooms] = useState<any[]>([]);
+  const [roomsLoaded, setRoomsLoaded] = useState(false);
   const [family, setFamily] = useState<any[]>([]);
   const [familySettings, setFamilySettings] = useState<any[]>([]);
-  const [leaderboard, setLeaderboard] = useState<any[]>([]);
   const [pointsPeriod, setPointsPeriod] = useState<'all' | 'week' | 'month' | 'year'>('all');
   const [pointsLeaderboard, setPointsLeaderboard] = useState<any[]>([]);
-  const [leaderboardPeriod, setLeaderboardPeriod] = useState<'week' | 'month' | 'quarter' | 'year'>('week');
-  const [completions, setCompletions] = useState<any[]>([]);
+  // Home's family progress uses this week's coins (the Board page loads its own periods)
+  const [leaderboardPeriod] = useState<'week' | 'month' | 'quarter' | 'year'>('week');
   const [coinsByEffort, setCoinsByEffort] = useState<Record<number, number>>({ 1: 5, 2: 10, 3: 15, 4: 20, 5: 25 });
   const [achievementsData, setAchievementsData] = useState<any>(null);
   const [rewardsData, setRewardsData] = useState<{ rewards: any[]; mine: any[] }>({ rewards: [], mine: [] });
-  const [theme, setTheme] = useState<'orange' | 'blue' | 'rose' | 'night'>(() => {
+  // The device's theme (also the login screen's); a signed-in person's own theme wins
+  const [deviceTheme, setDeviceTheme] = useState<Theme>(() => {
     const saved = typeof localStorage !== 'undefined' ? localStorage.getItem('tidyquest_theme') : null;
-    return (saved === 'blue' || saved === 'rose' || saved === 'night') ? saved : 'orange';
+    return isTheme(saved) ? saved : 'orange';
   });
+  const theme: Theme = isTheme(user?.theme) ? user.theme : deviceTheme;
+  const changeTheme = async (next: Theme) => {
+    setDeviceTheme(next);
+    if (user) {
+      await api.updateProfile(user.id, { theme: next });
+      await refreshUser();
+    }
+  };
+  // Seasonal styling (utils/seasons.ts): the holiday showing now, or the one a parent is previewing
+  const seasonPreview = useSeasonPreview();
+  const season = activeSeason({ enabled: !!dashboardData && dashboardData.features?.seasonal !== false, off: dashboardData?.holidaysOff ?? [], preview: seasonPreview });
+  const seasonColors = season && user?.holidayColors !== 0 ? season : null;
   const [vacationConfig, setVacationConfig] = useState<{ vacationMode: boolean; vacationStartDate: string | null; vacationEndDate: string | null } | null>(null);
   const vacationUpdatePending = useRef(false);
   const dashboardLoadInFlight = useRef<Promise<void> | null>(null);
@@ -49,8 +107,13 @@ function AppContent() {
   const [gamificationEnabled, setGamificationEnabled] = useState(true);
   const [confetti, setConfetti] = useState(false);
   const [taskErrorMsg, setTaskErrorMsg] = useState<string | null>(null);
+  const [photoProblem, setPhotoProblem] = useState<PhotoProblem | null>(null);
   const [unlockedAchievements, setUnlockedAchievements] = useState<string[]>([]);
+  // Names for the pop-up from the completion itself (parent-made and secret badges aren't in the page data yet)
+  const [unlockedInfo, setUnlockedInfo] = useState<Array<{ id: string; titleKey: string | null; title: string | null }>>([]);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const openSearch = useCallback(() => setSearchOpen(true), []);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
     if (typeof window === 'undefined') return false;
     const saved = localStorage.getItem('tidyquest-sidebar-collapsed');
@@ -65,6 +128,7 @@ function AppContent() {
       try {
         const roomsData = await api.getRooms();
         setRooms(roomsData);
+        setRoomsLoaded(true);
       } catch { /* ignore */ }
     })().finally(() => {
       roomsRefreshInFlight.current = null;
@@ -77,22 +141,22 @@ function AppContent() {
     if (dashboardLoadInFlight.current) return dashboardLoadInFlight.current;
     const p = (async () => {
       try {
-        const [dash, lb, hist, users, coinCfg, ach, roomsData] = await Promise.all([
+        const [dash, lb, users, coinCfg, ach, roomsData] = await Promise.all([
           api.dashboard(),
           api.leaderboard(leaderboardPeriod),
-          api.history(50, 0),
           api.getUsers(),
           api.getCoinsConfig(),
           api.achievements(),
           api.getRooms(),
         ]);
+        // The family's clock first, so everything drawn from this dashboard counts days at home
+        setFamilyZone(dash.timeZone);
         setDashboardData(dash);
         if (dash.vacation && !vacationUpdatePending.current) setVacationConfig(dash.vacation);
         setRooms(roomsData);
-        setLeaderboard(lb);
+        setRoomsLoaded(true);
         setFamily(lb);
         setFamilySettings(users);
-        setCompletions(hist.history || []);
         setCoinsByEffort(coinCfg.coinsByEffort || { 1: 5, 2: 10, 3: 15, 4: 20, 5: 25 });
         setAchievementsData(ach);
       } catch { /* not logged in */ }
@@ -102,6 +166,25 @@ function AppContent() {
     dashboardLoadInFlight.current = p;
     return p;
   }, [leaderboardPeriod]);
+
+  const loadRewards = useCallback(() => api.getRewards()
+    .then((data) => setRewardsData(data))
+    .catch(() => setRewardsData({ rewards: [], mine: [] })), []);
+
+  // A new family's parent lands in the setup wizard once (NEW-17); "Not now" or finishing it stops that
+  const setupOpened = useRef(false);
+  useEffect(() => {
+    if (dashboardData?.setupNeeded && location.pathname === '/' && !setupOpened.current) {
+      setupOpened.current = true;
+      navigate('/setup');
+    }
+  }, [dashboardData?.setupNeeded, location.pathname, navigate]);
+
+  // Search lists rewards with their prices, so fetch them fresh when it opens (a price just changed in Settings
+  // otherwise showed the old one until the Rewards page was opened)
+  useEffect(() => {
+    if (searchOpen && user) loadRewards();
+  }, [searchOpen]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (user) {
@@ -116,7 +199,7 @@ function AppContent() {
     const path = location.pathname;
     if (path === '/') {
       loadDashboard();
-    } else if (path === '/rooms' || path.startsWith('/rooms/')) {
+    } else if (path === '/rooms' || path.startsWith('/rooms/') || path === '/tasks') {
       refreshRooms();
     }
     if (path === '/rewards') {
@@ -128,11 +211,14 @@ function AppContent() {
   useEffect(() => {
     if (!user) return;
     const isDashboardPath = location.pathname === '/';
-    const isRoomsPath = location.pathname === '/rooms' || location.pathname.startsWith('/rooms/');
+    const isRoomsPath = location.pathname === '/rooms' || location.pathname.startsWith('/rooms/') || location.pathname === '/tasks';
+    // Rewards too, so a price or reward a parent just changed shows up on a page left open (BUG-13)
+    const isRewardsPath = location.pathname === '/rewards';
     const tick = () => {
       if (document.visibilityState !== 'visible') return;
       if (isDashboardPath) loadDashboard();
       if (isRoomsPath) refreshRooms();
+      if (isRewardsPath) loadRewards();
     };
     const interval = setInterval(tick, 15000);
     document.addEventListener('visibilitychange', tick);
@@ -140,16 +226,33 @@ function AppContent() {
       clearInterval(interval);
       document.removeEventListener('visibilitychange', tick);
     };
-  }, [user, location.pathname, loadDashboard, refreshRooms]);
+  }, [user, location.pathname, loadDashboard, refreshRooms, loadRewards]);
 
-  const loadRewards = useCallback(async () => {
-    try {
-      const data = await api.getRewards();
-      setRewardsData(data);
-    } catch {
-      setRewardsData({ rewards: [], mine: [] });
-    }
-  }, []);
+  // Each page opens at the top. A room opened for one task (?task=) scrolls to that task
+  // itself, a link with a #section (the guide) scrolls to that section, and Rooms reached by going
+  // back from a room returns to where it was (RoomsList); parent effects run after child effects,
+  // so skip those here or it would undo them.
+  const navType = useNavigationType();
+  useEffect(() => {
+    if (new URLSearchParams(location.search).has('task') || location.hash) return;
+    if (location.pathname === '/rooms' && (navType === 'POP' || (location.state as { fromRoom?: number } | null)?.fromRoom)) return;
+    window.scrollTo(0, 0);
+  }, [location.pathname]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // "/" or Ctrl/Cmd+K opens search from anywhere, unless the user is typing
+  useEffect(() => {
+    if (!user) return;
+    const onKey = (e: KeyboardEvent) => {
+      const el = e.target as HTMLElement | null;
+      const typing = !!el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT' || el.isContentEditable);
+      if ((e.key === 'k' && (e.ctrlKey || e.metaKey)) || (e.key === '/' && !typing && !e.ctrlKey && !e.metaKey && !e.altKey)) {
+        e.preventDefault();
+        setSearchOpen(true);
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [user]);
 
   useEffect(() => {
     if (user) loadRewards();
@@ -166,6 +269,21 @@ function AppContent() {
   }, [theme]);
 
   useEffect(() => {
+    const html = document.documentElement;
+    const set = (name: string, value: string | null) => (value ? html.setAttribute(name, value) : html.removeAttribute(name));
+    set('data-season', season?.id ?? null);
+    set('data-season-colors', seasonColors?.id ?? null);
+    set('data-season-dark', seasonColors?.dark ? '1' : null);
+    if (season) html.style.setProperty('--season-pattern', season.pattern); else html.style.removeProperty('--season-pattern');
+  }, [season, seasonColors]);
+
+  // Added to a phone's home screen, the status bar takes this color: keep it the page's own background
+  useEffect(() => {
+    const bg = getComputedStyle(document.documentElement).getPropertyValue('--warm-bg').trim();
+    if (bg) document.querySelector('meta[name="theme-color"]')?.setAttribute('content', bg);
+  }, [theme, seasonColors]);
+
+  useEffect(() => {
     document.title = 'TidyQuest';
   }, []);
 
@@ -180,23 +298,38 @@ function AppContent() {
     localStorage.setItem('tidyquest-sidebar-collapsed', String(sidebarCollapsed));
   }, [sidebarCollapsed]);
 
-  const handleCompleteTask = async (taskId: number) => {
+  /** Resolves true when the chore was recorded (or waits for approval) */
+  const handleCompleteTask = async (taskId: number, proof?: Proof): Promise<boolean> => {
     try {
-      const result = await api.completeTask(taskId);
+      const result = await api.completeTask(taskId, undefined, proof?.note ? { note: proof.note } : {});
+      if (proof?.file && result.completionId) {
+        const { file } = proof;
+        const { completionId } = result;
+        // The chore is already recorded; a failed photo upload shouldn't undo that
+        await api.uploadCompletionPhoto(completionId, file).catch((err) => {
+          // Say why when it's a limit (file size, the family's photo space); otherwise the same photo can go
+          // again while a parent still has to look at the chore
+          const why = limitError(err, t, '');
+          setPhotoProblem({ completionId, file, why, canRetry: !why && !!result.pendingApproval });
+        });
+      }
       if (result.pendingApproval) {
         setConfetti(false);
         setTaskErrorMsg(t('app.pendingApproval'));
         setTimeout(() => setTaskErrorMsg(null), 3500);
-        await refreshRooms();
-        return;
+        // Home and the room page both show "waiting for approval" once they reload
+        await Promise.all([refreshRooms(), loadDashboard()]);
+        return true;
       }
       if (result.newAchievements && result.newAchievements.length > 0) {
+        setUnlockedInfo(result.newAchievementInfo ?? []);
         setUnlockedAchievements(result.newAchievements);
       }
       setConfetti(true);
       refreshUser();
       await Promise.all([refreshRooms(), loadDashboard()]);
       setTimeout(() => setConfetti(false), 2200);
+      return true;
     } catch (err) {
       setConfetti(false);
       const msg = err instanceof Error ? err.message : '';
@@ -204,19 +337,18 @@ function AppContent() {
         setTaskErrorMsg(t('app.alreadyDoneToday'));
       } else if (msg === 'already_done_by_other') {
         setTaskErrorMsg(t('app.alreadyDoneByOther'));
+      } else if (msg === 'already_done') {
+        setTaskErrorMsg(t('app.alreadyDone'));
+      } else if (msg === 'repeat_limit_reached') {
+        setTaskErrorMsg(t('repeat.limitReached'));
       } else if (msg === 'not_assigned') {
         setTaskErrorMsg(t('app.notAssigned'));
       } else {
         setTaskErrorMsg(msg || t('common.error'));
       }
       setTimeout(() => setTaskErrorMsg(null), 3500);
+      return false;
     }
-  };
-
-  const handleLeaderboardPeriodChange = async (period: 'week' | 'month' | 'quarter' | 'year') => {
-    setLeaderboardPeriod(period);
-    const lb = await api.leaderboard(period);
-    setLeaderboard(lb);
   };
 
   const handleExport = async () => {
@@ -247,13 +379,13 @@ function AppContent() {
         await api.importData(data);
         await loadDashboard();
       } catch (err) {
-        alert(`Import failed: ${err instanceof Error ? err.message : 'Unknown error'}`);
+        alert(`Import failed: ${limitError(err, t, err instanceof Error ? err.message : 'Unknown error')}`);
       }
     };
     input.click();
   };
 
-  if (loading) {
+  if (loading || (!user && hosted === null)) {
     return (
       <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'var(--warm-bg)' }}>
         <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--warm-text-light)' }}>{t('common.loading')}...</div>
@@ -261,15 +393,30 @@ function AppContent() {
     );
   }
 
+  // The links in hosted mode's emails
+  if (location.pathname === '/confirm-email') return <ConfirmEmail signedIn={!!user} />;
+  if (location.pathname === '/reset-password') return <ResetPassword onSignedIn={signIn} />;
+  if (location.pathname === '/unsubscribe') return <Unsubscribe />;
+
   if (!user) {
+    if (hosted && location.pathname === '/signup') return <SignUp onSignedIn={signIn} />;
     if (authView === 'register') {
       return <Register onRegister={register} onSwitchToLogin={() => setAuthView('login')} />;
     }
-    return <Login onLogin={login} onSwitchToRegister={() => setAuthView('register')} />;
+    return <Login onLogin={login} onSwitchToRegister={() => setAuthView('register')} hosted={!!hosted} onSignUp={() => navigate('/signup')} />;
   }
 
-  const localeMap: Record<string, string> = { en: 'en-US', fr: 'fr-FR', de: 'de-DE', es: 'es-ES', it: 'it-IT', nl: 'nl-NL' };
-  const today = new Date().toLocaleDateString(localeMap[user.language] || 'en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+  if (hostedAccount && isShutOut(hostedAccount)) {
+    return <LockedScreen account={hostedAccount} language={user.language} onChanged={loadHostedAccount}
+      onLogout={() => { logout(); setHostedAccount(null); navigate('/login', { replace: true }); }} />;
+  }
+  // NEW-34: a parent or member agrees to the terms first; a full load then fetches what the server held back
+  if (hostedAccount?.mustAgree) {
+    return <AgreeScreen account={hostedAccount} language={user.language} onAgreed={() => { window.location.href = '/'; }}
+      onLogout={() => { logout(); setHostedAccount(null); navigate('/login', { replace: true }); }} />;
+  }
+
+  const today = new Date().toLocaleDateString(localeFor(user.language), { weekday: 'long', month: 'long', day: 'numeric' });
   const periods: Array<'all' | 'week' | 'month' | 'year'> = ['all', 'week', 'month', 'year'];
   const myPoints = pointsPeriod === 'all'
     ? (user.points ?? 0)
@@ -285,14 +432,44 @@ function AppContent() {
       setPointsLeaderboard([]);
     }
   };
+  // Parents get paused chores too (ENH-1), but only a room's own page shows them
+  const activeRooms: typeof rooms = rooms.map((r: { tasks?: Array<{ pausedAt?: string | null }> }) => (r.tasks || []).some((t) => t.pausedAt)
+    ? { ...r, tasks: (r.tasks || []).filter((t) => !t.pausedAt) } : r);
   // Build flat tasks list for calendar
-  const allTasks = rooms.flatMap((r: any) =>
+  const allTasks = activeRooms.flatMap((r: any) =>
     (r.tasks || []).map((t: any) => ({ ...t, roomName: r.name, roomType: r.roomType }))
   );
 
+  // One thing at a time: a page of its own, or Home itself when a parent chose that ("?all=1" shows the full Home)
+  const focusData: FocusData | null = dashboardData?.focus ?? null;
+  const focusIsHome = focusData?.mode === 'home' && !new URLSearchParams(location.search).has('all');
+  const focusPage = (onLeave: () => void, leaveLabel: string) => focusData && (
+    <Focus focus={focusData} userId={user.id} language={user.language} coinsByEffort={coinsByEffort}
+      gamificationEnabled={gamificationEnabled} mission={gamificationEnabled ? dashboardData?.rescueMission : null}
+      roomName={(name, roomId) => roomDisplayName(name, rooms.find((r: { id: number; roomType?: string }) => r.id === roomId)?.roomType || '')}
+      onComplete={(id) => handleCompleteTask(id)} onSeeAll={() => navigate('/tasks')} onLeave={onLeave} leaveLabel={leaveLabel} />
+  );
+
   return (
+    <SearchContext.Provider value={openSearch}>
+    <CosmeticsContext.Provider value={dashboardData?.cosmetics ?? NO_COSMETICS}>
+    <WeekStartContext.Provider value={dashboardData?.weekStart ?? 1}>
+    <ChoreTimerProvider key={user.id} userId={user.id} role={user.role} language={user.language} onComplete={(id) => handleCompleteTask(id)}>
     <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: 'var(--warm-bg)' }}>
-      <ConfettiEffect show={confetti} />
+      <ConfettiEffect show={confetti} season={season} celebration={dashboardData?.cosmetics?.[user.id]?.celebration} />
+      {season && <SeasonParticles season={season} />}
+
+      {searchOpen && (
+        <SearchOverlay
+          onClose={() => setSearchOpen(false)}
+          rooms={activeRooms}
+          rewards={rewardsData.rewards}
+          language={user.language}
+          gamificationEnabled={gamificationEnabled}
+          onNavigate={(path) => navigate(path)}
+          mineOnlyFor={user.taskView === 'mineOnly' || user.kidMode ? user : null}
+        />
+      )}
 
       {/* Achievement unlock toast */}
       {unlockedAchievements.length > 0 && (
@@ -300,6 +477,10 @@ function AppContent() {
           achievementIds={unlockedAchievements}
           onDismiss={() => setUnlockedAchievements([])}
           language={user?.language}
+          titles={Object.fromEntries([
+            ...((achievementsData?.me?.achievements ?? []) as Array<{ id: string; titleKey?: string | null; title?: string | null }>),
+            ...unlockedInfo,
+          ].filter((a) => a.titleKey || a.title).map((a) => [a.id, a.titleKey ? t(a.titleKey) : a.title as string]))}
         />
       )}
 
@@ -314,6 +495,11 @@ function AppContent() {
         }}>
           {taskErrorMsg}
         </div>
+      )}
+
+      {photoProblem && (
+        <PhotoFailedNote key={photoProblem.completionId} problem={photoProblem} language={user?.language}
+          onClose={() => setPhotoProblem((p) => (p === photoProblem ? null : p))} />
       )}
 
       {/* Mobile hamburger menu */}
@@ -353,14 +539,21 @@ function AppContent() {
         onToggle={() => setSidebarCollapsed(prev => !prev)}
       />
 
-      <main style={{ marginLeft: sidebarCollapsed ? 60 : 240, flex: 1, padding: '28px 36px', maxWidth: 1320, backgroundColor: 'var(--warm-bg)', transition: 'margin-left 0.3s ease' }} className="main-content">
+      <main style={{ marginLeft: sidebarCollapsed ? 60 : 240, flex: 1, padding: '28px 36px', maxWidth: 1320, backgroundColor: 'var(--warm-bg)', transition: 'margin-left 0.3s ease' }} className={`main-content${user.kidMode ? ' kid-mode' : ''}`}>
+        <ChoreTimerBar language={user.language} />
+        {hostedAccount && <ConfirmEmailBanner account={hostedAccount} language={user.language} onChanged={loadHostedAccount} />}
+        {season && <SeasonStrip season={season} previewing={!!seasonPreview} language={user.language} />}
         <Routes>
           <Route path="/" element={
             <>
-              <PageHeader title={t('nav.home')} subtitle={today} user={user} onCoinsClick={() => navigate('/rewards')} onStreakClick={() => navigate('/achievements')} onPointsClick={handlePointsClick} userPoints={myPoints} pointsPeriodLabel={pointsPeriodLabel} gamificationEnabled={gamificationEnabled} />
-              {dashboardData && (
+              <PageHeader title={focusIsHome ? t('focus.title') : t('nav.home')} subtitle={today} user={user} onCoinsClick={() => navigate('/rewards')} onStreakClick={() => navigate('/achievements')} onPointsClick={handlePointsClick} userPoints={myPoints} pointsPeriodLabel={pointsPeriodLabel} gamificationEnabled={gamificationEnabled} shieldsOn={!!dashboardData?.shields} />
+              {season && <SeasonGreeting season={season} language={user.language} />}
+              {focusIsHome && focusPage(() => navigate('/?all=1'), t('focus.fullHome'))}
+              {dashboardData && !focusIsHome && (
                 <Dashboard
                   data={dashboardData}
+                  allRooms={activeRooms}
+                  seasonCostume={season?.costume}
                   family={family}
                   users={familySettings}
                   language={user.language}
@@ -368,8 +561,15 @@ function AppContent() {
                   leaderboardPeriod={leaderboardPeriod}
                   onCompleteTask={handleCompleteTask}
                   onRefresh={loadDashboard}
+                  onCoinsChanged={refreshUser}
                   onNavigateToRoom={(id) => navigate(`/rooms/${id}`)}
+                  onOpenTask={(roomId, taskId) => navigate(`/rooms/${roomId}?task=${taskId}`)}
+                  coinsByEffort={coinsByEffort}
                   onNavigateToActivity={() => navigate('/activity')}
+                  onNavigateToRewards={() => navigate('/rewards')}
+                  onNavigateToRooms={() => navigate('/rooms')}
+                  onNavigateToTasks={(criticalOnly) => navigate(`/tasks?person=all${criticalOnly ? '&status=critical' : ''}`)}
+                  onOpenFocus={() => navigate('/focus')}
                   onRewardRequestAction={async (id, status) => {
                     await api.updateRedemptionStatus(id, status);
                     await Promise.all([loadDashboard(), loadRewards()]);
@@ -381,8 +581,9 @@ function AppContent() {
 
           <Route path="/rooms" element={
             <>
-              <PageHeader title={t('nav.rooms')} subtitle={`${rooms.length} ${t('app.roomsConfigured')}`} user={user} onCoinsClick={() => navigate('/rewards')} onStreakClick={() => navigate('/achievements')} onPointsClick={handlePointsClick} userPoints={myPoints} pointsPeriodLabel={pointsPeriodLabel} gamificationEnabled={gamificationEnabled} />
-              <RoomsList rooms={rooms} language={user.language} onSelectRoom={(id) => navigate(`/rooms/${id}`)}
+              <PageHeader title={t('nav.rooms')} subtitle={`${rooms.length} ${t('app.roomsConfigured')}`} user={user} onCoinsClick={() => navigate('/rewards')} onStreakClick={() => navigate('/achievements')} onPointsClick={handlePointsClick} userPoints={myPoints} pointsPeriodLabel={pointsPeriodLabel} gamificationEnabled={gamificationEnabled} shieldsOn={!!dashboardData?.shields} />
+              <RoomsList rooms={activeRooms} language={user.language} onSelectRoom={(id) => navigate(`/rooms/${id}`)}
+                onOpenTask={(roomId, taskId) => navigate(`/rooms/${roomId}?task=${taskId}`)}
                 isAdmin={user.role === 'admin'}
                 users={familySettings}
                 onCreateRoom={async (data) => {
@@ -401,53 +602,95 @@ function AppContent() {
                   await api.updateRoom(roomId, { name });
                   void refreshRooms();
                 }}
+                onRoomsChanged={refreshRooms}
+                viewer={user}
               />
             </>
           } />
 
           <Route path="/rooms/:id" element={
-            <RoomDetailWrapper rooms={rooms} user={user} users={familySettings} coinsByEffort={coinsByEffort} gamificationEnabled={gamificationEnabled} onCompleteTask={handleCompleteTask} onRefresh={() => { refreshRooms(); loadDashboard(); }} onAchievementsUnlocked={setUnlockedAchievements} />
+            <RoomDetailWrapper rooms={rooms} roomsLoaded={roomsLoaded} strictMode={!!dashboardData?.strictMode} shieldsOn={!!dashboardData?.shields} allowOneTime={dashboardData?.features?.todos !== false} allowPhotos={dashboardData?.features?.proofPhotos !== false} user={user} users={familySettings} coinsByEffort={coinsByEffort} gamificationEnabled={gamificationEnabled} onCompleteTask={handleCompleteTask} onRefresh={() => { refreshRooms(); loadDashboard(); }} onAchievementsUnlocked={setUnlockedAchievements} />
+          } />
+
+          <Route path="/focus" element={
+            <>
+              <PageHeader title={t('focus.title')} subtitle={today} user={user} onCoinsClick={() => navigate('/rewards')} onStreakClick={() => navigate('/achievements')} onPointsClick={handlePointsClick} userPoints={myPoints} pointsPeriodLabel={pointsPeriodLabel} gamificationEnabled={gamificationEnabled} shieldsOn={!!dashboardData?.shields} />
+              {focusData ? focusPage(() => navigate('/'), t('focus.backHome')) : dashboardData && <Navigate to="/" replace />}
+            </>
+          } />
+
+          <Route path="/tasks" element={
+            <>
+              <PageHeader title={t('nav.tasks')} subtitle={t('app.tasksSubtitle')} user={user} onCoinsClick={() => navigate('/rewards')} onStreakClick={() => navigate('/achievements')} onPointsClick={handlePointsClick} userPoints={myPoints} pointsPeriodLabel={pointsPeriodLabel} gamificationEnabled={gamificationEnabled} shieldsOn={!!dashboardData?.shields} />
+              <TaskList
+                rooms={activeRooms}
+                users={familySettings}
+                currentUserId={user.id}
+                coinsByEffort={coinsByEffort}
+                language={user.language}
+                gamificationEnabled={gamificationEnabled}
+                loading={!roomsLoaded}
+                taskView={user.taskView}
+                kidMode={user.kidMode}
+                isAdmin={user.role === 'admin'}
+                onRefresh={() => { refreshRooms(); loadDashboard(); }}
+                onOpenTask={(roomId, taskId) => navigate(`/rooms/${roomId}?task=${taskId}`)}
+              />
+            </>
           } />
 
           <Route path="/calendar" element={
             <>
-              <PageHeader title={t('nav.calendar')} subtitle={t('app.calendarSubtitle')} user={user} onCoinsClick={() => navigate('/rewards')} onStreakClick={() => navigate('/achievements')} onPointsClick={handlePointsClick} userPoints={myPoints} pointsPeriodLabel={pointsPeriodLabel} gamificationEnabled={gamificationEnabled} />
-              <Calendar completions={completions} tasks={allTasks} language={user.language} />
+              <PageHeader title={t('nav.calendar')} subtitle={t('app.calendarSubtitle')} user={user} onCoinsClick={() => navigate('/rewards')} onStreakClick={() => navigate('/achievements')} onPointsClick={handlePointsClick} userPoints={myPoints} pointsPeriodLabel={pointsPeriodLabel} gamificationEnabled={gamificationEnabled} shieldsOn={!!dashboardData?.shields} />
+              <Calendar tasks={allTasks} viewer={user} language={user.language} onOpenTask={(roomId, taskId) => navigate(`/rooms/${roomId}?task=${taskId}`)} />
             </>
           } />
 
           <Route path="/leaderboard" element={
             gamificationEnabled ? (
             <>
-              <PageHeader title={t('app.leaderboardTitle')} subtitle={t('app.leaderboardSubtitle')} user={user} onCoinsClick={() => navigate('/rewards')} onStreakClick={() => navigate('/achievements')} onPointsClick={handlePointsClick} userPoints={myPoints} pointsPeriodLabel={pointsPeriodLabel} gamificationEnabled={gamificationEnabled} />
-              <Leaderboard users={leaderboard} language={user.language} period={leaderboardPeriod} onPeriodChange={handleLeaderboardPeriodChange} />
+              <PageHeader title={t('app.leaderboardTitle')} subtitle={t('app.leaderboardSubtitle')} user={user} onCoinsClick={() => navigate('/rewards')} onStreakClick={() => navigate('/achievements')} onPointsClick={handlePointsClick} userPoints={myPoints} pointsPeriodLabel={pointsPeriodLabel} gamificationEnabled={gamificationEnabled} shieldsOn={!!dashboardData?.shields} />
+              <Leaderboard language={user.language} />
             </>
             ) : <Navigate to="/" replace />
           } />
 
           <Route path="/activity" element={
             <>
-              <PageHeader title={t('nav.activity')} subtitle={t('app.activitySubtitle')} user={user} onCoinsClick={() => navigate('/rewards')} onStreakClick={() => navigate('/achievements')} onPointsClick={handlePointsClick} userPoints={myPoints} pointsPeriodLabel={pointsPeriodLabel} gamificationEnabled={gamificationEnabled} />
-              <History language={user.language} isAdmin={user.role === 'admin'} />
+              <PageHeader title={t('nav.activity')} subtitle={t('app.activitySubtitle')} user={user} onCoinsClick={() => navigate('/rewards')} onStreakClick={() => navigate('/achievements')} onPointsClick={handlePointsClick} userPoints={myPoints} pointsPeriodLabel={pointsPeriodLabel} gamificationEnabled={gamificationEnabled} shieldsOn={!!dashboardData?.shields} />
+              <History language={user.language} isAdmin={user.role === 'admin'} users={familySettings} rooms={rooms} userId={user.id} mascotName={dashboardData?.mascot?.name} />
             </>
           } />
           <Route path="/history" element={
             <>
-              <PageHeader title={t('nav.activity')} subtitle={t('app.activitySubtitle')} user={user} onCoinsClick={() => navigate('/rewards')} onStreakClick={() => navigate('/achievements')} onPointsClick={handlePointsClick} userPoints={myPoints} pointsPeriodLabel={pointsPeriodLabel} gamificationEnabled={gamificationEnabled} />
-              <History language={user.language} isAdmin={user.role === 'admin'} />
+              <PageHeader title={t('nav.activity')} subtitle={t('app.activitySubtitle')} user={user} onCoinsClick={() => navigate('/rewards')} onStreakClick={() => navigate('/achievements')} onPointsClick={handlePointsClick} userPoints={myPoints} pointsPeriodLabel={pointsPeriodLabel} gamificationEnabled={gamificationEnabled} shieldsOn={!!dashboardData?.shields} />
+              <History language={user.language} isAdmin={user.role === 'admin'} users={familySettings} rooms={rooms} userId={user.id} mascotName={dashboardData?.mascot?.name} />
             </>
           } />
+
+          <Route path="/insights" element={user.role !== 'admin' ? <Navigate to="/" replace /> : (
+            <>
+              <PageHeader title={t('nav.insights')} subtitle={t('insights.subtitle')} user={user} onCoinsClick={() => navigate('/rewards')} onStreakClick={() => navigate('/achievements')} onPointsClick={handlePointsClick} userPoints={myPoints} pointsPeriodLabel={pointsPeriodLabel} gamificationEnabled={gamificationEnabled} shieldsOn={!!dashboardData?.shields} />
+              <Insights language={user.language} gamificationEnabled={gamificationEnabled} />
+            </>
+          )} />
 
           <Route path="/profile" element={
             <>
-              <PageHeader title={t('nav.profile')} subtitle={t('app.profileSubtitle')} user={user} onCoinsClick={() => navigate('/rewards')} onStreakClick={() => navigate('/achievements')} onPointsClick={handlePointsClick} userPoints={myPoints} pointsPeriodLabel={pointsPeriodLabel} gamificationEnabled={gamificationEnabled} />
-              <Profile user={user} onSave={async () => { await refreshUser(); }} onLogout={() => { logout(); navigate('/login', { replace: true }); }} />
+              <PageHeader title={t('nav.profile')} subtitle={t('app.profileSubtitle')} user={user} onCoinsClick={() => navigate('/rewards')} onStreakClick={() => navigate('/achievements')} onPointsClick={handlePointsClick} userPoints={myPoints} pointsPeriodLabel={pointsPeriodLabel} gamificationEnabled={gamificationEnabled} shieldsOn={!!dashboardData?.shields} />
+              <Profile user={user} theme={theme} onChangeTheme={changeTheme} onUnlocksChanged={() => { void loadDashboard(); }} onSave={async () => { await refreshUser(); }} onLogout={() => { logout(); navigate('/login', { replace: true }); }} />
             </>
           } />
 
+          <Route path="/guide" element={
+            <>
+              <PageHeader title={t('guide.title')} subtitle={t('guide.subtitle')} user={user} onCoinsClick={() => navigate('/rewards')} onStreakClick={() => navigate('/achievements')} onPointsClick={handlePointsClick} userPoints={myPoints} pointsPeriodLabel={pointsPeriodLabel} gamificationEnabled={gamificationEnabled} shieldsOn={!!dashboardData?.shields} />
+              <Guide language={user.language} />
+            </>
+          } />
           <Route path="/settings" element={
             <>
-              <PageHeader title={t('nav.settings')} subtitle={t('app.settingsSubtitle')} user={user} onCoinsClick={() => navigate('/rewards')} onStreakClick={() => navigate('/achievements')} onPointsClick={handlePointsClick} userPoints={myPoints} pointsPeriodLabel={pointsPeriodLabel} gamificationEnabled={gamificationEnabled} />
+              <PageHeader title={t('nav.settings')} subtitle={t('app.settingsSubtitle')} user={user} onCoinsClick={() => navigate('/rewards')} onStreakClick={() => navigate('/achievements')} onPointsClick={handlePointsClick} userPoints={myPoints} pointsPeriodLabel={pointsPeriodLabel} gamificationEnabled={gamificationEnabled} shieldsOn={!!dashboardData?.shields} />
               <Settings
                 user={user}
                 family={familySettings}
@@ -463,6 +706,14 @@ function AppContent() {
                     vacationUpdatePending.current = false;
                   }
                 }}
+                onWeekStartChange={async (weekStart) => { await api.updateWeekStart(weekStart); await loadDashboard(); }}
+                timeZone={dashboardData?.timeZone ? { zone: dashboardData.timeZone, set: !!dashboardData.timeZoneSet } : undefined}
+                onTimeZoneChange={async (timeZone) => { await api.updateTimeZone(timeZone); await loadDashboard(); }}
+                shields={dashboardData?.shields ?? null}
+                onGiveShield={async (targetUserId) => {
+                  await api.giveShield(targetUserId);
+                  setFamilySettings(await api.getUsers());
+                }}
                 onUpdateRole={async (targetUserId, role) => {
                   await api.updateUserRole(targetUserId, role);
                   setFamilySettings(await api.getUsers());
@@ -470,6 +721,10 @@ function AppContent() {
                 }}
                 onAddMember={async (member) => {
                   await api.createUser(member);
+                  setFamilySettings(await api.getUsers());
+                }}
+                onSetMemberLogin={async (targetUserId, data) => {
+                  await api.setUserLogin(targetUserId, data);
                   setFamilySettings(await api.getUsers());
                 }}
                 onDeleteUser={async (targetUserId) => {
@@ -497,21 +752,29 @@ function AppContent() {
                   const updated = await api.updateCoinsConfig({ useDefault: true });
                   setCoinsByEffort(updated.coinsByEffort);
                 }}
-                theme={theme}
-                onChangeTheme={setTheme}
                 onExport={handleExport}
                 onImport={handleImport}
-                onAdjustCoins={async (userId: number, amount: number) => {
-                  await api.adjustCoins(userId, amount);
+                hostedAccount={hostedAccount}
+                onHostedChanged={loadHostedAccount}
+                rooms={rooms}
+                onDataChanged={() => { refreshRooms(); loadDashboard(); }}
+                onAdjustCoins={async (userId: number, amount: number, reason?: string) => {
+                  await api.adjustCoins(userId, amount, reason);
                   setFamilySettings(await api.getUsers());
                 }}
               />
             </>
           } />
+          <Route path="/setup" element={user.role !== 'admin' ? <Navigate to="/" replace /> : (
+            <>
+              <PageHeader title={t('setup.title')} subtitle={t('setup.subtitle')} user={user} onCoinsClick={() => navigate('/rewards')} onStreakClick={() => navigate('/achievements')} onPointsClick={handlePointsClick} userPoints={myPoints} pointsPeriodLabel={pointsPeriodLabel} gamificationEnabled={gamificationEnabled} shieldsOn={!!dashboardData?.shields} />
+              <SetupWizard user={user} onSaved={() => Promise.all([loadDashboard(), loadRewards()])} onExit={() => { loadDashboard(); navigate('/', { replace: true }); }} onOpenGuide={() => navigate('/guide', { replace: true })} />
+            </>
+          )} />
           <Route path="/achievements" element={
             gamificationEnabled ? (
             <>
-              <PageHeader title={t('nav.achievements')} subtitle={t('app.achievementsSubtitle')} user={user} onCoinsClick={() => navigate('/rewards')} onStreakClick={() => navigate('/achievements')} onPointsClick={handlePointsClick} userPoints={myPoints} pointsPeriodLabel={pointsPeriodLabel} gamificationEnabled={gamificationEnabled} />
+              <PageHeader title={t('nav.achievements')} subtitle={t('app.achievementsSubtitle')} user={user} onCoinsClick={() => navigate('/rewards')} onStreakClick={() => navigate('/achievements')} onPointsClick={handlePointsClick} userPoints={myPoints} pointsPeriodLabel={pointsPeriodLabel} gamificationEnabled={gamificationEnabled} shieldsOn={!!dashboardData?.shields} />
               <Achievements data={achievementsData} language={user.language} />
             </>
             ) : <Navigate to="/" replace />
@@ -519,20 +782,35 @@ function AppContent() {
           <Route path="/rewards" element={
             gamificationEnabled ? (
             <>
-              <PageHeader title={t('nav.rewards')} subtitle={t('app.rewardsSubtitle')} user={user} onCoinsClick={() => navigate('/rewards')} onStreakClick={() => navigate('/achievements')} onPointsClick={handlePointsClick} userPoints={myPoints} pointsPeriodLabel={pointsPeriodLabel} gamificationEnabled={gamificationEnabled} />
+              <PageHeader title={t('nav.rewards')} subtitle={t('app.rewardsSubtitle')} user={user} onCoinsClick={() => navigate('/rewards')} onStreakClick={() => navigate('/achievements')} onPointsClick={handlePointsClick} userPoints={myPoints} pointsPeriodLabel={pointsPeriodLabel} gamificationEnabled={gamificationEnabled} shieldsOn={!!dashboardData?.shields} />
               <Rewards
+                key={location.search}
                 language={user.language}
                 rewards={rewardsData.rewards}
                 mine={rewardsData.mine}
                 userCoins={user.coins}
                 isAdmin={user.role === 'admin'}
+                people={user.role === 'admin' ? familySettings.filter((u) => u.id !== user.id) : undefined}
+                onBoughtFor={() => void loadDashboard()}
                 pendingRequests={dashboardData?.pendingRewardRequests}
                 onRewardRequestAction={async (id, status) => {
                   await api.updateRedemptionStatus(id, status);
                   await Promise.all([loadDashboard(), loadRewards()]);
                 }}
-                onRedeem={async (rewardId: number) => {
-                  await api.redeemReward(rewardId);
+                onRedeem={async (rewardId: number, costCoins: number) => {
+                  try {
+                    await api.redeemReward(rewardId, { costCoins });
+                  } catch (err) {
+                    // A parent changed the price since this page loaded: fetch it so the box shows the new one
+                    if ((err as { body?: { error?: string } }).body?.error === 'price_changed') await loadRewards();
+                    throw err;
+                  }
+                  await refreshUser();
+                  await loadDashboard();
+                  await loadRewards();
+                }}
+                onContribute={async (rewardId: number, amount: number) => {
+                  await api.contributeReward(rewardId, amount);
                   await refreshUser();
                   await loadDashboard();
                   await loadRewards();
@@ -551,16 +829,25 @@ function AppContent() {
         </Routes>
       </main>
     </div>
+    </ChoreTimerProvider>
+    </WeekStartContext.Provider>
+    </CosmeticsContext.Provider>
+    </SearchContext.Provider>
   );
 }
 
-function RoomDetailWrapper({ rooms, user, users, coinsByEffort, gamificationEnabled, onCompleteTask, onRefresh, onAchievementsUnlocked }: { rooms: any[]; user: any; users?: any[]; coinsByEffort: Record<number, number>; gamificationEnabled: boolean; onCompleteTask: (id: number) => void; onRefresh: () => void; onAchievementsUnlocked?: (ids: string[]) => void }) {
+function RoomDetailWrapper({ rooms, roomsLoaded, strictMode, shieldsOn, allowOneTime, allowPhotos, user, users, coinsByEffort, gamificationEnabled, onCompleteTask, onRefresh, onAchievementsUnlocked }: { rooms: any[]; roomsLoaded: boolean; strictMode?: boolean; shieldsOn?: boolean; allowOneTime?: boolean; allowPhotos?: boolean; user: any; users?: any[]; coinsByEffort: Record<number, number>; gamificationEnabled: boolean; onCompleteTask: (id: number, proof?: Proof) => void; onRefresh: () => void; onAchievementsUnlocked?: (ids: string[]) => void }) {
   const navigate = useNavigate();
   const { t, roomDisplayName } = useTranslation(user?.language || 'en');
   const { id: idParam } = useParams<{ id: string }>();
+  const [searchParams] = useSearchParams();
+  const focusTaskId = Number(searchParams.get('task')) || undefined;
   const id = parseInt(idParam || '0');
   const room = rooms.find((r) => r.id === id);
 
+  if (!room && !roomsLoaded) {
+    return <div style={{ padding: 40, textAlign: 'center', color: '#B0A090', fontWeight: 600 }}>{t('common.loading')}</div>;
+  }
   if (!room) {
     return (
       <div style={{ padding: 40, textAlign: 'center', color: '#B0A090', fontWeight: 600 }}>
@@ -575,8 +862,8 @@ function RoomDetailWrapper({ rooms, user, users, coinsByEffort, gamificationEnab
 
   return (
     <>
-      <PageHeader title={roomDisplayName(room.name, room.roomType)} subtitle={`${room.tasks?.length || 0} ${t('rooms.tasksTracked')}`} user={user} onCoinsClick={() => navigate('/rewards')} onStreakClick={() => navigate('/achievements')} gamificationEnabled={gamificationEnabled} />
-      <RoomDetail room={room} language={user?.language} isAdmin={user?.role === 'admin'} currentUserId={user?.id} currentUserRole={user?.role} users={users} coinsByEffort={coinsByEffort} onCompleteTask={onCompleteTask} onBack={() => navigate('/rooms')} onRefresh={onRefresh} onAchievementsUnlocked={onAchievementsUnlocked} />
+      <PageHeader title={roomDisplayName(room.name, room.roomType)} subtitle={room.isTodoRoom ? t('todos.countLine').replace('{n}', String(room.todoCount ?? 0)) : `${room.tasks?.length || 0} ${t('rooms.tasksTracked')}`} user={user} onCoinsClick={() => navigate('/rewards')} onStreakClick={() => navigate('/achievements')} gamificationEnabled={gamificationEnabled} shieldsOn={shieldsOn} />
+      <RoomDetail room={room} language={user?.language} isAdmin={user?.role === 'admin'} currentUserId={user?.id} currentUserRole={user?.role} users={users} coinsByEffort={coinsByEffort} onCompleteTask={onCompleteTask} onBack={() => navigate('/rooms', { state: { fromRoom: room.id } })} onOpenRoom={(id) => navigate(`/rooms/${id}`)} allowOneTime={allowOneTime} allowPhotos={allowPhotos} focusTaskId={focusTaskId} strictMode={strictMode} onlyMine={user?.taskView === 'mineOnly' || !!user?.kidMode} onRefresh={onRefresh} onAchievementsUnlocked={onAchievementsUnlocked} />
     </>
   );
 }

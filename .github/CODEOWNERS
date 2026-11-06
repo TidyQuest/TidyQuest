@@ -2,21 +2,21 @@
 # These owners will be automatically requested for review when someone opens a pull request
 
 # Global owner (all files)
-* @mellow-fox
+* @cjueden
 
 # Security-sensitive files (require explicit approval)
-/SECURITY.md @mellow-fox
-/.github/ @mellow-fox
-/docker-compose.yml @mellow-fox
-/Dockerfile @mellow-fox
-/.env.example @mellow-fox
+/SECURITY.md @cjueden
+/.github/ @cjueden
+/docker-compose.yml @cjueden
+/Dockerfile @cjueden
+/.env.example @cjueden
 
 # Server code (backend)
-/server/ @mellow-fox
+/server/ @cjueden
 
 # Database schema changes
-/server/src/database.ts @mellow-fox
+/server/src/database.ts @cjueden
 
 # Authentication and security
-/server/src/middleware/auth.ts @mellow-fox
-/server/src/routes/auth.ts @mellow-fox
+/server/src/middleware/auth.ts @cjueden
+/server/src/routes/auth.ts @cjueden

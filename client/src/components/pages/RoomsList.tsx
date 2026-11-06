@@ -1,13 +1,18 @@
 import { useState, useEffect } from 'react';
+import { useLocation, useNavigationType } from 'react-router-dom';
 import HealthBar from '../shared/HealthBar';
 import { getRoomIcon } from '../icons/RoomIcons';
-import { TaskIcon, TASK_ICON_OPTIONS } from '../icons/TaskIcons';
+import { TaskIcon } from '../icons/TaskIcons';
+import { IconPicker } from '../shared/IconPicker';
 import { PlusIcon, TrashIcon } from '../icons/UIIcons';
 import UserAvatar from '../shared/UserAvatar';
-import { getHealthColor, getRoomHealth } from '../../utils/health';
+import { getHealthColor, getRoomHealth, notDueYet } from '../../utils/health';
 import { ROOM_COLORS } from '../../utils/colors';
 import { api } from '../../hooks/useApi';
 import { useTranslation } from '../../hooks/useTranslation';
+import { useTaskView } from '../../hooks/useTaskView';
+import { AllMineToggle } from '../shared/AllMineToggle';
+import { isTaskForUser } from '../../utils/tasks';
 
 const ROOM_TYPES = [
   { type: 'kitchen' },
@@ -74,19 +79,37 @@ interface RoomsListProps {
     zoneId?: number | null;
     assignedUserId?: number | null;
     assignedUser?: AssignedUser | null;
-    tasks: Array<{ id: number; name: string; translationKey?: string; iconKey?: string; health: number }>;
+    tasks: Array<{ id: number; name: string; translationKey?: string; iconKey?: string; health: number; onDemand?: boolean | number; allowEarlyCompletion?: boolean | number; lastCompletedAt?: string | null; effectiveAssignedUserIds?: number[]; assignedToChildren?: boolean }>;
+    /** The family's To-dos room (ENH-18): a to-do count instead of health */
+    isTodoRoom?: boolean;
+    todoCount?: number;
+    todoOverdue?: number;
   }>;
   language?: string;
   isAdmin: boolean;
   users?: Array<{ id: number; displayName: string; role: string; avatarColor: string; avatarType?: string; avatarPreset?: string; avatarPhotoUrl?: string }>;
   onSelectRoom: (roomId: number) => void;
+  /** Open a room scrolled to one of its chores (tapping a chore chip) */
+  onOpenTask?: (roomId: number, taskId: number) => void;
   onCreateRoom: (data: { name: string; roomType: string; color: string; accentColor: string; tasks: any[]; assignedUserId?: number | null }) => Promise<void>;
   onDeleteRoom: (roomId: number) => Promise<void>;
   onAssignRoom?: (roomId: number, assignedUserId: number | null, force?: boolean) => Promise<void>;
   onRenameRoom?: (roomId: number, name: string) => Promise<void>;
+  /** Reload the rooms after a change made here (e.g. moving a room to another zone) */
+  onRoomsChanged?: () => Promise<void> | void;
+  /** The person looking: drives the All / Mine switch */
+  viewer?: { id: number; role?: string; taskView?: 'all' | 'mine' | 'mineOnly'; kidMode?: number | boolean };
 }
 
-export function RoomsList({ rooms, language, isAdmin, users, onSelectRoom, onCreateRoom, onDeleteRoom, onAssignRoom, onRenameRoom }: RoomsListProps) {
+type Zone = { id: number; name: string; sortOrder: number; roomCount: number };
+// Where the page was when a room was opened from it, so coming back lands there again (FIX-28), and the zones from
+// the last visit, so the page has its final layout as soon as it comes back.
+let returnSpot: { roomId: number; y: number } | null = null;
+let zonesCache: Zone[] | null = null;
+const rememberSpot = (roomId: number) => { returnSpot = { roomId, y: window.scrollY }; };
+const cacheZones = (z: Zone[]) => { zonesCache = z; return z; };
+
+export function RoomsList({ rooms, language, isAdmin, users, onSelectRoom, onOpenTask, onCreateRoom, onDeleteRoom, onAssignRoom, onRenameRoom, onRoomsChanged, viewer }: RoomsListProps) {
   const { taskName, t, roomName: translateRoomName, roomDisplayName } = useTranslation(language);
   const [showModal, setShowModal] = useState(false);
   const [step, setStep] = useState<1 | 2>(1);
@@ -105,7 +128,8 @@ export function RoomsList({ rooms, language, isAdmin, users, onSelectRoom, onCre
   const [newTaskName, setNewTaskName] = useState('');
   const [renamingRoom, setRenamingRoom] = useState<number | null>(null);
   const [renameValue, setRenameValue] = useState('');
-  const [zones, setZones] = useState<Array<{ id: number; name: string; sortOrder: number; roomCount: number }>>([]);
+  const [zones, setZones] = useState<Zone[]>(() => zonesCache ?? []);
+  const [zonesReady, setZonesReady] = useState(zonesCache !== null);
   const [creatingZone, setCreatingZone] = useState(false);
   const [newZoneName, setNewZoneName] = useState('');
   const [renamingZone, setRenamingZone] = useState<number | null>(null);
@@ -113,18 +137,48 @@ export function RoomsList({ rooms, language, isAdmin, users, onSelectRoom, onCre
   const [zoneMenuRoomId, setZoneMenuRoomId] = useState<number | null>(null);
 
   useEffect(() => {
-    api.getZones().then(setZones).catch(() => {});
+    api.getZones().then((z) => { setZones(cacheZones(z)); setZonesReady(true); }).catch(() => setZonesReady(true));
   }, []);
 
-  const refreshZones = () => api.getZones().then(setZones).catch(() => {});
+  const refreshZones = () => api.getZones().then((z) => setZones(cacheZones(z))).catch(() => {});
 
-  const sortedRooms = [...rooms].sort(
-    (a, b) => getRoomHealth(a.tasks as any) - getRoomHealth(b.tasks as any)
+  // Coming back from a room (its Back to Rooms button, or the phone's back button): scroll to where the page was
+  // when that room was opened, and make sure its card is on screen. App skips its scroll to the top for these.
+  const location = useLocation();
+  const navType = useNavigationType();
+  useEffect(() => {
+    if (!zonesReady) return;
+    const fromRoom = (location.state as { fromRoom?: number } | null)?.fromRoom ?? (navType === 'POP' ? returnSpot?.roomId : undefined);
+    if (fromRoom === undefined) {
+      if (navType === 'POP') window.scrollTo(0, 0);
+      return;
+    }
+    window.scrollTo(0, returnSpot?.roomId === fromRoom ? returnSpot.y : 0);
+    const card = document.querySelector(`[data-room-id="${fromRoom}"]`);
+    const box = card?.getBoundingClientRect();
+    if (card && box && (box.top < 0 || box.bottom > window.innerHeight)) card.scrollIntoView({ block: 'center' });
+  }, [zonesReady]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Mine: rooms the viewer owns or has at least one task in
+  const { filter: roomFilter, setFilter: setRoomFilter, locked: roomFilterLocked } = useTaskView(viewer, 'tq-rooms-filter');
+  const isMyRoom = (room: RoomsListProps['rooms'][number]) => !viewer || room.assignedUserId === viewer.id
+    || room.tasks.some((task) => isTaskForUser(task, viewer.id, viewer.role));
+  // A room page locked to Mine lists only the viewer's chores, so other chips just open the room
+  const onlyMine = !!viewer && (viewer.taskView === 'mineOnly' || !!viewer.kidMode);
+  const canOpenTask = (task: RoomsListProps['rooms'][number]['tasks'][number]) => !!onOpenTask
+    && (!onlyMine || isTaskForUser(task, viewer!.id, viewer!.role));
+  // Most urgent first; the To-dos room (no health) last
+  const sortedRooms = [...rooms].filter((room) => roomFilter === 'all' || isMyRoom(room)).sort(
+    (a, b) => Number(!!a.isTodoRoom) - Number(!!b.isTodoRoom) || getRoomHealth(a.tasks as any) - getRoomHealth(b.tasks as any)
   );
+  const todoLine = (room: { todoCount?: number; todoOverdue?: number }) => [
+    t('todos.countLine').replace('{n}', String(room.todoCount ?? 0)),
+    room.todoOverdue ? t('todos.overdueCount').replace('{n}', String(room.todoOverdue)) : '',
+  ].filter(Boolean).join(' · ');
 
+  // Step 2's suggested chores (the button that opens step 2 turns loadingTasks on)
   useEffect(() => {
     if (step === 2) {
-      setLoadingTasks(true);
       api.getDefaultTasks(selectedType).then((defaults) => {
         setTaskConfigs(defaults.map((t) => {
           const { value, unit } = daysToFreq(t.frequencyDays);
@@ -211,8 +265,9 @@ export function RoomsList({ rooms, language, isAdmin, users, onSelectRoom, onCre
     setTaskConfigs(prev => prev.filter((_, i) => i !== idx));
   };
 
-  const handleDeleteRoom = async (roomId: number, roomName: string) => {
-    const shouldDelete = window.confirm(t('rooms.deleteRoomConfirm').replace('{room}', roomName));
+  const handleDeleteRoom = async (roomId: number, roomName: string, choreCount: number) => {
+    const key = choreCount === 0 ? 'rooms.deleteRoomConfirmEmpty' : choreCount === 1 ? 'rooms.deleteRoomConfirmOne' : 'rooms.deleteRoomConfirmMany';
+    const shouldDelete = window.confirm(t(key).replace('{room}', roomName).replace('{n}', String(choreCount)));
     if (!shouldDelete) return;
     await onDeleteRoom(roomId);
   };
@@ -252,11 +307,12 @@ export function RoomsList({ rooms, language, isAdmin, users, onSelectRoom, onCre
   const healthLabel = (h: number): string =>
     h >= 70 ? t('rooms.healthHealthy') : h >= 40 ? t('rooms.healthNeedsAttention') : t('rooms.healthCritical');
 
-  const taskBadgeStyle = (health: number): { bg: string; text: string; border: string } => {
+  // A chore that can't be done yet stays yellow instead of red (the same rule as its bar inside the room)
+  const taskBadgeStyle = (health: number, locked = false): { bg: string; text: string; border: string } => {
     if (health >= 70) {
       return { bg: 'var(--task-healthy-bg)', text: 'var(--task-healthy-text)', border: 'var(--task-healthy-border)' };
     }
-    if (health >= 40) {
+    if (health >= 40 || locked) {
       return { bg: 'var(--task-warning-bg)', text: 'var(--task-warning-text)', border: 'var(--task-warning-border)' };
     }
     return { bg: 'var(--task-critical-bg)', text: 'var(--task-critical-text)', border: 'var(--task-critical-border)' };
@@ -264,6 +320,11 @@ export function RoomsList({ rooms, language, isAdmin, users, onSelectRoom, onCre
 
   return (
     <>
+      {viewer && !roomFilterLocked && (
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 12 }}>
+          <AllMineToggle value={roomFilter} onChange={setRoomFilter} allLabel={t('dashboard.allTasks')} mineLabel={t('dashboard.myTasks')} />
+        </div>
+      )}
       {isAdmin && (
         <div style={{ marginBottom: 20 }}>
           <button className="tq-btn tq-btn-primary tq-btn-md"
@@ -345,8 +406,8 @@ export function RoomsList({ rooms, language, isAdmin, users, onSelectRoom, onCre
             const rh = room.health;
             const RoomIcon = getRoomIcon(room.roomType);
             return (
-              <div key={room.id} className="tq-card tq-card-hover tq-card-padded"
-                onClick={() => onSelectRoom(room.id)}
+              <div key={room.id} data-room-id={room.id} className="tq-card tq-card-hover tq-card-padded"
+                onClick={() => { rememberSpot(room.id); onSelectRoom(room.id); }}
                 style={{ cursor: 'pointer' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 16 }}>
                   <div style={{
@@ -379,9 +440,13 @@ export function RoomsList({ rooms, language, isAdmin, users, onSelectRoom, onCre
                         )}
                       </div>
                     )}
-                    <div style={{ fontSize: 12, color: 'var(--warm-text-light)', fontWeight: 600 }}>
-                      {room.tasks.length} {t('rooms.tasks')} &middot; {healthLabel(rh)}
-                    </div>
+                    {room.isTodoRoom ? (
+                      <div style={{ fontSize: 12, color: room.todoOverdue ? 'var(--health-red)' : 'var(--warm-text-light)', fontWeight: 700 }}>{todoLine(room)}</div>
+                    ) : (
+                      <div style={{ fontSize: 12, color: 'var(--warm-text-light)', fontWeight: 600 }}>
+                        {room.tasks.length} {t('rooms.tasks')} &middot; {healthLabel(rh)}
+                      </div>
+                    )}
                     {room.assignedUser && (
                       <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, marginTop: 6, padding: '3px 8px 3px 4px', borderRadius: 20, backgroundColor: 'var(--warm-bg-subtle)', border: '1px solid var(--warm-border)' }}>
                         <UserAvatar name={room.assignedUser.displayName} color={room.assignedUser.avatarColor} size={18} avatarType={room.assignedUser.avatarType as any} avatarPreset={room.assignedUser.avatarPreset} avatarPhotoUrl={room.assignedUser.avatarPhotoUrl} />
@@ -390,7 +455,9 @@ export function RoomsList({ rooms, language, isAdmin, users, onSelectRoom, onCre
                     )}
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
-                    <div style={{ fontSize: 26, fontWeight: 900, color: getHealthColor(rh) }}>{rh}%</div>
+                    {room.isTodoRoom
+                      ? <div aria-hidden="true" style={{ fontSize: 26 }}>📝</div>
+                      : <div style={{ fontSize: 26, fontWeight: 900, color: getHealthColor(rh) }}>{rh}%</div>}
                     {isAdmin && (
                       <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
                         {zones.length > 0 && (
@@ -404,10 +471,10 @@ export function RoomsList({ rooms, language, isAdmin, users, onSelectRoom, onCre
                             {zoneMenuRoomId === room.id && (
                               <div style={{ position: 'absolute', right: 0, top: '100%', zIndex: 100, background: 'var(--warm-card)', border: '1.5px solid var(--warm-border)', borderRadius: 12, boxShadow: '0 4px 16px rgba(0,0,0,0.14)', minWidth: 150, overflow: 'hidden' }}>
                                 {room.zoneId && (
-                                  <button onClick={async () => { await api.updateRoom(room.id, { zoneId: null }); setZoneMenuRoomId(null); window.location.reload(); }} style={{ width: '100%', textAlign: 'left', padding: '9px 14px', fontSize: 12, fontWeight: 600, color: 'var(--warm-text-muted)', background: 'none', border: 'none', borderBottom: '1px solid var(--warm-border-subtle)', cursor: 'pointer', fontFamily: 'Nunito' }}>{t('rooms.removeFromZone')}</button>
+                                  <button onClick={async () => { await api.updateRoom(room.id, { zoneId: null }); setZoneMenuRoomId(null); await onRoomsChanged?.(); }} style={{ width: '100%', textAlign: 'left', padding: '9px 14px', fontSize: 12, fontWeight: 600, color: 'var(--warm-text-muted)', background: 'none', border: 'none', borderBottom: '1px solid var(--warm-border-subtle)', cursor: 'pointer', fontFamily: 'Nunito' }}>{t('rooms.removeFromZone')}</button>
                                 )}
                                 {zones.map(z => (
-                                  <button key={z.id} onClick={async () => { await api.updateRoom(room.id, { zoneId: z.id }); setZoneMenuRoomId(null); window.location.reload(); }} style={{ width: '100%', textAlign: 'left', padding: '9px 14px', fontSize: 12, fontWeight: room.zoneId === z.id ? 800 : 600, color: room.zoneId === z.id ? 'var(--warm-accent)' : 'var(--warm-text)', background: 'none', border: 'none', borderBottom: '1px solid var(--warm-border-subtle)', cursor: 'pointer', fontFamily: 'Nunito' }}>🏷️ {z.name}</button>
+                                  <button key={z.id} onClick={async () => { await api.updateRoom(room.id, { zoneId: z.id }); setZoneMenuRoomId(null); await onRoomsChanged?.(); }} style={{ width: '100%', textAlign: 'left', padding: '9px 14px', fontSize: 12, fontWeight: room.zoneId === z.id ? 800 : 600, color: room.zoneId === z.id ? 'var(--warm-accent)' : 'var(--warm-text)', background: 'none', border: 'none', borderBottom: '1px solid var(--warm-border-subtle)', cursor: 'pointer', fontFamily: 'Nunito' }}>🏷️ {z.name}</button>
                                 ))}
                               </div>
                             )}
@@ -418,24 +485,33 @@ export function RoomsList({ rooms, language, isAdmin, users, onSelectRoom, onCre
                             <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="5" r="3" stroke="currentColor" strokeWidth="1.5"/><path d="M2 14c0-3.314 2.686-6 6-6s6 2.686 6 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
                           </button>
                         )}
-                        <button className="tq-btn" onClick={(e) => { e.stopPropagation(); handleDeleteRoom(room.id, room.name); }} aria-label={`${t('common.delete')} ${roomDisplayName(room.name, room.roomType)}`} title={`${t('common.delete')} ${roomDisplayName(room.name, room.roomType)}`} style={{ width: 26, height: 26, borderRadius: 9, border: '1.5px solid var(--warm-danger-border)', backgroundColor: 'var(--warm-danger-bg)', color: 'var(--warm-danger)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}>
+                        <button className="tq-btn" onClick={(e) => { e.stopPropagation(); handleDeleteRoom(room.id, roomDisplayName(room.name, room.roomType), room.tasks.length); }} aria-label={`${t('common.delete')} ${roomDisplayName(room.name, room.roomType)}`} title={`${t('common.delete')} ${roomDisplayName(room.name, room.roomType)}`} style={{ width: 26, height: 26, borderRadius: 9, border: '1.5px solid var(--warm-danger-border)', backgroundColor: 'var(--warm-danger-bg)', color: 'var(--warm-danger)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}>
                           <TrashIcon />
                         </button>
                       </div>
                     )}
                   </div>
                 </div>
-                <HealthBar value={rh} height={10} showLabel={false} />
-                <div style={{ display: 'flex', gap: 6, marginTop: 14, flexWrap: 'wrap' }}>
+                {!room.isTodoRoom && <HealthBar value={rh} height={10} showLabel={false} />}
+                <div style={{ display: 'flex', gap: 6, marginTop: room.isTodoRoom ? 0 : 14, flexWrap: 'wrap' }}>
                   {room.tasks.map((tk) => {
-                    const badge = taskBadgeStyle(tk.health);
-                    return (
-                      <div key={tk.id} style={{ fontSize: 11, fontWeight: 700, padding: '4px 10px 4px 6px', borderRadius: 10, backgroundColor: badge.bg, color: badge.text, border: `1px solid ${badge.border}`, display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+                    const badge = taskBadgeStyle(tk.health, notDueYet(tk));
+                    const chipStyle = { fontSize: 11, fontWeight: 700, padding: '4px 10px 4px 6px', borderRadius: 10, backgroundColor: badge.bg, color: badge.text, border: `1px solid ${badge.border}`, display: 'inline-flex', alignItems: 'center', gap: 8 };
+                    const chip = (
+                      <>
                         <span style={{ width: 30, height: 30, borderRadius: 10, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(255,255,255,0.45)', border: '1px solid rgba(255,255,255,0.6)', flexShrink: 0, marginLeft: -5 }}>
                           <TaskIcon iconKey={tk.iconKey} size={21} />
                         </span>
                         <span>{taskName(tk.name, tk.translationKey)}</span>
-                      </div>
+                      </>
+                    );
+                    return canOpenTask(tk) ? (
+                      <button key={tk.id} type="button" onClick={(e) => { e.stopPropagation(); rememberSpot(room.id); onOpenTask!(room.id, tk.id); }}
+                        style={{ ...chipStyle, fontFamily: 'inherit', textAlign: 'left', cursor: 'pointer' }}>
+                        {chip}
+                      </button>
+                    ) : (
+                      <div key={tk.id} style={chipStyle}>{chip}</div>
                     );
                   })}
                 </div>
@@ -609,7 +685,7 @@ export function RoomsList({ rooms, language, isAdmin, users, onSelectRoom, onCre
                 <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
                   <button className="tq-btn tq-btn-secondary tq-btn-md" onClick={closeModal} disabled={creatingRoom}
                     >{t('common.cancel')}</button>
-                  <button className="tq-btn tq-btn-primary tq-btn-md" onClick={() => setStep(2)} disabled={creatingRoom}
+                  <button className="tq-btn tq-btn-primary tq-btn-md" onClick={() => { setLoadingTasks(true); setStep(2); }} disabled={creatingRoom}
                     >{t('rooms.nextConfigure')}</button>
                 </div>
               </>
@@ -732,18 +808,8 @@ export function RoomsList({ rooms, language, isAdmin, users, onSelectRoom, onCre
                                 <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--warm-text-light)', textTransform: 'uppercase', marginBottom: 6 }}>
                                   {t('rooms.icon')}
                                 </div>
-                                <select
-                                  value={task.iconKey || 'sparkle'}
-                                  onChange={(e) => updateTask(idx, { iconKey: e.target.value })}
-                                  className="tq-input-compact" style={{ width: '100%', cursor: 'pointer', fontSize: 11 }}
-                                >
-                                  {TASK_ICON_OPTIONS
-                                    .slice()
-                                    .sort((a, b) => t(`taskIcons.${a.key}`).localeCompare(t(`taskIcons.${b.key}`)))
-                                    .map((opt) => (
-                                      <option key={opt.key} value={opt.key}>{t(`taskIcons.${opt.key}`)}</option>
-                                    ))}
-                                </select>
+                                <IconPicker value={task.iconKey || 'sparkle'} onChange={(k) => updateTask(idx, { iconKey: k })} language={language}
+                                  taskName={taskName(task.name, task.translationKey)} compact />
                               </div>
 
                             </div>

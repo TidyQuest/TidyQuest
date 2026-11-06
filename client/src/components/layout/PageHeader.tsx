@@ -1,4 +1,10 @@
+import { useContext } from 'react';
 import { FireIcon, CoinIcon, PointsIcon } from '../icons/UIIcons';
+import { ShieldIcons } from '../shared/StreakShields';
+import { SearchContext } from '../shared/searchContext';
+import { SearchIcon } from '../shared/SearchOverlay';
+import { useTranslation } from '../../hooks/useTranslation';
+import { formatCoins } from '../../utils/format';
 import type { User } from '../../hooks/useAuth';
 
 interface PageHeaderProps {
@@ -12,11 +18,15 @@ interface PageHeaderProps {
   userPoints?: number;
   pointsPeriodLabel?: string;
   gamificationEnabled?: boolean;
+  /** Streak shields are on: show the ones held next to the streak */
+  shieldsOn?: boolean;
 }
 
-export function PageHeader({ title, subtitle, user, rightContent, onCoinsClick, onStreakClick, onPointsClick, userPoints, pointsPeriodLabel, gamificationEnabled = true }: PageHeaderProps) {
+export function PageHeader({ title, subtitle, user, rightContent, onCoinsClick, onStreakClick, onPointsClick, userPoints, pointsPeriodLabel, gamificationEnabled = true, shieldsOn = false }: PageHeaderProps) {
+  const openSearch = useContext(SearchContext);
+  const { t } = useTranslation(user.language);
   return (
-    <div className="page-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 28 }}>
+    <div className="page-header" style={{ display: 'flex', flexWrap: 'wrap', gap: '12px 16px', alignItems: 'center', justifyContent: 'space-between', marginBottom: 28 }}>
       <div>
         <h1 style={{ fontSize: 26, fontWeight: 900, color: 'var(--warm-text)', margin: 0, letterSpacing: -0.5 }}>
           {title}
@@ -25,7 +35,23 @@ export function PageHeader({ title, subtitle, user, rightContent, onCoinsClick, 
           {subtitle}
         </p>
       </div>
-      <div className="page-header-actions" style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+      <div className="page-header-actions" style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 16 }}>
+        {openSearch && (
+          <button
+            onClick={openSearch}
+            aria-label={t('search.button')}
+            title={`${t('search.button')} (/)`}
+            style={{
+              display: 'flex', alignItems: 'center', gap: 6,
+              backgroundColor: 'var(--warm-accent-light)', borderRadius: 14, padding: '8px 14px',
+              border: '1.5px solid var(--warm-streak-border)', cursor: 'pointer',
+              color: 'var(--warm-streak-text)', fontFamily: 'Nunito', fontSize: 14, fontWeight: 800,
+            }}
+          >
+            <SearchIcon size={17} />
+            <span className="search-button-label">{t('search.button')}</span>
+          </button>
+        )}
         {rightContent}
         {gamificationEnabled && (
         <>
@@ -48,6 +74,7 @@ export function PageHeader({ title, subtitle, user, rightContent, onCoinsClick, 
         }}>
           <FireIcon />
           <span style={{ fontSize: 15, fontWeight: 800, color: 'var(--warm-streak-text)' }}>{user.currentStreak}</span>
+          {shieldsOn && <ShieldIcons count={user.streakShields} language={user.language} style={{ fontSize: 13 }} />}
         </div>
         <div
           onClick={onCoinsClick}
@@ -67,7 +94,7 @@ export function PageHeader({ title, subtitle, user, rightContent, onCoinsClick, 
           cursor: onCoinsClick ? 'pointer' : 'default',
         }}>
           <CoinIcon />
-          <span style={{ fontSize: 15, fontWeight: 800, color: 'var(--warm-streak-text)' }}>{user.coins}</span>
+          <span style={{ fontSize: 15, fontWeight: 800, color: 'var(--warm-streak-text)' }}>{formatCoins(user.coins)}</span>
         </div>
         <div
           onClick={onPointsClick}
@@ -87,7 +114,7 @@ export function PageHeader({ title, subtitle, user, rightContent, onCoinsClick, 
           cursor: onPointsClick ? 'pointer' : 'default',
         }}>
           <PointsIcon />
-          <span style={{ fontSize: 15, fontWeight: 800, color: 'var(--warm-streak-text)' }}>{userPoints ?? user.points}</span>
+          <span style={{ fontSize: 15, fontWeight: 800, color: 'var(--warm-streak-text)' }}>{formatCoins(userPoints ?? user.points)}</span>
           {pointsPeriodLabel && (
             <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--warm-text-light)', textTransform: 'uppercase' }}>{pointsPeriodLabel}</span>
           )}

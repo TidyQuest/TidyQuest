@@ -1,9 +1,14 @@
+import { todoCounts, todoRoomId } from '../utils/todoRoom';
 import { Router, Response } from 'express';
+import { pinnedTaskIds } from '../utils/homeSections';
 import db from '../database';
 import { AuthRequest, authMiddleware } from '../middleware/auth';
-import { calculateHealth } from '../utils/health';
+import { isSeasonalNow, scheduleFields, taskHealth } from '../utils/schedule';
 import { suggestTaskIcon } from '../utils/taskIcons';
-import { ensureAdmin, getGlobalVacation, getUserVacation, resolveVacation } from '../utils/adminHelpers';
+import { ensureAdmin, getGlobalVacation, getUserVacation, hiddenRoomIdsFor, resolveVacation } from '../utils/adminHelpers';
+import { repeatCountsFor } from '../utils/repeatLimits';
+import { dropProofPhotos, softDeleteTasks } from '../utils/trash';
+import { daySql } from '../utils/clock';
 
 const router = Router();
 
@@ -127,11 +132,16 @@ router.use(authMiddleware);
 
 // List all rooms with computed health (single JOIN query — no N+1)
 router.get('/', (req: AuthRequest, res: Response) => {
-  const rooms = db.prepare('SELECT * FROM rooms ORDER BY sortOrder, id').all() as any[];
+  // Kids don't see other people's private rooms (when the setting is on)
+  const hiddenRooms = hiddenRoomIdsFor(req.userId);
+  const rooms = (db.prepare('SELECT * FROM rooms WHERE deletedAt IS NULL ORDER BY sortOrder, id').all() as any[]).filter((r) => !hiddenRooms.has(r.id));
   const vacation = getGlobalVacation();
 
-  // Fetch all tasks in one query, then group by roomId
-  const allTasks = db.prepare('SELECT * FROM tasks').all() as any[];
+  // Fetch all tasks in one query, then group by roomId (done one-time chores are archived, not listed).
+  // Paused chores (ENH-1) only go to parents, who see them greyed in the room; they never count for health.
+  const seesPaused = ensureAdmin(req.userId);
+  const allTasks = (db.prepare('SELECT * FROM tasks WHERE archivedAt IS NULL AND deletedAt IS NULL').all() as any[])
+    .filter((t) => !t.pausedAt || seesPaused);
   const tasksByRoom = new Map<number, any[]>();
   for (const t of allTasks) {
     if (!tasksByRoom.has(t.roomId)) tasksByRoom.set(t.roomId, []);
@@ -145,13 +155,13 @@ router.get('/', (req: AuthRequest, res: Response) => {
   // Batch-fetch today's completions for Done button display
   const nowIso = new Date().toISOString();
   const todayCompletions = db.prepare(
-    `SELECT tc.id as completionId, tc.taskId, tc.userId, u.displayName, u.avatarColor, u.avatarType, u.avatarPreset, u.avatarPhotoUrl
+    `SELECT tc.id as completionId, tc.taskId, tc.userId, tc.coinsEarned, u.displayName, u.avatarColor, u.avatarType, u.avatarPreset, u.avatarPhotoUrl
      FROM task_completions tc
      JOIN users u ON tc.userId = u.id
-     WHERE tc.status = 'approved' AND date(tc.completedAt, 'localtime') = date(?, 'localtime')`
+     WHERE tc.status = 'approved' AND ${daySql('tc.completedAt')} = ${daySql('?')}`
   ).all(nowIso) as any[];
   const completedTodayByTask = new Map(todayCompletions.map((c: any) => [c.taskId, {
-    completionId: c.completionId, userId: c.userId, displayName: c.displayName, avatarColor: c.avatarColor,
+    completionId: c.completionId, userId: c.userId, coinsEarned: c.coinsEarned, displayName: c.displayName, avatarColor: c.avatarColor,
     avatarType: c.avatarType, avatarPreset: c.avatarPreset, avatarPhotoUrl: c.avatarPhotoUrl,
   }]));
 
@@ -162,6 +172,16 @@ router.get('/', (req: AuthRequest, res: Response) => {
     sharedCompletionsByTask.get(c.taskId)!.push({ userId: c.userId, displayName: c.displayName, completionId: c.completionId });
   }
 
+  // The viewer's own completions still waiting for a parent, per task (Strict Mode)
+  const myPendingByTask = new Map(
+    (db.prepare("SELECT taskId, COUNT(*) AS n, MAX(id) AS lastId FROM task_completions WHERE userId = ? AND status = 'pending' GROUP BY taskId")
+      .all(req.userId) as { taskId: number; n: number; lastId: number }[]).map((r) => [r.taskId, r])
+  );
+  // Anytime quests with a repeat limit: how many times the viewer did each this day/week
+  const myRepeatCounts = repeatCountsFor(req.userId, allTasks);
+  // Tasks the viewer pinned to "Your usual" on Home
+  const myPins = new Set(pinnedTaskIds(req.userId!));
+
   // Batch-fetch all task_assignees
   const allTaskAssignees = db.prepare('SELECT taskId, userId, coinPercentage FROM task_assignees').all() as { taskId: number; userId: number; coinPercentage: number }[];
   const assigneesByTask = new Map<number, { userId: number; coinPercentage: number }[]>();
@@ -170,6 +190,7 @@ router.get('/', (req: AuthRequest, res: Response) => {
     assigneesByTask.get(a.taskId)!.push({ userId: a.userId, coinPercentage: a.coinPercentage ?? 0 });
   }
 
+  const todoRoom = todoRoomId();
   const roomsWithHealth = rooms.map((room) => {
     const tasks = tasksByRoom.get(room.id) || [];
     const roomAssignedUserId = room.assignedUserId || null;
@@ -187,32 +208,45 @@ router.get('/', (req: AuthRequest, res: Response) => {
       const mode = t.assignmentMode || 'first';
       return {
         ...t,
-        isSeasonal: !!t.isSeasonal,
+        ...scheduleFields(t, taskAssignedUserIds),
+        isSeasonal: isSeasonalNow(t),
+        pinned: myPins.has(t.id),
         assignedToChildren: !!t.assignedToChildren,
         assignedUserIds: taskAssignedUserIds,
         assignedUsers,
         effectiveAssignedUserIds,
         completedTodayBy: completedTodayByTask.get(t.id) || null,
+        myPendingCount: myPendingByTask.get(t.id)?.n || 0,
+        // The latest one, so its owner can take it back (FIX-3)
+        myPendingId: myPendingByTask.get(t.id)?.lastId ?? null,
+        myRepeatCount: myRepeatCounts.get(t.id) || 0,
         assignmentMode: mode,
         sharedCompletions: (mode === 'shared' || mode === 'custom') ? (sharedCompletionsByTask.get(t.id) || []) : undefined,
         health: (() => {
           const taskVac = effectiveAssignedUserIds.length === 1
             ? resolveVacation(vacation, getUserVacation(effectiveAssignedUserIds[0]))
             : vacation;
-          return calculateHealth(t.lastCompletedAt, t.frequencyDays, taskVac.isVacation, taskVac.startDate);
+          return taskHealth(t, taskVac);
         })(),
       };
     });
 
-    const nonSeasonal = tasksWithHealth.filter((t) => !t.isSeasonal);
-    const forAvg = nonSeasonal.length > 0 ? nonSeasonal : tasksWithHealth;
+    const assignedUser = room.assignedUserId ? (usersById.get(room.assignedUserId) || null) : null;
+    // The To-dos room has a to-do count instead of health (ENH-18)
+    if (room.id === todoRoom) {
+      return { ...room, tasks: tasksWithHealth, health: 100, assignedUser, isTodoRoom: true, ...todoCounts(tasksWithHealth.filter((t: any) => !t.pausedAt)) };
+    }
+
+    // One-time chores don't count toward health
+    const regular = tasksWithHealth.filter((t: any) => !t.oneTime && !t.pausedAt);
+    const nonSeasonal = regular.filter((t: any) => !t.isSeasonal);
+    const forAvg = nonSeasonal.length > 0 ? nonSeasonal : regular;
     const totalEffort = forAvg.reduce((s, t) => s + t.effort, 0);
     const health = totalEffort > 0
       ? Math.round(forAvg.reduce((s, t) => s + t.health * t.effort, 0) / totalEffort)
       : 100;
 
-    const assignedUser = room.assignedUserId ? (usersById.get(room.assignedUserId) || null) : null;
-    return { ...room, tasks: tasksWithHealth, health, assignedUser };
+    return { ...room, tasks: tasksWithHealth, health, assignedUser, isTodoRoom: false };
   });
 
   res.json(roomsWithHealth);
@@ -299,7 +333,7 @@ router.put('/:id', (req: AuthRequest, res: Response) => {
   }
 
   const { name, roomType, color, accentColor, sortOrder } = req.body;
-  const room = db.prepare('SELECT * FROM rooms WHERE id = ?').get(req.params.id) as any;
+  const room = db.prepare('SELECT * FROM rooms WHERE id = ? AND deletedAt IS NULL').get(req.params.id) as any;
   if (!room) return res.status(404).json({ error: 'Room not found' });
 
   // Build SQL dynamically to handle assignedUserId/zoneId: null (explicit unset) vs undefined (not provided)
@@ -382,17 +416,76 @@ router.put('/:id', (req: AuthRequest, res: Response) => {
   res.json({ ...updated, assignedUser });
 });
 
-// Delete room (cascades to tasks)
+// Delete room: the room and its chores are hidden, not erased, so their history and coins stay in Activity,
+// the Board and goals. It isn't in the trash (its chores already there can be restored into another room).
 router.delete('/:id', (req: AuthRequest, res: Response) => {
   if (!ensureAdmin(req.userId)) {
     return res.status(403).json({ error: 'Admin only' });
   }
 
-  const room = db.prepare('SELECT * FROM rooms WHERE id = ?').get(req.params.id);
+  const room = db.prepare('SELECT * FROM rooms WHERE id = ? AND deletedAt IS NULL').get(req.params.id);
   if (!room) return res.status(404).json({ error: 'Room not found' });
 
-  db.prepare('DELETE FROM rooms WHERE id = ?').run(req.params.id);
+  db.transaction(() => {
+    // Its chores can't come back (they aren't in the trash), so their proof photos go now (NEW-34)
+    const chores = (db.prepare('SELECT id FROM tasks WHERE roomId = ? AND deletedAt IS NULL').all(req.params.id) as { id: number }[]).map((t) => t.id);
+    softDeleteTasks('roomId = ?', req.params.id);
+    dropProofPhotos(chores);
+    db.prepare("UPDATE rooms SET deletedAt = datetime('now') WHERE id = ?").run(req.params.id);
+  })();
   res.json({ success: true });
+});
+
+// Duplicate a room with its tasks (settings and assignees, no history), e.g. copy one kid's quest room
+// for the other. When a new owner is given and the room has one, the old owner's assignments go to them.
+router.post('/:id/duplicate', (req: AuthRequest, res: Response) => {
+  if (!ensureAdmin(req.userId)) return res.status(403).json({ error: 'Admin only' });
+  const room = db.prepare('SELECT * FROM rooms WHERE id = ? AND deletedAt IS NULL').get(req.params.id) as any;
+  if (!room) return res.status(404).json({ error: 'Room not found' });
+  const name = typeof req.body?.name === 'string' ? req.body.name.trim() : '';
+  if (!name) return res.status(400).json({ error: 'name is required' });
+  // ownerUserId left out: same owner as the original; null: no owner; a user id: that person
+  const newOwnerGiven = req.body?.ownerUserId != null;
+  const ownerUserId: number | null = 'ownerUserId' in (req.body || {})
+    ? (newOwnerGiven ? Number(req.body.ownerUserId) : null)
+    : room.assignedUserId ?? null;
+  if (ownerUserId !== null && !db.prepare('SELECT 1 FROM users WHERE id = ?').get(ownerUserId)) {
+    return res.status(400).json({ error: 'Owner not found' });
+  }
+  const swapFrom: number | null = newOwnerGiven && room.assignedUserId ? room.assignedUserId : null;
+
+  const newRoomId = db.transaction(() => {
+    const id = Number(db.prepare(
+      'INSERT INTO rooms (name, roomType, color, accentColor, photoUrl, sortOrder, assignedUserId, zoneId) VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
+    ).run(name, room.roomType, room.color, room.accentColor, room.photoUrl ?? null, room.sortOrder, ownerUserId, room.zoneId ?? null).lastInsertRowid);
+    const tasks = db.prepare('SELECT * FROM tasks WHERE roomId = ? AND archivedAt IS NULL AND deletedAt IS NULL ORDER BY id').all(room.id) as any[];
+    // Every setting column is copied (so newer ones like schedules and repeat limits come along);
+    // history and whose turn it is start fresh
+    const fresh = ['id', 'roomId', 'lastCompletedAt', 'createdAt', 'rotationCurrentUserId'];
+    const cols = (db.prepare('PRAGMA table_info(tasks)').all() as { name: string }[]).map((c) => c.name).filter((c) => !fresh.includes(c));
+    const insertTask = db.prepare(`INSERT INTO tasks (roomId, ${cols.join(', ')}) VALUES (?, ${cols.map(() => '?').join(', ')})`);
+    const insertAssignee = db.prepare('INSERT OR IGNORE INTO task_assignees (taskId, userId, coinPercentage) VALUES (?, ?, ?)');
+    for (const t of tasks) {
+      const values = cols.map((c) => (c === 'assignedUserId' && swapFrom !== null && t[c] === swapFrom ? ownerUserId : t[c]));
+      const taskId = Number(insertTask.run(id, ...values).lastInsertRowid);
+      const assignees = db.prepare('SELECT userId, coinPercentage FROM task_assignees WHERE taskId = ? ORDER BY userId').all(t.id) as { userId: number; coinPercentage: number }[];
+      const userIds: number[] = [];
+      for (const a of assignees) {
+        const userId = swapFrom !== null && a.userId === swapFrom ? ownerUserId! : a.userId;
+        insertAssignee.run(taskId, userId, a.coinPercentage);
+        if (!userIds.includes(userId)) userIds.push(userId);
+      }
+      // Rotations start again from the first person
+      if (t.assignmentMode === 'rotating' && userIds.length > 0) {
+        db.prepare('UPDATE tasks SET rotationCurrentUserId = ? WHERE id = ?').run(Math.min(...userIds), taskId);
+      }
+    }
+    return id;
+  })();
+
+  const created = db.prepare('SELECT * FROM rooms WHERE id = ?').get(newRoomId) as any;
+  const tasks = db.prepare('SELECT * FROM tasks WHERE roomId = ?').all(newRoomId);
+  res.status(201).json({ ...created, tasks });
 });
 
 export default router;

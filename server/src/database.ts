@@ -3,6 +3,10 @@ import path from 'path';
 import fs from 'fs';
 import bcrypt from 'bcryptjs';
 import { suggestTaskIcon } from './utils/taskIcons';
+import { applyForkSchema } from './forkSchema';
+import { keepTrashedRewardHistory } from './utils/trash';
+import { registerClockFunctions } from './utils/clock';
+import { currentFamily, isHosted } from './hosted/context';
 
 const DB_PATH = path.join(__dirname, '..', '..', 'data', 'tidyquest.db');
 
@@ -14,23 +18,47 @@ export function createDatabase(dbPath: string = DB_PATH): InstanceType<typeof Da
   const instance = new Database(dbPath);
   instance.pragma('journal_mode = WAL');
   instance.pragma('foreign_keys = ON');
+  registerClockFunctions(instance);
   return instance;
 }
 
-let _db: InstanceType<typeof Database> | null = process.env.VITEST ? null : createDatabase();
+// Hosted mode never opens this one: each request uses its family's database (hosted/context.ts), and
+// touching the database outside a family throws instead of reaching another family's data.
+let _db: InstanceType<typeof Database> | null = process.env.VITEST || isHosted() ? null : createDatabase();
 
 export function setDatabase(instance: InstanceType<typeof Database>) {
+  registerClockFunctions(instance);
   _db = instance;
 }
 
-// Proxy so that route files importing `db` always reach the current _db instance.
-// This allows tests to swap the DB via setDatabase() without module mocking.
+/** The database in use right now (null before one is set up), for caches that belong to one database. */
+export function currentDatabase(): InstanceType<typeof Database> | null {
+  return currentFamily()?.db ?? _db;
+}
+
+// Statements the background jobs run thousands of times a minute: each database keeps them prepared
+const kept = new WeakMap<object, Map<string, Database.Statement>>();
+
+/** db.prepare(sql), prepared once per database. Only for SQL with no values written into it. */
+export function prepared(sql: string): Database.Statement {
+  const instance = currentDatabase();
+  if (!instance) return db.prepare(sql); // throws, as the db proxy does outside a family
+  let statements = kept.get(instance);
+  if (!statements) kept.set(instance, (statements = new Map()));
+  let statement = statements.get(sql);
+  if (!statement) statements.set(sql, (statement = instance.prepare(sql)));
+  return statement;
+}
+
+// Proxy so that route files importing `db` always reach the current database: the request's family in
+// hosted mode, else _db. This allows tests to swap the DB via setDatabase() without module mocking.
 const db = new Proxy({} as InstanceType<typeof Database>, {
   get(_target, prop: string | symbol) {
-    if (!_db) throw new Error('Database not initialised — call setDatabase() first');
-    const value = (_db as any)[prop];
+    const active = currentDatabase();
+    if (!active) throw new Error(isHosted() ? 'No family for this database call (hosted mode)' : 'Database not initialised — call setDatabase() first');
+    const value = (active as any)[prop];
     if (typeof value === 'function') {
-      return value.bind(_db);
+      return value.bind(active);
     }
     return value;
   },
@@ -224,6 +252,10 @@ export function initDatabase() {
   }
 
   db.exec(`CREATE INDEX IF NOT EXISTS idx_task_completions_status ON task_completions(status);`);
+
+  applyForkSchema(db);
+  // Rewards deleted before FIX-22 come back as deleted rows, with their purchases
+  keepTrashedRewardHistory();
 
   // One-time migration: set isParticipant = 0 for existing admins (opt-in for pre-existing installs)
   const participantMigrated = db.prepare("SELECT value FROM app_settings WHERE key = 'adminParticipantMigrated_v1'").get() as any;
@@ -436,15 +468,16 @@ export function initDatabase() {
     const insertReward = db.prepare(
       'INSERT INTO rewards (title, description, costCoins, isPreset, isActive) VALUES (?, ?, ?, 1, 1)'
     );
+    // In English like the rest of the stored data; the client shows them in each reader's language (#150)
     const defaults: Array<[string, string, number]> = [
-      ['Movie Night Pick', 'Choisir le film du soir en famille.', 40],
-      ['Ice Cream Treat', 'Une glace ou un dessert special.', 30],
-      ['Stay Up 30 Min', 'Se coucher 30 minutes plus tard.', 35],
-      ['Game Time Bonus', '30 minutes de jeu supplementaire.', 50],
-      ['Choose Dinner', 'Choisir le menu du diner.', 45],
-      ['Park Adventure', 'Sortie au parc en mode aventure.', 60],
-      ['No-Chore Pass', 'Une tache au choix sautee cette semaine.', 80],
-      ['Family Board Game', 'Choisir un jeu de societe pour la soiree.', 25],
+      ['Movie Night Pick', "Choose tonight's family movie.", 40],
+      ['Ice Cream Treat', 'Get an ice cream or special dessert.', 30],
+      ['Stay Up 30 Min', 'Go to bed 30 minutes later.', 35],
+      ['Game Time Bonus', 'Get 30 extra minutes of game time.', 50],
+      ['Choose Dinner', 'Pick what the family eats tonight.', 45],
+      ['Park Adventure', 'Special family park outing.', 60],
+      ['No-Chore Pass', 'Skip one chore this week.', 80],
+      ['Family Board Game', 'Pick the board game for family night.', 25],
     ];
     const seed = db.transaction(() => {
       defaults.forEach(([title, description, cost]) => insertReward.run(title, description, cost));
@@ -461,14 +494,20 @@ export function initDatabase() {
     }
   }
 
-  // Emergency admin password recovery via environment variable
+  // Emergency admin password recovery via environment variable. Not in hosted mode: every family's
+  // database opens through here, so it would reset some family's first parent. Parents use the email reset.
   const resetPassword = process.env.ADMIN_RESET_PASSWORD;
-  if (resetPassword) {
+  if (resetPassword && isHosted()) {
+    console.warn('[WARN] ADMIN_RESET_PASSWORD is ignored in hosted mode. Remove it from your environment.');
+    delete process.env.ADMIN_RESET_PASSWORD;
+  } else if (resetPassword) {
     const admin = db.prepare("SELECT id, username FROM users WHERE role = 'admin' ORDER BY id ASC LIMIT 1").get() as { id: number; username: string } | undefined;
     if (admin) {
       const hash = bcrypt.hashSync(resetPassword, 10);
-      db.prepare('UPDATE users SET passwordHash = ? WHERE id = ?').run(hash, admin.id);
-      console.log(`[RECOVERY] Password reset for admin "${admin.username}". Remove ADMIN_RESET_PASSWORD from your environment now.`);
+      // Also signs them out on every device, like any other new password (revokeTokens in middleware/auth.ts,
+      // which imports this file)
+      db.prepare('UPDATE users SET passwordHash = ?, tokenVersion = tokenVersion + 1 WHERE id = ?').run(hash, admin.id);
+      console.log(`[RECOVERY] Password reset for admin "${admin.username}". They are signed out on every device. Remove ADMIN_RESET_PASSWORD from your environment now.`);
     }
     // Clear from process memory to prevent re-use on hot-reload and reduce exposure
     delete process.env.ADMIN_RESET_PASSWORD;

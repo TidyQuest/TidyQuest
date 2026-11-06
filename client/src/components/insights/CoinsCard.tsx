@@ -1,0 +1,275 @@
+import { useState } from 'react';
+import type { InsightsCoins } from '../../hooks/useApi';
+import { homeDate } from '../../utils/clock';
+import { localeFor } from '../../utils/locale';
+import { weekdayName } from '../../utils/schedule';
+import { useWeekStart } from '../../utils/week';
+import { CoinBars } from './CoinBars';
+import { useBarPick } from './useBarPick';
+import { coinColor, coinWeeks, formatValue, rewardStats, shows, soloOf, type People, type RewardPayer } from './insightsData';
+import { Segmented } from './Segmented';
+
+const muted = { fontSize: 12, color: 'var(--warm-text-muted)' } as const;
+const cardTitle = { fontSize: 16, fontWeight: 800, margin: 0, color: 'var(--warm-text)' } as const;
+const subTitle = { fontSize: 14, fontWeight: 800, margin: '16px 0 2px', color: 'var(--warm-text)' } as const;
+const linkButton = { background: 'none', border: 'none', padding: 0, cursor: 'pointer', fontSize: 12, fontWeight: 700, color: 'var(--warm-accent)', fontFamily: 'inherit' } as const;
+const cell = { padding: '4px 6px', textAlign: 'right' as const, whiteSpace: 'nowrap' as const };
+const rowButton = { display: 'block', width: '100%', background: 'none', border: 'none', padding: 0, margin: 0, cursor: 'pointer', textAlign: 'left' as const, font: 'inherit', color: 'inherit' } as const;
+const waitingTag = { fontSize: 11, fontWeight: 700, padding: '1px 7px', borderRadius: 99, background: 'var(--warm-accent-light)', color: 'var(--warm-text)', whiteSpace: 'nowrap' as const };
+const RECENT_SHOWN = 8;
+
+/** A person's color dot and name, with their coins when several people paid. */
+function Payer({ p, coins }: { p: RewardPayer; coins?: string }) {
+  return (
+    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, minWidth: 0 }}>
+      <span style={{ flex: 'none', width: 9, height: 9, borderRadius: 99, background: p.color }} />
+      <span style={{ overflowWrap: 'anywhere' }}>{p.name}{coins ? ` ${coins}` : ''}</span>
+    </span>
+  );
+}
+
+interface Props {
+  data: InsightsCoins | null;
+  weeks: 8 | 26;
+  onWeeks: (w: 8 | 26) => void;
+  /** Who's shown (null: everyone) */
+  people: People;
+  language: string;
+  t: (k: string) => string;
+  /** e.g. "8 weeks to Oct 25" */
+  rangeLabel: string;
+}
+
+/** Coins in and out per week (NEW-7 part 3): earned vs spent, the weekly goal, the balance, and rewards bought. */
+export function CoinsCard({ data, weeks, onWeeks, people, language, t, rangeLabel }: Props) {
+  const [showTable, setShowTable] = useState(false);
+  const [allNever, setAllNever] = useState(false);
+  const [allRecent, setAllRecent] = useState(false);
+  /** The reward in "bought most" whose buyers are open */
+  const [openReward, setOpenReward] = useState<number | null>(null);
+  const fmt = (v: number) => formatValue(v, language);
+  const signed = (v: number, sign: '+' | '−') => (v > 0 ? `${sign}${fmt(v)}` : '0');
+  const locale = localeFor(language);
+  const first = useWeekStart();
+  const key = `${weeks}:${people ? [...people].join(',') : ''}:${data?.end ?? ''}`;
+  const bar = useBarPick(key);
+  const selected = bar.shown; // the week to read out: the hovered one, else the pinned one
+
+  const header = (
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, flexWrap: 'wrap' }}>
+      <h2 id="insights-coins" style={cardTitle}>{t('insights.coinsTitle')}</h2>
+      <Segmented label={t('insights.heatRange')} value={String(weeks) as '8' | '26'} onChange={(v) => onWeeks(v === '26' ? 26 : 8)}
+        options={[{ value: '8', label: t('insights.weeks8') }, { value: '26', label: t('insights.weeks26') }]} />
+    </div>
+  );
+  if (!data || data.weeks !== weeks) {
+    return <section className="tq-card tq-card-padded" aria-labelledby="insights-coins">{header}<p style={muted}>{t('insights.loading')}</p></section>;
+  }
+
+  const w = coinWeeks(data, people);
+  const solo = soloOf(people);
+  const person = data.people.find((p) => p.id === solo);
+  const labels = data.starts.map((iso) => new Date(iso).toLocaleDateString(locale, { day: 'numeric', month: 'short' }));
+  const cat = (c: string) => t(`insights.cat_${c}`);
+  const hasGoals = w.goals.some((g) => g != null);
+  const goalWeeks = w.goals.map((g, i) => [g, w.choreCoins[i]] as const).filter(([g]) => g != null);
+  const met = goalWeeks.filter(([g, c]) => c >= (g as number)).length;
+  const empty = w.earned.every((v) => v === 0) && w.spent.every((v) => v === 0);
+  const rewards = rewardStats(data, people);
+  const maxTimes = Math.max(1, ...rewards.most.map((r) => r.times));
+
+  return (
+    <section className="tq-card tq-card-padded" aria-labelledby="insights-coins">
+      {header}
+      <p style={{ ...muted, margin: '6px 0 8px' }}>
+        {t('insights.coinsHint').replace('{first}', weekdayName(first, language, 'long')).replace('{last}', weekdayName((first + 6) % 7, language, 'long'))}{hasGoals ? ` ${t('insights.goalHint')}` : ''}{' '}
+        <strong style={{ color: 'var(--warm-text)', fontWeight: 700 }}>{rangeLabel}</strong>
+      </p>
+      {empty ? <p style={muted}>{t('insights.coinsEmpty')}</p> : (
+        <>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px 12px', marginBottom: 8 }}>
+            {[...w.inCats, ...w.outCats].map((c) => (
+              <span key={c} style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 12, color: 'var(--warm-text)' }}>
+                <span style={{ width: 10, height: 10, borderRadius: 3, background: coinColor(c) }} />{cat(c)}
+              </span>
+            ))}
+            {hasGoals && (
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 12, color: 'var(--warm-text)' }}>
+                <span style={{ width: 14, height: 2, borderRadius: 1, background: 'var(--warm-text)' }} />{t('insights.weeklyGoal')}
+              </span>
+            )}
+          </div>
+          <CoinBars labels={labels} weeks={w} language={language}
+            selected={bar.selected} hovered={bar.hovered} onSelect={bar.onSelect} onHover={bar.onHover} ariaLabel={t('insights.coinsTitle')}
+            balanceColor={person?.color ?? 'var(--warm-text-muted)'} balanceLabel={t('insights.balance')} />
+
+          <div aria-live="polite" style={{ minHeight: 40, marginTop: 6 }}>
+            {selected == null ? <p style={{ ...muted, margin: 0 }}>{t('insights.tapWeek')}</p> : (
+              <div style={{ fontSize: 12 }}>
+                <div style={{ fontSize: 13, color: 'var(--warm-text)', marginBottom: 4 }}>
+                  <strong>{t('insights.weekOf').replace('{date}', labels[selected])}</strong>
+                  {' · '}{t('insights.in')} <strong>{signed(w.earned[selected], '+')}</strong>
+                  {' · '}{t('insights.out')} <strong>{signed(w.spent[selected], '−')}</strong>
+                  {' · '}{t('insights.balance')} <strong>{fmt(w.balance[selected])}</strong>
+                </div>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '2px 12px' }}>
+                  {[...w.inCats.map((c, j) => [c, w.up[selected][j], '+'] as const), ...w.outCats.map((c, j) => [c, w.down[selected][j], '−'] as const)]
+                    .filter(([, v]) => v > 0).map(([c, v, sign]) => (
+                      <span key={c} style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }}>
+                        <span style={{ width: 12, height: 3, borderRadius: 2, background: coinColor(c) }} />
+                        <strong style={{ color: 'var(--warm-text)' }}>{sign}{fmt(v)}</strong>
+                        <span style={{ color: 'var(--warm-text-muted)' }}>{cat(c)}</span>
+                      </span>
+                    ))}
+                </div>
+                {w.goals[selected] != null && (
+                  <div style={{ ...muted, marginTop: 3 }}>
+                    {t('insights.goalLine').replace('{goal}', fmt(w.goals[selected]!)).replace('{chores}', fmt(w.choreCoins[selected]))}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+          {goalWeeks.length > 0 && (
+            <p style={{ fontSize: 13, color: 'var(--warm-text)', margin: '2px 0 6px' }}>
+              {t('insights.goalMet').replace('{met}', String(met)).replace('{n}', String(goalWeeks.length))}
+            </p>
+          )}
+          <button type="button" style={linkButton} aria-expanded={showTable} onClick={() => setShowTable((v) => !v)}>
+            {showTable ? t('insights.hideTable') : t('insights.showTable')}
+          </button>
+          {showTable && (
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12, marginTop: 8, color: 'var(--warm-text)' }}>
+              <thead>
+                <tr style={{ color: 'var(--warm-text-muted)' }}>
+                  <th style={{ ...cell, textAlign: 'left', paddingLeft: 0 }}>{t('insights.week')}</th>
+                  <th style={cell}>{t('insights.in')}</th>
+                  <th style={cell}>{t('insights.out')}</th>
+                  <th style={cell}>{t('insights.balance')}</th>
+                  {hasGoals && <th style={{ ...cell, paddingRight: 0 }}>{t('insights.weeklyGoal')}</th>}
+                </tr>
+              </thead>
+              <tbody>
+                {labels.map((l, i) => (
+                  <tr key={i} style={{ borderTop: '1px solid var(--warm-border-subtle)' }}>
+                    <td style={{ ...cell, textAlign: 'left', paddingLeft: 0 }}>{l}</td>
+                    <td style={cell}>{signed(w.earned[i], '+')}</td>
+                    <td style={cell}>{signed(w.spent[i], '−')}</td>
+                    <td style={{ ...cell, fontWeight: 700 }}>{fmt(w.balance[i])}</td>
+                    {hasGoals && <td style={{ ...cell, paddingRight: 0 }}>{w.goals[i] == null ? '' : `${fmt(w.choreCoins[i])} / ${fmt(w.goals[i]!)}`}</td>}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </>
+      )}
+
+      {/* More than one person: each one's totals for the window */}
+      {solo == null && (
+        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13, marginTop: 14, color: 'var(--warm-text)' }}>
+          <thead>
+            <tr style={{ color: 'var(--warm-text-muted)', fontSize: 12 }}>
+              <th style={{ ...cell, textAlign: 'left', paddingLeft: 0 }}>{t('insights.person')}</th>
+              <th style={cell}>{t('insights.in')}</th>
+              <th style={cell}>{t('insights.out')}</th>
+              <th style={{ ...cell, paddingRight: 0 }}>{t('insights.balanceNow')}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {data.people.filter((p) => shows(people, p.id)).map((p) => {
+              const pw = coinWeeks(data, new Set([p.id]));
+              const inSum = pw.earned.reduce((a, b) => a + b, 0);
+              const outSum = pw.spent.reduce((a, b) => a + b, 0);
+              if (!inSum && !outSum && !p.balance) return null;
+              return (
+                <tr key={p.id} style={{ borderTop: '1px solid var(--warm-border-subtle)' }}>
+                  <td style={{ ...cell, textAlign: 'left', paddingLeft: 0, whiteSpace: 'normal' }}>
+                    <span style={{ display: 'inline-block', width: 9, height: 9, borderRadius: 99, background: p.color, marginRight: 6 }} />{p.name}
+                  </td>
+                  <td style={cell}>{signed(inSum, '+')}</td>
+                  <td style={cell}>{signed(outSum, '−')}</td>
+                  <td style={{ ...cell, paddingRight: 0, fontWeight: 700 }}>{fmt(p.balance)}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      )}
+
+      <h3 style={subTitle}>{t('insights.boughtMost')}</h3>
+      {rewards.most.length === 0 ? <p style={{ ...muted, fontStyle: 'italic', margin: '4px 0 0' }}>{t('insights.boughtNone')}</p> : (
+        <>
+          <p style={{ ...muted, margin: '0 0 4px' }}>{t('insights.boughtTap')}</p>
+          <ul style={{ margin: 0, padding: 0 }}>
+            {rewards.most.slice(0, 5).map((r) => {
+              const open = openReward === r.id;
+              return (
+                <li key={r.key} style={{ listStyle: 'none', padding: '7px 0', borderTop: '1px solid var(--warm-border-subtle)' }}>
+                  <button type="button" style={rowButton} aria-expanded={open} onClick={() => setOpenReward(open ? null : r.id)}>
+                    <span style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
+                      <span style={{ flex: 1, minWidth: 0, overflowWrap: 'anywhere', fontSize: 14, fontWeight: 700, color: 'var(--warm-text)' }}>{r.name}</span>
+                      <strong style={{ fontSize: 14, color: 'var(--warm-text)', whiteSpace: 'nowrap' }}>{r.times}×</strong>
+                      <span aria-hidden="true" style={{ ...muted, width: 12, textAlign: 'center' }}>{open ? '▾' : '▸'}</span>
+                    </span>
+                    <span style={{ display: 'block', height: 4, borderRadius: 2, background: 'var(--viz-heat-0)', margin: '5px 0 3px' }}>
+                      <span style={{ display: 'block', height: 4, borderRadius: 2, width: `${(r.times / maxTimes) * 100}%`, background: 'var(--viz-heat-4)' }} />
+                    </span>
+                    <span style={{ ...muted, display: 'block' }}>{t('insights.coinsSpent').replace('{n}', fmt(r.coins))}</span>
+                  </button>
+                  {open && (
+                    <ul aria-label={t('insights.whoBought').replace('{name}', r.name)} style={{ margin: '6px 0 0', padding: '0 0 0 10px', borderLeft: '2px solid var(--warm-border-subtle)' }}>
+                      {r.buyers.map((b) => (
+                        <li key={b.id} style={{ listStyle: 'none', display: 'flex', alignItems: 'baseline', gap: 8, padding: '2px 0', fontSize: 13, color: 'var(--warm-text)' }}>
+                          <span style={{ flex: 1, minWidth: 0 }}><Payer p={b} /></span>
+                          <span style={{ whiteSpace: 'nowrap' }}><strong>{b.times}×</strong> <span style={muted}>· {t('insights.coinsSpent').replace('{n}', fmt(b.coins))}</span></span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+        </>
+      )}
+      {rewards.recent.length > 0 && (
+        <>
+          <h3 style={subTitle}>{t('insights.recentRewards')}</h3>
+          <ul style={{ margin: 0, padding: 0 }}>
+            {(allRecent ? rewards.recent : rewards.recent.slice(0, RECENT_SHOWN)).map((r) => (
+              <li key={r.id} style={{ listStyle: 'none', padding: '6px 0', borderTop: '1px solid var(--warm-border-subtle)' }}>
+                <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
+                  <span style={{ flex: 1, minWidth: 0, overflowWrap: 'anywhere', fontSize: 14, fontWeight: 700, color: 'var(--warm-text)' }}>{r.name}</span>
+                  <span style={{ fontSize: 13, color: 'var(--warm-text)', whiteSpace: 'nowrap' }}>{t('insights.coinsSpent').replace('{n}', fmt(r.coins))}</span>
+                </div>
+                <div style={{ ...muted, display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '2px 10px', marginTop: 2 }}>
+                  <span style={{ whiteSpace: 'nowrap' }}>{homeDate(r.at).toLocaleDateString(locale, { weekday: 'short', day: 'numeric', month: 'short' })}</span>
+                  {r.payers.map((p) => <Payer key={p.id} p={p} coins={r.payers.length > 1 ? fmt(p.coins) : undefined} />)}
+                  {r.boughtBy && <span style={{ whiteSpace: 'nowrap' }}>🛒 {t('rewards.boughtBy').replace('{name}', r.boughtBy)}</span>}
+                  {r.waiting && <span style={waitingTag}>⏳ {t('insights.waiting')}</span>}
+                </div>
+              </li>
+            ))}
+          </ul>
+          {rewards.recent.length > RECENT_SHOWN && (
+            <button type="button" style={{ ...linkButton, marginTop: 4 }} aria-expanded={allRecent} onClick={() => setAllRecent((v) => !v)}>
+              {allRecent ? t('insights.showFewer') : t('insights.showAll').replace('{n}', String(rewards.recent.length))}
+            </button>
+          )}
+        </>
+      )}
+      <h3 style={subTitle}>{t('insights.neverBought').replace('{n}', String(rewards.never.length))}</h3>
+      {rewards.never.length === 0 ? <p style={{ ...muted, fontStyle: 'italic', margin: '4px 0 0' }}>{t('insights.neverNone')}</p> : (
+        <p style={{ fontSize: 13, color: 'var(--warm-text)', margin: '4px 0 0', lineHeight: 1.5 }}>
+          {(allNever ? rewards.never : rewards.never.slice(0, 8)).join(' · ')}
+          {rewards.never.length > 8 && (
+            <> {' '}<button type="button" style={linkButton} aria-expanded={allNever} onClick={() => setAllNever((v) => !v)}>
+              {allNever ? t('insights.showFewer') : t('insights.showAll').replace('{n}', String(rewards.never.length))}
+            </button></>
+          )}
+        </p>
+      )}
+    </section>
+  );
+}

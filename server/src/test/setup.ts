@@ -1,15 +1,87 @@
 import Database from 'better-sqlite3';
+import fs from 'fs';
+import os from 'os';
+import path from 'path';
 import supertest from 'supertest';
+import { afterAll } from 'vitest';
 
 // Must set JWT_SECRET before any imports that reference it
 process.env.JWT_SECRET = 'test-secret-key-for-vitest';
 process.env.NODE_ENV = 'test';
 process.env.VITEST = 'true';
+// Web push keys (NEW-5) for the tests, so none are made and saved in the real data folder
+process.env.VAPID_PUBLIC_KEY ??= 'BG0F_SIenYvkT6wl0KI5Lkst4FfE0BacZLexYElm_P8M8tRsYrR1TV8BzLl_MZUUnS2Ea2BFBvALhbzMo9HBHFo';
+process.env.VAPID_PRIVATE_KEY ??= 'CDP07ZHsrcGupP4NI3pyRjK07QGKvvLeOBDH6xK49FU';
 
 import { setDatabase } from '../database';
+import { applyForkSchema } from '../forkSchema';
 import { createApp } from '../index';
+import { resetLoginLimits } from '../utils/throttle';
+import { at, wall } from '../utils/clock';
+import { currentFamily, isHosted, runInFamily, setHosted, setTestFamily } from '../hosted/context';
+import { closeAllFamilies, createFamily, openFamily } from '../hosted/families';
+import { mainDb, setDataDir, setMainDb } from '../hosted/mainDb';
+import { recordConsent } from '../hosted/legal';
+import { addParent } from '../hosted/signup';
 
-export function createTestApp() {
+/**
+ * Today on the family's clock, `days` later (or earlier), at a wall-clock time. Tests build "home"
+ * times with this and utils/clock's at() and wall(), so the suite also passes with the family in
+ * another zone than the server (TZ=UTC TEST_TIME_ZONE=Pacific/Auckland npm test).
+ */
+export function homeToday(days = 0, hours = 0, minutes = 0, seconds = 0, ms = 0): Date {
+  const w = wall();
+  return at(w.year, w.month, w.date + days, hours, minutes, seconds, ms);
+}
+
+/**
+ * A fresh app and database. HOSTED=1 npm test runs the whole suite in hosted mode, with the tests' own
+ * code (and their logins) as family A. createTestApp({ hosted: true }) makes a hosted server with family A
+ * and no default family: those tests name the family (addTestFamily, runInFamily).
+ */
+export function createTestApp(opts: { hosted?: boolean } = {}) {
+  const db = newTestDatabase();
+  let familyId: string | undefined;
+  if (opts.hosted || process.env.HOSTED === '1') {
+    startTestHosting();
+    familyId = createFamily('Family A', { db });
+    setTestFamily(opts.hosted ? null : { familyId, db });
+    // The whole suite as one family (HOSTED=1): as if its parent had confirmed, so everyone can sign in (NEW-34)
+    if (!opts.hosted) recordConsent(familyId);
+  } else {
+    // Swap the global singleton so all routes use this DB
+    setDatabase(db);
+  }
+
+  const app = createApp();
+  const agent = supertest(app);
+  resetLoginLimits();
+
+  return { agent, db, app, familyId };
+}
+
+/** Another family on a hosted test server. */
+export function addTestFamily(name = 'Family B') {
+  const db = newTestDatabase();
+  return { familyId: createFamily(name, { db }), db };
+}
+
+// Hosted test servers keep their family folders in a temporary folder, removed when the file is done
+const hostingDirs: string[] = [];
+afterAll(() => {
+  for (const dir of hostingDirs.splice(0)) fs.rmSync(dir, { recursive: true, force: true });
+});
+
+function startTestHosting() {
+  setHosted(true);
+  closeAllFamilies();
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'tidyquest-hosted-'));
+  hostingDirs.push(dir);
+  setDataDir(dir);
+  setMainDb(new Database(':memory:'));
+}
+
+function newTestDatabase() {
   // Fresh in-memory DB for each test suite
   const db = new Database(':memory:');
   db.pragma('journal_mode = WAL');
@@ -17,14 +89,31 @@ export function createTestApp() {
 
   // Initialize schema
   runSchema(db);
+  applyForkSchema(db);
+  // The Rescue Mission doubles the coins of a long-overdue chore; tests about it turn it on themselves.
+  // Proof photos start off in hosted mode; the suite's photo tests run in both.
+  db.prepare("INSERT OR REPLACE INTO app_settings (key, value) VALUES ('features', ?)").run(JSON.stringify({ rescue: false, proofPhotos: true }));
+  // TEST_TIME_ZONE=Pacific/Auckland runs the suite with the family in another zone than the server's TZ
+  if (process.env.TEST_TIME_ZONE) db.prepare("INSERT OR REPLACE INTO app_settings (key, value) VALUES ('timeZone', ?)").run(process.env.TEST_TIME_ZONE);
+  return db;
+}
 
-  // Swap the global singleton so all routes use this DB
-  setDatabase(db);
+/** The run with HOSTED=1: tests of self-hosted-only routes (/register) skip it. */
+export const HOSTED_RUN = process.env.HOSTED === '1';
 
-  const app = createApp();
-  const agent = supertest(app);
+/** A token's family in hosted mode, for tests that sign their own tokens. */
+export function tokenFamily() {
+  return isHosted() ? { fid: currentFamily()?.familyId } : {};
+}
 
-  return { agent, db };
+/** A family's code (hosted mode). */
+export function familyCodeOf(familyId = currentFamily()?.familyId): string {
+  return (mainDb().prepare('SELECT code FROM families WHERE id = ?').get(familyId) as { code: string }).code;
+}
+
+/** Hosted mode logs in with the family code next to the username. */
+export function familyField(familyId = currentFamily()?.familyId) {
+  return isHosted() ? { familyCode: familyCodeOf(familyId) } : {};
 }
 
 function runSchema(db: InstanceType<typeof Database>) {
@@ -223,8 +312,18 @@ export async function createAdmin(
   agent: supertest.Agent,
   username = 'admin',
   password = 'admin123',
-  displayName = 'Admin'
+  displayName = 'Admin',
+  familyId = currentFamily()?.familyId
 ) {
+  if (isHosted()) {
+    // No /register in hosted mode: the family's first parent is made as sign-up makes them, with an email.
+    // The family counts as having its parent's consent, so the rest of it can sign in (NEW-34), though the
+    // email stays unconfirmed; tests of the wait sign up instead.
+    runInFamily(openFamily(familyId)!, () => addParent({ username, displayName, password, email: `${username}@${familyId}.example` }));
+    recordConsent(familyId!);
+    const login = await agent.post('/api/auth/login').send({ username, password, ...familyField(familyId) });
+    return { user: login.body.user, token: login.body.token as string };
+  }
   const res = await agent
     .post('/api/auth/register')
     .send({ username, password, displayName });
@@ -235,7 +334,7 @@ export async function createAdmin(
 export async function createUser(
   agent: supertest.Agent,
   adminToken: string,
-  opts: { username: string; displayName: string; password: string; role?: string }
+  opts: { username: string; displayName: string; password: string; role?: string; familyId?: string }
 ) {
   // Create via admin endpoint — pass role directly (POST /api/users supports it)
   const res = await agent
@@ -253,18 +352,26 @@ export async function createUser(
   // Login to get token
   const loginRes = await agent
     .post('/api/auth/login')
-    .send({ username: opts.username, password: opts.password });
+    .send({ username: opts.username, password: opts.password, ...familyField(opts.familyId) });
 
   return { user: loginRes.body.user, token: loginRes.body.token };
+}
+
+/** The photos cookie (NEW-29) for a login, as the app gets it on start: a Cookie header value ('' if none). */
+export async function photoCookie(agent: supertest.Agent, token: string): Promise<string> {
+  const me = await agent.get('/api/auth/me').set('Authorization', `Bearer ${token}`);
+  const set = ([] as string[]).concat(me.headers['set-cookie'] ?? []).find((c) => c.startsWith('tq_files='));
+  return set ? set.split(';')[0] : '';
 }
 
 export async function loginAs(
   agent: supertest.Agent,
   username: string,
-  password: string
+  password: string,
+  familyId?: string
 ) {
   const res = await agent
     .post('/api/auth/login')
-    .send({ username, password });
+    .send({ username, password, ...familyField(familyId) });
   return res.body.token as string;
 }

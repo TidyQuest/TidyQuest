@@ -14,17 +14,19 @@ Authorization: Bearer <your-jwt-token>
 
 ## 📑 Table of Contents
 
-- [Authentication](#authentication)
-- [Rooms](#rooms)
-- [Tasks](#tasks)
-- [Dashboard](#dashboard)
-- [Leaderboard](#leaderboard)
-- [History](#history)
-- [Users](#users)
-- [Rewards](#rewards)
-- [Achievements](#achievements)
-- [Data Export/Import](#data-exportimport)
-- [Error Responses](#error-responses)
+- [Authentication](#-authentication)
+- [Rooms](#-rooms)
+- [Tasks](#-tasks)
+- [Dashboard](#-dashboard)
+- [Leaderboard](#-leaderboard)
+- [History](#-history)
+- [Users](#-users)
+- [Rewards](#-rewards)
+- [Achievements](#-achievements)
+- [Data Export/Import](#-data-exportimport)
+- [Error Responses](#-error-responses)
+- [Rate Limiting](#-rate-limiting)
+- [Notes](#-notes)
 
 ---
 
@@ -446,6 +448,12 @@ curl -X GET http://localhost:3020/api/tasks/overdue \
 Mark a task as completed, earn coins, update streak.
 
 **Endpoint**: `POST /api/tasks/:id/complete`
+
+**Request Body** (all optional):
+| Field | Description |
+|---|---|
+| `onBehalfOfUserId` | Admins and members can record the completion for someone else. |
+| `requireApproval` | With `onBehalfOfUserId`, send `true` when the person named is the one acting (for example from Home Assistant). If they're a child and Strict Mode is on, the completion waits for a parent's approval instead of paying out immediately. |
 
 **Response** (200):
 ```json
@@ -875,6 +883,14 @@ Or reset to defaults:
 
 **Endpoint**: `POST /api/rewards/:id/redeem`
 
+**Request body** (optional):
+```json
+{ "costCoins": 40 }
+```
+The price the app showed. When it no longer matches what this person pays (a parent changed the price or set their
+own price since), nothing is charged and the server answers `409` with `{ "error": "price_changed", "costCoins": 55 }`.
+Leave it out to pay whatever the current price is.
+
 **Response** (200):
 ```json
 {
@@ -893,6 +909,7 @@ Or reset to defaults:
 **Errors**:
 - `400`: Insufficient coins
 - `404`: Reward not found or inactive
+- `409`: `price_changed` (see the request body)
 
 ---
 
@@ -990,7 +1007,7 @@ curl -X GET http://localhost:3020/api/achievements \
 
 ### Export Data
 
-**Endpoint**: `GET /api/data/export` (Admin only)
+**Endpoint**: `GET /api/export` (Admin only)
 
 **Response** (200):
 ```json
@@ -1009,7 +1026,7 @@ curl -X GET http://localhost:3020/api/achievements \
 
 **cURL Example**:
 ```bash
-curl -X GET http://localhost:3020/api/data/export \
+curl -X GET http://localhost:3020/api/export \
   -H "Authorization: Bearer <admin-token>" \
   -o backup.json
 ```
@@ -1018,9 +1035,11 @@ curl -X GET http://localhost:3020/api/data/export \
 
 ### Import Data
 
-**Endpoint**: `POST /api/data/import` (Admin only)
+**Endpoint**: `POST /api/import` (Admin only)
 
 **Request Body**: Full JSON export (same structure as export)
+
+Importing replaces all existing data. Password hashes are never exported or imported: the importing admin keeps their password, anyone whose username already exists on this server keeps their current password, and new people get a random password that an admin must reset.
 
 **Response** (200):
 ```json
@@ -1041,7 +1060,7 @@ curl -X GET http://localhost:3020/api/data/export \
 
 **cURL Example**:
 ```bash
-curl -X POST http://localhost:3020/api/data/import \
+curl -X POST http://localhost:3020/api/import \
   -H "Authorization: Bearer <admin-token>" \
   -H "Content-Type: application/json" \
   -d @backup.json
@@ -1088,4 +1107,4 @@ Currently **no rate limiting** is implemented. For production deployments, consi
 
 ---
 
-**Need help?** Open an issue on [GitHub Issues](https://github.com/mellow-fox/TidyQuest/issues)
+**Need help?** Open an issue on [GitHub Issues](https://github.com/TidyQuest/TidyQuest/issues)

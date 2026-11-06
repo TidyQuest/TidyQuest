@@ -3,7 +3,14 @@ import { UserAvatar } from '../shared/UserAvatar';
 import { AVATAR_PRESETS, AvatarPresetIcon } from '../icons/AvatarPresets';
 import { GlobeIcon } from '../icons/UIIcons';
 import { api } from '../../hooks/useApi';
+import { limitError } from '../../utils/hosted';
 import { useTranslation } from '../../hooks/useTranslation';
+import { MyNotifications } from '../shared/MyNotifications';
+import { ThemePicker } from '../shared/ThemePicker';
+import { Toggle } from '../shared/Toggle';
+import { UnlocksCard } from '../shared/UnlocksCard';
+import { useCosmetic } from '../../utils/unlocks';
+import type { Theme } from '../../utils/themes';
 import type { User } from '../../hooks/useAuth';
 
 const COLORS = [
@@ -14,11 +21,16 @@ const COLORS = [
 
 interface ProfileProps {
   user: User;
+  theme: Theme;
+  onChangeTheme: (theme: Theme) => void | Promise<void>;
+  /** A frame, celebration or title was picked (the app reloads everyone's looks) */
+  onUnlocksChanged?: () => void;
   onSave: () => void;
   onLogout: () => void;
 }
 
-export function Profile({ user, onSave, onLogout }: ProfileProps) {
+export function Profile({ user, theme, onChangeTheme, onUnlocksChanged, onSave, onLogout }: ProfileProps) {
+  const myLevel = useCosmetic(user.id)?.level;
   const { t } = useTranslation(user.language);
   const [displayName, setDisplayName] = useState(user.displayName);
   const [avatarType, setAvatarType] = useState<'letter' | 'preset' | 'photo'>(user.avatarType || 'letter');
@@ -32,6 +44,7 @@ export function Profile({ user, onSave, onLogout }: ProfileProps) {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [passwordMsg, setPasswordMsg] = useState('');
+  const [logoutOthersMsg, setLogoutOthersMsg] = useState('');
   const [uploadMsg, setUploadMsg] = useState('');
   const fileRef = useRef<HTMLInputElement>(null);
 
@@ -57,10 +70,7 @@ export function Profile({ user, onSave, onLogout }: ProfileProps) {
     const file = e.target.files?.[0];
     if (!file) return;
     setUploadMsg('');
-    if (file.size > 2 * 1024 * 1024) {
-      setUploadMsg(t('profile.fileTooLarge'));
-      return;
-    }
+    // Big photos are scaled down before uploading; the server says if one is still too big
     setSaving(true);
     try {
       const result = await api.uploadAvatar(user.id, file);
@@ -69,7 +79,7 @@ export function Profile({ user, onSave, onLogout }: ProfileProps) {
       setUploadMsg('');
       onSave();
     } catch (err: any) {
-      setUploadMsg(err?.message || t('profile.uploadFailed'));
+      setUploadMsg(limitError(err, t, err?.message || t('profile.uploadFailed')));
     } finally {
       setSaving(false);
     }
@@ -88,11 +98,21 @@ export function Profile({ user, onSave, onLogout }: ProfileProps) {
       setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
-      setPasswordMsg(t('settings.passwordUpdated'));
+      setPasswordMsg(t('profile.passwordUpdatedElsewhere'));
     } catch (err: any) {
       setPasswordMsg(err?.message || t('settings.passwordUpdateFailed'));
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleLogoutOthers = async () => {
+    if (!confirm(t('profile.logoutOthersConfirm'))) return;
+    try {
+      await api.logoutOthers();
+      setLogoutOthersMsg(t('profile.logoutOthersDone'));
+    } catch {
+      setLogoutOthersMsg(t('profile.logoutOthersFailed'));
     }
   };
 
@@ -108,6 +128,7 @@ export function Profile({ user, onSave, onLogout }: ProfileProps) {
         {/* Avatar preview */}
         <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 28 }}>
           <UserAvatar
+            userId={user.id}
             name={displayName}
             color={avatarColor}
             size={80}
@@ -281,7 +302,32 @@ export function Profile({ user, onSave, onLogout }: ProfileProps) {
         >
           {t('profile.logout')}
         </button>
+        <button
+          className="tq-btn tq-btn-secondary tq-btn-sm"
+          onClick={handleLogoutOthers}
+          style={{ width: '100%', fontWeight: 700, marginTop: 8 }}
+        >
+          🚪 {t('profile.logoutOthers')}
+        </button>
+        <div style={{ fontSize: 11, color: 'var(--warm-text-light)', fontWeight: logoutOthersMsg ? 700 : 600, marginTop: 4, textAlign: 'center' }}>
+          {logoutOthersMsg || t('profile.logoutOthersDesc')}
+        </div>
       </div>
+      <div className="tq-card tq-card-padded" style={{ marginTop: 16, display: 'grid', gap: 8 }}>
+        <h3 className="tq-card-title" style={{ margin: 0 }}>🎨 {t('settings.theme')}</h3>
+        <div style={{ fontSize: 11, color: 'var(--warm-text-light)', fontWeight: 600 }}>{t('profile.themeDesc')}</div>
+        <ThemePicker value={theme} onChange={(next) => void onChangeTheme(next)} language={user.language} level={myLevel} />
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, paddingTop: 8, borderTop: '1px solid var(--warm-border)' }}>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontSize: 13, fontWeight: 800, color: 'var(--warm-text)' }}>🎃 {t('profile.holidayColors')}</div>
+            <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--warm-text-light)' }}>{t('profile.holidayColorsDesc')}</div>
+          </div>
+          <Toggle checked={user.holidayColors !== 0} label={t('profile.holidayColors')}
+            onChange={async (on) => { await api.updateProfile(user.id, { holidayColors: on }); onSave(); }} />
+        </div>
+      </div>
+      <UnlocksCard user={user} onChanged={onUnlocksChanged} />
+      <MyNotifications userId={user.id} language={user.language} />
     </div>
   );
 }

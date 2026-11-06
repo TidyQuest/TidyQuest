@@ -1,14 +1,40 @@
-import { useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { HealthBar } from '../shared/HealthBar';
 import { RingGauge } from '../shared/RingGauge';
 import { EffortDots } from '../shared/EffortDots';
 import { getRoomIcon } from '../icons/RoomIcons';
-import { TaskIcon, TASK_ICON_OPTIONS } from '../icons/TaskIcons';
+import { TaskIcon } from '../icons/TaskIcons';
+import { IconPicker } from '../shared/IconPicker';
 import { CheckIcon, BackIcon, PlusIcon, CoinIcon } from '../icons/UIIcons';
-import { getRoomHealth } from '../../utils/health';
+import { getRoomHealth, notDueYet } from '../../utils/health';
+import { formatNextDue, isTaskForUser, taskNextDue } from '../../utils/tasks';
+import { TimerStartButton } from '../shared/ChoreTimer';
+import { useChoreTimer } from '../../hooks/useChoreTimer';
+import { DueOnPicker, ReminderPicker, RotationPeriodPicker, SeasonPicker, StartsOnPicker, StepsField, TimerPicker } from '../shared/ScheduleFields';
+import { EMPTY_SCHEDULE, monthlyLabel, schedulePayload, scheduleFromTask, seasonLabel, startsLater, todayIso, weekdaysLabel, type ScheduledTaskFields, type ScheduleValue } from '../../utils/schedule';
 import { api } from '../../hooks/useApi';
+import { TakeBackButton } from '../shared/TakeBackButton';
+import { TodoQuickAdd } from '../shared/TodoQuickAdd';
+import { localeFor } from '../../utils/locale';
 import { useTranslation } from '../../hooks/useTranslation';
 import { AdminCompleteModal } from '../shared/AdminCompleteModal';
+import { ProofModal, type Proof } from '../shared/ProofModal';
+import { LateLogModal } from '../shared/LateLogModal';
+import { UndoToast, type UndoState } from '../shared/UndoToast';
+import { TeamUpButton, TeamUpDialog } from '../shared/TeamUp';
+import { claimedLabel } from '../../utils/teamups';
+import type { TeamUpInfo } from '../../hooks/useApi';
+import { DuplicateRoom } from '../shared/DuplicateRoom';
+import { useWeekStart } from '../../utils/week';
+import { dateStr } from '../../utils/clock';
+
+const tomorrowIso = () => todayIso(new Date(Date.now() + 86400000));
+
+// Task table columns: each shrinks to a fixed minimum, so every row lines up (the buttons' 190px fits German's
+// "☆ Bearbeiten ⋯"). When the card is narrower than the minimums add up to (954px with gaps), computers switch to the
+// wrapped layout in index.css (BUG-11).
+const TASK_COLUMNS = 'minmax(240px, 3fr) minmax(80px, 1.4fr) minmax(70px, 1fr) 80px minmax(44px, 0.6fr) minmax(70px, 1fr) minmax(80px, 1.4fr) minmax(190px, 2fr)';
 
 const FREQ_UNITS = [
   { label: 'hours', toDays: 1 / 24 },
@@ -43,52 +69,12 @@ function healthColor(value: number): string {
   return 'var(--health-red)';
 }
 
-function getNextDueDate(lastCompletedAt: string | null, frequencyDays: number): Date {
-  if (!lastCompletedAt) return new Date();
-  const last = new Date(lastCompletedAt);
-  return new Date(last.getTime() + frequencyDays * 24 * 60 * 60 * 1000);
-}
-
-function formatNextDue(lastCompletedAt: string | null, frequencyDays: number, t: (k: string) => string, language?: string, health?: number): { text: string; color: string } {
-  const nextDue = getNextDueDate(lastCompletedAt, frequencyDays);
-  const now = new Date();
-
-  // Time-based countdown for tasks due within the next 24 hours
-  const diffMs = nextDue.getTime() - now.getTime();
-  // Only show overdue when health is truly 0 (aligns with server-side calculation)
-  if (diffMs < 0 && (health === undefined || health <= 0)) return { text: t('roomDetail.overdue'), color: 'var(--health-red)' };
-  if (diffMs < 0) return { text: t('roomDetail.inMinutes').replace('{m}', '1'), color: 'var(--health-yellow)' };
-
-  const diffMinutes = Math.ceil(diffMs / (60 * 1000));
-  const diffHours = Math.floor(diffMs / (60 * 60 * 1000));
-  const remainingMinutes = Math.floor((diffMs % (60 * 60 * 1000)) / (60 * 1000));
-
-  if (diffMinutes < 60) {
-    return { text: t('roomDetail.inMinutes').replace('{m}', `${Math.max(1, diffMinutes)}`), color: 'var(--health-yellow)' };
-  }
-  if (diffHours < 24) {
-    const text = remainingMinutes > 0
-      ? t('roomDetail.inHoursMinutes').replace('{h}', `${diffHours}`).replace('{m}', `${remainingMinutes}`)
-      : t('roomDetail.inHours').replace('{h}', `${diffHours}`);
-    return { text, color: 'var(--health-yellow)' };
-  }
-
-  // Day-based display for tasks due further out
-  const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const dueStart = new Date(nextDue.getFullYear(), nextDue.getMonth(), nextDue.getDate());
-  const diffDays = Math.round((dueStart.getTime() - todayStart.getTime()) / (24 * 60 * 60 * 1000));
-  if (diffDays <= 1) return { text: t('roomDetail.tomorrow'), color: 'var(--health-yellow)' };
-  const localeMap: Record<string, string> = { en: 'en-US', fr: 'fr-FR', de: 'de-DE', es: 'es-ES', it: 'it-IT' };
-  const locale = localeMap[language || 'en'] || 'en-US';
-  const text = nextDue.toLocaleDateString(locale, { day: 'numeric', month: 'short' });
-  return { text, color: diffDays <= 7 ? 'var(--health-yellow)' : 'var(--health-green)' };
-}
-
 type SortKey = 'name' | 'health' | 'effort' | 'frequency' | 'coins' | 'assigned' | 'dueDate';
 
 interface CompletedTodayBy {
   completionId: number;
   userId: number;
+  coinsEarned?: number;
   displayName: string;
   avatarColor: string;
   avatarType?: string;
@@ -96,7 +82,9 @@ interface CompletedTodayBy {
   avatarPhotoUrl?: string;
 }
 
-interface Task {
+interface Task extends ScheduledTaskFields {
+  pausedAt?: string | null; // ENH-1: paused (parents only see it)
+  pausedUntil?: string | null;
   id: number; name: string; translationKey?: string; health: number; frequencyDays: number;
   effort: number; notes?: string | null; isSeasonal: boolean; onDemand?: boolean; showInDashboard?: boolean; lastCompletedAt: string | null; iconKey?: string;
   assignedToChildren?: boolean;
@@ -104,11 +92,27 @@ interface Task {
   assignedUsers?: Array<{ id: number; displayName: string; avatarColor: string; avatarType?: string; avatarPreset?: string; avatarPhotoUrl?: string; coinPercentage?: number }>;
   effectiveAssignedUserIds?: number[];
   completedTodayBy?: CompletedTodayBy | null;
+  /** Team-ups: can you start one, and has a team claimed it today? */
+  teamUp?: TeamUpInfo | null;
   assignmentMode?: 'first' | 'shared' | 'custom' | 'rotating';
   rotationCurrentUserId?: number | null;
   customCoins?: number | null;
+  myPendingCount?: number;
+  /** My latest Done that waits for approval (I can take it back) */
+  myPendingId?: number | null;
+  repeatLimit?: number | null;
+  repeatPeriod?: 'day' | 'week' | null;
+  /** The viewer's completions of this anytime quest in the current day/week */
+  myRepeatCount?: number;
   allowEarlyCompletion?: boolean;
   sharedCompletions?: Array<{ userId: number; displayName: string; completionId: number }>;
+  /** When it's next due, from the server (set weekdays aware) */
+  nextDueAt?: string | null;
+  /** Outside its season right now (isSeasonal is then true too) */
+  outOfSeason?: boolean;
+  /** Pinned by the viewer to "Your usual" on Home */
+  pinned?: boolean;
+  createdAt?: string | null;
 }
 
 interface RoomDetailProps {
@@ -116,6 +120,12 @@ interface RoomDetailProps {
     id: number; name: string; roomType: string; color: string; accentColor: string;
     assignedUserId?: number | null;
     tasks: Task[];
+    /** From the server: one-time chores, paused ones and (for the To-dos room) everything left out */
+    health?: number;
+    /** The family's To-dos room (ENH-18): a checklist, with no health */
+    isTodoRoom?: boolean;
+    todoCount?: number;
+    todoOverdue?: number;
   };
   language?: string;
   isAdmin: boolean;
@@ -123,10 +133,22 @@ interface RoomDetailProps {
   currentUserRole?: 'admin' | 'member' | 'child';
   users?: Array<{ id: number; displayName: string; role: string; avatarColor: string; avatarType?: string; avatarPreset?: string; avatarPhotoUrl?: string }>;
   coinsByEffort?: Record<number, number>;
-  onCompleteTask: (taskId: number) => void;
+  onCompleteTask: (taskId: number, proof?: Proof) => void;
+  /** Strict Mode is on: kids can attach a note or photo when finishing */
+  strictMode?: boolean;
   onBack: () => void;
   onRefresh?: () => void;
+  /** Go to another room (after duplicating this one) */
+  onOpenRoom?: (roomId: number) => void;
+  /** Offer "One time" in the task form (Settings → Features → To-dos) */
+  allowOneTime?: boolean;
+  /** Settings → Features → Proof photos: kids' proof is a note only when off */
+  allowPhotos?: boolean;
   onAchievementsUnlocked?: (ids: string[]) => void;
+  /** Task to scroll to and briefly highlight (from search or the task list) */
+  focusTaskId?: number;
+  /** The viewer is locked to Mine (or in Kid mode): only show their tasks */
+  onlyMine?: boolean;
 }
 
 function FrequencyPicker({ value, unit, onChange, t }: {
@@ -172,11 +194,13 @@ function EffortPicker({ effort, onChange }: { effort: number; onChange: (e: numb
   );
 }
 
-export function RoomDetail({ room, language, isAdmin, currentUserId, currentUserRole, users, coinsByEffort, onCompleteTask, onBack, onRefresh, onAchievementsUnlocked }: RoomDetailProps) {
+export function RoomDetail({ room, language, isAdmin, currentUserId, currentUserRole, users, coinsByEffort, onCompleteTask, onBack, onRefresh, onOpenRoom, allowOneTime = true, allowPhotos = true, onAchievementsUnlocked, focusTaskId, onlyMine, strictMode }: RoomDetailProps) {
   const { taskName: translateTask, roomDisplayName, timeAgo, t } = useTranslation(language);
   const [animatedTask, setAnimatedTask] = useState<number | null>(null);
+  const timer = useChoreTimer();
+  const weekStart = useWeekStart();
   const [editingTask, setEditingTask] = useState<number | null>(null);
-  const [editForm, setEditForm] = useState({ name: '', originalName: '', notes: '', freqValue: 7, freqUnit: 'days', effort: 1, health: 100, healthChanged: false, iconKey: 'sparkle', onDemand: false, showInDashboard: false, assignmentType: 'none' as 'none' | 'users', assignmentUserIds: [] as number[], assignmentMode: 'first' as 'first' | 'shared' | 'custom' | 'rotating', assignmentPercentages: {} as Record<number, number>, customCoins: '' as string | number, allowEarlyCompletion: false });
+  const [editForm, setEditForm] = useState({ name: '', originalName: '', notes: '', freqValue: 7, freqUnit: 'days', effort: 1, health: 100, healthChanged: false, iconKey: 'sparkle', onDemand: false, showInDashboard: false, assignmentType: 'none' as 'none' | 'users', assignmentUserIds: [] as number[], assignmentMode: 'first' as 'first' | 'shared' | 'custom' | 'rotating', assignmentPercentages: {} as Record<number, number>, customCoins: '' as string | number, allowEarlyCompletion: false, repeatLimit: '', repeatPeriod: 'week' as 'day' | 'week', paused: false, pausedUntil: '' });
   const [taskMenuOpen, setTaskMenuOpen] = useState<number | null>(null);
   const [moveMenuTaskId, setMoveMenuTaskId] = useState<number | null>(null);
   const [allRooms, setAllRooms] = useState<Array<{ id: number; name: string; roomType: string }>>([]);
@@ -190,13 +214,43 @@ export function RoomDetail({ room, language, isAdmin, currentUserId, currentUser
   const [newTaskIconKey, setNewTaskIconKey] = useState('sparkle');
   const [newAssignmentType, setNewAssignmentType] = useState<'none' | 'users'>('none');
   const [newAssignmentUserIds, setNewAssignmentUserIds] = useState<number[]>([]);
-  const [newAssignmentMode, setNewAssignmentMode] = useState<'first' | 'shared' | 'custom'>('first');
+  const [newAssignmentMode, setNewAssignmentMode] = useState<'first' | 'shared' | 'custom' | 'rotating'>('first');
   const [newAssignmentPercentages, setNewAssignmentPercentages] = useState<Record<number, number>>({});
   const [addTaskError, setAddTaskError] = useState('');
   const [newTaskOnDemand, setNewTaskOnDemand] = useState(false);
   const [newTaskShowInDashboard, setNewTaskShowInDashboard] = useState(false);
+  const [newRepeatLimit, setNewRepeatLimit] = useState('');
+  const [newRepeatPeriod, setNewRepeatPeriod] = useState<'day' | 'week'>('week');
+  const [editSchedule, setEditSchedule] = useState<ScheduleValue>(EMPTY_SCHEDULE);
+  const [newSchedule, setNewSchedule] = useState<ScheduleValue>(EMPTY_SCHEDULE);
   const [sortKey, setSortKey] = useState<SortKey>('health');
   const [sortAsc, setSortAsc] = useState(true);
+  const focusedOnce = useRef<number | null>(null);
+  const [proofTask, setProofTask] = useState<Task | null>(null);
+  /** "Done earlier…" (ENH-7) */
+  const [lateTask, setLateTask] = useState<Task | null>(null);
+  // The chore someone is picking a team-up partner for
+  const [teamPick, setTeamPick] = useState<Task | null>(null);
+  const canAddProof = !!strictMode && currentUserRole === 'child';
+  const [undo, setUndo] = useState<UndoState | null>(null);
+  const [showDuplicate, setShowDuplicate] = useState(false);
+  const closeUndo = useCallback(() => setUndo(null), []);
+  // Delete, undo, pin, copy and move: a failure (such as a phone that's offline) shows a toast instead of nothing
+  const attempt = async (fn: () => Promise<void>) => {
+    try { await fn(); } catch { setUndo({ message: t('common.actionFailed') }); onRefresh?.(); }
+  };
+
+  // Opened from search or the task list: bring that task into view and flash it once
+  useEffect(() => {
+    if (!focusTaskId || focusedOnce.current === focusTaskId) return;
+    const el = document.querySelector(`[data-task-id="${focusTaskId}"]`);
+    if (!el) return;
+    focusedOnce.current = focusTaskId;
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    el.classList.add('task-focus-flash');
+    const timer = setTimeout(() => el.classList.remove('task-focus-flash'), 2500);
+    return () => { clearTimeout(timer); el.classList.remove('task-focus-flash'); };
+  }, [focusTaskId, room.tasks.length]);
 
   const [adminModalTask, setAdminModalTask] = useState<Task | null>(null);
   const [showTemplates, setShowTemplates] = useState(false);
@@ -214,21 +268,25 @@ export function RoomDetail({ room, language, isAdmin, currentUserId, currentUser
     return result;
   };
 
-  const health = getRoomHealth(room.tasks);
+  const health = room.health ?? getRoomHealth(room.tasks);
   const RoomIcon = getRoomIcon(room.roomType);
 
-  const sortedTasks = [...room.tasks].sort((a, b) => {
+  // Same rule the server uses when paying out: a custom amount wins over the effort default
+  const taskCoins = (task: Task) =>
+    task.customCoins != null && task.customCoins > 0 ? task.customCoins : (coinsByEffort?.[task.effort] ?? task.effort * 5);
+
+  const sortedTasks = [...room.tasks].filter((task) => !onlyMine || currentUserId === undefined || isTaskForUser(task, currentUserId, currentUserRole)).sort((a, b) => {
     let cmp = 0;
     switch (sortKey) {
       case 'name': cmp = a.name.localeCompare(b.name); break;
       case 'health': cmp = a.health - b.health; break;
       case 'effort': cmp = a.effort - b.effort; break;
       case 'frequency': cmp = a.frequencyDays - b.frequencyDays; break;
-      case 'coins': cmp = (coinsByEffort?.[a.effort] ?? a.effort * 5) - (coinsByEffort?.[b.effort] ?? b.effort * 5); break;
+      case 'coins': cmp = taskCoins(a) - taskCoins(b); break;
       case 'assigned': cmp = (a.assignedUsers?.length ?? 0) - (b.assignedUsers?.length ?? 0); break;
-      case 'dueDate': cmp = getNextDueDate(a.lastCompletedAt, a.frequencyDays).getTime() - getNextDueDate(b.lastCompletedAt, b.frequencyDays).getTime(); break;
+      case 'dueDate': cmp = taskNextDue(a).getTime() - taskNextDue(b).getTime(); break;
     }
-    return sortAsc ? cmp : -cmp;
+    return !!a.pausedAt !== !!b.pausedAt ? (a.pausedAt ? 1 : -1) : sortAsc ? cmp : -cmp; // paused chores last
   });
 
   const handleSort = (key: SortKey) => {
@@ -282,7 +340,8 @@ export function RoomDetail({ room, language, isAdmin, currentUserId, currentUser
     }
     const displayedName = translateTask(task.name, task.translationKey);
     setEditingTask(task.id);
-    setEditForm({ name: displayedName, originalName: displayedName, notes: task.notes || '', freqValue: value, freqUnit: unit, effort: task.effort, health: task.health, healthChanged: false, iconKey: task.iconKey || 'sparkle', onDemand: !!task.onDemand, showInDashboard: !!task.showInDashboard, assignmentType, assignmentUserIds, assignmentMode: (task.assignmentMode || 'first') as 'first' | 'shared' | 'custom' | 'rotating', assignmentPercentages, customCoins: task.customCoins ?? '', allowEarlyCompletion: !!task.allowEarlyCompletion });
+    setEditSchedule(scheduleFromTask(task));
+    setEditForm({ name: displayedName, originalName: displayedName, notes: task.notes || '', freqValue: value, freqUnit: unit, effort: task.effort, health: task.health, healthChanged: false, iconKey: task.iconKey || 'sparkle', onDemand: !!task.onDemand, showInDashboard: !!task.showInDashboard, assignmentType, assignmentUserIds, assignmentMode: (task.assignmentMode || 'first') as 'first' | 'shared' | 'custom' | 'rotating', assignmentPercentages, customCoins: task.customCoins ?? '', allowEarlyCompletion: !!task.allowEarlyCompletion, repeatLimit: task.repeatLimit ? String(task.repeatLimit) : '', repeatPeriod: task.repeatPeriod === 'day' ? 'day' : 'week', paused: !!task.pausedAt, pausedUntil: task.pausedUntil || '' });
   };
 
   const saveEdit = async () => {
@@ -293,13 +352,24 @@ export function RoomDetail({ room, language, isAdmin, currentUserId, currentUser
       { assignedToChildren: false, assignedUserIds: [] };
     const assignedUserPercentages = editForm.assignmentMode === 'custom' ? editForm.assignmentPercentages : undefined;
     const nameChanged = editForm.name.trim() !== editForm.originalName.trim();
-    await api.updateTask(editingTask, { ...(nameChanged ? { name: editForm.name } : {}), notes: editForm.notes, frequencyDays, effort: editForm.effort, ...(editForm.healthChanged ? { health: editForm.health } : {}), iconKey: editForm.iconKey, onDemand: editForm.onDemand, showInDashboard: editForm.showInDashboard, assignmentMode: editForm.assignmentMode, assignedUserPercentages, customCoins: editForm.customCoins !== '' ? Number(editForm.customCoins) : null, allowEarlyCompletion: editForm.allowEarlyCompletion, ...assignmentPayload });
+    await api.updateTask(editingTask, { ...(nameChanged ? { name: editForm.name } : {}), notes: editForm.notes, frequencyDays, effort: editForm.effort, ...(editForm.healthChanged ? { health: editForm.health } : {}), iconKey: editForm.iconKey, onDemand: editForm.onDemand, showInDashboard: editForm.showInDashboard, assignmentMode: editForm.assignmentMode, assignedUserPercentages, customCoins: editForm.customCoins !== '' ? Number(editForm.customCoins) : null, allowEarlyCompletion: editForm.allowEarlyCompletion, repeatLimit: editForm.onDemand && editForm.repeatLimit ? Number(editForm.repeatLimit) : null, repeatPeriod: editForm.repeatPeriod, ...schedulePayload(editSchedule, { onDemand: editForm.onDemand, rotating: editForm.assignmentMode === 'rotating' }), ...assignmentPayload, paused: editForm.paused, pausedUntil: editForm.paused && editForm.pausedUntil ? editForm.pausedUntil : null });
+    const editedId = editingTask;
     setEditingTask(null);
     onRefresh?.();
+    // Bring the edited task back into view once the list has reloaded (it may have re-sorted)
+    setTimeout(() => {
+      const el = document.querySelector(`[data-task-id="${editedId}"]`);
+      if (!el) return;
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      el.classList.add('task-focus-flash');
+      setTimeout(() => el.classList.remove('task-focus-flash'), 2000);
+    }, 500);
   };
 
   // Determine if Done button should be disabled for a task
   function getDoneButtonState(task: Task): { disabled: boolean; label: string } {
+    const claimed = claimedLabel(task.teamUp);
+    if (claimed) return { disabled: true, label: claimed };
     if (currentUserRole !== 'admin' && currentUserRole !== 'member') {
       const effectiveIds = task.effectiveAssignedUserIds;
       if (effectiveIds && effectiveIds.length > 0 && currentUserId !== undefined) {
@@ -307,6 +377,18 @@ export function RoomDetail({ room, language, isAdmin, currentUserId, currentUser
           return { disabled: true, label: t('app.notAssigned') };
         }
       }
+    }
+
+    // Strict Mode: my earlier tap is still waiting for a parent
+    const pending = task.myPendingCount ?? 0;
+    if (pending > 0 && currentUserRole !== 'admin' && currentUserRole !== 'member') {
+      if (!task.onDemand) return { disabled: true, label: t('app.waitingForApproval') };
+      return { disabled: false, label: `${t('roomDetail.done')} · ⏳ ${pending}` };
+    }
+
+    // Anytime quest with a repeat limit that's used up for this day/week
+    if (task.onDemand && task.repeatLimit && (task.myRepeatCount ?? 0) >= task.repeatLimit && currentUserRole !== 'admin' && currentUserRole !== 'member') {
+      return { disabled: true, label: t(task.repeatPeriod === 'day' ? 'repeat.doneToday' : 'repeat.doneThisWeek') };
     }
 
     // Rotating mode: disabled if it's not the current user's turn
@@ -326,17 +408,13 @@ export function RoomDetail({ room, language, isAdmin, currentUserId, currentUser
     if (task.health > 0 && task.lastCompletedAt) {
       // Allow early completion if the toggle is on AND last completion was on a previous calendar day
       if (task.allowEarlyCompletion) {
-        const last = new Date(task.lastCompletedAt);
-        const today = new Date();
-        const lastStr = `${last.getFullYear()}-${String(last.getMonth()).padStart(2,'0')}-${String(last.getDate()).padStart(2,'0')}`;
-        const todayStr = `${today.getFullYear()}-${String(today.getMonth()).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
-        if (lastStr < todayStr) {
+        if (dateStr(task.lastCompletedAt) < dateStr()) {
           // Different calendar day — allow despite health > 0
         } else {
           return { disabled: true, label: t('roomDetail.done') };
         }
       } else {
-        const { text } = formatNextDue(task.lastCompletedAt, task.frequencyDays, t, language, task.health);
+        const { text } = formatNextDue(task.lastCompletedAt, task.frequencyDays, t, language, task.health, task.nextDueAt);
         return { disabled: true, label: text };
       }
     }
@@ -362,23 +440,52 @@ export function RoomDetail({ room, language, isAdmin, currentUserId, currentUser
   }
 
   const deleteTask = async (taskId: number) => {
-    if (!window.confirm(t('roomDetail.deleteTaskConfirm'))) return;
-    await api.deleteTask(taskId);
-    setEditingTask(null);
-    onRefresh?.();
+    const task = room.tasks.find((x) => x.id === taskId);
+    const name = task ? translateTask(task.name, task.translationKey) : '';
+    if (!window.confirm(t('roomDetail.deleteTaskConfirmTrash').replace('{name}', name).replace('{n}', '30'))) return;
+    await attempt(async () => {
+      const { trashId } = await api.deleteTask(taskId);
+      setEditingTask(null);
+      onRefresh?.();
+      if (trashId) setUndo({ trashIds: [trashId], message: t('trash.deleted').replace('{name}', name) });
+    });
   };
+
+  const togglePin = async (task: Task) => {
+    await attempt(async () => {
+      if (task.pinned) await api.unpinTask(task.id); else await api.pinTask(task.id);
+      onRefresh?.();
+    });
+  };
+
+  const togglePause = async (task: Task) => {
+    setTaskMenuOpen(null);
+    setMoveMenuTaskId(null);
+    await attempt(async () => {
+      if (task.pausedAt) await api.resumeTask(task.id); else await api.pauseTask(task.id);
+      onRefresh?.();
+    });
+  };
+
+  const pausedLabel = (task: Task) => task.pausedUntil
+    ? t('pause.pausedUntil').replace('{date}', new Date(`${task.pausedUntil}T12:00:00`).toLocaleDateString(localeFor(language), { month: 'short', day: 'numeric' }))
+    : t('pause.paused');
 
   const handleDuplicateTask = async (taskId: number) => {
     setTaskMenuOpen(null);
-    await api.duplicateTask(taskId);
-    onRefresh?.();
+    await attempt(async () => {
+      await api.duplicateTask(taskId);
+      onRefresh?.();
+    });
   };
 
   const handleMoveTask = async (taskId: number, targetRoomId: number) => {
     setMoveMenuTaskId(null);
     setTaskMenuOpen(null);
-    await api.updateTask(taskId, { roomId: targetRoomId });
-    onRefresh?.();
+    await attempt(async () => {
+      await api.updateTask(taskId, { roomId: targetRoomId });
+      onRefresh?.();
+    });
   };
 
   const handleTaskMenuOpen = async (taskId: number) => {
@@ -406,11 +513,14 @@ export function RoomDetail({ room, language, isAdmin, currentUserId, currentUser
       frequencyDays,
       effort: newTaskEffort,
       health: newTaskHealth,
-      iconKey: newTaskIconKey,
+      // Left on the sparkle: the server picks the icon the name suggests
+      iconKey: newTaskIconKey !== 'sparkle' ? newTaskIconKey : undefined,
       onDemand: newTaskOnDemand,
       showInDashboard: newTaskShowInDashboard,
+      ...(newTaskOnDemand && newRepeatLimit ? { repeatLimit: Number(newRepeatLimit), repeatPeriod: newRepeatPeriod } : {}),
       assignmentMode: newAssignmentMode,
       assignedUserPercentages,
+      ...schedulePayload(newSchedule, { onDemand: newTaskOnDemand, rotating: newAssignmentMode === 'rotating' }),
       ...assignmentPayload,
     });
     setNewTaskName('');
@@ -426,6 +536,8 @@ export function RoomDetail({ room, language, isAdmin, currentUserId, currentUser
     setNewAssignmentPercentages({});
     setNewTaskOnDemand(false);
     setNewTaskShowInDashboard(false);
+    setNewRepeatLimit('');
+    setNewSchedule(EMPTY_SCHEDULE);
     setShowAddTask(false);
     onRefresh?.();
   };
@@ -435,48 +547,84 @@ export function RoomDetail({ room, language, isAdmin, currentUserId, currentUser
     color: sortKey === key ? 'var(--warm-accent)' : 'var(--warm-text-light)',
   });
 
-  return (
-    <>
-    <div className="page-enter">
-      {/* Header */}
-      <div className="tq-card room-detail-hero" style={{
-        padding: 28, marginBottom: 20, display: 'flex', alignItems: 'center', gap: 28,
-        background: `linear-gradient(135deg, ${room.color}88, ${room.color}33)`,
-        borderColor: `${room.accentColor}44`,
-      }}>
-        <RingGauge value={health} size={110} strokeWidth={10} />
-        <div style={{ flex: 1 }}>
-          <div style={{ marginBottom: 6 }}><RoomIcon /></div>
-          <h2 style={{ fontSize: 24, fontWeight: 900, color: 'var(--warm-text)', margin: '0 0 4px' }}>{roomDisplayName(room.name, room.roomType)}</h2>
-          <div style={{ fontSize: 13, color: 'var(--warm-text-muted)', fontWeight: 600 }}>{room.tasks.length} {t('rooms.tasksTracked')}</div>
-        </div>
-        <button onClick={onBack} className="tq-btn tq-btn-secondary tq-btn-md">
-          <BackIcon /> {t('rooms.backToRooms')}
-        </button>
-      </div>
+  const shortDate = (day: string) => new Date(`${day}T12:00:00`).toLocaleDateString(localeFor(language), { weekday: 'short', month: 'short', day: 'numeric' });
+  const repeatLabel = (task: Task) => monthlyLabel(task, t, language)
+    || (task.scheduleWeekdays ? weekdaysLabel(task.scheduleWeekdays, language, weekStart) : `${t('roomDetail.every')} ${formatFreq(task.frequencyDays, t)}`);
 
-      {/* Task Table */}
-      <div className="tq-card tq-card-padded">
-        <div className="room-table-scroll room-detail-scroll">
-        {/* Column Headers (sortable) */}
-        <div className="room-table-header" style={{
-          display: 'grid', gridTemplateColumns: '1fr 150px 100px 85px 70px 110px 150px 220px',
-          gap: 12, padding: '0 8px 14px', borderBottom: '1.5px solid var(--warm-border)',
-          fontSize: 11, fontWeight: 800, textTransform: 'uppercase', letterSpacing: 1,
-        }}>
-          <div style={colStyle('name')} onClick={() => handleSort('name')}>{t('history.task')}{sortIndicator('name')}</div>
-          <div style={colStyle('health')} onClick={() => handleSort('health')}>{t('rooms.health')}{sortIndicator('health')}</div>
-          <div style={colStyle('frequency')} onClick={() => handleSort('frequency')}>{t('roomDetail.frequency')}{sortIndicator('frequency')}</div>
-          <div style={colStyle('effort')} onClick={() => handleSort('effort')}>{t('roomDetail.effort')}{sortIndicator('effort')}</div>
-          <div style={colStyle('coins')} onClick={() => handleSort('coins')}>{t('roomDetail.coins')}{sortIndicator('coins')}</div>
-          <div style={colStyle('dueDate')} onClick={() => handleSort('dueDate')}>{t('roomDetail.nextDue')}{sortIndicator('dueDate')}</div>
-          <div style={colStyle('assigned')} onClick={() => handleSort('assigned')}>{t('roomDetail.assigned')}{sortIndicator('assigned')}</div>
-          <div style={{ textAlign: 'right', color: 'var(--warm-text-light)' }}>{t('roomDetail.actions')}</div>
-        </div>
+  // The To-dos room (ENH-18): a checklist instead of the chore table. Earliest do-by date first, then
+  // the oldest added; ticking one finishes it, with its coins.
+  const todoOrder = [...sortedTasks].sort((a, b) => (!!a.pausedAt !== !!b.pausedAt ? (a.pausedAt ? 1 : -1) : 0)
+    || String(a.doBy || '9999').localeCompare(String(b.doBy || '9999'))
+    || String(a.createdAt ?? '').localeCompare(String(b.createdAt ?? '')) || a.id - b.id);
+  const todoChecklist = () => (
+    <div className="todo-checklist" style={{ display: 'flex', flexDirection: 'column' }}>
+      {todoOrder.map((task) => {
+        const name = translateTask(task.name, task.translationKey);
+        const btn = getDoneButtonState(task);
+        const ticked = animatedTask === task.id;
+        const off = btn.disabled || !!task.pausedAt;
+        const overdue = !!task.oneTime && task.health <= 0 && !task.pausedAt;
+        const who = (task.assignedUsers ?? []).map((u) => u.displayName).join(' + ');
+        const details = [
+          overdue ? `⚠️ ${t('todos.overdue')}` : '',
+          task.doBy ? t('todos.byDate').replace('{date}', shortDate(task.doBy)) : '',
+          !task.oneTime ? `🔁 ${repeatLabel(task)}` : '',
+          who ? `${t('todos.forWho')} ${who}` : '',
+          task.pausedAt ? pausedLabel(task) : '',
+          btn.disabled && btn.label !== t('roomDetail.done') ? btn.label : '',
+        ].filter(Boolean).join(' · ');
+        return (
+          <div key={task.id} data-task-id={task.id}>
+            {taskEditor(task)}
+            <div className="todo-row" style={{
+              display: 'flex', alignItems: 'center', gap: 12, padding: '12px 6px', borderRadius: 12,
+              borderBottom: '1px solid var(--warm-border-subtle)', transition: 'background-color 0.3s ease',
+              backgroundColor: ticked ? 'var(--health-green-bg)' : 'transparent',
+            }}>
+              <button type="button" role="checkbox" aria-checked={ticked} aria-label={`${t('roomDetail.done')}: ${name}`}
+                title={off ? btn.label : t('roomDetail.done')} disabled={off} onClick={() => !off && handleComplete(task)}
+                style={{
+                  width: 30, height: 30, borderRadius: 9, flexShrink: 0, padding: 0,
+                  display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                  border: `2px solid ${overdue ? 'var(--health-red)' : 'var(--warm-accent)'}`,
+                  backgroundColor: ticked ? 'var(--warm-accent)' : 'var(--warm-bg-input)', color: '#fff',
+                  cursor: off ? 'default' : 'pointer', opacity: off && !ticked ? 0.45 : 1,
+                }}>
+                {ticked && <CheckIcon />}
+              </button>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ fontSize: 15, fontWeight: 800, color: 'var(--warm-text)', overflowWrap: 'anywhere', textDecoration: ticked ? 'line-through' : 'none' }}>{name}</div>
+                {task.notes && <div style={{ fontSize: 12, color: 'var(--warm-text-muted)', fontWeight: 600, marginTop: 2, overflowWrap: 'anywhere' }}>{task.notes}</div>}
+                {details && <div style={{ fontSize: 12, fontWeight: 700, marginTop: 2, color: overdue ? 'var(--health-red)' : 'var(--warm-text-muted)' }}>{details}</div>}
+              </div>
+              <span style={{ fontSize: 12, fontWeight: 800, color: 'var(--warm-accent)', display: 'inline-flex', alignItems: 'center', gap: 3, flexShrink: 0 }}>
+                <CoinIcon />{taskCoins(task)}
+              </span>
+              <TakeBackButton completionId={task.myPendingId} onDone={() => onRefresh?.()} language={language} />
+              {isAdmin && (
+                <button onClick={() => startEdit(task)} className="tq-btn-sm"
+                  style={{ background: 'none', border: '1.5px solid var(--warm-border)', borderRadius: 10, fontWeight: 700, color: 'var(--warm-text-muted)', cursor: 'pointer', fontFamily: 'Nunito', flexShrink: 0 }}>
+                  {t('common.edit')}
+                </button>
+              )}
+            </div>
+          </div>
+        );
+      })}
+      {todoOrder.length === 0 && (
+        <div className="tq-empty-state" style={{ padding: '24px 8px' }}>{t('todos.empty')}</div>
+      )}
+    </div>
+  );
+  const todoLine = [
+    t('todos.countLine').replace('{n}', String(room.todoCount ?? 0)),
+    room.todoOverdue ? t('todos.overdueCount').replace('{n}', String(room.todoOverdue)) : '',
+  ].filter(Boolean).join(' · ');
 
-        {sortedTasks.map((task) => (
-          <div key={task.id}>
-            {editingTask === task.id ? (
+  // The edit pop-up for one chore (a bottom sheet on phones), shared by the table and the to-do checklist
+  const taskEditor = (task: Task) => editingTask === task.id && createPortal(
+              <div className="tq-modal-overlay task-edit-overlay" onClick={() => setEditingTask(null)}>
+              <div className="tq-card tq-modal tq-modal-wide task-edit-sheet" role="dialog" aria-modal="true" onClick={(e) => e.stopPropagation()} style={{ overflowY: 'auto', padding: 12 }}>
               <div style={{
                 padding: '16px 8px', borderBottom: '1px solid var(--warm-border-subtle)',
                 backgroundColor: 'var(--warm-bg-warm)', borderRadius: 12,
@@ -486,7 +634,7 @@ export function RoomDetail({ room, language, isAdmin, currentUserId, currentUser
                     <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--warm-text-light)', minWidth: 70 }}>{t('roomDetail.name')}</label>
                     <input value={editForm.name}
                       onChange={(e) => setEditForm(f => ({ ...f, name: e.target.value }))}
-                      autoFocus
+                      autoFocus={!window.matchMedia('(pointer: coarse)').matches}
                       className="tq-input"
                       style={{ flex: 1, fontWeight: 700 }} />
                   </div>
@@ -501,7 +649,7 @@ export function RoomDetail({ room, language, isAdmin, currentUserId, currentUser
                       style={{ flex: 1, resize: 'vertical' }}
                     />
                   </div>
-                  <div className="task-edit-form" style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
+                  <div className="task-edit-form" style={{ display: 'flex', alignItems: 'center', gap: '12px 20px', flexWrap: 'wrap' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                       <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--warm-text-light)' }}>{t('roomDetail.onDemand')}</label>
                       <input type="checkbox" checked={editForm.onDemand}
@@ -514,12 +662,24 @@ export function RoomDetail({ room, language, isAdmin, currentUserId, currentUser
                         onChange={(e) => setEditForm(f => ({ ...f, showInDashboard: e.target.checked }))}
                         style={{ cursor: 'pointer', width: 16, height: 16, accentColor: 'var(--warm-accent)' }} />
                     </div>}
-                    {!editForm.onDemand && <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                      <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--warm-text-light)' }}>{t('roomDetail.every')}</label>
-                      <FrequencyPicker value={editForm.freqValue} unit={editForm.freqUnit}
-                        t={t}
-                        onChange={(v, u) => setEditForm(f => ({ ...f, freqValue: v, freqUnit: u }))} />
+                    {editForm.onDemand && <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }} title={t('repeat.limitDesc')}>
+                      <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--warm-text-light)' }}>{t('repeat.limit')}</label>
+                      <input type="number" min={1} max={99} className="tq-input-compact" value={editForm.repeatLimit} placeholder="∞"
+                        onChange={(e) => setEditForm(f => ({ ...f, repeatLimit: e.target.value }))} style={{ width: 52 }} />
+                      <select className="tq-input-compact" value={editForm.repeatPeriod} onChange={(e) => setEditForm(f => ({ ...f, repeatPeriod: e.target.value as 'day' | 'week' }))}>
+                        <option value="day">{t('repeat.perDay')}</option>
+                        <option value="week">{t('repeat.perWeek')}</option>
+                      </select>
                     </div>}
+                    {!editForm.onDemand && <DueOnPicker allowOnce={allowOneTime} value={editSchedule} onChange={setEditSchedule} t={t} language={language}
+                      interval={<FrequencyPicker value={editForm.freqValue} unit={editForm.freqUnit}
+                        t={t}
+                        onChange={(v, u) => setEditForm(f => ({ ...f, freqValue: v, freqUnit: u }))} />} />}
+                    {!editForm.onDemand && editSchedule.mode !== 'once' && <StartsOnPicker value={editSchedule} onChange={setEditSchedule} t={t} />}
+                    {!editForm.onDemand && editSchedule.mode !== 'once' && <SeasonPicker value={editSchedule} onChange={setEditSchedule} t={t} language={language} />}
+                    {!editForm.onDemand && <ReminderPicker value={editSchedule} onChange={setEditSchedule} t={t} />}
+                    <TimerPicker value={editSchedule} onChange={setEditSchedule} t={t} />
+                    <StepsField value={editSchedule} onChange={setEditSchedule} t={t} />
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                       <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--warm-text-light)' }}>{t('roomDetail.effort')}</label>
                       <EffortPicker effort={editForm.effort} onChange={(e) => setEditForm(f => ({ ...f, effort: e }))} />
@@ -544,7 +704,7 @@ export function RoomDetail({ room, language, isAdmin, currentUserId, currentUser
                     />
                     <span style={{ fontSize: 11, color: 'var(--warm-text-light)' }}>{t('roomDetail.customCoinsDesc')}</span>
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  {!editForm.onDemand && startsLater(editSchedule) ? <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--warm-text-muted)' }}>{t('schedule.firstDueOnStart')}</div> : <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                     <label style={{ fontSize: 10, fontWeight: 700, color: 'var(--warm-text-light)', minWidth: 58 }}>{t('rooms.health')}</label>
                     <div style={{ width: 220 }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -565,21 +725,11 @@ export function RoomDetail({ room, language, isAdmin, currentUserId, currentUser
                         <span>{t('rooms.dirty')}</span><span>{t('rooms.clean')}</span>
                       </div>
                     </div>
-                  </div>
+                  </div>}
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                     <label style={{ fontSize: 10, fontWeight: 700, color: 'var(--warm-text-light)', minWidth: 58 }}>{t('roomDetail.icon')}</label>
-                    <select
-                      value={editForm.iconKey}
-                      onChange={(e) => setEditForm((f) => ({ ...f, iconKey: e.target.value }))}
-                      className="tq-input-compact"
-                    >
-                      {TASK_ICON_OPTIONS
-                        .slice()
-                        .sort((a, b) => t(`taskIcons.${a.key}`).localeCompare(t(`taskIcons.${b.key}`)))
-                        .map((opt) => (
-                          <option key={opt.key} value={opt.key}>{t(`taskIcons.${opt.key}`)}</option>
-                        ))}
-                    </select>
+                    <IconPicker value={editForm.iconKey} onChange={(k) => setEditForm((f) => ({ ...f, iconKey: k }))} language={language}
+                      taskName={editForm.name} roomName={room.name} roomColor={room.color} coins={coinsByEffort?.[editForm.effort]} />
                   </div>
                   {/* Task assignment — only show if room has no room-level assignment */}
                   {!room.assignedUserId && (
@@ -635,7 +785,7 @@ export function RoomDetail({ room, language, isAdmin, currentUserId, currentUser
                             <>
                               <div style={{ marginLeft: 70, display: 'flex', gap: 8, alignItems: 'center', marginTop: 4 }}>
                                 <label style={{ fontSize: 10, fontWeight: 700, color: 'var(--warm-text-light)', minWidth: 58 }}>Mode</label>
-                                <div style={{ display: 'flex', gap: 6 }}>
+                                <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
                                   {(['first', 'shared', 'custom', 'rotating'] as const).map(mode => (
                                     <button
                                       key={mode}
@@ -656,6 +806,11 @@ export function RoomDetail({ room, language, isAdmin, currentUserId, currentUser
                                   ))}
                                 </div>
                               </div>
+                              {editForm.assignmentMode === 'rotating' && (
+                                <div style={{ marginLeft: 70, marginTop: 4 }}>
+                                  <RotationPeriodPicker value={editSchedule} onChange={setEditSchedule} t={t} language={language} />
+                                </div>
+                              )}
                               {editForm.assignmentMode === 'custom' && (() => {
                                 const total = editForm.assignmentUserIds.reduce((s, id) => s + (editForm.assignmentPercentages[id] ?? 0), 0);
                                 const totalOk = total === 100;
@@ -692,6 +847,24 @@ export function RoomDetail({ room, language, isAdmin, currentUserId, currentUser
                       )}
                     </div>
                   )}
+                  <div className="task-edit-form" style={{ display: 'flex', alignItems: 'center', gap: '8px 16px', flexWrap: 'wrap' }}>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 11, fontWeight: 700, color: 'var(--warm-text-light)', cursor: 'pointer' }}>
+                      {t('pause.switch')}
+                      <input type="checkbox" checked={editForm.paused}
+                        onChange={(e) => setEditForm(f => ({ ...f, paused: e.target.checked, pausedUntil: e.target.checked ? f.pausedUntil : '' }))}
+                        style={{ cursor: 'pointer', width: 16, height: 16, accentColor: 'var(--warm-accent)' }} />
+                    </label>
+                    {editForm.paused && (
+                      <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 11, fontWeight: 700, color: 'var(--warm-text-light)' }}>
+                        {t('pause.untilLabel')}
+                        <input type="date" className="tq-input-compact" value={editForm.pausedUntil} min={tomorrowIso()}
+                          onChange={(e) => setEditForm(f => ({ ...f, pausedUntil: e.target.value }))} />
+                      </label>
+                    )}
+                    {editForm.paused && (
+                      <div style={{ flexBasis: '100%', fontSize: 11, fontWeight: 600, color: 'var(--warm-text-muted)' }}>{t('pause.hint')}</div>
+                    )}
+                  </div>
                   {(() => {
                     const editCustomTotal = editForm.assignmentMode === 'custom'
                       ? editForm.assignmentUserIds.reduce((s, id) => s + (editForm.assignmentPercentages[id] ?? 0), 0)
@@ -716,12 +889,85 @@ export function RoomDetail({ room, language, isAdmin, currentUserId, currentUser
                   })()}
                 </div>
               </div>
-            ) : (
-              <div className="room-task-row" style={{
-                display: 'grid', gridTemplateColumns: '1fr 150px 100px 85px 70px 110px 150px 220px',
+              </div>
+              </div>,
+              document.body
+  );
+
+  return (
+    <>
+    <div className="page-enter">
+      {/* Header */}
+      <div className="tq-card room-detail-hero" style={{
+        padding: 28, marginBottom: 20, display: 'flex', alignItems: 'center', gap: 28,
+        background: `linear-gradient(135deg, ${room.color}88, ${room.color}33)`,
+        borderColor: `${room.accentColor}44`,
+      }}>
+        {room.isTodoRoom ? (
+          <div aria-hidden="true" style={{ width: 110, height: 110, borderRadius: '50%', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', backgroundColor: 'var(--warm-card)', border: `3px solid ${room.todoOverdue ? 'var(--health-red)' : 'var(--warm-accent)'}` }}>
+            <span style={{ fontSize: 30 }}>📝</span>
+            <span style={{ fontSize: 22, fontWeight: 900, color: 'var(--warm-text)' }}>{room.todoCount ?? 0}</span>
+          </div>
+        ) : <RingGauge value={health} size={110} strokeWidth={10} />}
+        <div style={{ flex: 1 }}>
+          <div style={{ marginBottom: 6 }}><RoomIcon /></div>
+          <h2 style={{ fontSize: 24, fontWeight: 900, color: 'var(--warm-text)', margin: '0 0 4px' }}>{roomDisplayName(room.name, room.roomType)}</h2>
+          {room.isTodoRoom ? (
+            <>
+              <div style={{ fontSize: 13, color: room.todoOverdue ? 'var(--health-red)' : 'var(--warm-text-muted)', fontWeight: 700 }}>{todoLine}</div>
+              <div style={{ fontSize: 12, color: 'var(--warm-text-light)', fontWeight: 600, marginTop: 2 }}>{t('todos.noHealth')}</div>
+            </>
+          ) : (
+            <div style={{ fontSize: 13, color: 'var(--warm-text-muted)', fontWeight: 600 }}>{room.tasks.length} {t('rooms.tasksTracked')}</div>
+          )}
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8, alignSelf: 'stretch', justifyContent: 'center' }}>
+          <button onClick={onBack} className="tq-btn tq-btn-secondary tq-btn-md">
+            <BackIcon /> {t('rooms.backToRooms')}
+          </button>
+          {isAdmin && (
+            <button onClick={() => setShowDuplicate((v) => !v)} className="tq-btn tq-btn-secondary tq-btn-sm">
+              {t('duplicateRoom.button')}
+            </button>
+          )}
+        </div>
+      </div>
+
+      {isAdmin && showDuplicate && (
+        <DuplicateRoom room={room} displayName={roomDisplayName(room.name, room.roomType)} users={users || []} language={language}
+          onCancel={() => setShowDuplicate(false)}
+          onDone={(id) => { setShowDuplicate(false); onRefresh?.(); onOpenRoom?.(id); }} />
+      )}
+
+      {/* Task Table */}
+      <div className="tq-card tq-card-padded">
+        {room.isTodoRoom ? todoChecklist() : (
+        <div className="room-table-scroll room-detail-scroll">
+        {/* Column Headers (sortable) */}
+        <div className="room-table-header" style={{
+          display: 'grid', gridTemplateColumns: TASK_COLUMNS,
+          gap: 12, padding: '0 8px 14px', borderBottom: '1.5px solid var(--warm-border)',
+          fontSize: 11, fontWeight: 800, textTransform: 'uppercase', letterSpacing: 1,
+        }}>
+          <div style={colStyle('name')} onClick={() => handleSort('name')}>{t('history.task')}{sortIndicator('name')}</div>
+          <div style={colStyle('health')} onClick={() => handleSort('health')}>{t('rooms.health')}{sortIndicator('health')}</div>
+          <div style={colStyle('frequency')} onClick={() => handleSort('frequency')}>{t('roomDetail.frequency')}{sortIndicator('frequency')}</div>
+          <div style={colStyle('effort')} onClick={() => handleSort('effort')}>{t('roomDetail.effort')}{sortIndicator('effort')}</div>
+          <div style={colStyle('coins')} onClick={() => handleSort('coins')}>{t('roomDetail.coins')}{sortIndicator('coins')}</div>
+          <div style={colStyle('dueDate')} onClick={() => handleSort('dueDate')}>{t('roomDetail.nextDue')}{sortIndicator('dueDate')}</div>
+          <div style={colStyle('assigned')} onClick={() => handleSort('assigned')}>{t('roomDetail.assigned')}{sortIndicator('assigned')}</div>
+          <div style={{ textAlign: 'right', color: 'var(--warm-text-light)' }}>{t('roomDetail.actions')}</div>
+        </div>
+
+        {sortedTasks.map((task) => (
+          <div key={task.id} data-task-id={task.id}>
+            {/* Edit opens in a pop-up (a bottom sheet on phones) so the list doesn't jump around */}
+            {taskEditor(task)}
+              <div className={`room-task-row${task.pausedAt ? ' room-task-paused' : ''}`} style={{
+                display: 'grid', gridTemplateColumns: TASK_COLUMNS,
                 gap: 12, padding: '16px 8px', alignItems: 'center',
                 borderBottom: '1px solid var(--warm-border-subtle)',
-                backgroundColor: animatedTask === task.id ? 'var(--health-green-bg)' : 'transparent',
+                backgroundColor: animatedTask === task.id ? 'var(--health-green-bg)' : task.pausedAt ? 'var(--warm-bg-subtle)' : 'transparent',
                 transition: 'all 0.3s ease', borderRadius: 12,
               }}>
                 <div className="room-task-main" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -745,24 +991,38 @@ export function RoomDetail({ room, language, isAdmin, currentUserId, currentUser
                       </div>
                     )}
                     <div style={{ fontSize: 11, color: 'var(--warm-text-light)', fontWeight: 600 }}>
-                      {timeAgo(task.lastCompletedAt)}{task.isSeasonal ? ` · ${t('roomDetail.seasonal')}` : ''}{task.onDemand ? ` · ${t('roomDetail.onDemand')}` : ''}
+                      {timeAgo(task.lastCompletedAt)}{startsLater(task) ? ` · 📅 ${t('schedule.startsLabel').replace('{date}', new Date(`${task.startsOn}T12:00:00`).toLocaleDateString(localeFor(language), { weekday: 'short', month: 'short', day: 'numeric' }))}` : ''}{task.outOfSeason && task.seasonStartMonth && task.seasonEndMonth ? ` · ${t('schedule.offSeason')} (${seasonLabel(task.seasonStartMonth, task.seasonEndMonth, language)})` : task.isSeasonal ? ` · ${t('roomDetail.seasonal')}` : ''}{task.onDemand ? ` · ${t('roomDetail.onDemand')}` : ''}{task.onDemand && task.repeatLimit ? ` · ${task.myRepeatCount ?? 0}/${task.repeatLimit} ${t(task.repeatPeriod === 'day' ? 'repeat.today' : 'repeat.thisWeek')}` : ''}
                     </div>
                   </div>
                 </div>
-                <div className="room-task-health"><HealthBar value={animatedTask === task.id ? 100 : task.health} height={8} animate={animatedTask === task.id} /></div>
+                <div className="room-task-health"><HealthBar value={animatedTask === task.id ? 100 : task.health} height={8} animate={animatedTask === task.id} notDueYet={notDueYet(task)} /></div>
                 <div className="room-task-frequency" style={{ fontSize: 13, color: 'var(--warm-text-secondary)', fontWeight: 600 }}>
                   {task.onDemand
                     ? <span style={{ color: 'var(--warm-accent)', fontWeight: 700 }}>{t('roomDetail.onDemand')}</span>
-                    : <>{t('roomDetail.every')} {formatFreq(task.frequencyDays, t)}</>
+                    : task.oneTime
+                      ? <span style={{ color: 'var(--warm-accent)', fontWeight: 700 }}>{t('schedule.once')}</span>
+                    : monthlyLabel(task, t, language)
+                      ? <>{monthlyLabel(task, t, language)}</>
+                    : task.scheduleWeekdays
+                      ? <>{weekdaysLabel(task.scheduleWeekdays, language, weekStart)}</>
+                      : <>{t('roomDetail.every')} {formatFreq(task.frequencyDays, t)}</>
                   }
                 </div>
                 <div className="room-task-effort"><EffortDots effort={task.effort} /></div>
                 <div className="room-task-coins" style={{ fontSize: 12, fontWeight: 800, color: 'var(--warm-accent)', display: 'flex', alignItems: 'center', gap: 3 }}>
-                  <CoinIcon />{coinsByEffort?.[task.effort] ?? task.effort * 5}
+                  <CoinIcon />{taskCoins(task)}
                 </div>
-                {task.onDemand
+                {task.pausedAt
+                  ? <div className="room-task-due" style={{ fontSize: 12, fontWeight: 800, color: 'var(--warm-text-secondary)' }}>{pausedLabel(task)}</div>
+                  : task.onDemand
                   ? <div className="room-task-due" style={{ fontSize: 12, fontWeight: 700, color: 'var(--warm-text-light)' }}>—</div>
-                  : (() => { const { text, color } = formatNextDue(task.lastCompletedAt, task.frequencyDays, t, language, task.health); return (
+                  : task.outOfSeason
+                  ? <div className="room-task-due" style={{ fontSize: 12, fontWeight: 700, color: 'var(--warm-text-light)' }}>{t('schedule.offSeason')}</div>
+                  : task.oneTime
+                  ? <div className="room-task-due" style={{ fontSize: 12, fontWeight: 700, color: task.health <= 0 ? 'var(--health-red)' : 'var(--warm-text-light)' }}>
+                      {task.health <= 0 ? t('todos.overdue') : task.doBy ? t('todos.byDate').replace('{date}', new Date(`${task.doBy}T12:00:00`).toLocaleDateString(localeFor(language), { month: 'short', day: 'numeric' })) : '—'}
+                    </div>
+                  : (() => { const { text, color } = formatNextDue(task.lastCompletedAt, task.frequencyDays, t, language, task.health, task.nextDueAt); return (
                       <div className="room-task-due" style={{ fontSize: 12, fontWeight: 700, color }}>{text}</div>
                     ); })()
                 }
@@ -780,7 +1040,7 @@ export function RoomDetail({ room, language, isAdmin, currentUserId, currentUser
                         )}
                         {task.assignmentMode === 'rotating' && task.rotationCurrentUserId !== undefined && (
                           <div style={{ fontSize: 10, color: 'var(--warm-accent)', fontWeight: 700, marginTop: 2 }}>
-                            🔄 {task.assignedUsers.find(u => u.id === task.rotationCurrentUserId)?.displayName || '?'}
+                            🔄 {task.assignedUsers.find(u => u.id === task.rotationCurrentUserId)?.displayName || '?'}{task.rotationPeriod === 'week' ? ` · ${t('repeat.thisWeek')}` : ''}
                           </div>
                         )}
                       </span>
@@ -794,7 +1054,13 @@ export function RoomDetail({ room, language, isAdmin, currentUserId, currentUser
                       : <span style={{ color: 'var(--warm-text-light)', opacity: 0.5 }}>—</span>
                   }
                 </div>
-                <div className="room-task-actions" style={{ display: 'flex', gap: 4, justifyContent: 'flex-end', position: 'relative' }}>
+                <div className="room-task-actions" style={{ display: 'flex', flexWrap: 'wrap', gap: '8px 12px', justifyContent: 'flex-end', alignItems: 'center', position: 'relative' }}>
+                  <div className="room-task-tools" style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
+                  <button onClick={() => togglePin(task)} className="tq-btn-sm" aria-pressed={!!task.pinned}
+                    title={task.pinned ? t('home.unpin') : t('home.pin')} aria-label={task.pinned ? t('home.unpin') : t('home.pin')}
+                    style={{ background: 'none', border: '1.5px solid var(--warm-border)', borderRadius: 10, cursor: 'pointer', fontSize: 14, color: task.pinned ? 'var(--warm-accent)' : 'var(--warm-text-light)' }}>
+                    {task.pinned ? '★' : '☆'}
+                  </button>
                   {isAdmin && (
                     <>
                       <button onClick={() => startEdit(task)}
@@ -804,22 +1070,18 @@ export function RoomDetail({ room, language, isAdmin, currentUserId, currentUser
                           fontWeight: 700, color: 'var(--warm-text-muted)',
                           cursor: 'pointer', fontFamily: 'Nunito',
                         }}>{t('common.edit')}</button>
-                      <button onClick={() => deleteTask(task.id)}
-                        className="tq-btn-sm"
-                        style={{
-                          background: 'none', border: '1.5px solid var(--warm-danger-border)', borderRadius: 10,
-                          fontWeight: 700, color: 'var(--warm-danger)',
-                          cursor: 'pointer', fontFamily: 'Nunito',
-                        }}>&times;</button>
-                      <div style={{ position: 'relative' }}>
+                      <div className="room-task-more" style={{ position: 'relative' }}>
                         <button
                           onClick={(e) => { e.stopPropagation(); if (taskMenuOpen === task.id) { setTaskMenuOpen(null); setMoveMenuTaskId(null); } else { handleTaskMenuOpen(task.id); setMoveMenuTaskId(null); } }}
-                          className="tq-btn-sm"
-                          style={{ background: 'none', border: '1.5px solid var(--warm-border)', borderRadius: 10, fontWeight: 700, color: 'var(--warm-text-muted)', cursor: 'pointer', fontFamily: 'Nunito', padding: '2px 7px', fontSize: 16 }}
-                          title="More options"
-                        >⋮</button>
+                          className="tq-btn-sm room-task-more-btn"
+                          style={{ background: 'none', border: '1.5px solid var(--warm-border)', borderRadius: 10, color: 'var(--warm-text-muted)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                          title={t('roomDetail.moreOptions')} aria-label={t('roomDetail.moreOptions')}
+                          aria-haspopup="menu" aria-expanded={taskMenuOpen === task.id}
+                        >
+                          <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true" fill="currentColor"><circle cx="4" cy="10" r="2" /><circle cx="10" cy="10" r="2" /><circle cx="16" cy="10" r="2" /></svg>
+                        </button>
                         {taskMenuOpen === task.id && (
-                          <div
+                          <div className="room-task-menu"
                             style={{ position: 'absolute', right: 0, top: '100%', zIndex: 100, background: 'var(--warm-card)', border: '1.5px solid var(--warm-border)', borderRadius: 12, boxShadow: '0 4px 16px rgba(0,0,0,0.14)', minWidth: 180, overflow: 'hidden' }}
                           >
                             <button
@@ -844,6 +1106,10 @@ export function RoomDetail({ room, language, isAdmin, currentUserId, currentUser
                               </div>
                             )}
                             <button
+                              onClick={() => togglePause(task)}
+                              style={{ width: '100%', textAlign: 'left', padding: '10px 14px', fontSize: 12, fontWeight: 700, color: 'var(--warm-text)', background: 'none', border: 'none', borderTop: '1px solid var(--warm-border-subtle)', cursor: 'pointer', fontFamily: 'Nunito' }}
+                            >{task.pausedAt ? t('pause.resume') : t('pause.pause')}</button>
+                            <button
                               onClick={() => { setTaskMenuOpen(null); setMoveMenuTaskId(null); }}
                               style={{ width: '100%', textAlign: 'center', padding: '8px 14px', fontSize: 11, fontWeight: 600, color: 'var(--warm-text-muted)', background: 'none', border: 'none', borderTop: '1px solid var(--warm-border-subtle)', cursor: 'pointer', fontFamily: 'Nunito' }}
                             >{t('common.cancel')}</button>
@@ -855,21 +1121,41 @@ export function RoomDetail({ room, language, isAdmin, currentUserId, currentUser
                   {isAdmin && task.completedTodayBy?.completionId && (
                     <button
                       onClick={async () => {
-                        await api.cancelCompletion(task.completedTodayBy!.completionId);
-                        onRefresh?.();
+                        const by = task.completedTodayBy!;
+                        const ask = t('roomDetail.undoDoneConfirm').replace('{task}', translateTask(task.name, task.translationKey))
+                          .replace('{name}', by.displayName).replace('{coins}', String(by.coinsEarned ?? 0));
+                        if (!window.confirm(ask)) return;
+                        await attempt(async () => {
+                          await api.cancelCompletion(by.completionId);
+                          onRefresh?.();
+                        });
                       }}
-                      title={t('roomDetail.reset')}
+                      title={t('roomDetail.undoDoneTitle')}
                       className="tq-btn-sm"
                       style={{
                         background: 'none', border: '1.5px solid var(--warm-border)', borderRadius: 10,
-                        cursor: 'pointer', fontFamily: 'Nunito',
+                        fontWeight: 700, color: 'var(--warm-text-muted)', cursor: 'pointer', fontFamily: 'Nunito', whiteSpace: 'nowrap',
                       }}
-                    >🔄</button>
+                    >↩️ {t('roomDetail.undoDone')}</button>
                   )}
+                  </div>
+                  {!task.pausedAt && <div className="room-task-done" style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
                   {(() => {
                     const btn = getDoneButtonState(task);
+                    // Kids start the timer first; Done comes when it ends (NEW-1)
+                    const waitForTimer = !!timer?.mustWait(task);
                     return (
-                      <button
+                      <>
+                      <TeamUpButton info={task.teamUp} onClick={() => setTeamPick(task)} language={language} />
+                      <TakeBackButton completionId={task.myPendingId} onDone={() => onRefresh?.()} language={language} />
+                      {canAddProof && !btn.disabled && !waitForTimer && (
+                        <button onClick={() => setProofTask(task)} className="tq-btn tq-btn-secondary tq-btn-sm" title={t(allowPhotos ? 'proof.addProof' : 'proof.addNote')} aria-label={t(allowPhotos ? 'proof.addProof' : 'proof.addNote')}>📎</button>
+                      )}
+                      {btn.label !== t('app.notAssigned') && !claimedLabel(task.teamUp) && (
+                        <button onClick={() => setLateTask(task)} className="tq-btn tq-btn-secondary tq-btn-sm" title={t('late.button')} aria-label={t('late.button')}>📅</button>
+                      )}
+                      {!btn.disabled && <TimerStartButton task={{ ...task, name: translateTask(task.name, task.translationKey) }} language={language} primary={waitForTimer} />}
+                      {!(waitForTimer && !btn.disabled) && <button
                         onClick={() => !btn.disabled && handleComplete(task)}
                         disabled={btn.disabled}
                         className={btn.disabled ? 'tq-btn tq-btn-sm' : 'tq-btn tq-btn-primary tq-btn-sm'}
@@ -883,18 +1169,37 @@ export function RoomDetail({ room, language, isAdmin, currentUserId, currentUser
                         }}
                       >
                         {btn.disabled ? btn.label : <><CheckIcon /> {btn.label}</>}
-                      </button>
+                      </button>}
+                      </>
                     );
                   })()}
+                  </div>}
                 </div>
               </div>
-            )}
+
           </div>
         ))}
-        </div>{/* end room-table-scroll */}
+        </div>)}{/* end room-table-scroll */}
 
         {/* Add Task */}
-        {isAdmin && showAddTask ? (
+        {/* To-dos room: "+ To-do" opens the short to-do form (the server makes it one-time) */}
+        {isAdmin && room.isTodoRoom ? (
+          showAddTask ? (
+            <div style={{ marginTop: 12 }}>
+              <TodoQuickAdd language={language} roomId={room.id}
+                people={(users ?? []).map((u) => ({ id: u.id, displayName: u.displayName }))}
+                onCancel={() => setShowAddTask(false)}
+                onAdded={() => { setShowAddTask(false); onRefresh?.(); }} />
+            </div>
+          ) : (
+            <div style={{ padding: '14px 8px' }}>
+              <button onClick={() => setShowAddTask(true)} className="tq-btn-md"
+                style={{ width: '100%', background: 'none', border: '1.5px dashed var(--warm-border)', borderRadius: 12, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, fontWeight: 700, color: 'var(--warm-text-light)', fontFamily: 'Nunito' }}>
+                <PlusIcon /> {t('todos.add')}
+              </button>
+            </div>
+          )
+        ) : isAdmin && showAddTask ? (
           <div style={{
             padding: '16px 8px', borderTop: '1px solid var(--warm-border-subtle)',
             backgroundColor: 'var(--warm-bg-warm)', borderRadius: 12, marginTop: 4,
@@ -919,7 +1224,7 @@ export function RoomDetail({ room, language, isAdmin, currentUserId, currentUser
                   className="tq-input"
                   style={{ flex: 1, resize: 'vertical' }} />
               </div>
-              <div className="task-add-form" style={{ display: 'flex', alignItems: 'center', gap: 20, minHeight: 30 }}>
+              <div className="task-add-form" style={{ display: 'flex', alignItems: 'center', gap: '12px 20px', flexWrap: 'wrap', minHeight: 30 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--warm-text-light)' }}>{t('roomDetail.onDemand')}</label>
                   <input type="checkbox" checked={newTaskOnDemand}
@@ -932,18 +1237,29 @@ export function RoomDetail({ room, language, isAdmin, currentUserId, currentUser
                     onChange={(e) => setNewTaskShowInDashboard(e.target.checked)}
                     style={{ cursor: 'pointer', width: 16, height: 16, accentColor: 'var(--warm-accent)' }} />
                 </div>}
-                {!newTaskOnDemand && <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--warm-text-light)' }}>{t('roomDetail.every')}</label>
-                  <FrequencyPicker value={newFreqValue} unit={newFreqUnit}
-                    t={t}
-                    onChange={(v, u) => { setNewFreqValue(v); setNewFreqUnit(u); }} />
+                {newTaskOnDemand && <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }} title={t('repeat.limitDesc')}>
+                  <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--warm-text-light)' }}>{t('repeat.limit')}</label>
+                  <input type="number" min={1} max={99} className="tq-input-compact" value={newRepeatLimit} placeholder="∞" onChange={(e) => setNewRepeatLimit(e.target.value)} style={{ width: 52 }} />
+                  <select className="tq-input-compact" value={newRepeatPeriod} onChange={(e) => setNewRepeatPeriod(e.target.value as 'day' | 'week')}>
+                    <option value="day">{t('repeat.perDay')}</option>
+                    <option value="week">{t('repeat.perWeek')}</option>
+                  </select>
                 </div>}
+                {!newTaskOnDemand && <DueOnPicker allowOnce={allowOneTime} value={newSchedule} onChange={setNewSchedule} t={t} language={language}
+                  interval={<FrequencyPicker value={newFreqValue} unit={newFreqUnit}
+                    t={t}
+                    onChange={(v, u) => { setNewFreqValue(v); setNewFreqUnit(u); }} />} />}
+                {!newTaskOnDemand && newSchedule.mode !== 'once' && <StartsOnPicker value={newSchedule} onChange={setNewSchedule} t={t} />}
+                {!newTaskOnDemand && newSchedule.mode !== 'once' && <SeasonPicker value={newSchedule} onChange={setNewSchedule} t={t} language={language} />}
+                {!newTaskOnDemand && <ReminderPicker value={newSchedule} onChange={setNewSchedule} t={t} />}
+                <TimerPicker value={newSchedule} onChange={setNewSchedule} t={t} />
+                <StepsField value={newSchedule} onChange={setNewSchedule} t={t} />
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--warm-text-light)' }}>{t('roomDetail.effort')}</label>
                   <EffortPicker effort={newTaskEffort} onChange={setNewTaskEffort} />
                 </div>
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              {!newTaskOnDemand && startsLater(newSchedule) ? <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--warm-text-muted)' }}>{t('schedule.firstDueOnStart')}</div> : <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                 <label style={{ fontSize: 10, fontWeight: 700, color: 'var(--warm-text-light)', minWidth: 58 }}>{t('rooms.health')}</label>
                 <div style={{ width: 220 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -964,21 +1280,11 @@ export function RoomDetail({ room, language, isAdmin, currentUserId, currentUser
                     <span>{t('rooms.dirty')}</span><span>{t('rooms.clean')}</span>
                   </div>
                 </div>
-              </div>
+              </div>}
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <label style={{ fontSize: 10, fontWeight: 700, color: 'var(--warm-text-light)', minWidth: 58 }}>{t('roomDetail.icon')}</label>
-                <select
-                  value={newTaskIconKey}
-                  onChange={(e) => setNewTaskIconKey(e.target.value)}
-                  className="tq-input-compact"
-                >
-                  {TASK_ICON_OPTIONS
-                    .slice()
-                    .sort((a, b) => t(`taskIcons.${a.key}`).localeCompare(t(`taskIcons.${b.key}`)))
-                    .map((opt) => (
-                      <option key={opt.key} value={opt.key}>{t(`taskIcons.${opt.key}`)}</option>
-                    ))}
-                </select>
+                <IconPicker value={newTaskIconKey} onChange={setNewTaskIconKey} language={language}
+                  taskName={newTaskName} roomName={room.name} roomColor={room.color} coins={coinsByEffort?.[newTaskEffort]} />
               </div>
               {!room.assignedUserId && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -1030,8 +1336,8 @@ export function RoomDetail({ room, language, isAdmin, currentUserId, currentUser
                         <>
                           <div style={{ marginLeft: 70, display: 'flex', gap: 8, alignItems: 'center', marginTop: 4 }}>
                             <label style={{ fontSize: 10, fontWeight: 700, color: 'var(--warm-text-light)', minWidth: 58 }}>Mode</label>
-                            <div style={{ display: 'flex', gap: 6 }}>
-                              {(['first', 'shared', 'custom'] as const).map(mode => (
+                            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                              {(['first', 'shared', 'custom', 'rotating'] as const).map(mode => (
                                 <button
                                   key={mode}
                                   onClick={() => {
@@ -1046,11 +1352,16 @@ export function RoomDetail({ room, language, isAdmin, currentUserId, currentUser
                                     cursor: 'pointer', fontFamily: 'Nunito',
                                   }}
                                 >
-                                  {mode === 'first' ? t('rooms.modeFirst') : mode === 'shared' ? t('rooms.modeShared') : t('rooms.modeCustom')}
+                                  {mode === 'first' ? t('rooms.modeFirst') : mode === 'shared' ? t('rooms.modeShared') : mode === 'custom' ? t('rooms.modeCustom') : t('roomDetail.rotating')}
                                 </button>
                               ))}
                             </div>
                           </div>
+                          {newAssignmentMode === 'rotating' && (
+                            <div style={{ marginLeft: 70, marginTop: 4 }}>
+                              <RotationPeriodPicker value={newSchedule} onChange={setNewSchedule} t={t} language={language} />
+                            </div>
+                          )}
                           {newAssignmentMode === 'custom' && (() => {
                             const total = newAssignmentUserIds.reduce((s, id) => s + (newAssignmentPercentages[id] ?? 0), 0);
                             const totalOk = total === 100;
@@ -1140,6 +1451,39 @@ export function RoomDetail({ room, language, isAdmin, currentUserId, currentUser
         ) : null}
       </div>
     </div>
+    {teamPick && (
+      <TeamUpDialog task={{ id: teamPick.id, name: translateTask(teamPick.name, teamPick.translationKey) }} language={language}
+        people={(users ?? []).filter((u) => u.id !== currentUserId && ((teamPick.effectiveAssignedUserIds ?? []).length === 0 || teamPick.effectiveAssignedUserIds!.includes(u.id)))}
+        onClose={() => setTeamPick(null)} onStarted={() => onRefresh?.()} />
+    )}
+    {proofTask && (
+      <ProofModal
+        taskTitle={translateTask(proofTask.name, proofTask.translationKey)}
+        language={language}
+        photos={allowPhotos}
+        onClose={() => setProofTask(null)}
+        onSubmit={async (proof) => { onCompleteTask(proofTask.id, proof); setProofTask(null); }}
+      />
+    )}
+    {lateTask && (() => {
+      // Admins and members can say who did it: the chore's people, or everyone
+      const canPick = currentUserRole === 'admin' || currentUserRole === 'member';
+      const ids = lateTask.effectiveAssignedUserIds ?? [];
+      const all = users ?? [];
+      const others = all.filter((u) => u.id !== currentUserId && (ids.length > 0 ? ids.includes(u.id) : !lateTask.assignedToChildren || u.role === 'child'));
+      const me = all.find((u) => u.id === currentUserId);
+      return (
+        <LateLogModal
+          task={{ id: lateTask.id, title: translateTask(lateTask.name, lateTask.translationKey) }}
+          people={canPick && me ? [me, ...others] : []}
+          currentUserId={currentUserId}
+          isParent={currentUserRole === 'admin'}
+          language={language}
+          onClose={() => setLateTask(null)}
+          onLogged={(r) => { if (r.newAchievements?.length) onAchievementsUnlocked?.(r.newAchievements); onRefresh?.(); }}
+        />
+      );
+    })()}
     {adminModalTask && (
       <AdminCompleteModal
         task={adminModalTask}
@@ -1212,6 +1556,7 @@ export function RoomDetail({ room, language, isAdmin, currentUserId, currentUser
         </div>
       </div>
     )}
+    <UndoToast undo={undo} language={language} onClose={closeUndo} onRestored={() => onRefresh?.()} />
     </>
   );
 }

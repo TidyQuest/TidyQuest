@@ -6,6 +6,8 @@ interface HealthBarProps {
   height?: number;
   showLabel?: boolean;
   animate?: boolean;
+  /** A chore that can't be done yet: it stops at yellow, since red means "due, do it now" (#153) */
+  notDueYet?: boolean;
 }
 
 const HealthBar: React.FC<HealthBarProps> = ({
@@ -13,8 +15,9 @@ const HealthBar: React.FC<HealthBarProps> = ({
   height = 10,
   showLabel = true,
   animate = false,
+  notDueYet = false,
 }) => {
-  const color = getHealthColor(value);
+  const color = notDueYet && value < 40 ? 'var(--health-yellow)' : getHealthColor(value);
 
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%' }}>
