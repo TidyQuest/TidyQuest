@@ -1372,7 +1372,10 @@
       "more_goal_weeks_one": "1 more weekly goal in a row",
       "more_task_count_one": "1 more time",
       "more_room_count_one": "1 more chore in that room",
-      "more_task_weeks_one": "1 more week in a row"
+      "more_task_weeks_one": "1 more week in a row",
+      "ladder_team_ups": "Team chores",
+      "more_team_ups": "{n} more team chores",
+      "more_team_ups_one": "1 more team chore"
     },
     "notify": {
       "taskDue": "📋 Due today: {task}",

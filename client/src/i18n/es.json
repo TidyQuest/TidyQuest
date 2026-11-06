@@ -1372,7 +1372,10 @@
       "more_goal_weeks_one": "1 meta semanal seguida más",
       "more_task_count_one": "1 vez más",
       "more_room_count_one": "1 tarea más en esa habitación",
-      "more_task_weeks_one": "1 semana seguida más"
+      "more_task_weeks_one": "1 semana seguida más",
+      "ladder_team_ups": "Tareas en equipo",
+      "more_team_ups": "{n} tareas más en equipo",
+      "more_team_ups_one": "1 tarea más en equipo"
     },
     "notify": {
       "taskDue": "📋 Para hoy: {task}",

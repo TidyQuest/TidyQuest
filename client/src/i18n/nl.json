@@ -1372,7 +1372,10 @@
       "more_goal_weeks_one": "nog 1 weekdoel op rij",
       "more_task_count_one": "nog 1 keer",
       "more_room_count_one": "nog 1 taak in die ruimte",
-      "more_task_weeks_one": "nog 1 week op rij"
+      "more_task_weeks_one": "nog 1 week op rij",
+      "ladder_team_ups": "Taken als team",
+      "more_team_ups": "nog {n} taken als team",
+      "more_team_ups_one": "nog 1 taak als team"
     },
     "notify": {
       "taskDue": "📋 Vandaag te doen: {task}",

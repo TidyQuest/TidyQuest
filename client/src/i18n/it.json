@@ -1372,7 +1372,10 @@
       "more_goal_weeks_one": "ancora 1 obiettivo di fila",
       "more_task_count_one": "ancora 1 volta",
       "more_room_count_one": "ancora 1 attività in quella stanza",
-      "more_task_weeks_one": "ancora 1 settimana di fila"
+      "more_task_weeks_one": "ancora 1 settimana di fila",
+      "ladder_team_ups": "Attività in squadra",
+      "more_team_ups": "ancora {n} attività in squadra",
+      "more_team_ups_one": "ancora 1 attività in squadra"
     },
     "notify": {
       "taskDue": "📋 Da fare oggi: {task}",

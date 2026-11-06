@@ -9,6 +9,13 @@ What changed in each release, in plain language, newest first. Releases up to v0
 
 ## Unreleased
 
+### Fixed
+
+- On Achievements, the row of team-up badges (Better Together, Dream Team, Unstoppable Crew) showed
+  "badges.ladder_team_ups" instead of its name. It's now called "Team chores" in all six languages, and the hint for
+  the next one says "5 more team chores" instead of "5 to go". A new test checks that every row of badges has a name,
+  and that every piece of text the app asks for exists. (#175)
+
 ## v0.17.0 (2026-11-05)
 
 ### Added

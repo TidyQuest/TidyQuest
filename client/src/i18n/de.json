@@ -1372,7 +1372,10 @@
       "more_goal_weeks_one": "noch 1 Wochenziel in Folge",
       "more_task_count_one": "noch 1-mal",
       "more_room_count_one": "noch 1 Aufgabe in diesem Raum",
-      "more_task_weeks_one": "noch 1 Woche in Folge"
+      "more_task_weeks_one": "noch 1 Woche in Folge",
+      "ladder_team_ups": "Aufgaben im Team",
+      "more_team_ups": "noch {n} Aufgaben im Team",
+      "more_team_ups_one": "noch 1 Aufgabe im Team"
     },
     "notify": {
       "taskDue": "📋 Heute fällig: {task}",

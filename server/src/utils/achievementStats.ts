@@ -141,7 +141,7 @@ export function builtinBadgeBonus(): number {
 }
 
 // Built-in badges in a ladder (several for the same number, e.g. 1, 10, 25 … chores) show as tiers
-const LADDERS = new Set(
+export const LADDERS = new Set(
   Object.entries(ACHIEVEMENTS.filter((a) => !a.secret).reduce<Record<string, number>>((m, a) => ({ ...m, [a.metric]: (m[a.metric] ?? 0) + 1 }), {}))
     .filter(([, n]) => n > 1).map(([metric]) => metric)
 );
