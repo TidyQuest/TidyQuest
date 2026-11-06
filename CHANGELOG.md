@@ -9,6 +9,8 @@ What changed in each release, in plain language, newest first. Releases up to v0
 
 ## Unreleased
 
+## v0.17.1 (2026-11-05)
+
 ### Fixed
 
 - On Achievements, the row of team-up badges (Better Together, Dream Team, Unstoppable Crew) showed
