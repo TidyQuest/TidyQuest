@@ -1,0 +1,12 @@
+name: "Tidy Quest"
+version: "0.6.2"
+slug: "tidy_quest"
+description: "TidyQuest is a self-hosted web application that gamifies housework using RPG mechanics. Complete tasks, earn coins, unlock achievements, and compete with your family on the leaderboard."
+arch:
+  - aarch64
+init: false
+panel_icon: "mdi:greenhouse"
+panel_title: "Tidy Quest"
+ingress: true
+options: {}
+schema: {}
