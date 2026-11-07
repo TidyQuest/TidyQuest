@@ -17,6 +17,7 @@ self.addEventListener('push', (event) => {
         self.registration.showNotification(data.title || 'TidyQuest', {
             body: data.body || '',
             icon: '/icon-192.png',
+            badge: '/transparent-icon.png',
             data: { url: data.url || './' },
         }),
     );
