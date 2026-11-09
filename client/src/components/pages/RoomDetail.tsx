@@ -789,7 +789,7 @@ export function RoomDetail({ room, language, isAdmin, currentUserId, currentUser
                           {editForm.assignmentUserIds.length >= 2 && (
                             <>
                               <div style={{ marginLeft: 70, display: 'flex', gap: 8, alignItems: 'center', marginTop: 4 }}>
-                                <label style={{ fontSize: 10, fontWeight: 700, color: 'var(--warm-text-light)', minWidth: 58 }}>Mode</label>
+                                <label style={{ fontSize: 10, fontWeight: 700, color: 'var(--warm-text-light)', minWidth: 58 }}>{t('roomDetail.assignmentMode')}</label>
                                 <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
                                   {(['first', 'shared', 'custom', 'rotating'] as const).map(mode => (
                                     <button
@@ -1353,7 +1353,7 @@ export function RoomDetail({ room, language, isAdmin, currentUserId, currentUser
                       {newAssignmentUserIds.length >= 2 && (
                         <>
                           <div style={{ marginLeft: 70, display: 'flex', gap: 8, alignItems: 'center', marginTop: 4 }}>
-                            <label style={{ fontSize: 10, fontWeight: 700, color: 'var(--warm-text-light)', minWidth: 58 }}>Mode</label>
+                            <label style={{ fontSize: 10, fontWeight: 700, color: 'var(--warm-text-light)', minWidth: 58 }}>{t('roomDetail.assignmentMode')}</label>
                             <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
                               {(['first', 'shared', 'custom', 'rotating'] as const).map(mode => (
                                 <button

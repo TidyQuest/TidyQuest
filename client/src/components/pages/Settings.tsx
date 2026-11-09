@@ -1456,7 +1456,7 @@ export function Settings({
                   </div>
                   <div className="family-member-stats" style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 2 }}>
                     <span style={{ fontSize: 11, color: 'var(--warm-text-light)', fontWeight: 600 }}>{u.coins} {t('settings.coins')}</span>
-                    <span style={{ fontSize: 11, color: 'var(--warm-text-light)', fontWeight: 600 }}>{u.currentStreak}d {t('settings.streak')}</span>
+                    <span style={{ fontSize: 11, color: 'var(--warm-text-light)', fontWeight: 600 }}>{t('common.daysShort').replace('{n}', String(u.currentStreak))} {t('settings.streak')}</span>
                     {shields && <ShieldIcons count={u.streakShields} language={user.language} style={{ fontSize: 11 }} />}
                   </div>
                 </div>

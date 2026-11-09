@@ -3,6 +3,7 @@ import { api, type CoinBoost } from '../../hooks/useApi';
 import { useTranslation } from '../../hooks/useTranslation';
 import { localeFor } from '../../utils/locale';
 import { familyZone, toHomeInput, fromHomeInput } from '../../utils/clock';
+import { serverErrorText } from '../../utils/serverError';
 
 /** "2026-10-17T18:00" for a datetime-local input, in local time. */
 // The start and end are typed and shown on the clock at home (Settings → Time zone)
@@ -31,6 +32,12 @@ export function CoinBoostsAdmin({ rooms, language }: { rooms: BoostRoom[]; langu
 
   const create = async () => {
     setError('');
+    // An empty or half-typed date box can't be read
+    const readable = (v: string) => !!v && !Number.isNaN((fromHomeInput(v) ?? new Date(v)).getTime());
+    if (!readable(startAt) || !readable(endAt)) {
+      setError(t('errors.badDate'));
+      return;
+    }
     try {
       await api.createBoost({
         title: title.trim(), multiplier: Number(multiplier),
@@ -41,7 +48,7 @@ export function CoinBoostsAdmin({ rooms, language }: { rooms: BoostRoom[]; langu
       setTitle(''); setRoomIds([]); setTaskIds([]); setChoreQuery('');
       await load();
     } catch (err) {
-      setError(err instanceof Error ? err.message : t('common.error'));
+      setError(serverErrorText(err, t));
     }
   };
 

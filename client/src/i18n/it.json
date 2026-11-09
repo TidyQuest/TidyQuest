@@ -390,7 +390,9 @@
       "waitingCount": "{n} in attesa di approvazione",
       "alreadyDone": "È già fatto!",
       "takeBack": "Annulla",
-      "takeBackHint": "Hai toccato Fatto per sbaglio? Annullalo prima che decida un genitore."
+      "takeBackHint": "Hai toccato Fatto per sbaglio? Annullalo prima che decida un genitore.",
+      "importInvalid": "Questo non è un backup di TidyQuest: non contiene persone né stanze.",
+      "importFailed": "Importazione non riuscita: {error}"
     },
     "admin": {
       "whoDidThisTask": "Chi ha completato questo compito?",
@@ -578,7 +580,8 @@
       "undoDone": "Annulla",
       "undoDoneTitle": "Annulla questo completamento (toglie le sue monete)",
       "undoDoneConfirm": "Annullare «{task}» di {name}? Le {coins} monete vengono tolte.",
-      "moreOptions": "Altre opzioni"
+      "moreOptions": "Altre opzioni",
+      "assignmentMode": "Modalità"
     },
     "avatars": {
       "cat": "Gatto",
@@ -697,7 +700,10 @@
       "showLess": "Mostra meno",
       "error": "Qualcosa è andato storto",
       "close": "Chiudi",
-      "actionFailed": "Non ha funzionato. Controlla la connessione e riprova."
+      "actionFailed": "Non ha funzionato. Controlla la connessione e riprova.",
+      "openMenu": "Apri menu",
+      "dismiss": "Chiudi",
+      "daysShort": "{n} g"
     },
     "units": {
       "hours": "ore",
@@ -1109,7 +1115,8 @@
       "weeklyWinTitle": "Vittoria settimanale",
       "weeklyWinTemplate": "Vittoria settimanale",
       "bonusEarned": "di bonus guadagnate!",
-      "bonusWhenReached": "+{n} di bonus quando lo raggiungi"
+      "bonusWhenReached": "+{n} di bonus quando lo raggiungi",
+      "reachedReason": "Obiettivo raggiunto: {title}"
     },
     "coins": {
       "reasonPlaceholder": "Motivo (facoltativo)",
@@ -1219,7 +1226,28 @@
       "addNewRoom": "nuova, in una nuova stanza",
       "addRow": "nuova",
       "apply": "Applica modifiche ({n})",
-      "errorsSkipped": "Le righe con problemi vengono saltate."
+      "errorsSkipped": "Le righe con problemi vengono saltate.",
+      "errEmptyFile": "Il file è vuoto",
+      "errTooManyRows": "Al massimo {n} righe",
+      "errMissingColumns": "Colonna/e mancante/i: {cols}",
+      "errMissingRoom": "La stanza è vuota",
+      "errMissingTask": "Il nome dell'attività è vuoto",
+      "errDuplicateTask": "Stessa stanza e attività della riga {line}",
+      "errBadDays": "«{value}» non è un numero di giorni",
+      "errBadEffort": "Lo sforzo deve essere da 1 a 5 (ricevuto «{value}»)",
+      "errBadCoins": "Le monete devono essere un numero intero, o vuote per il valore dello sforzo (ricevuto «{value}»)",
+      "errBadBoolean": "«{value}» non è né yes né no",
+      "errUnknownPerson": "Nessuno qui si chiama «{value}»",
+      "errBadTimer": "Il timer deve essere da 0 a {max} minuti, o vuoto per nessuno (ricevuto «{value}»)",
+      "errBadSteps": "Al massimo {max} passaggi, uno per riga, di massimo {length} caratteri ciascuno",
+      "errAmbiguousRoom": "{n} stanze si chiamano «{value}»; rinominane prima una",
+      "errAmbiguousTask": "{n} attività in «{room}» si chiamano «{value}»; rinominane prima una",
+      "errMissingTitle": "Il titolo è vuoto",
+      "errDuplicateTitle": "Stesso titolo della riga {line}",
+      "errBadCost": "Il prezzo deve essere un numero intero di almeno 1 (ricevuto «{value}»)",
+      "errAmbiguousReward": "{n} ricompense si chiamano «{value}»; rinominane prima una",
+      "errNewRewardCost": "Una nuova ricompensa ha bisogno di un prezzo",
+      "errNotSaved": "Non è stato possibile salvare la riga {line} ({error}), quindi non è cambiato nulla."
     },
     "rewardOrder": {
       "up": "Sposta su",
@@ -1417,7 +1445,8 @@
       "shieldSaved": "🛡️ Il tuo scudo ha salvato la tua serie di {n} giorni!",
       "shieldsSaved": "🛡️ {count} scudi hanno salvato la tua serie di {n} giorni!",
       "shieldGiven": "🛡️ {name} ti ha regalato uno scudo della serie. Salva la tua serie se salti un giorno.",
-      "recapLastWeek": "📊 La settimana scorsa: {lines}"
+      "recapLastWeek": "📊 La settimana scorsa: {lines}",
+      "testFamily": "👋 Test di TidyQuest inviato da {name} alle {time}: le notifiche della famiglia funzionano!"
     },
     "notifyAdmin": {
       "peopleTitle": "Chi riceve cosa",
@@ -2356,6 +2385,19 @@
       "night_off_desc": "Qualcun altro prepara la cena, o si ordina.",
       "pick_outing": "Scegliere l'uscita del weekend",
       "pick_outing_desc": "Decidi tu dove andiamo questo weekend."
+    },
+    "errors": {
+      "titleRequired": "Dagli un titolo.",
+      "multiplier": "Il moltiplicatore deve essere maggiore di 1 e al massimo {n}.",
+      "badDate": "Inserisci una data valida.",
+      "endBeforeStart": "La fine deve essere dopo l'inizio.",
+      "fromAfterUntil": "«Dal» deve essere lo stesso giorno di «Al» o prima.",
+      "goalCoins": "L'obiettivo deve essere di almeno 1 moneta.",
+      "familyTarget": "L'obiettivo deve essere 0 o più.",
+      "prices": "I prezzi devono essere numeri interi maggiori di 0.",
+      "limitCount": "Il limite deve essere un numero intero da 1 a {n}.",
+      "notFound": "Non esiste più (forse è appena stato eliminato). Ricarica la pagina.",
+      "adminOnly": "Solo i genitori possono farlo."
     }
   }
 }

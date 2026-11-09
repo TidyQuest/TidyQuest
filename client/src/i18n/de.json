@@ -390,7 +390,9 @@
       "waitingCount": "{n} warten auf Freigabe",
       "alreadyDone": "Das ist schon erledigt!",
       "takeBack": "Zurücknehmen",
-      "takeBackHint": "Aus Versehen auf Erledigt getippt? Nimm es zurück, bevor ein Elternteil entscheidet."
+      "takeBackHint": "Aus Versehen auf Erledigt getippt? Nimm es zurück, bevor ein Elternteil entscheidet.",
+      "importInvalid": "Das ist keine TidyQuest-Sicherung: Sie enthält keine Personen oder Räume.",
+      "importFailed": "Import fehlgeschlagen: {error}"
     },
     "admin": {
       "whoDidThisTask": "Wer hat diese Aufgabe erledigt?",
@@ -578,7 +580,8 @@
       "undoDone": "Rückgängig",
       "undoDoneTitle": "Diese Erledigung rückgängig machen (Münzen werden abgezogen)",
       "undoDoneConfirm": "„{task}“ für {name} rückgängig machen? Die {coins} Münzen werden wieder abgezogen.",
-      "moreOptions": "Weitere Optionen"
+      "moreOptions": "Weitere Optionen",
+      "assignmentMode": "Modus"
     },
     "avatars": {
       "cat": "Katze",
@@ -697,7 +700,10 @@
       "showLess": "Weniger anzeigen",
       "error": "Etwas ist schiefgelaufen",
       "close": "Schließen",
-      "actionFailed": "Das hat nicht geklappt. Prüfe deine Verbindung und versuche es noch einmal."
+      "actionFailed": "Das hat nicht geklappt. Prüfe deine Verbindung und versuche es noch einmal.",
+      "openMenu": "Menü öffnen",
+      "dismiss": "Schließen",
+      "daysShort": "{n} T."
     },
     "units": {
       "hours": "Stunden",
@@ -1109,7 +1115,8 @@
       "weeklyWinTitle": "Wochensieg",
       "weeklyWinTemplate": "Wochensieg",
       "bonusEarned": "Bonus verdient!",
-      "bonusWhenReached": "+{n} Bonus, wenn du es schaffst"
+      "bonusWhenReached": "+{n} Bonus, wenn du es schaffst",
+      "reachedReason": "Ziel erreicht: {title}"
     },
     "coins": {
       "reasonPlaceholder": "Grund (optional)",
@@ -1219,7 +1226,28 @@
       "addNewRoom": "neu, in einem neuen Raum",
       "addRow": "neu",
       "apply": "Änderungen anwenden ({n})",
-      "errorsSkipped": "Zeilen mit Problemen werden übersprungen."
+      "errorsSkipped": "Zeilen mit Problemen werden übersprungen.",
+      "errEmptyFile": "Die Datei ist leer",
+      "errTooManyRows": "Höchstens {n} Zeilen",
+      "errMissingColumns": "Fehlende Spalte(n): {cols}",
+      "errMissingRoom": "Der Raum ist leer",
+      "errMissingTask": "Der Aufgabenname ist leer",
+      "errDuplicateTask": "Gleicher Raum und gleiche Aufgabe wie in Zeile {line}",
+      "errBadDays": "„{value}“ ist keine Anzahl von Tagen",
+      "errBadEffort": "Der Aufwand muss 1 bis 5 sein (erhalten: „{value}“)",
+      "errBadCoins": "Münzen müssen eine ganze Zahl sein oder leer für den Wert des Aufwands (erhalten: „{value}“)",
+      "errBadBoolean": "„{value}“ ist weder yes noch no",
+      "errUnknownPerson": "Niemand hier heißt „{value}“",
+      "errBadTimer": "Der Timer muss 0 bis {max} Minuten sein oder leer für keinen (erhalten: „{value}“)",
+      "errBadSteps": "Höchstens {max} Schritte, einer pro Zeile, mit je höchstens {length} Zeichen",
+      "errAmbiguousRoom": "{n} Räume heißen „{value}“; benenne zuerst einen um",
+      "errAmbiguousTask": "{n} Aufgaben in „{room}“ heißen „{value}“; benenne zuerst eine um",
+      "errMissingTitle": "Der Titel ist leer",
+      "errDuplicateTitle": "Gleicher Titel wie in Zeile {line}",
+      "errBadCost": "Der Preis muss eine ganze Zahl von mindestens 1 sein (erhalten: „{value}“)",
+      "errAmbiguousReward": "{n} Belohnungen heißen „{value}“; benenne zuerst eine um",
+      "errNewRewardCost": "Eine neue Belohnung braucht einen Preis",
+      "errNotSaved": "Zeile {line} konnte nicht gespeichert werden ({error}), daher wurde nichts geändert."
     },
     "rewardOrder": {
       "up": "Nach oben",
@@ -1417,7 +1445,8 @@
       "shieldSaved": "🛡️ Dein Schild hat deine {n}-Tage-Serie gerettet!",
       "shieldsSaved": "🛡️ {count} Schilde haben deine {n}-Tage-Serie gerettet!",
       "shieldGiven": "🛡️ {name} hat dir einen Serienschild geschenkt. Er rettet deine Serie, wenn du einen Tag verpasst.",
-      "recapLastWeek": "📊 Letzte Woche: {lines}"
+      "recapLastWeek": "📊 Letzte Woche: {lines}",
+      "testFamily": "👋 Test von TidyQuest, gesendet von {name} um {time}: Die Familien-Benachrichtigungen funktionieren!"
     },
     "notifyAdmin": {
       "peopleTitle": "Wer bekommt was",
@@ -2356,6 +2385,19 @@
       "night_off_desc": "Jemand anderes kocht, oder es gibt Essen zum Mitnehmen.",
       "pick_outing": "Den Wochenendausflug aussuchen",
       "pick_outing_desc": "Du bestimmst, wohin es am Wochenende geht."
+    },
+    "errors": {
+      "titleRequired": "Gib einen Titel ein.",
+      "multiplier": "Der Multiplikator muss größer als 1 und höchstens {n} sein.",
+      "badDate": "Gib ein gültiges Datum ein.",
+      "endBeforeStart": "Das Ende muss nach dem Beginn liegen.",
+      "fromAfterUntil": "„Von“ muss am selben Tag wie „Bis“ oder davor liegen.",
+      "goalCoins": "Das Ziel muss mindestens 1 Münze sein.",
+      "familyTarget": "Das Ziel muss 0 oder mehr sein.",
+      "prices": "Preise müssen ganze Zahlen über 0 sein.",
+      "limitCount": "Das Limit muss eine ganze Zahl von 1 bis {n} sein.",
+      "notFound": "Das gibt es nicht mehr (vielleicht wurde es gerade gelöscht). Lade die Seite neu.",
+      "adminOnly": "Das können nur Eltern."
     }
   }
 }

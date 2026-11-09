@@ -373,13 +373,13 @@ function AppContent() {
         const text = await file.text();
         const data = JSON.parse(text);
         if (!data || typeof data !== 'object' || !Array.isArray(data.users) || !Array.isArray(data.rooms)) {
-          alert('Invalid backup file: missing users or rooms data.');
+          alert(t('app.importInvalid'));
           return;
         }
         await api.importData(data);
         await loadDashboard();
       } catch (err) {
-        alert(`Import failed: ${limitError(err, t, err instanceof Error ? err.message : 'Unknown error')}`);
+        alert(t('app.importFailed').replace('{error}', limitError(err, t, err instanceof Error ? err.message : t('common.error'))));
       }
     };
     input.click();
@@ -523,7 +523,7 @@ function AppContent() {
           boxShadow: '0 2px 8px var(--warm-shadow)',
           color: 'var(--warm-text)',
         }}
-        aria-label="Open menu"
+        aria-label={t('common.openMenu')}
       >
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
           <path d="M3 12h18M3 6h18M3 18h18" />

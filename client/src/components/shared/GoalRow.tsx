@@ -3,6 +3,7 @@ import { api } from '../../hooks/useApi';
 import { useTranslation } from '../../hooks/useTranslation';
 import { CoinIcon } from '../icons/UIIcons';
 import { formatCoins } from '../../utils/format';
+import { serverErrorText } from '../../utils/serverError';
 
 export interface GoalItem {
   id: number;
@@ -47,7 +48,7 @@ export function GoalRow({ goal, language, formatDate, onChanged, onDelete }: {
       setEditing(false);
       await onChanged();
     } catch (err) {
-      setError(err instanceof Error ? err.message : t('common.error'));
+      setError(serverErrorText(err, t));
     }
   };
 

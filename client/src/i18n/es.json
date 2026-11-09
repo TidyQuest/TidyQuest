@@ -390,7 +390,9 @@
       "waitingCount": "{n} esperando aprobación",
       "alreadyDone": "¡Eso ya está hecho!",
       "takeBack": "Deshacer",
-      "takeBackHint": "¿Pulsaste Hecho por error? Deshazlo antes de que decida un padre."
+      "takeBackHint": "¿Pulsaste Hecho por error? Deshazlo antes de que decida un padre.",
+      "importInvalid": "Esto no es una copia de seguridad de TidyQuest: no tiene personas ni habitaciones.",
+      "importFailed": "Error al importar: {error}"
     },
     "admin": {
       "whoDidThisTask": "¿Quién completó esta tarea?",
@@ -578,7 +580,8 @@
       "undoDone": "Deshacer",
       "undoDoneTitle": "Deshacer esta tarea hecha (quita sus monedas)",
       "undoDoneConfirm": "¿Deshacer «{task}» de {name}? Se le quitan las {coins} monedas.",
-      "moreOptions": "Más opciones"
+      "moreOptions": "Más opciones",
+      "assignmentMode": "Modo"
     },
     "avatars": {
       "cat": "Gato",
@@ -697,7 +700,10 @@
       "showLess": "Mostrar menos",
       "error": "Algo salió mal",
       "close": "Cerrar",
-      "actionFailed": "No funcionó. Revisa tu conexión e inténtalo de nuevo."
+      "actionFailed": "No funcionó. Revisa tu conexión e inténtalo de nuevo.",
+      "openMenu": "Abrir menú",
+      "dismiss": "Cerrar",
+      "daysShort": "{n} d"
     },
     "units": {
       "hours": "horas",
@@ -1109,7 +1115,8 @@
       "weeklyWinTitle": "Victoria semanal",
       "weeklyWinTemplate": "Victoria semanal",
       "bonusEarned": "de bonus ganadas",
-      "bonusWhenReached": "+{n} de bonus cuando lo logres"
+      "bonusWhenReached": "+{n} de bonus cuando lo logres",
+      "reachedReason": "Meta alcanzada: {title}"
     },
     "coins": {
       "reasonPlaceholder": "Motivo (opcional)",
@@ -1219,7 +1226,28 @@
       "addNewRoom": "nueva, en una habitación nueva",
       "addRow": "nueva",
       "apply": "Aplicar cambios ({n})",
-      "errorsSkipped": "Las filas con problemas se omiten."
+      "errorsSkipped": "Las filas con problemas se omiten.",
+      "errEmptyFile": "El archivo está vacío",
+      "errTooManyRows": "Como máximo {n} filas",
+      "errMissingColumns": "Falta(n) columna(s): {cols}",
+      "errMissingRoom": "La habitación está vacía",
+      "errMissingTask": "El nombre de la tarea está vacío",
+      "errDuplicateTask": "Misma habitación y tarea que en la línea {line}",
+      "errBadDays": "«{value}» no es un número de días",
+      "errBadEffort": "El esfuerzo debe ser de 1 a 5 (se recibió «{value}»)",
+      "errBadCoins": "Las monedas deben ser un número entero, o vacías para el valor del esfuerzo (se recibió «{value}»)",
+      "errBadBoolean": "«{value}» no es yes ni no",
+      "errUnknownPerson": "Nadie aquí se llama «{value}»",
+      "errBadTimer": "El temporizador debe ser de 0 a {max} minutos, o vacío para ninguno (se recibió «{value}»)",
+      "errBadSteps": "Como máximo {max} pasos, uno por línea, de hasta {length} caracteres cada uno",
+      "errAmbiguousRoom": "{n} habitaciones se llaman «{value}»; cambia el nombre de una primero",
+      "errAmbiguousTask": "{n} tareas de «{room}» se llaman «{value}»; cambia el nombre de una primero",
+      "errMissingTitle": "El título está vacío",
+      "errDuplicateTitle": "Mismo título que en la línea {line}",
+      "errBadCost": "El precio debe ser un número entero de al menos 1 (se recibió «{value}»)",
+      "errAmbiguousReward": "{n} recompensas se llaman «{value}»; cambia el nombre de una primero",
+      "errNewRewardCost": "Una recompensa nueva necesita un precio",
+      "errNotSaved": "No se pudo guardar la línea {line} ({error}), así que no se cambió nada."
     },
     "rewardOrder": {
       "up": "Subir",
@@ -1417,7 +1445,8 @@
       "shieldSaved": "🛡️ ¡Tu escudo salvó tu racha de {n} días!",
       "shieldsSaved": "🛡️ ¡{count} escudos salvaron tu racha de {n} días!",
       "shieldGiven": "🛡️ {name} te dio un escudo de racha. Salva tu racha si te saltas un día.",
-      "recapLastWeek": "📊 La semana pasada: {lines}"
+      "recapLastWeek": "📊 La semana pasada: {lines}",
+      "testFamily": "👋 Prueba de TidyQuest enviada por {name} a las {time}: ¡las notificaciones de la familia funcionan!"
     },
     "notifyAdmin": {
       "peopleTitle": "Quién recibe qué",
@@ -2356,6 +2385,19 @@
       "night_off_desc": "Otra persona hace la cena, o se pide comida.",
       "pick_outing": "Elegir el plan del fin de semana",
       "pick_outing_desc": "Tú decides adónde vamos este fin de semana."
+    },
+    "errors": {
+      "titleRequired": "Ponle un título.",
+      "multiplier": "El multiplicador debe ser mayor que 1 y como máximo {n}.",
+      "badDate": "Indica una fecha válida.",
+      "endBeforeStart": "El final debe ser posterior al inicio.",
+      "fromAfterUntil": "«Desde» debe ser el mismo día que «Hasta» o antes.",
+      "goalCoins": "La meta debe ser de al menos 1 moneda.",
+      "familyTarget": "El objetivo debe ser 0 o más.",
+      "prices": "Los precios deben ser números enteros mayores que 0.",
+      "limitCount": "El límite debe ser un número entero de 1 a {n}.",
+      "notFound": "Ya no existe (quizá se acaba de borrar). Recarga la página.",
+      "adminOnly": "Solo los padres pueden hacer eso."
     }
   }
 }

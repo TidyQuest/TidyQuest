@@ -157,7 +157,7 @@ export function Leaderboard({ language }: { language?: string }) {
               </div>
               <UserTitle userId={u.id} language={language} />
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 2, flexWrap: 'wrap', fontSize: 12, color: 'var(--warm-text-light)', fontWeight: 600 }}>
-                <span style={{ display: 'flex', alignItems: 'center', gap: 3 }}><FireIcon /> {u.currentStreak}d {t('leaderboard.streak')}</span>
+                <span style={{ display: 'flex', alignItems: 'center', gap: 3 }}><FireIcon /> {t('common.daysShort').replace('{n}', String(u.currentStreak))} {t('leaderboard.streak')}</span>
                 <span>{t('board.choresCount').replace('{n}', String(u.chores))}</span>
               </div>
             </div>

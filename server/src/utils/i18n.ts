@@ -8,6 +8,8 @@ import path from 'path';
  */
 const I18N_DIR = path.join(__dirname, '..', '..', '..', 'client', 'src', 'i18n');
 export const LANGUAGES = ['en', 'fr', 'de', 'es', 'it', 'nl'];
+/** Each language's locale, for dates and times. */
+export const LOCALES: Record<string, string> = { en: 'en-US', fr: 'fr-FR', de: 'de-DE', es: 'es-ES', it: 'it-IT', nl: 'nl-NL' };
 
 const cache = new Map<string, Record<string, Record<string, string>>>();
 

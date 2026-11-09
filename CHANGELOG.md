@@ -23,6 +23,13 @@ What changed in each release, in plain language, newest first. Releases up to v0
   - Cancel on a goal's edit form throws away the changes.
   - The date on Home and Focus, and the week labels in Insights → Coins, follow the family's time zone, not the
     phone's.
+- **Fewer English words in a French, German, Spanish, Italian or Dutch app** (FIX-32): the problems listed when
+  loading a spreadsheet, the family channel's test message (now with a local time), "Goal reached" in Activity, the
+  backup import messages, "Mode" in the chore forms, the "d" after streaks, prices and times on reward requests, the
+  menu button's and pop-ups' screen-reader labels, and the errors in Settings for double coins events, reward rules
+  and goals.
+- **Loading a tasks spreadsheet that the save step refuses says which line**, instead of failing with a server
+  error, and changes nothing.
 
 ## v0.17.2 (2026-11-09)
 

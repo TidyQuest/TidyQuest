@@ -6,6 +6,7 @@ import { parseCsv, toCsv, type CsvRecord } from '../utils/csv';
 import { createTask, updateTask } from './tasks';
 import { MAX_TIMER_MINUTES } from '../utils/schedule';
 import { MAX_STEP_LENGTH, MAX_STEPS, parseSteps, readSteps } from '../utils/focus';
+import { tr } from '../utils/i18n';
 
 /**
  * Tasks and rewards as spreadsheets (Settings → Data). Export writes every task / reward; import
@@ -53,23 +54,32 @@ function parseBool(raw: string, emptyMeans = false): boolean | null {
 class RowProblem extends Error {
   constructor(public problem: RowError) { super(problem.message); }
 }
+/** A planned task the save step refused anyway: the whole import is rolled back. */
+class LineNotSaved extends Error {
+  constructor(public line: number, public detail: string) { super(`Line ${line}: ${detail}`); }
+}
 const fail = (code: string, message: string, field?: string, value?: string): never => {
   throw new RowProblem({ code, message, field, value });
 };
 
+/** The importing parent's language, for the problems shown in the preview. */
+const languageOf = (userId: number | undefined) =>
+  (db.prepare('SELECT language FROM users WHERE id = ?').get(userId) as { language?: string } | undefined)?.language ?? 'en';
+
 /** Read the header row; returns a column getter per record, or the missing required columns. */
-function readTable(csv: unknown, required: string[], known: string[]) {
-  if (typeof csv !== 'string' || !csv.trim()) return { error: { status: 400, body: { error: 'empty_file', message: 'The file is empty' } } };
+function readTable(csv: unknown, required: string[], known: string[], lang: string) {
+  const empty = { error: { status: 400, body: { error: 'empty_file', message: tr(lang, 'csv.errEmptyFile') } } };
+  if (typeof csv !== 'string' || !csv.trim()) return empty;
   const records = parseCsv(csv);
-  if (records.length < 1) return { error: { status: 400, body: { error: 'empty_file', message: 'The file is empty' } } };
-  if (records.length - 1 > MAX_ROWS) return { error: { status: 400, body: { error: 'too_many_rows', message: `At most ${MAX_ROWS} rows` } } };
+  if (records.length < 1) return empty;
+  if (records.length - 1 > MAX_ROWS) return { error: { status: 400, body: { error: 'too_many_rows', message: tr(lang, 'csv.errTooManyRows', { n: MAX_ROWS }) } } };
   const header = records[0].cells.map((h) => {
     const key = h.trim().toLowerCase().replace(/[\s-]+/g, '_');
     return ALIASES[key] ?? key;
   });
   const missing = required.filter((c) => !header.includes(c));
   if (missing.length > 0) {
-    return { error: { status: 400, body: { error: 'missing_columns', columns: missing, message: `Missing column(s): ${missing.join(', ')}` } } };
+    return { error: { status: 400, body: { error: 'missing_columns', columns: missing, message: tr(lang, 'csv.errMissingColumns', { cols: missing.join(', ') }) } } };
   }
   const has = (col: string) => header.includes(col);
   const cell = (r: CsvRecord, col: string) => (r.cells[header.indexOf(col)] ?? '');
@@ -105,8 +115,9 @@ router.get('/tasks', (req: AuthRequest, res: Response) => {
 interface TaskRow { line: number; action: Action; room: string; task: string; newRoom?: boolean; changes: Change[]; error?: RowError }
 type TaskOp = { line: number; kind: 'add'; roomKey: string; body: any } | { line: number; kind: 'update'; taskId: number; body: any };
 
-function planTaskImport(csv: unknown) {
-  const table = readTable(csv, ['room', 'task'], TASK_COLUMNS);
+function planTaskImport(csv: unknown, lang: string) {
+  const msg = (key: string, vars: Record<string, string | number> = {}) => tr(lang, `csv.${key}`, vars);
+  const table = readTable(csv, ['room', 'task'], TASK_COLUMNS, lang);
   if ('error' in table) return { error: table.error };
   const { rows, has, cell, unknownColumns } = table;
 
@@ -133,10 +144,10 @@ function planTaskImport(csv: unknown) {
     const result: TaskRow = { line: r.line, action: 'error', room: roomName, task: taskName, changes: [] };
     results.push(result);
     try {
-      if (!roomName) fail('missing_room', 'The room is empty', 'room');
-      if (!taskName) fail('missing_task', 'The task name is empty', 'task');
+      if (!roomName) fail('missing_room', msg('errMissingRoom'), 'room');
+      if (!taskName) fail('missing_task', msg('errMissingTask'), 'task');
       const key = `${norm(roomName)}\u0000${norm(taskName)}`;
-      if (seen.has(key)) fail('duplicate_row', `Same room and task as line ${seen.get(key)}`, 'task', String(seen.get(key)));
+      if (seen.has(key)) fail('duplicate_row', msg('errDuplicateTask', { line: seen.get(key)! }), 'task', String(seen.get(key)));
       seen.set(key, r.line);
 
       // Read every given column into the values the task would have
@@ -145,32 +156,32 @@ function planTaskImport(csv: unknown) {
       if (has('every_days') && cell(r, 'every_days').trim() !== '') {
         const raw = cell(r, 'every_days').trim();
         const n = Number(raw.replace(',', '.'));
-        if (!Number.isFinite(n) || n <= 0 || n > 3650) fail('bad_number', `"${raw}" is not a number of days`, 'every_days', raw);
+        if (!Number.isFinite(n) || n <= 0 || n > 3650) fail('bad_number', msg('errBadDays', { value: raw }), 'every_days', raw);
         v.frequencyDays = n;
       }
       if (has('effort') && cell(r, 'effort').trim() !== '') {
         const raw = cell(r, 'effort').trim();
         const n = Number(raw);
-        if (!Number.isInteger(n) || n < 1 || n > 5) fail('bad_effort', `Effort must be 1 to 5 (got "${raw}")`, 'effort', raw);
+        if (!Number.isInteger(n) || n < 1 || n > 5) fail('bad_effort', msg('errBadEffort', { value: raw }), 'effort', raw);
         v.effort = n;
       }
       if (has('coins')) {
         const raw = cell(r, 'coins').trim();
         const n = raw === '' ? 0 : Number(raw);
-        if (!Number.isInteger(n) || n < 0) fail('bad_coins', `Coins must be a whole number, or empty for the effort default (got "${raw}")`, 'coins', raw);
+        if (!Number.isInteger(n) || n < 0) fail('bad_coins', msg('errBadCoins', { value: raw }), 'coins', raw);
         v.customCoins = n > 0 ? n : null;
       }
       for (const [col, field] of [['on_demand', 'onDemand'], ['show_on_home', 'showInDashboard'], ['early', 'allowEarlyCompletion']]) {
         if (!has(col)) continue;
         const b = parseBool(cell(r, col));
-        if (b === null) fail('bad_boolean', `"${cell(r, col).trim()}" is not yes or no`, col, cell(r, col).trim());
+        if (b === null) fail('bad_boolean', msg('errBadBoolean', { value: cell(r, col).trim() }), col, cell(r, col).trim());
         v[field] = b;
       }
       if (has('assignees')) {
         const ids: number[] = [];
         for (const part of cell(r, 'assignees').split('+').map((p) => p.trim()).filter(Boolean)) {
           const person = findPerson(part);
-          if (!person) fail('unknown_person', `No one here is called "${part}"`, 'assignees', part);
+          if (!person) fail('unknown_person', msg('errUnknownPerson', { value: part }), 'assignees', part);
           if (!ids.includes(person!.id)) ids.push(person!.id);
         }
         v.assignedUserIds = ids;
@@ -179,21 +190,21 @@ function planTaskImport(csv: unknown) {
       if (has('timer_minutes')) {
         const raw = cell(r, 'timer_minutes').trim();
         const n = raw === '' ? 0 : Number(raw);
-        if (!Number.isInteger(n) || n < 0 || n > MAX_TIMER_MINUTES) fail('bad_timer', `Timer must be 0 to ${MAX_TIMER_MINUTES} minutes, or empty for none (got "${raw}")`, 'timer_minutes', raw);
+        if (!Number.isInteger(n) || n < 0 || n > MAX_TIMER_MINUTES) fail('bad_timer', msg('errBadTimer', { max: MAX_TIMER_MINUTES, value: raw }), 'timer_minutes', raw);
         v.timerMinutes = n > 0 ? n : null;
       }
       // One step per line in the cell
       if (has('steps')) {
         const steps = readSteps(cell(r, 'steps'));
-        if ('error' in steps) fail('bad_steps', `Up to ${MAX_STEPS} steps, one per line, each up to ${MAX_STEP_LENGTH} characters`, 'steps');
+        if ('error' in steps) fail('bad_steps', msg('errBadSteps', { max: MAX_STEPS, length: MAX_STEP_LENGTH }), 'steps');
         else v.steps = steps.value ? JSON.parse(steps.value) : null;
       }
 
       const roomMatches = rooms.filter((rm) => norm(rm.name) === norm(roomName));
-      if (roomMatches.length > 1) fail('ambiguous', `${roomMatches.length} rooms are called "${roomName}"; rename one first`, 'room', roomName);
+      if (roomMatches.length > 1) fail('ambiguous', msg('errAmbiguousRoom', { n: roomMatches.length, value: roomName }), 'room', roomName);
       const room = roomMatches[0];
       const existing = room ? tasks.filter((t) => t.roomId === room.id && norm(t.name) === norm(taskName)) : [];
-      if (existing.length > 1) fail('ambiguous', `${existing.length} tasks in "${roomName}" are called "${taskName}"; rename one first`, 'task', taskName);
+      if (existing.length > 1) fail('ambiguous', msg('errAmbiguousTask', { n: existing.length, room: roomName, value: taskName }), 'task', taskName);
 
       if (existing.length === 0) {
         if (!room) {
@@ -246,27 +257,33 @@ function planTaskImport(csv: unknown) {
 router.post('/tasks/import', (req: AuthRequest, res: Response) => {
   if (!ensureAdmin(req.userId)) return res.status(403).json({ error: 'Admin only' });
   const dryRun = req.body?.dryRun !== false;
-  const plan = planTaskImport(req.body?.csv);
+  const lang = languageOf(req.userId);
+  const plan = planTaskImport(req.body?.csv, lang);
   if ('error' in plan && plan.error) return res.status(plan.error.status).json(plan.error.body);
   const { results, ops, roomsToCreate, unknownColumns, rooms } = plan as Exclude<typeof plan, { error: unknown }>;
 
   if (!dryRun) {
-    db.transaction(() => {
-      const roomIds = new Map(rooms.map((r) => [norm(r.name), r.id]));
-      for (const [key, name] of roomsToCreate) {
-        roomIds.set(key, Number(db.prepare("INSERT INTO rooms (name, roomType) VALUES (?, 'other')").run(name).lastInsertRowid));
-      }
-      for (const op of ops) {
-        const result = op.kind === 'add' ? createTask(roomIds.get(op.roomKey)!, op.body) : updateTask(op.taskId, op.body);
-        if (result.status >= 300) throw new Error(`Line ${op.line}: ${result.body?.error ?? 'could not be saved'}`);
-        // The file says exactly who: a new task in someone's room doesn't also get the owner added
-        if (op.kind === 'add' && op.body.assignedUserIds !== undefined) {
-          const keep = op.body.assignedUserIds as number[];
-          db.prepare(`DELETE FROM task_assignees WHERE taskId = ?${keep.length ? ` AND userId NOT IN (${keep.map(() => '?').join(',')})` : ''}`)
-            .run(result.body.id, ...keep);
+    try {
+      db.transaction(() => {
+        const roomIds = new Map(rooms.map((r) => [norm(r.name), r.id]));
+        for (const [key, name] of roomsToCreate) {
+          roomIds.set(key, Number(db.prepare("INSERT INTO rooms (name, roomType) VALUES (?, 'other')").run(name).lastInsertRowid));
         }
-      }
-    })();
+        for (const op of ops) {
+          const result = op.kind === 'add' ? createTask(roomIds.get(op.roomKey)!, op.body) : updateTask(op.taskId, op.body);
+          if (result.status >= 300) throw new LineNotSaved(op.line, String(result.body?.error ?? ''));
+          // The file says exactly who: a new task in someone's room doesn't also get the owner added
+          if (op.kind === 'add' && op.body.assignedUserIds !== undefined) {
+            const keep = op.body.assignedUserIds as number[];
+            db.prepare(`DELETE FROM task_assignees WHERE taskId = ?${keep.length ? ` AND userId NOT IN (${keep.map(() => '?').join(',')})` : ''}`)
+              .run(result.body.id, ...keep);
+          }
+        }
+      })();
+    } catch (e) {
+      if (!(e instanceof LineNotSaved)) throw e;
+      return res.status(400).json({ error: 'not_saved', line: e.line, message: tr(lang, 'csv.errNotSaved', { line: e.line, error: e.detail }) });
+    }
   }
   res.json({ dryRun, applied: !dryRun, rows: results, summary: summarize(results), roomsToCreate: [...roomsToCreate.values()], unknownColumns });
 });
@@ -285,7 +302,9 @@ type RewardOp = { kind: 'add'; values: any } | { kind: 'update'; id: number; val
 router.post('/rewards/import', (req: AuthRequest, res: Response) => {
   if (!ensureAdmin(req.userId)) return res.status(403).json({ error: 'Admin only' });
   const dryRun = req.body?.dryRun !== false;
-  const table = readTable(req.body?.csv, ['title'], REWARD_COLUMNS);
+  const lang = languageOf(req.userId);
+  const msg = (key: string, vars: Record<string, string | number> = {}) => tr(lang, `csv.${key}`, vars);
+  const table = readTable(req.body?.csv, ['title'], REWARD_COLUMNS, lang);
   if ('error' in table) return res.status(table.error!.status).json(table.error!.body);
   const { rows, has, cell, unknownColumns } = table;
 
@@ -298,28 +317,28 @@ router.post('/rewards/import', (req: AuthRequest, res: Response) => {
     const result: RewardRow = { line: r.line, action: 'error', title, changes: [] };
     results.push(result);
     try {
-      if (!title) fail('missing_title', 'The title is empty', 'title');
-      if (seen.has(norm(title))) fail('duplicate_row', `Same title as line ${seen.get(norm(title))}`, 'title', String(seen.get(norm(title))));
+      if (!title) fail('missing_title', msg('errMissingTitle'), 'title');
+      if (seen.has(norm(title))) fail('duplicate_row', msg('errDuplicateTitle', { line: seen.get(norm(title))! }), 'title', String(seen.get(norm(title))));
       seen.set(norm(title), r.line);
       const v: Record<string, any> = {};
       if (has('description')) v.description = cell(r, 'description').trim();
       if (has('cost') && cell(r, 'cost').trim() !== '') {
         const raw = cell(r, 'cost').trim();
         const n = Number(raw);
-        if (!Number.isInteger(n) || n < 1) fail('bad_cost', `Cost must be a whole number of at least 1 (got "${raw}")`, 'cost', raw);
+        if (!Number.isInteger(n) || n < 1) fail('bad_cost', msg('errBadCost', { value: raw }), 'cost', raw);
         v.costCoins = n;
       }
       if (has('active')) {
         const b = parseBool(cell(r, 'active'), true);
-        if (b === null) fail('bad_boolean', `"${cell(r, 'active').trim()}" is not yes or no`, 'active', cell(r, 'active').trim());
+        if (b === null) fail('bad_boolean', msg('errBadBoolean', { value: cell(r, 'active').trim() }), 'active', cell(r, 'active').trim());
         v.isActive = b ? 1 : 0;
       }
       if (has('category')) v.category = cell(r, 'category').trim().slice(0, 40);
 
       const existing = rewards.filter((w) => norm(w.title) === norm(title));
-      if (existing.length > 1) fail('ambiguous', `${existing.length} rewards are called "${title}"; rename one first`, 'title', title);
+      if (existing.length > 1) fail('ambiguous', msg('errAmbiguousReward', { n: existing.length, value: title }), 'title', title);
       if (existing.length === 0) {
-        if (v.costCoins === undefined) fail('bad_cost', 'A new reward needs a cost', 'cost', '');
+        if (v.costCoins === undefined) fail('bad_cost', msg('errNewRewardCost'), 'cost', '');
         result.action = 'add';
         ops.push({ kind: 'add', values: { title, description: v.description || null, costCoins: v.costCoins, isActive: v.isActive ?? 1, category: v.category || null } });
         continue;

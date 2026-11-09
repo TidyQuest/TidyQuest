@@ -244,7 +244,7 @@ export function Sidebar({ user, isMobileOpen = false, onClose, gamificationEnabl
                       <CoinIcon /> {formatCoins(user.coins)}
                     </span>
                     <span style={{ display: 'flex', alignItems: 'center', gap: 3, fontSize: 11, color: 'var(--warm-text-light)', fontWeight: 600 }}>
-                      <FireIcon /> {user.currentStreak}d
+                      <FireIcon /> {t('common.daysShort').replace('{n}', String(user.currentStreak))}
                     </span>
                   </div>
                 )}
