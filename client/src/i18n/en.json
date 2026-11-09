@@ -397,7 +397,8 @@
       "confirmCompletion": "Confirm",
       "alreadyCompletedBy": "Already done by {name}",
       "completeForSelf": "Complete for myself",
-      "noOneSelected": "Select at least one person"
+      "noOneSelected": "Select at least one person",
+      "alreadyDone": "Already done"
     },
     "calendar": {
       "mon": "Mon",

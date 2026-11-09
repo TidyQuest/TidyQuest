@@ -397,7 +397,8 @@
       "confirmCompletion": "Confirmar",
       "alreadyCompletedBy": "Ya completado por {name}",
       "completeForSelf": "Completar para mí",
-      "noOneSelected": "Selecciona al menos una persona"
+      "noOneSelected": "Selecciona al menos una persona",
+      "alreadyDone": "Ya hecho"
     },
     "calendar": {
       "mon": "Lun",

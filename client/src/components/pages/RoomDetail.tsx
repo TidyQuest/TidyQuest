@@ -144,6 +144,8 @@ interface RoomDetailProps {
   allowOneTime?: boolean;
   /** Settings → Features → Proof photos: kids' proof is a note only when off */
   allowPhotos?: boolean;
+  /** Your usual is switched on: show the ☆ pin button */
+  allowPins?: boolean;
   onAchievementsUnlocked?: (ids: string[]) => void;
   /** Task to scroll to and briefly highlight (from search or the task list) */
   focusTaskId?: number;
@@ -194,7 +196,7 @@ function EffortPicker({ effort, onChange }: { effort: number; onChange: (e: numb
   );
 }
 
-export function RoomDetail({ room, language, isAdmin, currentUserId, currentUserRole, users, coinsByEffort, onCompleteTask, onBack, onRefresh, onOpenRoom, allowOneTime = true, allowPhotos = true, onAchievementsUnlocked, focusTaskId, onlyMine, strictMode }: RoomDetailProps) {
+export function RoomDetail({ room, language, isAdmin, currentUserId, currentUserRole, users, coinsByEffort, onCompleteTask, onBack, onRefresh, onOpenRoom, allowOneTime = true, allowPhotos = true, allowPins = true, onAchievementsUnlocked, focusTaskId, onlyMine, strictMode }: RoomDetailProps) {
   const { taskName: translateTask, roomDisplayName, timeAgo, t } = useTranslation(language);
   const [animatedTask, setAnimatedTask] = useState<number | null>(null);
   const timer = useChoreTimer();
@@ -1059,11 +1061,11 @@ export function RoomDetail({ room, language, isAdmin, currentUserId, currentUser
                 </div>
                 <div className="room-task-actions" style={{ display: 'flex', flexWrap: 'wrap', gap: '8px 12px', justifyContent: 'flex-end', alignItems: 'center', position: 'relative' }}>
                   <div className="room-task-tools" style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
-                  <button onClick={() => togglePin(task)} className="tq-btn-sm" aria-pressed={!!task.pinned}
+                  {allowPins && <button onClick={() => togglePin(task)} className="tq-btn-sm" aria-pressed={!!task.pinned}
                     title={task.pinned ? t('home.unpin') : t('home.pin')} aria-label={task.pinned ? t('home.unpin') : t('home.pin')}
                     style={{ background: 'none', border: '1.5px solid var(--warm-border)', borderRadius: 10, cursor: 'pointer', fontSize: 14, color: task.pinned ? 'var(--warm-accent)' : 'var(--warm-text-light)' }}>
                     {task.pinned ? '★' : '☆'}
-                  </button>
+                  </button>}
                   {isAdmin && (
                     <>
                       <button onClick={() => startEdit(task)}

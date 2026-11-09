@@ -397,7 +397,8 @@
       "confirmCompletion": "Bevestigen",
       "alreadyCompletedBy": "Al gedaan door {name}",
       "completeForSelf": "Voor mezelf afvinken",
-      "noOneSelected": "Kies minstens één persoon"
+      "noOneSelected": "Kies minstens één persoon",
+      "alreadyDone": "Al gedaan"
     },
     "calendar": {
       "mon": "Ma",

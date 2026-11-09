@@ -397,7 +397,8 @@
       "confirmCompletion": "Bestätigen",
       "alreadyCompletedBy": "Bereits erledigt von {name}",
       "completeForSelf": "Für mich abschließen",
-      "noOneSelected": "Wähle mindestens eine Person aus"
+      "noOneSelected": "Wähle mindestens eine Person aus",
+      "alreadyDone": "Bereits erledigt"
     },
     "calendar": {
       "mon": "Mo",

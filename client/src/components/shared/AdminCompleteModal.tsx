@@ -186,7 +186,7 @@ export function AdminCompleteModal({ task, allUsers, language, onConfirm, onClos
                     </div>
                     {alreadyDone && (
                       <div style={{ fontSize: 11, color: 'var(--warm-text-muted)', fontWeight: 600 }}>
-                        ✓ {t('admin.alreadyCompletedBy').replace('{name}', '')}
+                        ✓ {t('admin.alreadyDone')}
                       </div>
                     )}
                   </div>

@@ -30,6 +30,11 @@ export function GoalRow({ goal, language, formatDate, onChanged, onDelete }: {
   const [bonus, setBonus] = useState(String(goal.rewardCoins ?? 0));
   const [repeat, setRepeat] = useState(!!goal.repeatWeekly);
   const [error, setError] = useState('');
+  // Edit always starts from the saved goal, so Cancel throws away what was typed
+  const startEdit = () => {
+    setTitle(goal.title); setCoins(String(goal.goalCoins)); setBonus(String(goal.rewardCoins ?? 0));
+    setRepeat(!!goal.repeatWeekly); setError(''); setEditing(true);
+  };
 
   const save = async () => {
     setError('');
@@ -81,7 +86,7 @@ export function GoalRow({ goal, language, formatDate, onChanged, onDelete }: {
         <CoinIcon /> {formatCoins(goal.goalCoins)}
         {(goal.rewardCoins ?? 0) > 0 && <span style={{ color: 'var(--health-green)' }}>· +{formatCoins(goal.rewardCoins)} {t('goals.bonus')}</span>}
       </div>
-      <button className="tq-btn tq-btn-sm" onClick={() => setEditing(true)}>{t('common.edit')}</button>
+      <button className="tq-btn tq-btn-sm" onClick={startEdit}>{t('common.edit')}</button>
       <button className="tq-btn tq-btn-sm" onClick={onDelete} style={{ backgroundColor: 'var(--warm-danger-bg)', color: 'var(--warm-danger)', border: '1.5px solid var(--warm-danger-border)' }}>
         {t('common.delete')}
       </button>

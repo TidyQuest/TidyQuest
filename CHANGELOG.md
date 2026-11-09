@@ -13,6 +13,16 @@ What changed in each release, in plain language, newest first. Releases up to v0
 
 - **Custom coins can be set when adding a chore to a room.** The room page's Add form has the same Custom coins box
   as Edit, so you no longer have to save the chore first and then edit it (FIX-29).
+- **Small fixes around the app** (FIX-31):
+  - A streak of 0 days no longer lights all seven bars on Home.
+  - The ☆ button that adds a chore to Your usual is hidden on room pages when Your usual is switched off.
+  - The Strict Mode "waiting for approval" message and other chore errors wrap on phones instead of being cut off.
+  - Tapping your profile card in the menu on a phone closes the menu.
+  - Changing the birthday month keeps a day that exists (March 31 → April 30), so the birthday badge still comes.
+  - "Who did this task?" says "✓ Already done" instead of "Already done by" with no name.
+  - Cancel on a goal's edit form throws away the changes.
+  - The date on Home and Focus, and the week labels in Insights → Coins, follow the family's time zone, not the
+    phone's.
 
 ## v0.17.2 (2026-11-09)
 

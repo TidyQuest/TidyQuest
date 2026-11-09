@@ -38,7 +38,7 @@ import { isTheme, type Theme } from './utils/themes';
 import { activeSeason, useSeasonPreview } from './utils/seasons';
 import { CosmeticsContext, type Cosmetic } from './utils/unlocks';
 import { WeekStartContext } from './utils/week';
-import { setFamilyZone } from './utils/clock';
+import { familyZone, setFamilyZone } from './utils/clock';
 import { syncPush } from './utils/pushSync';
 
 const NO_COSMETICS: Record<number, Cosmetic> = {};
@@ -416,7 +416,7 @@ function AppContent() {
       onLogout={() => { logout(); setHostedAccount(null); navigate('/login', { replace: true }); }} />;
   }
 
-  const today = new Date().toLocaleDateString(localeFor(user.language), { weekday: 'long', month: 'long', day: 'numeric' });
+  const today = new Date().toLocaleDateString(localeFor(user.language), { weekday: 'long', month: 'long', day: 'numeric', timeZone: familyZone() });
   const periods: Array<'all' | 'week' | 'month' | 'year'> = ['all', 'week', 'month', 'year'];
   const myPoints = pointsPeriod === 'all'
     ? (user.points ?? 0)
@@ -491,7 +491,7 @@ function AppContent() {
           zIndex: 9999, background: '#EF4444', color: '#fff',
           padding: '12px 24px', borderRadius: 12, fontWeight: 700, fontSize: 15,
           boxShadow: '0 4px 16px rgba(0,0,0,0.18)', pointerEvents: 'none',
-          whiteSpace: 'nowrap',
+          width: 'max-content', maxWidth: 'calc(100vw - 32px)', boxSizing: 'border-box', textAlign: 'center',
         }}>
           {taskErrorMsg}
         </div>
@@ -609,7 +609,7 @@ function AppContent() {
           } />
 
           <Route path="/rooms/:id" element={
-            <RoomDetailWrapper rooms={rooms} roomsLoaded={roomsLoaded} strictMode={!!dashboardData?.strictMode} shieldsOn={!!dashboardData?.shields} allowOneTime={dashboardData?.features?.todos !== false} allowPhotos={dashboardData?.features?.proofPhotos !== false} user={user} users={familySettings} coinsByEffort={coinsByEffort} gamificationEnabled={gamificationEnabled} onCompleteTask={handleCompleteTask} onRefresh={() => { refreshRooms(); loadDashboard(); }} onAchievementsUnlocked={setUnlockedAchievements} />
+            <RoomDetailWrapper rooms={rooms} roomsLoaded={roomsLoaded} strictMode={!!dashboardData?.strictMode} shieldsOn={!!dashboardData?.shields} allowOneTime={dashboardData?.features?.todos !== false} allowPhotos={dashboardData?.features?.proofPhotos !== false} allowPins={dashboardData?.features?.usual !== false} user={user} users={familySettings} coinsByEffort={coinsByEffort} gamificationEnabled={gamificationEnabled} onCompleteTask={handleCompleteTask} onRefresh={() => { refreshRooms(); loadDashboard(); }} onAchievementsUnlocked={setUnlockedAchievements} />
           } />
 
           <Route path="/focus" element={
@@ -836,7 +836,7 @@ function AppContent() {
   );
 }
 
-function RoomDetailWrapper({ rooms, roomsLoaded, strictMode, shieldsOn, allowOneTime, allowPhotos, user, users, coinsByEffort, gamificationEnabled, onCompleteTask, onRefresh, onAchievementsUnlocked }: { rooms: any[]; roomsLoaded: boolean; strictMode?: boolean; shieldsOn?: boolean; allowOneTime?: boolean; allowPhotos?: boolean; user: any; users?: any[]; coinsByEffort: Record<number, number>; gamificationEnabled: boolean; onCompleteTask: (id: number, proof?: Proof) => void; onRefresh: () => void; onAchievementsUnlocked?: (ids: string[]) => void }) {
+function RoomDetailWrapper({ rooms, roomsLoaded, strictMode, shieldsOn, allowOneTime, allowPhotos, allowPins, user, users, coinsByEffort, gamificationEnabled, onCompleteTask, onRefresh, onAchievementsUnlocked }: { rooms: any[]; roomsLoaded: boolean; strictMode?: boolean; shieldsOn?: boolean; allowOneTime?: boolean; allowPhotos?: boolean; allowPins?: boolean; user: any; users?: any[]; coinsByEffort: Record<number, number>; gamificationEnabled: boolean; onCompleteTask: (id: number, proof?: Proof) => void; onRefresh: () => void; onAchievementsUnlocked?: (ids: string[]) => void }) {
   const navigate = useNavigate();
   const { t, roomDisplayName } = useTranslation(user?.language || 'en');
   const { id: idParam } = useParams<{ id: string }>();
@@ -863,7 +863,7 @@ function RoomDetailWrapper({ rooms, roomsLoaded, strictMode, shieldsOn, allowOne
   return (
     <>
       <PageHeader title={roomDisplayName(room.name, room.roomType)} subtitle={room.isTodoRoom ? t('todos.countLine').replace('{n}', String(room.todoCount ?? 0)) : `${room.tasks?.length || 0} ${t('rooms.tasksTracked')}`} user={user} onCoinsClick={() => navigate('/rewards')} onStreakClick={() => navigate('/achievements')} gamificationEnabled={gamificationEnabled} shieldsOn={shieldsOn} />
-      <RoomDetail room={room} language={user?.language} isAdmin={user?.role === 'admin'} currentUserId={user?.id} currentUserRole={user?.role} users={users} coinsByEffort={coinsByEffort} onCompleteTask={onCompleteTask} onBack={() => navigate('/rooms', { state: { fromRoom: room.id } })} onOpenRoom={(id) => navigate(`/rooms/${id}`)} allowOneTime={allowOneTime} allowPhotos={allowPhotos} focusTaskId={focusTaskId} strictMode={strictMode} onlyMine={user?.taskView === 'mineOnly' || !!user?.kidMode} onRefresh={onRefresh} onAchievementsUnlocked={onAchievementsUnlocked} />
+      <RoomDetail room={room} language={user?.language} isAdmin={user?.role === 'admin'} currentUserId={user?.id} currentUserRole={user?.role} users={users} coinsByEffort={coinsByEffort} onCompleteTask={onCompleteTask} onBack={() => navigate('/rooms', { state: { fromRoom: room.id } })} onOpenRoom={(id) => navigate(`/rooms/${id}`)} allowOneTime={allowOneTime} allowPhotos={allowPhotos} allowPins={allowPins} focusTaskId={focusTaskId} strictMode={strictMode} onlyMine={user?.taskView === 'mineOnly' || !!user?.kidMode} onRefresh={onRefresh} onAchievementsUnlocked={onAchievementsUnlocked} />
     </>
   );
 }
