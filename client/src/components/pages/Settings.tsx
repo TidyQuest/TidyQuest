@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useState } from 'react';
+import { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { UserAvatar } from '../shared/UserAvatar';
 import { EffortDots } from '../shared/EffortDots';
 import { Toggle } from '../shared/Toggle';
@@ -200,7 +200,7 @@ export function Settings({
   const [editingRewardCost, setEditingRewardCost] = useState('');
   const [memberProfile, setMemberProfile] = useState<Record<number, {
     language: string;
-    avatarType: 'letter' | 'preset';
+    avatarType: 'letter' | 'preset' | 'photo';
     avatarColor: string;
     avatarPreset: string;
     birthday: string;
@@ -360,7 +360,8 @@ export function Settings({
       ...prev,
       [u.id]: prev[u.id] || {
         language: u.language || 'en',
-        avatarType: u.avatarType === 'preset' ? 'preset' : 'letter',
+        // Keep an uploaded photo: this box used to turn it into a letter on Save (upstream #177)
+        avatarType: u.avatarType === 'preset' ? 'preset' : (u.avatarType === 'photo' && u.avatarPhotoUrl ? 'photo' : 'letter'),
         avatarColor: u.avatarColor || '#F97316',
         avatarPreset: u.avatarPreset || 'cat',
         birthday: u.birthday ?? '',
@@ -587,6 +588,26 @@ export function Settings({
       .catch((err) => { show(true); setSwitchMsg(notifError(err)); });
   };
 
+  // The time and the kinds save as soon as they change. Their only Save buttons were inside Telegram and ntfy, so
+  // with web push alone nothing saved them (upstream #178). Saves go one at a time so the last change lands last.
+  const notifSaveQueue = useRef<Promise<unknown>>(Promise.resolve());
+  const saveNotifChoice = (patch: { notificationTypes?: typeof notifTypes; notificationTime?: string }) => {
+    setNotifMsg('');
+    notifSaveQueue.current = notifSaveQueue.current.then(() => api.updateNotificationsConfig(patch).catch((err) => {
+      setNotifMsg(notifError(err));
+      // Show what's really saved
+      return api.getNotificationsConfig().then((cfg) => {
+        setNotifTime(cfg.notificationTime || '09:00');
+        setNotifTypes(cfg.notificationTypes || { taskDue: true, rewardRequest: true, achievementUnlocked: true });
+      }).catch(() => {});
+    }));
+  };
+  const tickNotifType = (key: keyof typeof notifTypes, on: boolean) => {
+    const next = { ...notifTypes, [key]: on };
+    setNotifTypes(next);
+    saveNotifChoice({ notificationTypes: next });
+  };
+
   const saveNotifications = async () => {
     setNotifMsg('');
     try {
@@ -705,33 +726,36 @@ export function Settings({
                     {/* Notification time */}
                     <div style={{ display: 'grid', gap: 4 }}>
                       <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--warm-text-muted)' }}>{t('settings.notificationTime')}</label>
-                      <input type="time" className="tq-input" value={notifTime} onChange={(e) => setNotifTime(e.target.value || '09:00')} />
+                      <input type="time" className="tq-input" value={notifTime} onChange={(e) => {
+                        setNotifTime(e.target.value || '09:00');
+                        if (e.target.value) saveNotifChoice({ notificationTime: e.target.value });
+                      }} />
                     </div>
                     {/* Notification types */}
                     <div style={{ display: 'grid', gap: 6, marginTop: 2 }}>
                       <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--warm-text-muted)' }}>
-                        <input type="checkbox" checked={notifTypes.taskDue} onChange={(e) => setNotifTypes((prev) => ({ ...prev, taskDue: e.target.checked }))} style={{ marginRight: 6 }} />
+                        <input type="checkbox" checked={notifTypes.taskDue} onChange={(e) => tickNotifType('taskDue', e.target.checked)} style={{ marginRight: 6 }} />
                         {t('settings.notificationTypeTaskDue')}
                       </label>
                       <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--warm-text-muted)' }}>
-                        <input type="checkbox" checked={notifTypes.rewardRequest} onChange={(e) => setNotifTypes((prev) => ({ ...prev, rewardRequest: e.target.checked }))} style={{ marginRight: 6 }} />
+                        <input type="checkbox" checked={notifTypes.rewardRequest} onChange={(e) => tickNotifType('rewardRequest', e.target.checked)} style={{ marginRight: 6 }} />
                         {t('settings.notificationTypeRewardRequest')}
                       </label>
                       <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--warm-text-muted)' }}>
-                        <input type="checkbox" checked={notifTypes.achievementUnlocked} onChange={(e) => setNotifTypes((prev) => ({ ...prev, achievementUnlocked: e.target.checked }))} style={{ marginRight: 6 }} />
+                        <input type="checkbox" checked={notifTypes.achievementUnlocked} onChange={(e) => tickNotifType('achievementUnlocked', e.target.checked)} style={{ marginRight: 6 }} />
                         {t('settings.notificationTypeAchievementUnlocked')}
                       </label>
                       <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--warm-text-muted)' }}>
-                        <input type="checkbox" checked={notifTypes.choreApproval !== false} onChange={(e) => setNotifTypes((prev) => ({ ...prev, choreApproval: e.target.checked }))} style={{ marginRight: 6 }} />
+                        <input type="checkbox" checked={notifTypes.choreApproval !== false} onChange={(e) => tickNotifType('choreApproval', e.target.checked)} style={{ marginRight: 6 }} />
                         {t('settings.notificationTypeChoreApproval')}
                       </label>
                       <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--warm-text-muted)' }}>
-                        <input type="checkbox" checked={notifTypes.coinBoost !== false} onChange={(e) => setNotifTypes((prev) => ({ ...prev, coinBoost: e.target.checked }))} style={{ marginRight: 6 }} />
+                        <input type="checkbox" checked={notifTypes.coinBoost !== false} onChange={(e) => tickNotifType('coinBoost', e.target.checked)} style={{ marginRight: 6 }} />
                         {t('settings.notificationTypeCoinBoost')}
                       </label>
                       {(['reminder', 'outcome', 'summary', 'nudge'] as const).map((k) => (
                         <label key={k} style={{ fontSize: 11, fontWeight: 700, color: 'var(--warm-text-muted)' }}>
-                          <input type="checkbox" checked={notifTypes[k] !== false} onChange={(e) => setNotifTypes((prev) => ({ ...prev, [k]: e.target.checked }))} style={{ marginRight: 6 }} />
+                          <input type="checkbox" checked={notifTypes[k] !== false} onChange={(e) => tickNotifType(k, e.target.checked)} style={{ marginRight: 6 }} />
                           {t(`notifyAdmin.kind_${k}`)} <span style={{ fontWeight: 600, color: 'var(--warm-text-light)' }}>· {t(`notifyAdmin.kindDesc_${k}`)}</span>
                         </label>
                       ))}
@@ -1562,11 +1586,12 @@ export function Settings({
                       <option value="it">Italiano</option>
                       <option value="nl">Nederlands</option>
                     </select>
-                    <select className="tq-input" value={memberProfile[u.id]?.avatarType || 'letter'} onChange={(e) => setMemberProfile((prev) => ({ ...prev, [u.id]: { ...prev[u.id], avatarType: e.target.value as 'letter' | 'preset' } }))} style={{ cursor: 'pointer' }}>
+                    <select className="tq-input" value={memberProfile[u.id]?.avatarType || 'letter'} onChange={(e) => setMemberProfile((prev) => ({ ...prev, [u.id]: { ...prev[u.id], avatarType: e.target.value as 'letter' | 'preset' | 'photo' } }))} style={{ cursor: 'pointer' }}>
                       <option value="letter">{t('profile.letterMode')}</option>
                       <option value="preset">{t('profile.characterMode')}</option>
+                      {u.avatarPhotoUrl && <option value="photo">{t('profile.photoMode')}</option>}
                     </select>
-                    {(memberProfile[u.id]?.avatarType || 'letter') === 'letter' ? (
+                    {memberProfile[u.id]?.avatarType === 'photo' ? null : (memberProfile[u.id]?.avatarType || 'letter') === 'letter' ? (
                       <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
                         {COLORS.map((c) => (
                           <button key={c} onClick={() => setMemberProfile((prev) => ({ ...prev, [u.id]: { ...prev[u.id], avatarColor: c } }))} style={{ width: 20, height: 20, borderRadius: 8, border: (memberProfile[u.id]?.avatarColor || '#F97316') === c ? '2px solid #3D2F1E' : '1px solid transparent', backgroundColor: c }} />

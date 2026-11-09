@@ -9,6 +9,23 @@ What changed in each release, in plain language, newest first. Releases up to v0
 
 ## Unreleased
 
+### Added
+
+- **Phone notifications show a TidyQuest star in Android's status bar**, instead of the browser's own icon. From
+  gjincy88 (#176).
+- **The Home Assistant integration shows TidyQuest's icon** under Settings → Devices & services, on Home Assistant
+  2026.3 or later. From gjincy88 (#176).
+
+### Fixed
+
+- **A parent saving someone's profile no longer wipes their photo** (#177). Changing a birthday, language or theme
+  for someone in Settings replaced their uploaded photo with a letter avatar. Their photo now stays, and Photo is one
+  of the choices there for anyone who has uploaded one. If it already happened, they can get it back from Profile →
+  Photo → Save.
+- **The notification kinds and time save with phone notifications alone** (#178). In Settings → General →
+  Notifications, the only Save buttons were inside Telegram and ntfy, so with both off, unticked kinds came back
+  after a reload. The kinds and the time now save as soon as you change them.
+
 ## v0.17.1 (2026-11-05)
 
 ### Fixed
