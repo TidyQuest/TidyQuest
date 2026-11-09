@@ -143,7 +143,7 @@ export const GUIDE_DE: GuideSection[] = [
         'Eltern melden sich mit ihrer E-Mail und ihrem Passwort an. Alle anderen mit dem Familiencode, ihrem Benutzernamen und ihrem Passwort (Eltern können das auch).',
         'Einstellungen → 🔑 Familiencode zeigt den Code (z. B. sunny-otter-42), den Familienlink und einen QR-Code. Öffne den Link oder scanne den Code auf dem Handy oder Tablet eines Kindes: Das Gerät merkt sich die Familie, dann tippt es nur noch Benutzername und Passwort. Groß- und Kleinschreibung, Leerzeichen und Bindestriche im Code sind egal.',
         'Neuer Code gibt der Familie einen frischen Code. Der alte Code und Link funktionieren nicht mehr; wer angemeldet ist, bleibt angemeldet.',
-        'Einstellungen → ✉️ Anmelde-E-Mail: E-Mail ändern schickt einen Link an die neue Adresse, und die Änderung gilt, sobald du ihn öffnest. Ein zweites Elternteil kann mit E-Mail hinzufügen eine eigene eintragen.',
+        'Einstellungen → ✉️ Anmelde-E-Mail: E-Mail ändern schickt einen Link an die neue Adresse, und die Änderung gilt, sobald du ihn öffnest. Ein zweites Elternteil kann mit E-Mail hinzufügen eine eigene eintragen. Für die Anmeldung mit E-Mail braucht das Passwort eines Elternteils mindestens 8 Zeichen. Wird ein Elternteil zu Mitglied oder Kind, verliert es seine Anmelde-E-Mail und meldet sich dann mit dem Familiencode an.',
         'Bei der Anmeldung schicken wir einen Link, um deine Adresse zu bestätigen. Mit dem Öffnen willigt ein Elternteil auch für seine Kinder ein, was TidyQuest speichert (das verlangt das US-Kinderdatenschutzgesetz COPPA). Bis ein Elternteil bestätigt hat, können sich nur Eltern anmelden. Eine Familie, die die E-Mail eines Elternteils nicht innerhalb von 30 Tagen bestätigt, wird gelöscht; eine Woche vorher schicken wir eine Erinnerung.',
         'Passwort vergessen? auf dem Anmeldebildschirm schickt einem Elternteil einen Link, der einmal und eine Stunde lang funktioniert. Kinder und Teens bitten ein Elternteil, in Einstellungen → Familienmitglieder ein neues festzulegen.',
       ] },
@@ -438,7 +438,7 @@ export const GUIDE_DE: GuideSection[] = [
     blocks: [
       { ul: [
         'Einstellungen → Daten & Datenschutz → Exportieren: ein vollständiges JSON-Backup. Hebe vor großen Änderungen eins auf.',
-        'Importieren stellt ein Backup wieder her und ERSETZT alles. Wer auf diesem Server schon ein Konto hat (gleicher Benutzername), behält das aktuelle Passwort. Wer neu auf diesem Server ist, bekommt ein zufälliges; lege deren Passwörter danach unter Familienmitglieder fest.',
+        'Importieren stellt ein Backup wieder her und ERSETZT alles. Wer auf diesem Server schon ein Konto hat (gleicher Benutzername), behält das aktuelle Passwort. Wer neu auf diesem Server ist, bekommt ein zufälliges; lege deren Passwörter danach unter Familienmitglieder fest. Du musst im Backup als Admin stehen (gleicher Benutzername), sonst wird der Import abgelehnt. Manche Geräte werden danach abgemeldet; dort einfach mit demselben Passwort wieder anmelden.',
         'Einstellungen → Tabellen: Lade Aufgaben oder Belohnungen herunter, bearbeite sie in einer beliebigen Tabellenkalkulation und lade sie wieder hoch. Du siehst vorher eine Vorschau, und nichts wird gelöscht.',
         'Um eine Aufgabe zu löschen, öffne sie mit Bearbeiten; Aufgabe löschen steht unten im Formular. Sie landet 30 Tage lang unter Einstellungen → Zuletzt gelöscht und kann von dort wiederhergestellt werden. Belohnungen funktionieren genauso.',
         'Löschen nimmt nie Münzen weg und löscht nicht, was erledigt wurde: Frühere Erledigungen erscheinen weiter unter Aktivität, auf dem Board und in Zielen unter dem Namen der Aufgabe, auch nachdem sie aus Zuletzt gelöscht verschwunden ist.',
@@ -644,10 +644,10 @@ export const GUIDE_DE: GuideSection[] = [
           'Schließe sie ganz (im App-Umschalter wegwischen) und öffne sie wieder: Beim Start lädt sie die neueste Version.',
         ] },
         { q: 'Jemand kann sich nicht anmelden', a: [
-          'Zu viele falsche Passwörter sperren Anmeldungen für bis zu 15 Minuten: 10 bei einem Konto oder 20 von einem Gerät. Warte und versuche es erneut; ein richtiges Passwort setzt den Zähler des Kontos zurück.',
-          'Ein Elternteil kann in Einstellungen → Familienmitglieder ein neues Passwort festlegen.',
+          'Zu viele falsche Passwörter sperren Anmeldungen für bis zu 15 Minuten: 10 bei einem Konto oder 20 von einem Gerät. Warte und versuche es erneut; ein richtiges Passwort setzt den Zähler des Kontos zurück. Beim Ändern des eigenen Passworts oder der Anmelde-E-Mail und beim Löschen der Familie sind 5 falsche Passwörter in 15 Minuten erlaubt.',
+          'Ein Elternteil kann in Einstellungen → Familienmitglieder ein neues Passwort festlegen. Passwörter brauchen mindestens 4 Zeichen; auf tidyquest.org braucht das eines Elternteils 8.',
           'Kein Elternteil kann sich anmelden? Wer den Server betreibt, kann das Passwort des ersten Elternteils mit ADMIN_RESET_PASSWORD zurücksetzen (README, „Admin Password Recovery“). „Passwort vergessen?“ auf der Anmeldeseite sagt dasselbe.',
-          'Nach dem Import eines Backups behalten alle, die auf diesem Server schon ein Konto hatten, ihr Passwort. Wer neu auf diesem Server ist, braucht ein Passwort, das ein Elternteil unter Familienmitglieder festlegt.',
+          'Nach dem Import eines Backups behalten alle, die auf diesem Server schon ein Konto hatten, ihr Passwort. Wer neu auf diesem Server ist, braucht ein Passwort, das ein Elternteil unter Familienmitglieder festlegt. Manche Geräte werden nach einem Import abgemeldet; dort einfach mit demselben Passwort wieder anmelden.',
         ] },
         { q: 'Jemand fehlt auf dem Anmeldebildschirm, oder es heißt, die Anmeldung ist ausgeschaltet', a: [
           'Ein Elternteil hat Kann sich anmelden für die Person ausgeschaltet: Ihre Karte unter Einstellungen → Familienmitglieder zeigt 🔒 Ohne Anmeldung. Auf tidyquest.org sagt die Anmeldung nur, dass Name oder Passwort falsch sind.',

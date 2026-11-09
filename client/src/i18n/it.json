@@ -392,7 +392,8 @@
       "takeBack": "Annulla",
       "takeBackHint": "Hai toccato Fatto per sbaglio? Annullalo prima che decida un genitore.",
       "importInvalid": "Questo non è un backup di TidyQuest: non contiene persone né stanze.",
-      "importFailed": "Importazione non riuscita: {error}"
+      "importFailed": "Importazione non riuscita: {error}",
+      "importNotIn": "Questo backup non ti include ({name}) come Admin, quindi importarlo ti chiuderebbe fuori. Accedi con un Admin presente nel backup e riprova."
     },
     "admin": {
       "whoDidThisTask": "Chi ha completato questo compito?",
@@ -759,7 +760,9 @@
       "forgotAskParent": "Chiedi a un genitore di impostarne una nuova in Impostazioni → Membri della famiglia.",
       "forgotNoParent": "Nessun genitore riesce ad accedere? Chi gestisce il server può reimpostare la password del primo genitore.",
       "forgotHowTo": "Come reimpostarla",
-      "noLogin": "Un genitore ha disattivato il tuo accesso. Chiedigli di riattivarlo in Impostazioni → Membri della famiglia."
+      "noLogin": "Un genitore ha disattivato il tuo accesso. Chiedigli di riattivarlo in Impostazioni → Membri della famiglia.",
+      "tooManyTries": "Troppe password sbagliate. Aspetta 15 minuti e riprova.",
+      "passwordMin": "Le password devono avere almeno {n} caratteri."
     },
     "achievements": {
       "familyProgress": "Progresso famiglia",
@@ -2167,7 +2170,8 @@
       "deleteFamilyAction": "Elimina la famiglia per sempre",
       "deleteFamilyDone": "{family} è stata eliminata. Grazie per aver usato TidyQuest.",
       "errWrongName": "Non è il nome della famiglia.",
-      "memberPrivacy": "Cosa conserva TidyQuest su ogni persona: {privacy}"
+      "memberPrivacy": "Cosa conserva TidyQuest su ogni persona: {privacy}",
+      "errChangePasswordFirst": "Per accedere con un'email, la tua password deve avere almeno {n} caratteri. Cambiala prima in Profilo."
     },
     "limits": {
       "people": "Una famiglia può avere fino a {n} persone.",
@@ -2295,7 +2299,7 @@
       "errAge": "Scegli una fascia d'età per {name}.",
       "errUsername": "{name} ha bisogno di un nome utente (senza spazi).",
       "errUsernameTwice": "Due persone hanno il nome utente {name}.",
-      "errPassword": "La password di {name} deve avere almeno 4 caratteri.",
+      "errPassword": "La password di {name} deve avere almeno {n} caratteri.",
       "errUsernameTaken": "Questo nome utente è già usato. Torna al passo Famiglia e scegline un altro.",
       "tipsTitle": "Prossimi passi",
       "tourStart": "Mostrami come cambiare le cose",

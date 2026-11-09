@@ -392,7 +392,8 @@
       "takeBack": "Terugnemen",
       "takeBackHint": "Per ongeluk op Klaar getikt? Neem het terug voordat een ouder beslist.",
       "importInvalid": "Dit is geen TidyQuest-back-up: er staan geen personen of kamers in.",
-      "importFailed": "Importeren mislukt: {error}"
+      "importFailed": "Importeren mislukt: {error}",
+      "importNotIn": "Deze back-up heeft jou ({name}) niet als Admin, dus importeren zou je buitensluiten. Log in als een Admin die in de back-up staat en probeer het opnieuw."
     },
     "admin": {
       "whoDidThisTask": "Wie heeft dit klusje gedaan?",
@@ -759,7 +760,9 @@
       "forgotAskParent": "Vraag een ouder om een nieuw wachtwoord in te stellen in Instellingen → Gezinsleden.",
       "forgotNoParent": "Kan geen enkele ouder inloggen? Wie de server beheert, kan het wachtwoord van de eerste ouder resetten.",
       "forgotHowTo": "Zo reset je het",
-      "noLogin": "Een ouder heeft inloggen voor jou uitgezet. Vraag of die het weer aanzet in Instellingen → Gezinsleden."
+      "noLogin": "Een ouder heeft inloggen voor jou uitgezet. Vraag of die het weer aanzet in Instellingen → Gezinsleden.",
+      "tooManyTries": "Te veel verkeerde wachtwoorden. Wacht 15 minuten en probeer het opnieuw.",
+      "passwordMin": "Wachtwoorden moeten minstens {n} tekens hebben."
     },
     "achievements": {
       "familyProgress": "Gezinsvoortgang",
@@ -2167,7 +2170,8 @@
       "deleteFamilyAction": "Het gezin voorgoed verwijderen",
       "deleteFamilyDone": "{family} is verwijderd. Bedankt dat jullie TidyQuest hebben gebruikt.",
       "errWrongName": "Dat is niet de naam van het gezin.",
-      "memberPrivacy": "Wat TidyQuest over elke persoon bewaart: {privacy}"
+      "memberPrivacy": "Wat TidyQuest over elke persoon bewaart: {privacy}",
+      "errChangePasswordFirst": "Om met een e-mailadres in te loggen heeft je wachtwoord minstens {n} tekens nodig. Wijzig het eerst bij Profiel."
     },
     "limits": {
       "people": "Een gezin kan maximaal {n} personen hebben.",
@@ -2295,7 +2299,7 @@
       "errAge": "Kies een leeftijdsgroep voor {name}.",
       "errUsername": "{name} heeft een gebruikersnaam nodig (zonder spaties).",
       "errUsernameTwice": "Twee personen hebben de gebruikersnaam {name}.",
-      "errPassword": "Het wachtwoord van {name} moet minstens 4 tekens hebben.",
+      "errPassword": "Het wachtwoord van {name} moet minstens {n} tekens hebben.",
       "errUsernameTaken": "Die gebruikersnaam bestaat al. Ga terug naar de stap Gezin en kies een andere.",
       "tipsTitle": "Volgende stappen",
       "tourStart": "Laat zien hoe ik dingen aanpas",

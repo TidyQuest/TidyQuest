@@ -79,6 +79,11 @@ export interface EmailToken {
   newEmail: string | null;
 }
 
+/** The daily job that deletes used and expired email links, with the addresses in them (BUG-25, NEW-34). */
+export function forgetOldEmailLinks(now = new Date()): number {
+  return mainDb().prepare('DELETE FROM email_tokens WHERE usedAt IS NOT NULL OR expiresAt <= ?').run(now.toISOString()).changes;
+}
+
 /** A new link of this kind for this person. Their earlier unused ones of the same kind stop working. */
 export function createEmailToken(t: EmailToken, now = new Date()): string {
   const token = crypto.randomBytes(32).toString('base64url');

@@ -143,7 +143,7 @@ export const GUIDE_NL: GuideSection[] = [
         'Ouders loggen in met hun e-mail en wachtwoord. Alle anderen met de gezinscode, hun gebruikersnaam en hun wachtwoord (ouders kunnen dat ook).',
         'Instellingen → 🔑 Gezinscode toont de code (zoals sunny-otter-42), de gezinslink en een QR-code. Open de link of scan de code op de telefoon of tablet van een kind: het apparaat onthoudt het gezin, dus het kind typt alleen gebruikersnaam en wachtwoord. Hoofdletters, spaties en streepjes in de code maken niet uit.',
         'Nieuwe code geeft het gezin een nieuwe code. De oude code en link werken dan niet meer; wie ingelogd is, blijft ingelogd.',
-        'Instellingen → ✉️ Inlogmail: E-mail wijzigen stuurt een link naar het nieuwe adres, en de wijziging gaat in zodra je hem opent. Een tweede ouder kan met E-mail toevoegen een eigen adres instellen.',
+        'Instellingen → ✉️ Inlogmail: E-mail wijzigen stuurt een link naar het nieuwe adres, en de wijziging gaat in zodra je hem opent. Een tweede ouder kan met E-mail toevoegen een eigen adres instellen. Om met een e-mailadres in te loggen heeft het wachtwoord van een ouder minstens 8 tekens nodig. Een ouder die lid of kind wordt, verliest de inlogmail en logt dan in met de gezinscode.',
         'Bij het aanmelden sturen we een link om je adres te bevestigen. Door die te openen geeft een ouder ook toestemming, voor de kinderen, voor wat TidyQuest bewaart (de Amerikaanse privacywet voor kinderen, COPPA, vraagt dat). Tot een ouder heeft bevestigd, kunnen alleen ouders inloggen. Een gezin dat binnen 30 dagen geen e-mailadres van een ouder bevestigt, wordt verwijderd; een week eerder sturen we een herinnering.',
         'Wachtwoord vergeten? op het inlogscherm stuurt een ouder een link die één keer werkt, een uur lang. Kinderen en tieners vragen een ouder om een nieuw wachtwoord in te stellen bij Instellingen → Gezinsleden.',
       ] },
@@ -438,7 +438,7 @@ export const GUIDE_NL: GuideSection[] = [
     blocks: [
       { ul: [
         'Instellingen → Privacy & Gegevens → Exporteren: een volledige JSON-back-up. Bewaar er een voor je grote wijzigingen doet.',
-        'Importeren zet een back-up terug en VERVANGT alles. Wie al een account op deze server heeft (zelfde gebruikersnaam), houdt het huidige wachtwoord. Wie nieuw is op deze server krijgt een willekeurig wachtwoord, dus stel daarna hun wachtwoorden in bij Gezinsleden.',
+        'Importeren zet een back-up terug en VERVANGT alles. Wie al een account op deze server heeft (zelfde gebruikersnaam), houdt het huidige wachtwoord. Wie nieuw is op deze server krijgt een willekeurig wachtwoord, dus stel daarna hun wachtwoorden in bij Gezinsleden. Je moet als Admin in de back-up staan (zelfde gebruikersnaam), anders wordt het importeren geweigerd. Sommige apparaten worden daarna uitgelogd; log daar opnieuw in met hetzelfde wachtwoord.',
         'Instellingen → Spreadsheets: download klusjes of beloningen, bewerk ze in een spreadsheetprogramma en laad ze weer terug. Je ziet eerst een voorbeeld en er wordt niets verwijderd.',
         'Om een klusje te verwijderen open je het met Bewerken; Klusje verwijderen staat onderaan het formulier. Het gaat 30 dagen naar Instellingen → Onlangs verwijderd en kan daar worden teruggezet. Beloningen werken hetzelfde.',
         'Verwijderen haalt nooit munten weg en wist niet wat gedaan is: eerdere voltooiingen blijven onder de naam van het klusje zichtbaar in Activiteit, het Scorebord en de doelen, ook nadat het uit Onlangs verwijderd is.',
@@ -644,10 +644,10 @@ export const GUIDE_NL: GuideSection[] = [
           'Sluit hem helemaal (veeg hem weg in de appkiezer) en open hem opnieuw: bij het starten laadt hij de nieuwste versie.',
         ] },
         { q: 'Iemand kan niet inloggen', a: [
-          'Te veel foute wachtwoorden blokkeren inloggen tot 15 minuten: 10 voor één account of 20 vanaf één apparaat. Wacht en probeer opnieuw; een juist wachtwoord zet de teller van het account terug.',
-          'Een ouder kan een nieuw wachtwoord instellen in Instellingen → Gezinsleden.',
+          'Te veel foute wachtwoorden blokkeren inloggen tot 15 minuten: 10 voor één account of 20 vanaf één apparaat. Wacht en probeer opnieuw; een juist wachtwoord zet de teller van het account terug. Bij het wijzigen van je eigen wachtwoord of inlog-e-mailadres, of het verwijderen van het gezin, mag je 5 keer een fout wachtwoord typen in 15 minuten.',
+          'Een ouder kan een nieuw wachtwoord instellen in Instellingen → Gezinsleden. Wachtwoorden hebben minstens 4 tekens nodig; op tidyquest.org heeft dat van een ouder er 8 nodig.',
           'Kan geen enkele ouder inloggen? Wie de server beheert, kan het wachtwoord van de eerste ouder resetten met ADMIN_RESET_PASSWORD (README, "Admin Password Recovery"). "Wachtwoord vergeten?" op het inlogscherm zegt hetzelfde.',
-          'Na het importeren van een back-up houdt iedereen die al een account op deze server had het eigen wachtwoord. Wie nieuw is op deze server heeft een wachtwoord nodig dat een ouder instelt bij Gezinsleden.',
+          'Na het importeren van een back-up houdt iedereen die al een account op deze server had het eigen wachtwoord. Wie nieuw is op deze server heeft een wachtwoord nodig dat een ouder instelt bij Gezinsleden. Sommige apparaten worden na een import uitgelogd; log daar opnieuw in met hetzelfde wachtwoord.',
         ] },
         { q: 'Iemand staat niet op het inlogscherm, of er staat dat inloggen uit staat', a: [
           'Een ouder heeft Kan inloggen voor diegene uitgezet: hun kaart bij Instellingen → Gezinsleden toont 🔒 Zonder login. Op tidyquest.org zegt het inloggen alleen dat de naam of het wachtwoord niet klopt.',

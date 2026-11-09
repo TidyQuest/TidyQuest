@@ -143,7 +143,7 @@ export const GUIDE_ES: GuideSection[] = [
         'Los padres inician sesión con su correo y su contraseña. Los demás, con el código de familia, su usuario y su contraseña (los padres también pueden).',
         'Ajustes → 🔑 Código de familia muestra el código (como sunny-otter-42), el enlace de la familia y un código QR. Abre el enlace o escanea el código en el móvil o la tableta de un niño: el dispositivo recuerda la familia y solo tiene que escribir su usuario y contraseña. Las mayúsculas, los espacios y los guiones del código dan igual.',
         'Código nuevo da a la familia un código distinto. El código y el enlace antiguos dejan de funcionar; nadie pierde la sesión.',
-        'Ajustes → ✉️ Correo de inicio de sesión: Cambiar correo envía un enlace a la dirección nueva, y el cambio se hace al abrirlo. Otro padre o madre puede usar Añadir correo para iniciar sesión con el suyo.',
+        'Ajustes → ✉️ Correo de inicio de sesión: Cambiar correo envía un enlace a la dirección nueva, y el cambio se hace al abrirlo. Otro padre o madre puede usar Añadir correo para iniciar sesión con el suyo. Para entrar con un correo, la contraseña de un padre o una madre necesita al menos 8 caracteres. Si un padre o una madre pasa a ser miembro o niño, pierde su correo de inicio de sesión y entra con el código de familia.',
         'Al registrarte enviamos un enlace para confirmar tu dirección. Abrirlo es también como un padre o una madre acepta, por sus hijos, lo que TidyQuest guarda (lo pide la ley de privacidad infantil de EE. UU., COPPA). Hasta que un padre o una madre lo confirme, solo pueden iniciar sesión los padres. Una familia que no confirma el correo de un padre o una madre en 30 días se elimina; enviamos un recordatorio una semana antes.',
         '¿Olvidaste la contraseña? en la pantalla de inicio de sesión envía a un padre o una madre un enlace que funciona una vez, durante una hora. Los niños y adolescentes piden a sus padres que pongan una nueva en Ajustes → Miembros de la familia.',
       ] },
@@ -438,7 +438,7 @@ export const GUIDE_ES: GuideSection[] = [
     blocks: [
       { ul: [
         'Ajustes → Datos y privacidad → Exportar: una copia de seguridad JSON completa. Guarda una antes de hacer cambios grandes.',
-        'Importar restaura una copia de seguridad y REEMPLAZA todo. Quien ya tiene una cuenta en este servidor (mismo nombre de usuario) conserva su contraseña actual. Quien es nuevo en este servidor recibe una aleatoria, así que después pon sus contraseñas en Miembros de la familia.',
+        'Importar restaura una copia de seguridad y REEMPLAZA todo. Quien ya tiene una cuenta en este servidor (mismo nombre de usuario) conserva su contraseña actual. Quien es nuevo en este servidor recibe una aleatoria, así que después pon sus contraseñas en Miembros de la familia. Tienes que estar en la copia como Admin (mismo nombre de usuario), o la importación se rechaza. Algunos dispositivos pueden cerrar sesión después; basta con volver a entrar con la misma contraseña.',
         'Ajustes → Hojas de cálculo: descarga tareas o recompensas, edítalas en cualquier aplicación de hojas de cálculo y vuelve a cargarlas. Primero ves una vista previa y no se elimina nada.',
         'Para eliminar una tarea, ábrela con Editar; Eliminar tarea está al final del formulario. Va a Ajustes → Eliminados recientemente durante 30 días y se puede restaurar desde ahí. Las recompensas funcionan igual.',
         'Eliminar nunca quita monedas ni borra lo que se hizo: las veces que se completó siguen apareciendo en Actividad, el Tablero y los objetivos con el nombre de la tarea, incluso cuando ya no está en Eliminados recientemente.',
@@ -644,10 +644,10 @@ export const GUIDE_ES: GuideSection[] = [
           'Ciérrala del todo (deslízala fuera en el selector de apps) y ábrela otra vez: al arrancar carga la versión más nueva.',
         ] },
         { q: 'Alguien no puede iniciar sesión', a: [
-          'Demasiadas contraseñas incorrectas bloquean los inicios de sesión hasta 15 minutos: 10 en una cuenta o 20 desde un dispositivo. Espera e inténtalo de nuevo; una contraseña correcta borra el recuento de la cuenta.',
-          'Un padre o una madre puede poner una contraseña nueva en Ajustes → Miembros de la familia.',
+          'Demasiadas contraseñas incorrectas bloquean los inicios de sesión hasta 15 minutos: 10 en una cuenta o 20 desde un dispositivo. Espera e inténtalo de nuevo; una contraseña correcta borra el recuento de la cuenta. Al cambiar tu propia contraseña o tu correo de inicio de sesión, o al eliminar la familia, se permiten 5 contraseñas incorrectas en 15 minutos.',
+          'Un padre o una madre puede poner una contraseña nueva en Ajustes → Miembros de la familia. Las contraseñas necesitan al menos 4 caracteres; en tidyquest.org, la de un padre o una madre necesita 8.',
           '¿Ningún padre ni madre puede iniciar sesión? Quien gestiona el servidor puede restablecer la contraseña del primer padre o madre con ADMIN_RESET_PASSWORD (README, "Admin Password Recovery"). "¿Olvidaste la contraseña?" en la pantalla de inicio de sesión dice lo mismo.',
-          'Tras importar una copia de seguridad, quien ya tenía una cuenta en este servidor conserva su contraseña. Quien es nuevo en este servidor necesita que un padre o una madre le ponga una en Miembros de la familia.',
+          'Tras importar una copia de seguridad, quien ya tenía una cuenta en este servidor conserva su contraseña. Quien es nuevo en este servidor necesita que un padre o una madre le ponga una en Miembros de la familia. Algunos dispositivos pueden cerrar sesión tras una importación; basta con volver a entrar con la misma contraseña.',
         ] },
         { q: 'Alguien no está en la pantalla de inicio de sesión, o dice que el inicio de sesión está desactivado', a: [
           'Un padre o una madre desactivó Puede iniciar sesión para esa persona: su tarjeta en Ajustes → Miembros de la familia dice 🔒 Sin sesión. En tidyquest.org, el inicio de sesión solo dice que el nombre o la contraseña no son correctos.',

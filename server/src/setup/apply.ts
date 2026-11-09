@@ -7,6 +7,7 @@ import { syncPrimaryGoal } from '../utils/goals';
 import { currentLocalWeek } from '../utils/periods';
 import { trashReward } from '../utils/trash';
 import { tooManyPeople } from '../hosted/limits';
+import { minPassword } from '../utils/passwords';
 import {
   AGE_GROUPS, AgeGroup, Audience, CASH_AMOUNTS, KID_ROOM_COLORS, PRESET_DESCRIPTIONS, STARTER_REWARDS, STARTER_ROOMS,
   StarterChore, StarterRoomId, choreWeeklyCoins, coinsPerMoney, nicePrice, rewardPrice, starterChore, starterReward,
@@ -101,7 +102,8 @@ export function applySetup(requesterId: number, raw: unknown): SetupResult {
       if (logsIn) {
         const username = text(p.username, 40);
         if (!username || /\s/.test(username)) return refused('Each person who logs in needs a username', 'username_needed');
-        if (typeof p.password !== 'string' || p.password.length < 4) return refused('Passwords need at least 4 characters', 'password_needed');
+        const min = minPassword(kind === 'adult' ? 'admin' : 'child');
+        if (typeof p.password !== 'string' || p.password.length < min) return refused(`Passwords need at least ${min} characters`, 'password_needed');
         const key = username.toLowerCase();
         if (newNames.has(key) || db.prepare('SELECT 1 FROM users WHERE username = ? COLLATE NOCASE').get(username)) {
           return refused(`The username ${username} is taken`, 'username_taken', 409);

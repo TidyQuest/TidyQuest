@@ -628,8 +628,12 @@ export const api = {
 
   // Data
   exportData: () => apiFetch<any>('/export'),
-  importData: (data: any) =>
-    apiFetch<any>('/import', { method: 'POST', body: JSON.stringify(data) }),
+  importData: async (data: any) => {
+    const res = await apiFetch<{ token?: string }>('/import', { method: 'POST', body: JSON.stringify(data) });
+    // The backup may give you another id: it comes with a fresh login for this device (BUG-21)
+    if (res.token) saveNewToken(res.token);
+    return res;
+  },
   achievements: () => apiFetch<any>('/achievements'),
   getRegistrationStatus: () =>
     fetch('/api/auth/registration-status').then((r) => r.json()) as Promise<{ registrationEnabled: boolean }>,

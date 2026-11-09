@@ -167,7 +167,7 @@ export const GUIDE_EN: GuideSection[] = [
         'Parents sign in with their email and password. Everyone else signs in with the family code, their username and their password (parents can too).',
         'Settings → 🔑 Family code shows the code (like sunny-otter-42), the family link and a QR code. Open the link or scan the code on a kid’s phone or tablet: it remembers the family, so they only type their username and password. Capitals, spaces and dashes in the code don’t matter.',
         'New code gives the family a fresh code. The old code and link stop working; everyone who’s signed in stays signed in.',
-        'Settings → ✉️ Sign-in email: Change email sends a link to the new address, and the change happens when you open it. A second parent can Add email to sign in with their own.',
+        'Settings → ✉️ Sign-in email: Change email sends a link to the new address, and the change happens when you open it. A second parent can Add email to sign in with their own. A parent’s password needs at least 8 characters to sign in with an email. A parent changed to member or child loses their sign-in email and signs in with the family code instead.',
         'At sign-up we email a link to confirm your address. Opening it is also how a parent agrees, for their children, to what TidyQuest keeps (the US children’s privacy law, COPPA, asks for this). Until a parent has confirmed, only parents can sign in. A family that hasn’t confirmed a parent’s email within 30 days is deleted; we send a reminder a week before.',
         'Forgot password? on the login screen emails a parent a link that works once, for one hour. Kids and teens ask a parent to set a new one in Settings → Family Members.',
       ] },
@@ -462,7 +462,7 @@ export const GUIDE_EN: GuideSection[] = [
     blocks: [
       { ul: [
         'Settings → Data & Privacy → Export: a full JSON backup. Keep one before big changes.',
-        'Import restores a backup and REPLACES everything. Everyone who already has an account on this server (same username) keeps their current password. People who are new to this server get a random one, so set their passwords in Family Members afterwards.',
+        'Import restores a backup and REPLACES everything. Everyone who already has an account on this server (same username) keeps their current password. People who are new to this server get a random one, so set their passwords in Family Members afterwards. The backup must list you as an Admin (same username), or the import is refused. Some devices may be signed out afterwards; they sign in again with the same password.',
         'Settings → Spreadsheets: download chores or rewards, edit them in any spreadsheet app, and load them back. You see a preview first and nothing is deleted.',
         'To delete a chore, open it with Edit; Delete task is at the bottom of the form. It goes to Settings → Recently deleted for 30 days and can be restored from there. Rewards work the same way.',
         'Deleting never takes coins away or erases what was done: past completions keep showing in Activity, the Board and goals under the chore’s name, even after it leaves Recently deleted.',
@@ -668,10 +668,10 @@ export const GUIDE_EN: GuideSection[] = [
           'Close it fully (swipe it away in the app switcher) and open it again: it loads the newest version when it starts.',
         ] },
         { q: 'Someone can’t log in', a: [
-          'Too many wrong passwords block logins for up to 15 minutes: 10 for one account, or 20 from one device. Wait and try again; a correct password clears the account’s count.',
-          'A parent can set a new password in Settings → Family Members.',
+          'Too many wrong passwords block logins for up to 15 minutes: 10 for one account, or 20 from one device. Wait and try again; a correct password clears the account’s count. Changing your own password or sign-in email, or deleting the family, allows 5 wrong passwords in 15 minutes.',
+          'A parent can set a new password in Settings → Family Members. Passwords need at least 4 characters; on tidyquest.org a parent’s needs 8.',
           'No parent can log in? Whoever runs the server can reset the first parent’s password with ADMIN_RESET_PASSWORD (README, "Admin Password Recovery"). "Forgot password?" on the login screen says the same.',
-          'After importing a backup, people who already had an account on this server keep their passwords. People who are new to this server need a parent to set one in Family Members.',
+          'After importing a backup, people who already had an account on this server keep their passwords. People who are new to this server need a parent to set one in Family Members. Some devices may be signed out after an import; they sign in again with the same password.',
         ] },
         { q: 'Someone isn’t on the login screen, or it says logging in is turned off', a: [
           'A parent switched off Can log in for them: their card in Settings → Family Members says 🔒 No login. On tidyquest.org the login just says the name or password is wrong.',

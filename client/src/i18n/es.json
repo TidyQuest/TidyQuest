@@ -392,7 +392,8 @@
       "takeBack": "Deshacer",
       "takeBackHint": "¿Pulsaste Hecho por error? Deshazlo antes de que decida un padre.",
       "importInvalid": "Esto no es una copia de seguridad de TidyQuest: no tiene personas ni habitaciones.",
-      "importFailed": "Error al importar: {error}"
+      "importFailed": "Error al importar: {error}",
+      "importNotIn": "Esta copia de seguridad no te incluye ({name}) como Admin, así que importarla te dejaría sin acceso. Inicia sesión con un Admin que esté en la copia e inténtalo de nuevo."
     },
     "admin": {
       "whoDidThisTask": "¿Quién completó esta tarea?",
@@ -759,7 +760,9 @@
       "forgotAskParent": "Pide a un padre o una madre que te ponga una nueva en Ajustes → Miembros de la familia.",
       "forgotNoParent": "¿Ningún padre ni madre puede iniciar sesión? Quien gestiona el servidor puede restablecer la contraseña del primer padre o madre.",
       "forgotHowTo": "Cómo restablecerla",
-      "noLogin": "Un padre o una madre desactivó tu inicio de sesión. Pídele que lo vuelva a activar en Ajustes → Miembros de la familia."
+      "noLogin": "Un padre o una madre desactivó tu inicio de sesión. Pídele que lo vuelva a activar en Ajustes → Miembros de la familia.",
+      "tooManyTries": "Demasiadas contraseñas incorrectas. Espera 15 minutos e inténtalo de nuevo.",
+      "passwordMin": "Las contraseñas necesitan al menos {n} caracteres."
     },
     "achievements": {
       "familyProgress": "Progreso familiar",
@@ -2167,7 +2170,8 @@
       "deleteFamilyAction": "Eliminar la familia para siempre",
       "deleteFamilyDone": "{family} se eliminó. Gracias por usar TidyQuest.",
       "errWrongName": "Ese no es el nombre de la familia.",
-      "memberPrivacy": "Lo que TidyQuest guarda de cada persona: {privacy}"
+      "memberPrivacy": "Lo que TidyQuest guarda de cada persona: {privacy}",
+      "errChangePasswordFirst": "Para entrar con un correo, tu contraseña necesita al menos {n} caracteres. Cámbiala primero en Perfil."
     },
     "limits": {
       "people": "Una familia puede tener hasta {n} personas.",
@@ -2295,7 +2299,7 @@
       "errAge": "Elige un grupo de edad para {name}.",
       "errUsername": "{name} necesita un usuario (sin espacios).",
       "errUsernameTwice": "Dos personas tienen el usuario {name}.",
-      "errPassword": "La contraseña de {name} necesita al menos 4 caracteres.",
+      "errPassword": "La contraseña de {name} necesita al menos {n} caracteres.",
       "errUsernameTaken": "Ese usuario ya existe. Vuelve al paso Familia y elige otro.",
       "tipsTitle": "Siguientes pasos",
       "tourStart": "Enséñame cómo cambiar las cosas",

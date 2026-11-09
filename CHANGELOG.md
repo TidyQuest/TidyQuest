@@ -34,6 +34,23 @@ What changed in each release, in plain language, newest first. Releases up to v0
   were matched by the UTC date, so in the Americas two people finishing one in the late afternoon or evening could
   show as two entries, and one done just before midnight was merged with the next day's. They now follow the
   family's day, and so does who may see a shared chore's proof photo.
+- **Importing a backup can no longer leave a phone signed in as someone else** (BUG-21). Logins are tied to each
+  person's place in the family, and a backup can put someone else in that place, so a kid's tablet could open a
+  parent's account after an import. Anyone whose place changed is now signed out once and signs in again with
+  their password. The parent who imports stays signed in, and the import is refused if the backup doesn't list
+  them as an Admin. Nobody gets the importing parent's password any more.
+- **A backup round trip keeps earned badges** (BUG-22), so their bonus coins aren't paid again and the badge
+  notifications don't all go out a second time. Backups now also keep today's Rescue Mission, which reminders were
+  sent and the notification log. The 8 starter rewards only go into a new family and no longer come back after
+  you remove them all or import a backup without any.
+- **Wrong passwords count when you change your password or sign-in email, or delete the family** (BUG-23). After 5
+  wrong ones, it says to wait 15 minutes.
+- **On tidyquest.org a parent's password always needs 8 characters**, also when adding a parent, in the setup
+  wizard and when changing it in Profile or Family Members; a parent who was made from a kid changes a short one
+  before adding a sign-in email (BUG-24). Everyone else needs 4, which adding a family member now checks too.
+- **tidyquest.org account clean-ups** (BUG-25): a parent changed to member or child lets their sign-in email go
+  (they still sign in with the family code), used and expired email links are deleted each day, and wrong
+  sign-ins or "Forgot password?" requests no longer count as the family using TidyQuest.
 
 ## v0.17.2 (2026-11-09)
 

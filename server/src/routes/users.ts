@@ -8,6 +8,7 @@ import bcrypt from 'bcryptjs';
 import crypto from 'crypto';
 import db from '../database';
 import { AuthRequest, authMiddleware, loginToken, revokeTokens } from '../middleware/auth';
+import { TOO_MANY_TRIES, checkOwnPassword, minPassword, shortPassword } from '../utils/passwords';
 import { DEFAULT_COINS_BY_EFFORT, normalizeCoinsByEffortConfig } from '../utils/health';
 import { notifyCoinsAdjusted } from '../utils/notifyMessages';
 import { NOTIFICATION_KINDS, NotificationTypeSettings, sendTelegramMessageDetailed, sendNtfyMessageDetailed } from '../utils/notifications';
@@ -143,6 +144,7 @@ router.post('/', (req: AuthRequest, res: Response) => {
   if (tooMany) return res.status(403).json(tooMany);
 
   const safeRole = role === 'admin' ? 'admin' : role === 'child' ? 'child' : 'member';
+  if (!noLogin && String(password).length < minPassword(safeRole)) return res.status(400).json(shortPassword(minPassword(safeRole)));
   const passwordHash = noLogin ? unusableHash() : bcrypt.hashSync(password, 10);
   const result = db.prepare(
     'INSERT INTO users (username, displayName, passwordHash, role, avatarColor, language, canLogIn) VALUES (?, ?, ?, ?, ?, ?, ?)'
@@ -256,13 +258,12 @@ router.put('/:id/password', (req: AuthRequest, res: Response) => {
   const userId = parseInt(req.params.id as string);
   const { currentPassword, newPassword } = req.body as { currentPassword?: string; newPassword?: string };
 
-  if (!newPassword || newPassword.length < 4) {
-    return res.status(400).json({ error: 'newPassword must be at least 4 characters' });
-  }
-
   const requester = db.prepare('SELECT id, role FROM users WHERE id = ?').get(req.userId) as any;
   const target = db.prepare('SELECT id, role, passwordHash, canLogIn FROM users WHERE id = ?').get(userId) as any;
   if (!target) return res.status(404).json({ error: 'User not found' });
+  if (typeof newPassword !== 'string' || newPassword.length < minPassword(target.role)) {
+    return res.status(400).json(shortPassword(minPassword(target.role)));
+  }
   // Someone who doesn't log in gets a password by turning "Can log in" back on (PUT /:id/login)
   if (target.canLogIn === 0) return res.status(400).json({ error: 'They can\'t log in', code: 'cannot_log_in' });
 
@@ -276,10 +277,10 @@ router.put('/:id/password', (req: AuthRequest, res: Response) => {
     if (!currentPassword) {
       return res.status(400).json({ error: 'currentPassword is required' });
     }
-    // Not 401: the app treats a 401 as "signed out" and would drop this device's login
-    if (!bcrypt.compareSync(currentPassword, target.passwordHash)) {
-      return res.status(403).json({ error: 'Current password is incorrect' });
-    }
+    // Wrong ones count (BUG-23). Not 401: the app treats a 401 as "signed out" and would drop this device's login
+    const check = checkOwnPassword(`${req.familyId ?? ''}:${userId}`, currentPassword, target.passwordHash);
+    if (check === 'blocked') return res.status(429).json(TOO_MANY_TRIES);
+    if (check === 'wrong') return res.status(403).json({ error: 'Current password is incorrect', code: 'wrong-password' });
   }
 
   const hash = bcrypt.hashSync(newPassword, 10);
@@ -385,6 +386,9 @@ router.put('/:id/role', (req: AuthRequest, res: Response) => {
   }
 
   db.prepare('UPDATE users SET role = ? WHERE id = ?').run(role, targetId);
+  // Hosted: only parents sign in by email, so one who isn't a parent any more lets theirs go: no emails, no
+  // reset links, and the address is free again (BUG-25). They still sign in with the family code.
+  if (isHosted() && target.role === 'admin' && role !== 'admin') removeAccount(req.familyId!, targetId);
   const updated = db.prepare(`SELECT ${USER_SELECT} FROM users WHERE id = ?`).get(targetId);
   res.json(updated);
 });

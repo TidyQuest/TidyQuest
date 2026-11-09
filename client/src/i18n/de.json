@@ -392,7 +392,8 @@
       "takeBack": "Zurücknehmen",
       "takeBackHint": "Aus Versehen auf Erledigt getippt? Nimm es zurück, bevor ein Elternteil entscheidet.",
       "importInvalid": "Das ist keine TidyQuest-Sicherung: Sie enthält keine Personen oder Räume.",
-      "importFailed": "Import fehlgeschlagen: {error}"
+      "importFailed": "Import fehlgeschlagen: {error}",
+      "importNotIn": "Diese Sicherung führt dich ({name}) nicht als Admin, ein Import würde dich aussperren. Melde dich als Admin an, der in der Sicherung steht, und versuche es erneut."
     },
     "admin": {
       "whoDidThisTask": "Wer hat diese Aufgabe erledigt?",
@@ -759,7 +760,9 @@
       "forgotAskParent": "Bitte ein Elternteil, in Einstellungen → Familienmitglieder ein neues festzulegen.",
       "forgotNoParent": "Kein Elternteil kann sich anmelden? Wer den Server betreibt, kann das Passwort des ersten Elternteils zurücksetzen.",
       "forgotHowTo": "So wird es zurückgesetzt",
-      "noLogin": "Ein Elternteil hat deine Anmeldung ausgeschaltet. Bitte darum, sie unter Einstellungen → Familienmitglieder wieder einzuschalten."
+      "noLogin": "Ein Elternteil hat deine Anmeldung ausgeschaltet. Bitte darum, sie unter Einstellungen → Familienmitglieder wieder einzuschalten.",
+      "tooManyTries": "Zu viele falsche Passwörter. Warte 15 Minuten und versuche es erneut.",
+      "passwordMin": "Passwörter brauchen mindestens {n} Zeichen."
     },
     "achievements": {
       "familyProgress": "Fortschritt der Familie",
@@ -2167,7 +2170,8 @@
       "deleteFamilyAction": "Familie endgültig löschen",
       "deleteFamilyDone": "{family} wurde gelöscht. Danke, dass ihr TidyQuest benutzt habt.",
       "errWrongName": "Das ist nicht der Name der Familie.",
-      "memberPrivacy": "Was TidyQuest über jede Person speichert: {privacy}"
+      "memberPrivacy": "Was TidyQuest über jede Person speichert: {privacy}",
+      "errChangePasswordFirst": "Für die Anmeldung mit E-Mail braucht dein Passwort mindestens {n} Zeichen. Ändere es zuerst unter Profil."
     },
     "limits": {
       "people": "Eine Familie kann bis zu {n} Personen haben.",
@@ -2295,7 +2299,7 @@
       "errAge": "Wähle eine Altersgruppe für {name}.",
       "errUsername": "{name} braucht einen Benutzernamen (ohne Leerzeichen).",
       "errUsernameTwice": "Zwei Personen haben den Benutzernamen {name}.",
-      "errPassword": "Das Passwort von {name} braucht mindestens 4 Zeichen.",
+      "errPassword": "Das Passwort von {name} braucht mindestens {n} Zeichen.",
       "errUsernameTaken": "Dieser Benutzername ist schon vergeben. Geh zurück zum Schritt Familie und wähle einen anderen.",
       "tipsTitle": "Als Nächstes",
       "tourStart": "Zeig mir, wie ich etwas ändere",

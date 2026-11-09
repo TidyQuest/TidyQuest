@@ -143,7 +143,7 @@ export const GUIDE_FR: GuideSection[] = [
         'Les parents se connectent avec leur e-mail et leur mot de passe. Les autres se connectent avec le code de la famille, leur nom d’utilisateur et leur mot de passe (les parents aussi, s’ils veulent).',
         'Paramètres → 🔑 Code de la famille affiche le code (comme sunny-otter-42), le lien de la famille et un QR code. Ouvrez le lien ou scannez le code sur le téléphone ou la tablette d’un enfant : l’appareil retient la famille, il ne reste qu’à taper le nom d’utilisateur et le mot de passe. Majuscules, espaces et tirets dans le code n’ont pas d’importance.',
         'Nouveau code donne un nouveau code à la famille. L’ancien code et l’ancien lien ne marchent plus ; personne n’est déconnecté.',
-        'Paramètres → ✉️ E-mail de connexion : Changer d’e-mail envoie un lien à la nouvelle adresse, et le changement se fait quand vous l’ouvrez. Un deuxième parent peut Ajouter un e-mail pour se connecter avec le sien.',
+        'Paramètres → ✉️ E-mail de connexion : Changer d’e-mail envoie un lien à la nouvelle adresse, et le changement se fait quand vous l’ouvrez. Un deuxième parent peut Ajouter un e-mail pour se connecter avec le sien. Pour se connecter avec un e-mail, le mot de passe d’un parent doit avoir au moins 8 caractères. Un parent qui devient membre ou enfant perd son e-mail de connexion et se connecte alors avec le code de la famille.',
         'À l’inscription, nous envoyons un lien pour confirmer votre adresse. L’ouvrir, c’est aussi la façon dont un parent accepte, pour ses enfants, ce que TidyQuest garde (la loi américaine sur la vie privée des enfants, COPPA, le demande). Tant qu’un parent n’a pas confirmé, seuls les parents peuvent se connecter. Une famille qui n’a pas confirmé l’e-mail d’un parent en 30 jours est supprimée ; nous envoyons un rappel une semaine avant.',
         'Mot de passe oublié ? sur l’écran de connexion envoie à un parent un lien qui fonctionne une fois, pendant une heure. Les enfants et les ados demandent à un parent d’en choisir un nouveau dans Paramètres → Membres de la famille.',
       ] },
@@ -438,7 +438,7 @@ export const GUIDE_FR: GuideSection[] = [
     blocks: [
       { ul: [
         'Paramètres → Données et confidentialité → Exporter : une sauvegarde JSON complète. Garde-en une avant les gros changements.',
-        'Importer restaure une sauvegarde et REMPLACE tout. Les personnes qui ont déjà un compte sur ce serveur (même nom d’utilisateur) gardent leur mot de passe actuel. Les personnes nouvelles sur ce serveur en reçoivent un aléatoire, alors définis leur mot de passe dans Membres de la famille ensuite.',
+        'Importer restaure une sauvegarde et REMPLACE tout. Les personnes qui ont déjà un compte sur ce serveur (même nom d’utilisateur) gardent leur mot de passe actuel. Les personnes nouvelles sur ce serveur en reçoivent un aléatoire, alors définis leur mot de passe dans Membres de la famille ensuite. Tu dois figurer dans la sauvegarde en tant qu’Admin (même nom d’utilisateur), sinon l’import est refusé. Certains appareils peuvent être déconnectés ensuite : il suffit de se reconnecter avec le même mot de passe.',
         'Paramètres → Tableurs : télécharge les tâches ou les récompenses, modifie-les dans n’importe quelle appli de tableur, et recharge-les. Tu vois d’abord un aperçu et rien n’est supprimé.',
         'Pour supprimer une tâche, ouvre-la avec Modifier ; Supprimer la tâche est en bas du formulaire. Elle va dans Paramètres → Supprimés récemment pendant 30 jours et peut y être restaurée. Les récompenses fonctionnent de la même façon.',
         'Supprimer ne retire jamais de pièces et n’efface pas ce qui a été fait : les réalisations passées restent visibles dans Activité, le Tableau et les objectifs sous le nom de la tâche, même après qu’elle a quitté Supprimés récemment.',
@@ -644,10 +644,10 @@ export const GUIDE_FR: GuideSection[] = [
           'Ferme-la complètement (balaie-la dans le sélecteur d’apps) et rouvre-la : elle charge la dernière version au démarrage.',
         ] },
         { q: 'Quelqu’un ne peut pas se connecter', a: [
-          'Trop de mots de passe erronés bloquent les connexions jusqu’à 15 minutes : 10 pour un compte, ou 20 depuis un appareil. Attends et réessaie ; un bon mot de passe remet à zéro le compteur du compte.',
-          'Un parent peut définir un nouveau mot de passe dans Paramètres → Membres de la famille.',
+          'Trop de mots de passe erronés bloquent les connexions jusqu’à 15 minutes : 10 pour un compte, ou 20 depuis un appareil. Attends et réessaie ; un bon mot de passe remet à zéro le compteur du compte. Changer ton propre mot de passe ou ton e-mail de connexion, ou supprimer la famille, permet 5 mots de passe erronés en 15 minutes.',
+          'Un parent peut définir un nouveau mot de passe dans Paramètres → Membres de la famille. Les mots de passe ont au moins 4 caractères ; sur tidyquest.org, celui d’un parent en a au moins 8.',
           'Aucun parent ne peut se connecter ? La personne qui gère le serveur peut réinitialiser le mot de passe du premier parent avec ADMIN_RESET_PASSWORD (README, « Admin Password Recovery »). « Mot de passe oublié ? » sur l’écran de connexion dit la même chose.',
-          'Après l’import d’une sauvegarde, les personnes qui avaient déjà un compte sur ce serveur gardent leur mot de passe. Les personnes nouvelles sur ce serveur ont besoin qu’un parent leur en définisse un dans Membres de la famille.',
+          'Après l’import d’une sauvegarde, les personnes qui avaient déjà un compte sur ce serveur gardent leur mot de passe. Les personnes nouvelles sur ce serveur ont besoin qu’un parent leur en définisse un dans Membres de la famille. Certains appareils peuvent être déconnectés après un import : il suffit de se reconnecter avec le même mot de passe.',
         ] },
         { q: 'Quelqu’un n’est pas sur l’écran de connexion, ou on lit que la connexion est désactivée', a: [
           'Un parent a désactivé Peut se connecter pour lui : sa fiche dans Paramètres → Membres de la famille indique 🔒 Sans connexion. Sur tidyquest.org, la connexion dit simplement que le nom ou le mot de passe est faux.',

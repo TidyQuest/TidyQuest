@@ -3,7 +3,7 @@ import { UserAvatar } from '../shared/UserAvatar';
 import { AVATAR_PRESETS, AvatarPresetIcon } from '../icons/AvatarPresets';
 import { GlobeIcon } from '../icons/UIIcons';
 import { api } from '../../hooks/useApi';
-import { limitError } from '../../utils/hosted';
+import { hostedError, limitError } from '../../utils/hosted';
 import { useTranslation } from '../../hooks/useTranslation';
 import { MyNotifications } from '../shared/MyNotifications';
 import { ThemePicker } from '../shared/ThemePicker';
@@ -100,7 +100,7 @@ export function Profile({ user, theme, onChangeTheme, onUnlocksChanged, onSave, 
       setConfirmPassword('');
       setPasswordMsg(t('profile.passwordUpdatedElsewhere'));
     } catch (err: any) {
-      setPasswordMsg(err?.message || t('settings.passwordUpdateFailed'));
+      setPasswordMsg(hostedError(err, t, err?.message || t('settings.passwordUpdateFailed')));
     } finally {
       setSaving(false);
     }

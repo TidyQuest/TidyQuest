@@ -377,8 +377,14 @@ function AppContent() {
           return;
         }
         await api.importData(data);
-        await loadDashboard();
+        // Start again with the imported family (you may have another id in it)
+        window.location.reload();
       } catch (err) {
+        const body = (err as { body?: { code?: string; username?: string } })?.body;
+        if (body?.code === 'not-in-backup') {
+          alert(t('app.importNotIn').replace('{name}', body.username ?? ''));
+          return;
+        }
         alert(t('app.importFailed').replace('{error}', limitError(err, t, err instanceof Error ? err.message : t('common.error'))));
       }
     };

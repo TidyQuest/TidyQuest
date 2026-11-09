@@ -4,6 +4,7 @@ import db from '../database';
 import { AuthRequest, authMiddleware, revokeTokens } from '../middleware/auth';
 import { clientIp, sendLogin } from '../routes/auth';
 import { checkRateLimit } from '../utils/throttle';
+import { HOSTED_PARENT_MIN, TOO_MANY_TRIES, checkOwnPassword } from '../utils/passwords';
 import {
   accountByEmail, accountOf, addAccount, cleanEmail, confirmBy, createEmailToken, isLocked, markConfirmed, useEmailToken,
 } from './accounts';
@@ -22,7 +23,7 @@ import { joinWaitlist, signupsOpen } from './signupGate';
 // Hosted mode's own pages (/api/hosted): sign-up, parents' emails and passwords, the family code.
 const router = Router();
 
-const MIN_PASSWORD = 8;
+const MIN_PASSWORD = HOSTED_PARENT_MIN;
 // Each error has a code, so the page can say it in the family's language
 const LINK_EXPIRED = { error: 'This link has expired or was already used. Ask for a new one.', code: 'link-expired' };
 const BAD_EMAIL = { error: "That email address doesn't look right", code: 'bad-email' };
@@ -129,7 +130,8 @@ router.post('/forgot-password', (req: AuthRequest, res: Response) => {
     return res.status(429).json({ error: 'Too many tries. Please try again later.' });
   }
   const account = checkRateLimit(`forgot:${email}`, 3) ? accountByEmail(email) : undefined;
-  const family = account && openFamily(account.familyId);
+  // Asking for a link isn't using TidyQuest: anyone can type the email (BUG-25)
+  const family = account && openFamily(account.familyId, Date.now(), { activity: false });
   if (account && family) {
     runInFamily(family, () => {
       const user = db.prepare("SELECT displayName, language FROM users WHERE id = ? AND role = 'admin'").get(account.userId) as { displayName: string; language: string } | undefined;
@@ -275,8 +277,12 @@ router.post('/change-email', (req: AuthRequest, res: Response) => {
   if (user.role !== 'admin') return res.status(403).json({ error: 'Only parents sign in with an email' });
   const newEmail = cleanEmail(req.body.email);
   if (!newEmail) return res.status(400).json(BAD_EMAIL);
-  if (typeof req.body.password !== 'string' || !bcrypt.compareSync(req.body.password, user.passwordHash)) {
-    return res.status(400).json({ error: "Your password isn't right", code: 'wrong-password' });
+  const check = checkOwnPassword(`${req.familyId}:${req.userId}`, req.body.password, user.passwordHash);
+  if (check === 'blocked') return res.status(429).json(TOO_MANY_TRIES);
+  if (check === 'wrong') return res.status(400).json({ error: "Your password isn't right", code: 'wrong-password' });
+  // Signing in by email needs a parent's password (BUG-24): someone made a parent with a kid's short one changes it first
+  if (req.body.password.length < MIN_PASSWORD) {
+    return res.status(400).json({ error: `Change your password to one with at least ${MIN_PASSWORD} characters first`, code: 'change-password-first', min: MIN_PASSWORD });
   }
   if (!checkRateLimit(`change-email:${req.familyId}:${req.userId}`, 5)) {
     return res.status(429).json({ error: 'Too many emails. Please try again later.' });
@@ -306,9 +312,9 @@ router.post('/delete-family', (req: AuthRequest, res: Response) => {
   if (text(req.body.name, 100).toLowerCase() !== family.name.trim().toLowerCase()) {
     return res.status(400).json({ error: "Type the family's name to delete it", code: 'wrong-name' });
   }
-  if (typeof req.body.password !== 'string' || !bcrypt.compareSync(req.body.password, user.passwordHash)) {
-    return res.status(400).json({ error: "Your password isn't right", code: 'wrong-password' });
-  }
+  const check = checkOwnPassword(`${familyId}:${req.userId}`, req.body.password, user.passwordHash);
+  if (check === 'blocked') return res.status(429).json(TOO_MANY_TRIES);
+  if (check === 'wrong') return res.status(400).json({ error: "Your password isn't right", code: 'wrong-password' });
   // Read before deleting: the emails go with the family
   const parents = familyParents(familyId).filter((p) => p.confirmed);
   const who = accountOf(familyId, req.userId!)?.email ?? user.displayName;

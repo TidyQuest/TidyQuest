@@ -143,7 +143,7 @@ export const GUIDE_IT: GuideSection[] = [
         'I genitori accedono con la loro email e la loro password. Tutti gli altri con il codice famiglia, il loro username e la loro password (anche i genitori possono farlo).',
         'Impostazioni → 🔑 Codice famiglia mostra il codice (tipo sunny-otter-42), il link della famiglia e un codice QR. Apri il link o scansiona il codice sul telefono o tablet di un bambino: il dispositivo ricorda la famiglia, così basta scrivere username e password. Maiuscole, spazi e trattini nel codice non contano.',
         'Nuovo codice dà alla famiglia un codice nuovo. Il vecchio codice e il vecchio link smettono di funzionare; nessuno viene disconnesso.',
-        'Impostazioni → ✉️ Email di accesso: Cambia email invia un link al nuovo indirizzo, e il cambio avviene quando lo apri. Un secondo genitore può usare Aggiungi email per accedere con la sua.',
+        'Impostazioni → ✉️ Email di accesso: Cambia email invia un link al nuovo indirizzo, e il cambio avviene quando lo apri. Un secondo genitore può usare Aggiungi email per accedere con la sua. Per accedere con un’email, la password di un genitore deve avere almeno 8 caratteri. Un genitore che diventa membro o bambino perde la sua email di accesso e accede con il codice famiglia.',
         'All’iscrizione inviamo un link per confermare il tuo indirizzo. Aprirlo è anche il modo in cui un genitore acconsente, per i figli, a ciò che TidyQuest conserva (lo chiede la legge statunitense sulla privacy dei minori, COPPA). Finché un genitore non conferma, possono accedere solo i genitori. Una famiglia che non conferma l’email di un genitore entro 30 giorni viene eliminata; mandiamo un promemoria una settimana prima.',
         'Password dimenticata? nella schermata di accesso invia a un genitore un link che funziona una volta, per un’ora. Bambini e ragazzi chiedono a un genitore di impostarne una nuova in Impostazioni → Membri della famiglia.',
       ] },
@@ -438,7 +438,7 @@ export const GUIDE_IT: GuideSection[] = [
     blocks: [
       { ul: [
         'Impostazioni → Dati e privacy → Esporta: un backup JSON completo. Tienine uno prima dei grandi cambiamenti.',
-        'Importa ripristina un backup e SOSTITUISCE tutto. Chi ha già un account su questo server (stesso nome utente) mantiene la password attuale. Chi è nuovo su questo server ne riceve una casuale, quindi imposta le loro password in Membri della famiglia dopo.',
+        'Importa ripristina un backup e SOSTITUISCE tutto. Chi ha già un account su questo server (stesso nome utente) mantiene la password attuale. Chi è nuovo su questo server ne riceve una casuale, quindi imposta le loro password in Membri della famiglia dopo. Devi essere nel backup come Admin (stesso nome utente), altrimenti l’importazione viene rifiutata. Alcuni dispositivi potrebbero uscire dall’account dopo; basta accedere di nuovo con la stessa password.',
         'Impostazioni → Fogli di calcolo: scarica faccende o ricompense, modificale in qualsiasi app di fogli di calcolo e ricaricale. Prima vedi un’anteprima e non viene eliminato nulla.',
         'Per eliminare una faccenda, aprila con Modifica; Elimina attività è in fondo al modulo. Va in Impostazioni → Eliminati di recente per 30 giorni e da lì si può ripristinare. Le ricompense funzionano allo stesso modo.',
         'Eliminare non toglie mai monete né cancella quanto fatto: i completamenti passati continuano a comparire in Attività, nella Classifica e negli obiettivi con il nome della faccenda, anche dopo che esce da Eliminati di recente.',
@@ -644,10 +644,10 @@ export const GUIDE_IT: GuideSection[] = [
           'Chiudila del tutto (scorrila via nel selettore delle app) e riaprila: all’avvio carica la versione più recente.',
         ] },
         { q: 'Qualcuno non riesce ad accedere', a: [
-          'Troppe password sbagliate bloccano gli accessi fino a 15 minuti: 10 per un account, o 20 da un dispositivo. Aspetta e riprova; una password corretta azzera il conteggio dell’account.',
-          'Un genitore può impostare una nuova password in Impostazioni → Membri della famiglia.',
+          'Troppe password sbagliate bloccano gli accessi fino a 15 minuti: 10 per un account, o 20 da un dispositivo. Aspetta e riprova; una password corretta azzera il conteggio dell’account. Per cambiare la tua password o l’email di accesso, o per eliminare la famiglia, sono ammesse 5 password sbagliate in 15 minuti.',
+          'Un genitore può impostare una nuova password in Impostazioni → Membri della famiglia. Le password devono avere almeno 4 caratteri; su tidyquest.org quella di un genitore ne richiede 8.',
           'Nessun genitore riesce ad accedere? Chi gestisce il server può reimpostare la password del primo genitore con ADMIN_RESET_PASSWORD (README, "Admin Password Recovery"). "Password dimenticata?" nella schermata di accesso dice lo stesso.',
-          'Dopo aver importato un backup, chi aveva già un account su questo server mantiene la sua password. Chi è nuovo su questo server ha bisogno che un genitore gliene imposti una in Membri della famiglia.',
+          'Dopo aver importato un backup, chi aveva già un account su questo server mantiene la sua password. Chi è nuovo su questo server ha bisogno che un genitore gliene imposti una in Membri della famiglia. Alcuni dispositivi potrebbero uscire dall’account dopo un’importazione; basta accedere di nuovo con la stessa password.',
         ] },
         { q: 'Qualcuno non è nella schermata di accesso, oppure dice che l’accesso è disattivato', a: [
           'Un genitore ha disattivato Può accedere per lui: la sua scheda in Impostazioni → Membri della famiglia dice 🔒 Senza accesso. Su tidyquest.org l’accesso dice solo che nome o password sono sbagliati.',

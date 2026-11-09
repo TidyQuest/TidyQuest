@@ -33,7 +33,7 @@ import { useWeekStart } from '../../utils/week';
 import { TimeZonePicker } from '../shared/TimeZonePicker';
 import { DeleteFamily, FamilyCodeCard, SignInEmailCard } from '../shared/HostedAccount';
 import { LegalLinks, WithLinks } from '../shared/LegalLinks';
-import { limitError, useHosted, useSourceUrl, type HostedAccount } from '../../utils/hosted';
+import { hostedError, limitError, useHosted, useSourceUrl, type HostedAccount } from '../../utils/hosted';
 import { dateStr, endOfHomeDay } from '../../utils/clock';
 import { rewardDescText, rewardTextToSave, rewardTitleText } from '../../utils/presetRewards';
 
@@ -382,7 +382,7 @@ export function Settings({
       } : { displayName: newMemberName.trim(), role: 'child', canLogIn: false });
     } catch (err) {
       // A taken username, or hosted mode's limit on people
-      setAddMemberError(limitError(err, t, (err as Error)?.message || t('common.actionFailed')));
+      setAddMemberError(hostedError(err, t, limitError(err, t, (err as Error)?.message || t('common.actionFailed'))));
       return;
     }
     resetMemberForm();
@@ -413,7 +413,7 @@ export function Settings({
       setMemberPassword((prev) => ({ ...prev, [u.id]: '' }));
       setMemberPasswordMsg((prev) => ({ ...prev, [u.id]: t('settings.passwordResetSignedOut').replace('{name}', u.displayName) }));
     } catch (err: any) {
-      setMemberPasswordMsg((prev) => ({ ...prev, [u.id]: err?.message || t('settings.passwordUpdateFailed') }));
+      setMemberPasswordMsg((prev) => ({ ...prev, [u.id]: hostedError(err, t, err?.message || t('settings.passwordUpdateFailed')) }));
     }
   };
 

@@ -347,6 +347,12 @@ export const BACKUP_TABLES: Array<{ key: string; table: string }> = [
   { key: 'mascotPurchases', table: 'mascot_purchases' },
   { key: 'streakShieldEvents', table: 'streak_shield_events' },
   { key: 'choreOverdueDays', table: 'chore_overdue_days' },
+  // Records of what already happened (BUG-22), so a restore doesn't pay badge bonuses or today's Rescue
+  // Mission again, or resend reminders and notifications
+  { key: 'earnedBadges', table: 'user_achievement_notifications' },
+  { key: 'rescueMissions', table: 'rescue_missions' },
+  { key: 'notificationLog', table: 'notification_log' },
+  { key: 'dueReminders', table: 'task_due_notifications' },
 ];
 
 export function applyForkSchema(instance: InstanceType<typeof Database>) {

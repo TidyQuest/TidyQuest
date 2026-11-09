@@ -123,6 +123,7 @@ router.post('/login', (req: AuthRequest, res: Response) => {
     if (isHosted() && user.role !== 'admin' && !familyConsented(req.familyId!)) {
       return res.status(403).json({ error: 'A parent needs to confirm their email before you can sign in', code: 'awaiting-parent' });
     }
+    if (isHosted()) openFamily(req.familyId); // now it counts as activity
     sendLogin(res, user);
   };
   if (!isHosted()) return signIn(db.prepare('SELECT * FROM users WHERE username = ? COLLATE NOCASE').get(username));
@@ -130,7 +131,8 @@ router.post('/login', (req: AuthRequest, res: Response) => {
   // Hosted: the email or the family code finds the family, then the person is looked up in its database.
   // A wrong code answers like a wrong password, so codes can't be tried out on their own.
   const account = byEmail ? accountByEmail(cleanEmail(email) ?? '') : undefined;
-  const family = openFamily(byEmail ? account?.familyId : familyIdByCode(familyCode));
+  // Only a sign-in that works counts as the family using TidyQuest (BUG-25): anyone can type an email or a code
+  const family = openFamily(byEmail ? account?.familyId : familyIdByCode(familyCode), Date.now(), { activity: false });
   if (!family) return signIn(undefined);
   req.familyId = family.familyId;
   runInFamily(family, () => signIn(account
