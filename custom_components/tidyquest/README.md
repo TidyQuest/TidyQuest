@@ -4,7 +4,7 @@ This custom integration exposes TidyQuest tasks in Home Assistant and lets house
 
 ## Install
 
-Copy `custom_components/tidyquest` into your Home Assistant `custom_components` directory, restart Home Assistant, then add **TidyQuest** from **Settings > Devices & services**.
+Copy `custom_components/tidyquest` into your Home Assistant `custom_components` directory, restart Home Assistant, then add **TidyQuest** from **Settings > Devices & services**. Home Assistant 2026.3 or later shows TidyQuest's icon there (from the `brand` folder); older versions show a blank one.
 
 Use a TidyQuest admin or member account for the integration. TidyQuest only allows admin/member users to complete tasks on behalf of another user.
 

@@ -9,6 +9,13 @@ What changed in each release, in plain language, newest first. Releases up to v0
 
 ## Unreleased
 
+### Added
+
+- **Phone notifications show a TidyQuest star in Android's status bar**, instead of the browser's own icon. From
+  gjincy88 (#176).
+- **The Home Assistant integration shows TidyQuest's icon** under Settings → Devices & services, on Home Assistant
+  2026.3 or later. From gjincy88 (#176).
+
 ### Fixed
 
 - **A parent saving someone's profile no longer wipes their photo** (#177). Changing a birthday, language or theme

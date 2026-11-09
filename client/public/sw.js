@@ -16,6 +16,8 @@ self.addEventListener('push', (event) => {
   event.waitUntil(self.registration.showNotification(data.title || 'TidyQuest', {
     body: data.body || '',
     icon: 'icon-192.png',
+    // Android's status bar draws this from its transparency only: a white star on a clear background
+    badge: 'badge-icon.png',
     data: { url: data.url || './' },
   }));
 });
