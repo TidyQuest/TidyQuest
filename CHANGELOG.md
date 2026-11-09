@@ -30,6 +30,10 @@ What changed in each release, in plain language, newest first. Releases up to v0
   and goals.
 - **Loading a tasks spreadsheet that the save step refuses says which line**, instead of failing with a server
   error, and changes nothing.
+- **A shared chore that two people finish a few minutes apart is one entry in Activity** (BUG-31). Shared chores
+  were matched by the UTC date, so in the Americas two people finishing one in the late afternoon or evening could
+  show as two entries, and one done just before midnight was merged with the next day's. They now follow the
+  family's day, and so does who may see a shared chore's proof photo.
 
 ## v0.17.2 (2026-11-09)
 

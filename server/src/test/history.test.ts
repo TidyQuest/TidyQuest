@@ -96,3 +96,39 @@ describe('Activity history filters', () => {
   });
 });
 
+
+describe("Shared chores group by the family's day (BUG-31)", () => {
+  // Los Angeles is 8 hours behind UTC in November: its evening is the next UTC day
+  async function shared() {
+    db.prepare("INSERT OR REPLACE INTO app_settings (key, value) VALUES ('timeZone', 'America/Los_Angeles')").run();
+    const admin = await createAdmin(agent);
+    const kid = await createUser(agent, admin.token, { username: 'kid', displayName: 'Kid', password: 'kid123', role: 'child' });
+    const auth = { Authorization: `Bearer ${admin.token}` };
+    const room = (await agent.post('/api/rooms').set(auth).send({ name: 'Kitchen', roomType: 'other' })).body.id as number;
+    const task = (await agent.post(`/api/rooms/${room}/tasks`).set(auth).send({ name: 'Unload Dishwasher', effort: 1 })).body.id as number;
+    db.prepare("UPDATE tasks SET assignmentMode = 'shared' WHERE id = ?").run(task);
+    const add = (userId: number, completedAt: string) =>
+      db.prepare("INSERT INTO task_completions (taskId, userId, completedAt, coinsEarned, status) VALUES (?, ?, ?, 5, 'approved')")
+        .run(task, userId, completedAt);
+    return { admin, kid, add };
+  }
+  const entries = async (token: string) => (await history(token)).history as unknown as Array<{ participants: unknown[] }>;
+
+  it('is one entry when two people finish it at 3:50 and 4:10 pm (different UTC days)', async () => {
+    const { admin, kid, add } = await shared();
+    add(admin.user.id, '2026-11-08T23:50:00.000Z');
+    add(kid.user.id, '2026-11-09T00:10:00.000Z');
+    const list = await entries(admin.token);
+    expect(list).toHaveLength(1);
+    expect(list[0].participants).toHaveLength(2);
+  });
+
+  it('is two entries for 11:50 pm and 12:10 am (the same UTC day)', async () => {
+    const { admin, kid, add } = await shared();
+    add(admin.user.id, '2026-11-09T07:50:00.000Z');
+    add(kid.user.id, '2026-11-09T08:10:00.000Z');
+    const list = await entries(admin.token);
+    expect(list).toHaveLength(2);
+    expect(list.map((e) => e.participants.length)).toEqual([1, 1]);
+  });
+});
