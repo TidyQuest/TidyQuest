@@ -268,4 +268,19 @@ describe('Settings → Notifications switch (v0.16.2)', () => {
     expect(refused.body.error).toBe('To enable ntfy, a topic is required.');
     expect(value('ntfyEnabled')).toBe('0');
   });
+
+  it('the kinds and the time save on their own, with phone notifications as the only way to send (upstream #178)', async () => {
+    const admin = await createAdmin(agent);
+    seed();
+    db.prepare("INSERT OR IGNORE INTO app_settings (key, value) VALUES ('notificationTypes', '{}')").run();
+    await config(admin.token, { notificationsEnabled: true }).expect(200);
+    // What Settings now sends when a box is ticked, or a time picked: just that, with no Save button
+    const types = { taskDue: false, rewardRequest: true, achievementUnlocked: true, choreApproval: true, coinBoost: false, reminder: true, outcome: true, summary: false, nudge: true };
+    await config(admin.token, { notificationTypes: types }).expect(200);
+    await config(admin.token, { notificationTime: '07:30' }).expect(200);
+    const cfg = (await agent.get('/api/users/notifications-config').set(auth(admin.token)).expect(200)).body;
+    expect(cfg.notificationTypes).toMatchObject(types);
+    expect(cfg.notificationTime).toBe('07:30');
+    expect(cfg).toMatchObject({ notificationsEnabled: true, telegramEnabled: false, ntfyEnabled: false });
+  });
 });
