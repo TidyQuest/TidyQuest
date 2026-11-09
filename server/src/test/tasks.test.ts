@@ -48,6 +48,16 @@ describe('Tasks routes', () => {
     expect(res.body).toHaveProperty('effort', 3);
   });
 
+  it('Creating a task with custom coins stores them; blank means none (FIX-29)', async () => {
+    const { token } = await createAdmin(agent);
+    const roomId = await createRoom(token);
+    const withCoins = await createTask(token, roomId, { name: 'Mow the lawn', customCoins: 25 });
+    const blank = await createTask(token, roomId, { name: 'Sweep', customCoins: '' });
+    const coins = (id: number) => (db.prepare('SELECT customCoins FROM tasks WHERE id = ?').get(id) as { customCoins: number | null }).customCoins;
+    expect(coins(withCoins)).toBe(25);
+    expect(coins(blank)).toBeNull();
+  });
+
   it('Member cannot create task → 403', async () => {
     const { token: adminToken } = await createAdmin(agent);
     const roomId = await createRoom(adminToken);

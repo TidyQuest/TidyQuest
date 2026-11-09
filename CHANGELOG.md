@@ -9,6 +9,11 @@ What changed in each release, in plain language, newest first. Releases up to v0
 
 ## Unreleased
 
+### Fixed
+
+- **Custom coins can be set when adding a chore to a room.** The room page's Add form has the same Custom coins box
+  as Edit, so you no longer have to save the chore first and then edit it (FIX-29).
+
 ## v0.17.2 (2026-11-09)
 
 ### Added

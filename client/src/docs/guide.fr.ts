@@ -201,7 +201,7 @@ export const GUIDE_FR: GuideSection[] = [
       ] },
       { h: 'Pièces' },
       { ul: [
-        'L’effort (1–5) fixe les pièces d’après Paramètres → Pièces par effort. Les pièces personnalisées les remplacent pour une tâche.',
+        'L’effort (1–5) fixe les pièces d’après Paramètres → Pièces par effort. Les pièces personnalisées les remplacent pour une tâche : remplissez la case Coins personnalisés en ajoutant ou en modifiant la tâche, ou laissez-la sur Auto.',
         'La Mission sauvetage et les événements pièces doublées les multiplient pour la journée.',
       ] },
       { h: 'Qui peut la faire' },

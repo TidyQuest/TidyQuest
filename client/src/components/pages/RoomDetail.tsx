@@ -219,6 +219,7 @@ export function RoomDetail({ room, language, isAdmin, currentUserId, currentUser
   const [addTaskError, setAddTaskError] = useState('');
   const [newTaskOnDemand, setNewTaskOnDemand] = useState(false);
   const [newTaskShowInDashboard, setNewTaskShowInDashboard] = useState(false);
+  const [newTaskCustomCoins, setNewTaskCustomCoins] = useState<string | number>('');
   const [newRepeatLimit, setNewRepeatLimit] = useState('');
   const [newRepeatPeriod, setNewRepeatPeriod] = useState<'day' | 'week'>('week');
   const [editSchedule, setEditSchedule] = useState<ScheduleValue>(EMPTY_SCHEDULE);
@@ -517,6 +518,7 @@ export function RoomDetail({ room, language, isAdmin, currentUserId, currentUser
       iconKey: newTaskIconKey !== 'sparkle' ? newTaskIconKey : undefined,
       onDemand: newTaskOnDemand,
       showInDashboard: newTaskShowInDashboard,
+      customCoins: newTaskCustomCoins !== '' ? Number(newTaskCustomCoins) : null,
       ...(newTaskOnDemand && newRepeatLimit ? { repeatLimit: Number(newRepeatLimit), repeatPeriod: newRepeatPeriod } : {}),
       assignmentMode: newAssignmentMode,
       assignedUserPercentages,
@@ -536,6 +538,7 @@ export function RoomDetail({ room, language, isAdmin, currentUserId, currentUser
     setNewAssignmentPercentages({});
     setNewTaskOnDemand(false);
     setNewTaskShowInDashboard(false);
+    setNewTaskCustomCoins('');
     setNewRepeatLimit('');
     setNewSchedule(EMPTY_SCHEDULE);
     setShowAddTask(false);
@@ -729,7 +732,7 @@ export function RoomDetail({ room, language, isAdmin, currentUserId, currentUser
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                     <label style={{ fontSize: 10, fontWeight: 700, color: 'var(--warm-text-light)', minWidth: 58 }}>{t('roomDetail.icon')}</label>
                     <IconPicker value={editForm.iconKey} onChange={(k) => setEditForm((f) => ({ ...f, iconKey: k }))} language={language}
-                      taskName={editForm.name} roomName={room.name} roomColor={room.color} coins={coinsByEffort?.[editForm.effort]} />
+                      taskName={editForm.name} roomName={room.name} roomColor={room.color} coins={editForm.customCoins !== '' ? Number(editForm.customCoins) : coinsByEffort?.[editForm.effort]} />
                   </div>
                   {/* Task assignment — only show if room has no room-level assignment */}
                   {!room.assignedUserId && (
@@ -1259,6 +1262,19 @@ export function RoomDetail({ room, language, isAdmin, currentUserId, currentUser
                   <EffortPicker effort={newTaskEffort} onChange={setNewTaskEffort} />
                 </div>
               </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--warm-text-light)', minWidth: 70 }}>{t('roomDetail.customCoins')}</label>
+                <input
+                  type="number"
+                  min={1}
+                  value={newTaskCustomCoins}
+                  onChange={(e) => setNewTaskCustomCoins(e.target.value === '' ? '' : Math.max(1, parseInt(e.target.value) || 1))}
+                  placeholder={t('roomDetail.customCoinsPlaceholder')}
+                  className="tq-input-compact"
+                  style={{ width: 80 }}
+                />
+                <span style={{ fontSize: 11, color: 'var(--warm-text-light)' }}>{t('roomDetail.customCoinsDesc')}</span>
+              </div>
               {!newTaskOnDemand && startsLater(newSchedule) ? <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--warm-text-muted)' }}>{t('schedule.firstDueOnStart')}</div> : <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                 <label style={{ fontSize: 10, fontWeight: 700, color: 'var(--warm-text-light)', minWidth: 58 }}>{t('rooms.health')}</label>
                 <div style={{ width: 220 }}>
@@ -1284,7 +1300,7 @@ export function RoomDetail({ room, language, isAdmin, currentUserId, currentUser
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <label style={{ fontSize: 10, fontWeight: 700, color: 'var(--warm-text-light)', minWidth: 58 }}>{t('roomDetail.icon')}</label>
                 <IconPicker value={newTaskIconKey} onChange={setNewTaskIconKey} language={language}
-                  taskName={newTaskName} roomName={room.name} roomColor={room.color} coins={coinsByEffort?.[newTaskEffort]} />
+                  taskName={newTaskName} roomName={room.name} roomColor={room.color} coins={newTaskCustomCoins !== '' ? Number(newTaskCustomCoins) : coinsByEffort?.[newTaskEffort]} />
               </div>
               {!room.assignedUserId && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>

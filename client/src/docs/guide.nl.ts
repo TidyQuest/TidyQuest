@@ -201,7 +201,7 @@ export const GUIDE_NL: GuideSection[] = [
       ] },
       { h: 'Munten' },
       { ul: [
-        'Moeite (1–5) bepaalt de munten volgens Instellingen → Munten per klusje. Eigen munten gaan daar voor één klusje boven.',
+        'Moeite (1–5) bepaalt de munten volgens Instellingen → Munten per klusje. Eigen munten gaan daar voor één klusje boven: vul het vak Eigen muntenwaarde in als je het klusje toevoegt of bewerkt, of laat het op Automatisch.',
         'De Reddingsmissie en dubbele-muntenacties vermenigvuldigen ze op die dag.',
       ] },
       { h: 'Wie het kan doen' },

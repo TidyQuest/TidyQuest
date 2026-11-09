@@ -201,7 +201,7 @@ export const GUIDE_ES: GuideSection[] = [
       ] },
       { h: 'Monedas' },
       { ul: [
-        'El esfuerzo (1–5) fija las monedas de Ajustes → Monedas por esfuerzo. Las monedas personalizadas lo sustituyen en una tarea.',
+        'El esfuerzo (1–5) fija las monedas de Ajustes → Monedas por esfuerzo. Las monedas personalizadas lo sustituyen en una tarea: rellena la casilla Monedas personalizadas al añadir o editar la tarea, o déjala en Auto.',
         'La Misión de rescate y los eventos de monedas dobles las multiplican ese día.',
       ] },
       { h: 'Quién puede hacerla' },
