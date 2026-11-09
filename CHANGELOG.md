@@ -9,6 +9,32 @@ What changed in each release, in plain language, newest first. Releases up to v0
 
 ## Unreleased
 
+### Fixed
+
+- **Custom coins can be set when adding a chore to a room.** The room page's Add form has the same Custom coins box
+  as Edit, so you no longer have to save the chore first and then edit it (FIX-29).
+- **Small fixes around the app** (FIX-31):
+  - A streak of 0 days no longer lights all seven bars on Home.
+  - The ☆ button that adds a chore to Your usual is hidden on room pages when Your usual is switched off.
+  - The Strict Mode "waiting for approval" message and other chore errors wrap on phones instead of being cut off.
+  - Tapping your profile card in the menu on a phone closes the menu.
+  - Changing the birthday month keeps a day that exists (March 31 → April 30), so the birthday badge still comes.
+  - "Who did this task?" says "✓ Already done" instead of "Already done by" with no name.
+  - Cancel on a goal's edit form throws away the changes.
+  - The date on Home and Focus, and the week labels in Insights → Coins, follow the family's time zone, not the
+    phone's.
+- **Fewer English words in a French, German, Spanish, Italian or Dutch app** (FIX-32): the problems listed when
+  loading a spreadsheet, the family channel's test message (now with a local time), "Goal reached" in Activity, the
+  backup import messages, "Mode" in the chore forms, the "d" after streaks, prices and times on reward requests, the
+  menu button's and pop-ups' screen-reader labels, and the errors in Settings for double coins events, reward rules
+  and goals.
+- **Loading a tasks spreadsheet that the save step refuses says which line**, instead of failing with a server
+  error, and changes nothing.
+- **A shared chore that two people finish a few minutes apart is one entry in Activity** (BUG-31). Shared chores
+  were matched by the UTC date, so in the Americas two people finishing one in the late afternoon or evening could
+  show as two entries, and one done just before midnight was merged with the next day's. They now follow the
+  family's day, and so does who may see a shared chore's proof photo.
+
 ## v0.17.2 (2026-11-09)
 
 ### Added

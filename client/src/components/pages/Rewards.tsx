@@ -112,6 +112,7 @@ function SharedPot({ pot, userCoins, language, onContribute }: { pot: RewardPot;
 
 export function Rewards({ language, rewards: ownRewards, mine: ownMine, userCoins: ownCoins, isAdmin, pendingRequests, onRewardRequestAction, onRedeem, onCancel, onContribute, people, onBoughtFor }: RewardsProps) {
   const { t } = useTranslation(language);
+  const locale = localeFor(language);
   // A parent buying for someone else (ENH-16): the shop shows that person's rewards, prices, limits and coins
   const [forId, setForId] = useState<number | null>(null);
   const [shopFor, setShopFor] = useState<ShopFor | null>(null);
@@ -283,7 +284,7 @@ export function Rewards({ language, rewards: ownRewards, mine: ownMine, userCoin
               <div key={r.id} style={{ border: '1.5px solid var(--warm-border)', borderRadius: 12, padding: 10, display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 10 }}>
                 <div style={{ minWidth: 0 }}>
                   <div style={{ fontSize: 13, fontWeight: 800, color: 'var(--warm-text)' }}>{r.displayName} — {rewardTitleByName(r.title)}</div>
-                  <div style={{ fontSize: 10, color: 'var(--warm-text-light)', fontWeight: 700 }}>{new Date(r.redeemedAt).toLocaleString()} · {r.costCoins} coins</div>
+                  <div style={{ fontSize: 10, color: 'var(--warm-text-light)', fontWeight: 700 }}>{new Date(r.redeemedAt).toLocaleString(locale)} · {formatCoins(r.costCoins, locale)} {t('settings.coins')}</div>
                 </div>
                 <div style={{ display: 'flex', gap: 6 }}>
                   <button className="tq-btn tq-btn-primary tq-btn-sm" onClick={() => onRewardRequestAction?.(r.id, 'approved')}>{t('dashboard.approve')}</button>
@@ -382,7 +383,7 @@ export function Rewards({ language, rewards: ownRewards, mine: ownMine, userCoin
                 <div style={{ minWidth: 0 }}>
                   <div style={{ fontSize: 13, fontWeight: 800, color: 'var(--warm-text)' }}>{rewardTitleByName(m.title)}</div>
                   <div style={{ fontSize: 10, color: 'var(--warm-text-light)', fontWeight: 700 }}>
-                    {new Date(m.redeemedAt).toLocaleString()}
+                    {new Date(m.redeemedAt).toLocaleString(locale)}
                     {m.boughtByName && ` · 🛒 ${t('rewards.boughtBy').replace('{name}', m.boughtByName)}`}
                   </div>
                   {cancelFailed === m.id && <div role="alert" style={{ fontSize: 11, fontWeight: 700, color: 'var(--warm-danger)' }}>{t('common.actionFailed')}</div>}

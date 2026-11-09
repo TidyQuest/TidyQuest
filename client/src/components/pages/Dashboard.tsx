@@ -1124,7 +1124,7 @@ const Dashboard: React.FC<DashboardProps> = ({
                 height: 7,
                 borderRadius: 4,
                 backgroundColor:
-                  i < (currentUser.currentStreak % 7 || 7)
+                  i < (currentUser.currentStreak > 0 ? currentUser.currentStreak % 7 || 7 : 0)
                     ? 'var(--warm-accent)'
                     : 'var(--warm-streak-border)',
               }}

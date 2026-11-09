@@ -60,7 +60,7 @@ export function AchievementUnlockToast({ achievementIds, onDismiss, language, ti
           <button
             onClick={() => { setVisible(false); setTimeout(onDismiss, 300); }}
             style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--warm-text-muted)', fontSize: 14, padding: 2 }}
-            aria-label="Dismiss"
+            aria-label={t('common.dismiss')}
           >
             ✕
           </button>

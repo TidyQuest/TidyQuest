@@ -390,14 +390,17 @@
       "waitingCount": "{n} wachten op goedkeuring",
       "alreadyDone": "Dat is al gedaan!",
       "takeBack": "Terugnemen",
-      "takeBackHint": "Per ongeluk op Klaar getikt? Neem het terug voordat een ouder beslist."
+      "takeBackHint": "Per ongeluk op Klaar getikt? Neem het terug voordat een ouder beslist.",
+      "importInvalid": "Dit is geen TidyQuest-back-up: er staan geen personen of kamers in.",
+      "importFailed": "Importeren mislukt: {error}"
     },
     "admin": {
       "whoDidThisTask": "Wie heeft dit klusje gedaan?",
       "confirmCompletion": "Bevestigen",
       "alreadyCompletedBy": "Al gedaan door {name}",
       "completeForSelf": "Voor mezelf afvinken",
-      "noOneSelected": "Kies minstens één persoon"
+      "noOneSelected": "Kies minstens één persoon",
+      "alreadyDone": "Al gedaan"
     },
     "calendar": {
       "mon": "Ma",
@@ -577,7 +580,8 @@
       "undoDone": "Ongedaan",
       "undoDoneTitle": "Deze voltooiing ongedaan maken (haalt de munten terug)",
       "undoDoneConfirm": "“{task}” van {name} ongedaan maken? De {coins} munten gaan er weer af.",
-      "moreOptions": "Meer opties"
+      "moreOptions": "Meer opties",
+      "assignmentMode": "Modus"
     },
     "avatars": {
       "cat": "Kat",
@@ -696,7 +700,10 @@
       "showLess": "Minder tonen",
       "error": "Er ging iets mis",
       "close": "Sluiten",
-      "actionFailed": "Dat lukte niet. Controleer je verbinding en probeer het opnieuw."
+      "actionFailed": "Dat lukte niet. Controleer je verbinding en probeer het opnieuw.",
+      "openMenu": "Menu openen",
+      "dismiss": "Sluiten",
+      "daysShort": "{n} d"
     },
     "units": {
       "hours": "uur",
@@ -1108,7 +1115,8 @@
       "weeklyWinTitle": "Weekwinst",
       "weeklyWinTemplate": "Weekwinst",
       "bonusEarned": "bonus verdiend!",
-      "bonusWhenReached": "+{n} bonus als je het haalt"
+      "bonusWhenReached": "+{n} bonus als je het haalt",
+      "reachedReason": "Doel bereikt: {title}"
     },
     "coins": {
       "reasonPlaceholder": "Reden (optioneel)",
@@ -1218,7 +1226,28 @@
       "addNewRoom": "nieuw, in een nieuwe ruimte",
       "addRow": "nieuw",
       "apply": "Wijzigingen toepassen ({n})",
-      "errorsSkipped": "Regels met problemen worden overgeslagen."
+      "errorsSkipped": "Regels met problemen worden overgeslagen.",
+      "errEmptyFile": "Het bestand is leeg",
+      "errTooManyRows": "Hoogstens {n} regels",
+      "errMissingColumns": "Ontbrekende kolom(men): {cols}",
+      "errMissingRoom": "De kamer is leeg",
+      "errMissingTask": "De naam van de taak is leeg",
+      "errDuplicateTask": "Dezelfde kamer en taak als regel {line}",
+      "errBadDays": "‘{value}’ is geen aantal dagen",
+      "errBadEffort": "Moeite moet 1 tot 5 zijn (kreeg ‘{value}’)",
+      "errBadCoins": "Munten moeten een heel getal zijn, of leeg voor de waarde van de moeite (kreeg ‘{value}’)",
+      "errBadBoolean": "‘{value}’ is geen yes of no",
+      "errUnknownPerson": "Niemand hier heet ‘{value}’",
+      "errBadTimer": "De timer moet 0 tot {max} minuten zijn, of leeg voor geen (kreeg ‘{value}’)",
+      "errBadSteps": "Hoogstens {max} stappen, één per regel, van elk hoogstens {length} tekens",
+      "errAmbiguousRoom": "{n} kamers heten ‘{value}’; geef er eerst één een andere naam",
+      "errAmbiguousTask": "{n} taken in ‘{room}’ heten ‘{value}’; geef er eerst één een andere naam",
+      "errMissingTitle": "De titel is leeg",
+      "errDuplicateTitle": "Dezelfde titel als regel {line}",
+      "errBadCost": "De prijs moet een heel getal van minstens 1 zijn (kreeg ‘{value}’)",
+      "errAmbiguousReward": "{n} beloningen heten ‘{value}’; geef er eerst één een andere naam",
+      "errNewRewardCost": "Een nieuwe beloning heeft een prijs nodig",
+      "errNotSaved": "Regel {line} kon niet worden opgeslagen ({error}), dus er is niets veranderd."
     },
     "rewardOrder": {
       "up": "Omhoog",
@@ -1416,7 +1445,8 @@
       "shieldSaved": "🛡️ Je schild heeft je reeks van {n} dagen gered!",
       "shieldsSaved": "🛡️ {count} schilden hebben je reeks van {n} dagen gered!",
       "shieldGiven": "🛡️ {name} gaf je een reeksschild. Het redt je reeks als je een dag mist.",
-      "recapLastWeek": "📊 Vorige week: {lines}"
+      "recapLastWeek": "📊 Vorige week: {lines}",
+      "testFamily": "👋 Test van TidyQuest, verstuurd door {name} om {time}: de gezinsmeldingen werken!"
     },
     "notifyAdmin": {
       "peopleTitle": "Wie krijgt wat",
@@ -2355,6 +2385,19 @@
       "night_off_desc": "Iemand anders kookt, of we halen eten.",
       "pick_outing": "Het weekenduitje kiezen",
       "pick_outing_desc": "Jij bepaalt waar we dit weekend heen gaan."
+    },
+    "errors": {
+      "titleRequired": "Geef het een titel.",
+      "multiplier": "De vermenigvuldiger moet groter zijn dan 1 en hoogstens {n}.",
+      "badDate": "Vul een geldige datum in.",
+      "endBeforeStart": "Het einde moet na het begin liggen.",
+      "fromAfterUntil": "‘Van’ moet op dezelfde dag als ‘Tot’ liggen of ervoor.",
+      "goalCoins": "Het doel moet minstens 1 munt zijn.",
+      "familyTarget": "Het doel moet 0 of meer zijn.",
+      "prices": "Prijzen moeten hele getallen boven 0 zijn.",
+      "limitCount": "De limiet moet een heel getal van 1 tot {n} zijn.",
+      "notFound": "Dit bestaat niet meer (misschien is het net verwijderd). Laad de pagina opnieuw.",
+      "adminOnly": "Alleen ouders kunnen dat doen."
     }
   }
 }

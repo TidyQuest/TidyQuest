@@ -7,6 +7,7 @@ import { dataDir } from './mainDb';
 import { familyDir, openFamily } from './families';
 import db from '../database';
 import { stripPhotoMetadata } from '../utils/photoMetadata';
+import { dateStr, daySql } from '../utils/clock';
 import { filesViewer, shutOutCode, type FilesViewer } from '../middleware/auth';
 
 // Avatars and proof photos. Self-hosted they sit in data/avatars and data/proofs, served at /api/avatars
@@ -102,8 +103,8 @@ function mayView(viewer: FilesViewer, kind: FileKind, url: string): boolean {
     return !!db.prepare('SELECT 1 FROM task_completions WHERE teamupId = ? AND userId = ?').get(proof.teamupId, viewer.userId);
   }
   return proof.assignmentMode === 'shared' && !!db.prepare(
-    'SELECT 1 FROM task_completions WHERE taskId = ? AND substr(completedAt, 1, 10) = ? AND teamupId IS NULL AND userId = ?'
-  ).get(proof.taskId, proof.completedAt.slice(0, 10), viewer.userId);
+    `SELECT 1 FROM task_completions WHERE taskId = ? AND ${daySql('completedAt')} = ? AND teamupId IS NULL AND userId = ?`
+  ).get(proof.taskId, dateStr(proof.completedAt), viewer.userId);
 }
 
 /** Sends a photo, asking the browser to check back each time so a signed-out device can't show its copy. */

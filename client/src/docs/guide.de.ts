@@ -201,7 +201,7 @@ export const GUIDE_DE: GuideSection[] = [
       ] },
       { h: 'Münzen' },
       { ul: [
-        'Der Aufwand (1–5) bestimmt die Münzen aus Einstellungen → Münzen pro Aufwand. Eigene Coins ersetzen das für eine einzelne Aufgabe.',
+        'Der Aufwand (1–5) bestimmt die Münzen aus Einstellungen → Münzen pro Aufwand. Eigene Coins ersetzen das für eine einzelne Aufgabe: Trag sie beim Hinzufügen oder Bearbeiten der Aufgabe ins Feld Eigene Coins ein oder lass es auf Auto.',
         'Die Rettungsmission und Doppelte-Münzen-Aktionen vervielfachen sie am jeweiligen Tag.',
       ] },
       { h: 'Wer sie machen darf' },

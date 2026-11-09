@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { api } from '../../hooks/useApi';
 import { useTranslation } from '../../hooks/useTranslation';
 import { formatCoins } from '../../utils/format';
+import { serverErrorText } from '../../utils/serverError';
 
 /** Settings: the family team goal shown on the Board (one weekly coin target for everyone together). */
 export function FamilyGoalAdmin({ language }: { language?: string }) {
@@ -22,7 +23,7 @@ export function FamilyGoalAdmin({ language }: { language?: string }) {
       setProgress(g.progress);
       setMessage(t('common.saved'));
     } catch (err) {
-      setMessage(err instanceof Error ? err.message : t('common.error'));
+      setMessage(serverErrorText(err, t));
     }
   };
 

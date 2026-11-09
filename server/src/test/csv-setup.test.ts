@@ -78,6 +78,17 @@ describe('Tasks CSV', () => {
     expect((await agent.post('/api/csv/tasks/import').set(auth(admin.token)).send({ csv: '' })).body.error).toBe('empty_file');
     expect((await agent.get('/api/csv/tasks').set(auth(kid.token))).status).toBe(403);
   });
+
+  it("explains problems in the importing parent's language (FIX-32)", async () => {
+    const { admin } = await family();
+    db.prepare("UPDATE users SET language = 'fr' WHERE id = ?").run(admin.user.id);
+    const res = await agent.post('/api/csv/tasks/import').set(auth(admin.token)).send({ csv: 'room,task,effort\nCuisine,Vaisselle,9\nCuisine,,1' });
+    expect(res.body.rows.map((r: any) => [r.error.code, r.error.message])).toEqual([
+      ['bad_effort', "L'effort doit être de 1 à 5 (reçu « 9 »)"],
+      ['missing_task', 'Le nom de la tâche est vide'],
+    ]);
+    expect((await agent.post('/api/csv/rewards/import').set(auth(admin.token)).send({ csv: ' ' })).body.message).toBe('Le fichier est vide');
+  });
 });
 
 describe('Rewards CSV, categories and order', () => {

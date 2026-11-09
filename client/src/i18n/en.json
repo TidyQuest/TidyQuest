@@ -390,14 +390,17 @@
       "waitingCount": "{n} waiting for approval",
       "alreadyDone": "That's already done!",
       "takeBack": "Take back",
-      "takeBackHint": "Tapped Done by mistake? Take it back before a parent decides."
+      "takeBackHint": "Tapped Done by mistake? Take it back before a parent decides.",
+      "importInvalid": "This isn't a TidyQuest backup: it has no people or rooms.",
+      "importFailed": "Import failed: {error}"
     },
     "admin": {
       "whoDidThisTask": "Who completed this task?",
       "confirmCompletion": "Confirm",
       "alreadyCompletedBy": "Already done by {name}",
       "completeForSelf": "Complete for myself",
-      "noOneSelected": "Select at least one person"
+      "noOneSelected": "Select at least one person",
+      "alreadyDone": "Already done"
     },
     "calendar": {
       "mon": "Mon",
@@ -577,7 +580,8 @@
       "undoDone": "Undo",
       "undoDoneTitle": "Undo this completion (takes its coins back)",
       "undoDoneConfirm": "Undo “{task}” for {name}? The {coins} coins come back off.",
-      "moreOptions": "More options"
+      "moreOptions": "More options",
+      "assignmentMode": "Mode"
     },
     "avatars": {
       "cat": "Cat",
@@ -696,7 +700,10 @@
       "showLess": "Show less",
       "error": "Something went wrong",
       "close": "Close",
-      "actionFailed": "That didn't work. Check your connection and try again."
+      "actionFailed": "That didn't work. Check your connection and try again.",
+      "openMenu": "Open menu",
+      "dismiss": "Dismiss",
+      "daysShort": "{n}d"
     },
     "units": {
       "hours": "hours",
@@ -1108,7 +1115,8 @@
       "weeklyWinTitle": "Weekly Win",
       "weeklyWinTemplate": "Weekly Win",
       "bonusEarned": "bonus earned!",
-      "bonusWhenReached": "+{n} bonus when you reach it"
+      "bonusWhenReached": "+{n} bonus when you reach it",
+      "reachedReason": "Goal reached: {title}"
     },
     "coins": {
       "reasonPlaceholder": "Reason (optional)",
@@ -1218,7 +1226,28 @@
       "addNewRoom": "new, in a new room",
       "addRow": "new",
       "apply": "Apply changes ({n})",
-      "errorsSkipped": "Rows with problems are skipped."
+      "errorsSkipped": "Rows with problems are skipped.",
+      "errEmptyFile": "The file is empty",
+      "errTooManyRows": "At most {n} rows",
+      "errMissingColumns": "Missing column(s): {cols}",
+      "errMissingRoom": "The room is empty",
+      "errMissingTask": "The task name is empty",
+      "errDuplicateTask": "Same room and task as line {line}",
+      "errBadDays": "\"{value}\" is not a number of days",
+      "errBadEffort": "Effort must be 1 to 5 (got \"{value}\")",
+      "errBadCoins": "Coins must be a whole number, or empty for the effort default (got \"{value}\")",
+      "errBadBoolean": "\"{value}\" is not yes or no",
+      "errUnknownPerson": "No one here is called \"{value}\"",
+      "errBadTimer": "Timer must be 0 to {max} minutes, or empty for none (got \"{value}\")",
+      "errBadSteps": "Up to {max} steps, one per line, each up to {length} characters",
+      "errAmbiguousRoom": "{n} rooms are called \"{value}\"; rename one first",
+      "errAmbiguousTask": "{n} tasks in \"{room}\" are called \"{value}\"; rename one first",
+      "errMissingTitle": "The title is empty",
+      "errDuplicateTitle": "Same title as line {line}",
+      "errBadCost": "Cost must be a whole number of at least 1 (got \"{value}\")",
+      "errAmbiguousReward": "{n} rewards are called \"{value}\"; rename one first",
+      "errNewRewardCost": "A new reward needs a cost",
+      "errNotSaved": "Line {line} couldn't be saved ({error}), so nothing was changed."
     },
     "rewardOrder": {
       "up": "Move up",
@@ -1416,7 +1445,8 @@
       "shieldSaved": "🛡️ Your shield saved your {n}-day streak!",
       "shieldsSaved": "🛡️ {count} shields saved your {n}-day streak!",
       "shieldGiven": "🛡️ {name} gave you a streak shield. It saves your streak if you miss a day.",
-      "recapLastWeek": "📊 Last week: {lines}"
+      "recapLastWeek": "📊 Last week: {lines}",
+      "testFamily": "👋 Test from TidyQuest, sent by {name} at {time}: family notifications work!"
     },
     "notifyAdmin": {
       "peopleTitle": "Who gets what",
@@ -2355,6 +2385,19 @@
       "night_off_desc": "Someone else makes dinner, or it's takeout.",
       "pick_outing": "Pick the weekend outing",
       "pick_outing_desc": "Where we go this weekend is up to you."
+    },
+    "errors": {
+      "titleRequired": "Give it a title.",
+      "multiplier": "The multiplier must be more than 1 and at most {n}.",
+      "badDate": "Fill in a valid date.",
+      "endBeforeStart": "The end must be after the start.",
+      "fromAfterUntil": "“From” must be on or before “Until”.",
+      "goalCoins": "The goal must be at least 1 coin.",
+      "familyTarget": "The target must be 0 or more.",
+      "prices": "Prices must be whole numbers above 0.",
+      "limitCount": "The limit must be a whole number from 1 to {n}.",
+      "notFound": "That's gone (maybe it was just deleted). Reload the page.",
+      "adminOnly": "Only parents can do that."
     }
   }
 }

@@ -69,7 +69,7 @@ export function CoinsCard({ data, weeks, onWeeks, people, language, t, rangeLabe
   const w = coinWeeks(data, people);
   const solo = soloOf(people);
   const person = data.people.find((p) => p.id === solo);
-  const labels = data.starts.map((iso) => new Date(iso).toLocaleDateString(locale, { day: 'numeric', month: 'short' }));
+  const labels = data.starts.map((iso) => homeDate(iso).toLocaleDateString(locale, { day: 'numeric', month: 'short' }));
   const cat = (c: string) => t(`insights.cat_${c}`);
   const hasGoals = w.goals.some((g) => g != null);
   const goalWeeks = w.goals.map((g, i) => [g, w.choreCoins[i]] as const).filter(([g]) => g != null);

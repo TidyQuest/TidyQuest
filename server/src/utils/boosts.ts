@@ -1,6 +1,6 @@
 import db from '../database';
 import { familyZone } from './clock';
-import { tr } from './i18n';
+import { LOCALES, tr } from './i18n';
 import { notificationsOn, notifyPeople, type Builder } from './notify';
 
 /** A double (triple…) coins event, e.g. getting the house ready for a party. */
@@ -80,7 +80,6 @@ function targetNames(b: CoinBoost, lang: string): string {
   return all.length > 3 ? `${all.slice(0, 3).join(', ')} ${tr(lang, 'notify.andMore', { n: all.length - 3 })}` : all.join(', ');
 }
 
-const LOCALES: Record<string, string> = { en: 'en-US', fr: 'fr-FR', de: 'de-DE', es: 'es-ES', it: 'it-IT', nl: 'nl-NL' };
 const timeLabel = (iso: string, lang = 'en') => new Date(iso).toLocaleString(LOCALES[lang] ?? 'en-US', { weekday: 'short', hour: 'numeric', minute: '2-digit', timeZone: familyZone() });
 
 /** The start and last-hour messages, in a given language. */

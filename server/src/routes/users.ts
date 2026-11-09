@@ -17,6 +17,7 @@ import { realignWeeklyGoals, syncPrimaryGoal } from '../utils/goals';
 import { UNLOCKABLE_THEMES, canUse } from '../utils/unlocks';
 import { currentLocalWeek, weekStartDay } from '../utils/periods';
 import { canonicalZone, familyZone } from '../utils/clock';
+import { LOCALES, tr } from '../utils/i18n';
 import { isHosted } from '../hosted/context';
 import { removeAccount } from '../hosted/accounts';
 import { fileUrl, oneFile, removeFile, uploadDir } from '../hosted/files';
@@ -748,7 +749,7 @@ router.put('/notifications-config', (req: AuthRequest, res: Response) => {
 });
 
 router.post('/notifications-test', async (req: AuthRequest, res: Response) => {
-  const requester = db.prepare('SELECT id, role, displayName FROM users WHERE id = ?').get(req.userId) as any;
+  const requester = db.prepare('SELECT id, role, displayName, language FROM users WHERE id = ?').get(req.userId) as any;
   if (!requester || requester.role !== 'admin') {
     return res.status(403).json({ error: 'Admin only' });
   }
@@ -756,7 +757,8 @@ router.post('/notifications-test', async (req: AuthRequest, res: Response) => {
     botToken?: string; chatId?: string; provider?: 'telegram' | 'ntfy';
     ntfyServerUrl?: string; ntfyTopic?: string; ntfyToken?: string;
   };
-  const testMessage = `TidyQuest test notification from ${requester.displayName} (${new Date().toISOString()})`;
+  const time = new Date().toLocaleTimeString(LOCALES[requester.language] ?? 'en-US', { hour: 'numeric', minute: '2-digit', timeZone: familyZone() });
+  const testMessage = tr(requester.language, 'notify.testFamily', { name: requester.displayName, time });
 
   if (provider === 'ntfy') {
     const result = await sendNtfyMessageDetailed(testMessage, { ignoreEnabled: true, serverUrl: ntfyServerUrl, topic: ntfyTopic, token: ntfyToken });

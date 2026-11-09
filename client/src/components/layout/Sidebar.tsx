@@ -216,7 +216,7 @@ export function Sidebar({ user, isMobileOpen = false, onClose, gamificationEnabl
 
         <div style={{ padding: effectiveCollapsed ? '0 8px' : '0 14px' }}>
           <div
-            onClick={() => navigate('/profile')}
+            onClick={() => { navigate('/profile'); handleNavClick(); }}
             style={{
               display: 'flex', alignItems: 'center', gap: effectiveCollapsed ? 0 : 10,
               padding: effectiveCollapsed ? '8px' : '12px 14px',
@@ -244,7 +244,7 @@ export function Sidebar({ user, isMobileOpen = false, onClose, gamificationEnabl
                       <CoinIcon /> {formatCoins(user.coins)}
                     </span>
                     <span style={{ display: 'flex', alignItems: 'center', gap: 3, fontSize: 11, color: 'var(--warm-text-light)', fontWeight: 600 }}>
-                      <FireIcon /> {user.currentStreak}d
+                      <FireIcon /> {t('common.daysShort').replace('{n}', String(user.currentStreak))}
                     </span>
                   </div>
                 )}

@@ -225,7 +225,7 @@ export const GUIDE_EN: GuideSection[] = [
       ] },
       { h: 'Coins' },
       { ul: [
-        'Effort (1–5) sets the coins from Settings → Coins per effort. Custom coins override that for one chore.',
+        'Effort (1–5) sets the coins from Settings → Coins per effort. Custom coins override that for one chore: fill in the Custom coins box when you add the chore or edit it, or leave it on Auto.',
         'Rescue Mission and double coins events multiply them on the day.',
       ] },
       { h: 'Who can do it' },

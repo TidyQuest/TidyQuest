@@ -6,6 +6,7 @@ import { cheersFor } from '../utils/cheers';
 import { TREAT_EFFORT } from '../utils/mascot';
 import { isFeatureOn } from '../utils/features';
 import { shieldsOn } from '../utils/streaks';
+import { dateStr, familyZone } from '../utils/clock';
 
 const router = Router();
 router.use(authMiddleware);
@@ -43,21 +44,23 @@ router.get('/', (req: AuthRequest, res: Response) => {
     ORDER BY tc.completedAt DESC
   `).all(...params) as any[];
 
-  // Group shared-mode completions by (taskId, date) into a single entry with all participants
+  // Group shared-mode completions by (taskId, the family's day) into a single entry with all participants
   const grouped: any[] = [];
   const seenSharedKeys = new Set<string>();
+  const tz = familyZone();
+  const dayOf = new Map<any, string>(rawHistory.map((r: any) => [r, dateStr(r.completedAt, tz)]));
 
   for (const row of rawHistory) {
     row.type = 'completion';
     // A team-up is one entry with everyone on the team, like a shared chore
     if (row.assignmentMode === 'shared' || row.teamupId) {
-      const key = row.teamupId ? `team:${row.teamupId}` : `${row.taskId}:${row.completedAt.slice(0, 10)}`;
+      const key = row.teamupId ? `team:${row.teamupId}` : `${row.taskId}:${dayOf.get(row)}`;
       if (seenSharedKeys.has(key)) continue;
       seenSharedKeys.add(key);
 
       const partners = rawHistory.filter((r: any) => row.teamupId ? r.teamupId === row.teamupId : (
         r.taskId === row.taskId &&
-        r.completedAt.slice(0, 10) === row.completedAt.slice(0, 10) &&
+        dayOf.get(r) === dayOf.get(row) &&
         r.assignmentMode === 'shared' && !r.teamupId
       ));
 

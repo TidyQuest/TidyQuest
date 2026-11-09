@@ -1,6 +1,7 @@
 import db from '../database';
 import { addLocalDays, currentLocalWeek } from './periods';
 import { familyZone } from './clock';
+import { tr } from './i18n';
 
 export interface PrimaryGoal {
   id: number;
@@ -125,8 +126,10 @@ export function syncPrimaryGoal(userId: number): PrimaryGoal | null {
       if (changed.changes > 0 && g.rewardCoins > 0) {
         db.prepare('UPDATE users SET coins = coins + ? WHERE id = ?').run(g.rewardCoins, userId);
         // Shows up in Activity like a parent's coin adjustment
+        // Stored as text, so in the language of the person who reached it
+        const lang = (db.prepare('SELECT language FROM users WHERE id = ?').get(userId) as { language?: string } | undefined)?.language;
         db.prepare('INSERT INTO coin_adjustments (userId, amount, reason, createdBy, createdAt) VALUES (?, ?, ?, NULL, ?)')
-          .run(userId, g.rewardCoins, `Goal reached: ${goalTitleBase(g.title)}`, nowIso);
+          .run(userId, g.rewardCoins, tr(lang, 'goals.reachedReason', { title: goalTitleBase(g.title) }), nowIso);
       }
     }
   }

@@ -177,6 +177,19 @@ describe('Goals that repeat weekly, and the bonus', () => {
     expect(ledger).toEqual([{ amount: 25, reason: 'Goal reached: Weekly Win' }]);
   });
 
+  it("writes the bonus's coin history line in the kid's language (FIX-32)", async () => {
+    const { admin, kid, room } = await family();
+    db.prepare("UPDATE users SET language = 'de' WHERE id = ?").run(kid.user.id);
+    const week = currentLocalWeek();
+    await agent.post(`/api/users/${kid.user.id}/goals`).set(auth(admin.token))
+      .send({ title: 'Weekly Win', goalCoins: 10, startAt: week.startAt, endAt: week.endAt, rewardCoins: 25 }).expect(201);
+    const task = (await agent.post(`/api/rooms/${room}/tasks`).set(auth(admin.token)).send({ name: 'Big job', effort: 1, onDemand: true, customCoins: 12 })).body.id as number;
+    await agent.post(`/api/tasks/${task}/complete`).set(auth(kid.token)).expect(200);
+    await agent.get('/api/dashboard').set(auth(kid.token));
+    const ledger = db.prepare('SELECT reason FROM coin_adjustments WHERE userId = ?').all(kid.user.id);
+    expect(ledger).toEqual([{ reason: 'Ziel erreicht: Weekly Win' }]);
+  });
+
   it('lets a parent edit the bonus and the repeat setting', async () => {
     const { admin, kid } = await family();
     const goal = (await agent.post(`/api/users/${kid.user.id}/goals`).set(auth(admin.token)).send({ title: 'Weekly Win', goalCoins: 100, repeatWeekly: true })).body;

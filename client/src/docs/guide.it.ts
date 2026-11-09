@@ -201,7 +201,7 @@ export const GUIDE_IT: GuideSection[] = [
       ] },
       { h: 'Monete' },
       { ul: [
-        'Lo sforzo (1–5) determina le monete da Impostazioni → Monete per sforzo. Le monete personalizzate lo sostituiscono per una singola faccenda.',
+        'Lo sforzo (1–5) determina le monete da Impostazioni → Monete per sforzo. Le monete personalizzate lo sostituiscono per una singola faccenda: compila la casella Monete personalizzate quando aggiungi o modifichi la faccenda, oppure lasciala su Auto.',
         'La Missione di salvataggio e gli eventi monete doppie le moltiplicano per quel giorno.',
       ] },
       { h: 'Chi può farla' },

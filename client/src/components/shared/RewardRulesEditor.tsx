@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { api, type RewardRules } from '../../hooks/useApi';
 import { useTranslation } from '../../hooks/useTranslation';
+import { serverErrorText } from '../../utils/serverError';
 
 interface Member { id: number; displayName: string; role?: string; isParticipant?: number | boolean }
 
@@ -51,7 +52,7 @@ export function RewardRulesEditor({ reward, family, language, onSaved }: {
       setSaved(true);
       await onSaved();
     } catch (err) {
-      setError(err instanceof Error ? err.message : t('common.error'));
+      setError(serverErrorText(err, t));
     }
   };
 

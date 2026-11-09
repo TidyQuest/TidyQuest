@@ -73,6 +73,24 @@ describe('Proof photos need the photos cookie (NEW-29)', () => {
     expect((await load(f.url, kidB)).status).toBe(200);
   });
 
+  it("matches a shared chore's partner by the family's day, not the UTC day (BUG-31)", async () => {
+    const f = await family();
+    db.prepare("INSERT OR REPLACE INTO app_settings (key, value) VALUES ('timeZone', 'America/Los_Angeles')").run();
+    db.prepare("UPDATE tasks SET assignmentMode = 'shared' WHERE id = ?").run(f.task);
+    const kidB = await photoCookie(f.kidB.token);
+    const at = (id: number | bigint, iso: string) => db.prepare('UPDATE task_completions SET completedAt = ? WHERE id = ?').run(iso, id);
+    const row = db.prepare("INSERT INTO task_completions (taskId, userId, completedAt, coinsEarned, status) VALUES (?, ?, '', 0, 'approved')")
+      .run(f.task, f.kidB.user.id).lastInsertRowid;
+    // 3:50 pm and 4:10 pm in Los Angeles: the same family day, different UTC days
+    at(f.completionId, '2026-11-08T23:50:00.000Z');
+    at(row, '2026-11-09T00:10:00.000Z');
+    expect((await load(f.url, kidB)).status).toBe(200);
+    // 11:50 pm and 12:10 am: the same UTC day, different family days
+    at(f.completionId, '2026-11-09T07:50:00.000Z');
+    at(row, '2026-11-09T08:10:00.000Z');
+    expect((await load(f.url, kidB)).status).toBe(404);
+  });
+
   it('is set at login as a cookie scripts and other sites can’t use, and cleared by Log out', async () => {
     await createAdmin(agent);
     const login = await agent.post('/api/auth/login').send({ username: 'admin', password: 'admin123', ...familyField() });

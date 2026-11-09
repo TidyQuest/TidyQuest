@@ -390,14 +390,17 @@
       "waitingCount": "{n} en attente de validation",
       "alreadyDone": "C'est déjà fait !",
       "takeBack": "Annuler",
-      "takeBackHint": "Appuyé sur Fait par erreur ? Annule-le avant qu'un parent décide."
+      "takeBackHint": "Appuyé sur Fait par erreur ? Annule-le avant qu'un parent décide.",
+      "importInvalid": "Ce n'est pas une sauvegarde TidyQuest : elle ne contient ni personnes ni pièces.",
+      "importFailed": "Échec de l'import : {error}"
     },
     "admin": {
       "whoDidThisTask": "Qui a fait cette tâche ?",
       "confirmCompletion": "Confirmer",
       "alreadyCompletedBy": "Déjà fait par {name}",
       "completeForSelf": "Terminer pour moi",
-      "noOneSelected": "Sélectionne au moins une personne"
+      "noOneSelected": "Sélectionne au moins une personne",
+      "alreadyDone": "Déjà fait"
     },
     "calendar": {
       "mon": "Lun",
@@ -577,7 +580,8 @@
       "undoDone": "Annuler",
       "undoDoneTitle": "Annuler cette réalisation (retire ses pièces)",
       "undoDoneConfirm": "Annuler « {task} » pour {name} ? Les {coins} pièces seront retirées.",
-      "moreOptions": "Plus d'options"
+      "moreOptions": "Plus d'options",
+      "assignmentMode": "Mode"
     },
     "avatars": {
       "cat": "Chat",
@@ -696,7 +700,10 @@
       "showLess": "Afficher moins",
       "error": "Une erreur s'est produite",
       "close": "Fermer",
-      "actionFailed": "Ça n'a pas marché. Vérifie ta connexion et réessaie."
+      "actionFailed": "Ça n'a pas marché. Vérifie ta connexion et réessaie.",
+      "openMenu": "Ouvrir le menu",
+      "dismiss": "Fermer",
+      "daysShort": "{n} j"
     },
     "units": {
       "hours": "heures",
@@ -1108,7 +1115,8 @@
       "weeklyWinTitle": "Victoire de la semaine",
       "weeklyWinTemplate": "Victoire de la semaine",
       "bonusEarned": "de bonus gagnées !",
-      "bonusWhenReached": "+{n} de bonus quand tu l'atteins"
+      "bonusWhenReached": "+{n} de bonus quand tu l'atteins",
+      "reachedReason": "Objectif atteint : {title}"
     },
     "coins": {
       "reasonPlaceholder": "Raison (facultatif)",
@@ -1218,7 +1226,28 @@
       "addNewRoom": "nouvelle, dans une nouvelle pièce",
       "addRow": "nouvelle",
       "apply": "Appliquer les changements ({n})",
-      "errorsSkipped": "Les lignes avec des problèmes sont ignorées."
+      "errorsSkipped": "Les lignes avec des problèmes sont ignorées.",
+      "errEmptyFile": "Le fichier est vide",
+      "errTooManyRows": "{n} lignes au maximum",
+      "errMissingColumns": "Colonne(s) manquante(s) : {cols}",
+      "errMissingRoom": "La pièce est vide",
+      "errMissingTask": "Le nom de la tâche est vide",
+      "errDuplicateTask": "Même pièce et même tâche qu'à la ligne {line}",
+      "errBadDays": "« {value} » n'est pas un nombre de jours",
+      "errBadEffort": "L'effort doit être de 1 à 5 (reçu « {value} »)",
+      "errBadCoins": "Les pièces doivent être un nombre entier, ou vides pour la valeur de l'effort (reçu « {value} »)",
+      "errBadBoolean": "« {value} » n'est ni yes ni no",
+      "errUnknownPerson": "Personne ici ne s'appelle « {value} »",
+      "errBadTimer": "Le minuteur doit être de 0 à {max} minutes, ou vide pour aucun (reçu « {value} »)",
+      "errBadSteps": "{max} étapes au maximum, une par ligne, de {length} caractères au plus",
+      "errAmbiguousRoom": "{n} pièces s'appellent « {value} » ; renomme-en une d'abord",
+      "errAmbiguousTask": "{n} tâches de « {room} » s'appellent « {value} » ; renomme-en une d'abord",
+      "errMissingTitle": "Le titre est vide",
+      "errDuplicateTitle": "Même titre qu'à la ligne {line}",
+      "errBadCost": "Le prix doit être un nombre entier d'au moins 1 (reçu « {value} »)",
+      "errAmbiguousReward": "{n} récompenses s'appellent « {value} » ; renomme-en une d'abord",
+      "errNewRewardCost": "Une nouvelle récompense a besoin d'un prix",
+      "errNotSaved": "La ligne {line} n'a pas pu être enregistrée ({error}), donc rien n'a été modifié."
     },
     "rewardOrder": {
       "up": "Monter",
@@ -1416,7 +1445,8 @@
       "shieldSaved": "🛡️ Ton bouclier a sauvé ta série de {n} jours !",
       "shieldsSaved": "🛡️ {count} boucliers ont sauvé ta série de {n} jours !",
       "shieldGiven": "🛡️ {name} t'a donné un bouclier de série. Il protège ta série si tu manques un jour.",
-      "recapLastWeek": "📊 La semaine dernière : {lines}"
+      "recapLastWeek": "📊 La semaine dernière : {lines}",
+      "testFamily": "👋 Test TidyQuest envoyé par {name} à {time} : les notifications de la famille fonctionnent !"
     },
     "notifyAdmin": {
       "peopleTitle": "Qui reçoit quoi",
@@ -2355,6 +2385,19 @@
       "night_off_desc": "Quelqu'un d'autre fait le dîner, ou on commande.",
       "pick_outing": "Choisir la sortie du week-end",
       "pick_outing_desc": "C'est toi qui décides où on va ce week-end."
+    },
+    "errors": {
+      "titleRequired": "Donne-lui un titre.",
+      "multiplier": "Le multiplicateur doit être supérieur à 1 et au plus {n}.",
+      "badDate": "Indique une date valide.",
+      "endBeforeStart": "La fin doit être après le début.",
+      "fromAfterUntil": "« Du » doit être le même jour que « Au » ou avant.",
+      "goalCoins": "L'objectif doit être d'au moins 1 pièce.",
+      "familyTarget": "L'objectif doit être de 0 ou plus.",
+      "prices": "Les prix doivent être des nombres entiers supérieurs à 0.",
+      "limitCount": "La limite doit être un nombre entier de 1 à {n}.",
+      "notFound": "Cet élément n'existe plus (il vient peut-être d'être supprimé). Recharge la page.",
+      "adminOnly": "Seuls les parents peuvent faire ça."
     }
   }
 }
