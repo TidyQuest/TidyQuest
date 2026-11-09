@@ -9,6 +9,8 @@ What changed in each release, in plain language, newest first. Releases up to v0
 
 ## Unreleased
 
+## v0.17.2 (2026-11-09)
+
 ### Added
 
 - **Phone notifications show a TidyQuest star in Android's status bar**, instead of the browser's own icon. From
