@@ -60,7 +60,7 @@ describe('BUG-45: chores pick up where they left off after a vacation', () => {
     await familyBack();
     expect(taskHealth(task(weekly))).toBe(frozen);
     expect(daysAgoOf(task(weekly).lastCompletedAt)).toBeCloseTo(2, 1);
-    expect(daysAgoOf(task(during).lastCompletedAt)).toBeCloseTo(1, 1);
+    expect(task(during).lastCompletedAt).toBe(iso(1)); // untouched
   });
 
   it("one person's vacation moves only that person's chores", async () => {
@@ -71,8 +71,8 @@ describe('BUG-45: chores pick up where they left off after a vacation', () => {
     await personAway(kidA.user.id, 7);
     await agent.put(`/api/users/${kidA.user.id}/vacation`).set(auth(admin.token)).send({ isVacationMode: false }).expect(200);
     expect(daysAgoOf(task(mine).lastCompletedAt)).toBeCloseTo(2, 1);
-    expect(daysAgoOf(task(both).lastCompletedAt)).toBeCloseTo(9, 1);
-    expect(daysAgoOf(task(anyone).lastCompletedAt)).toBeCloseTo(9, 1);
+    expect(task(both).lastCompletedAt).toBe(iso(9));
+    expect(task(anyone).lastCompletedAt).toBe(iso(9));
   });
 
   it('the family return date is that day in the family time zone, and ends the vacation when it comes', async () => {

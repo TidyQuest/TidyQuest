@@ -80,7 +80,7 @@ describe('BUG-29: streaks count the day the chore was done', () => {
     const { kidA, add } = await family();
     await add({ name: 'Wash the car', frequencyDays: 7, onDemand: true });
     const weekly = await add({ name: 'Vacuum', frequencyDays: 7 });
-    db.prepare('UPDATE tasks SET lastCompletedAt = ? WHERE id = ?').run(iso(7, 23), weekly); // due again tonight
+    db.prepare('UPDATE tasks SET lastCompletedAt = ? WHERE id = ?').run(iso(6), weekly); // due again tomorrow
     db.prepare('UPDATE users SET currentStreak = 5, lastActiveDate = ? WHERE id = ?').run(day(3), kidA.user.id);
     await done(kidA.token, weekly, {}).expect(409); // not due yet: nothing was due these three days
     const quest = await add({ name: 'Help a sibling', frequencyDays: 7, onDemand: true });
