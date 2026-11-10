@@ -393,7 +393,8 @@
       "takeBackHint": "¿Pulsaste Hecho por error? Deshazlo antes de que decida un padre.",
       "importInvalid": "Esto no es una copia de seguridad de TidyQuest: no tiene personas ni habitaciones.",
       "importFailed": "Error al importar: {error}",
-      "importNotIn": "Esta copia de seguridad no te incluye ({name}) como Admin, así que importarla te dejaría sin acceso. Inicia sesión con un Admin que esté en la copia e inténtalo de nuevo."
+      "importNotIn": "Esta copia de seguridad no te incluye ({name}) como Admin, así que importarla te dejaría sin acceso. Inicia sesión con un Admin que esté en la copia e inténtalo de nuevo.",
+      "notYetDue": "Todavía no toca."
     },
     "admin": {
       "whoDidThisTask": "¿Quién completó esta tarea?",
@@ -1250,7 +1251,8 @@
       "errBadCost": "El precio debe ser un número entero de al menos 1 (se recibió «{value}»)",
       "errAmbiguousReward": "{n} recompensas se llaman «{value}»; cambia el nombre de una primero",
       "errNewRewardCost": "Una recompensa nueva necesita un precio",
-      "errNotSaved": "No se pudo guardar la línea {line} ({error}), así que no se cambió nada."
+      "errNotSaved": "No se pudo guardar la línea {line} ({error}), así que no se cambió nada.",
+      "errBadDate": "«{value}» no es una fecha (usa AAAA-MM-DD, por ejemplo 2027-03-01)"
     },
     "rewardOrder": {
       "up": "Subir",

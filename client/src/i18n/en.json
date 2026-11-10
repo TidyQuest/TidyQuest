@@ -393,7 +393,8 @@
       "takeBackHint": "Tapped Done by mistake? Take it back before a parent decides.",
       "importInvalid": "This isn't a TidyQuest backup: it has no people or rooms.",
       "importFailed": "Import failed: {error}",
-      "importNotIn": "This backup doesn't list you ({name}) as an Admin, so importing it would lock you out. Sign in as an Admin who is in the backup and try again."
+      "importNotIn": "This backup doesn't list you ({name}) as an Admin, so importing it would lock you out. Sign in as an Admin who is in the backup and try again.",
+      "notYetDue": "This isn't due yet."
     },
     "admin": {
       "whoDidThisTask": "Who completed this task?",
@@ -1250,7 +1251,8 @@
       "errBadCost": "Cost must be a whole number of at least 1 (got \"{value}\")",
       "errAmbiguousReward": "{n} rewards are called \"{value}\"; rename one first",
       "errNewRewardCost": "A new reward needs a cost",
-      "errNotSaved": "Line {line} couldn't be saved ({error}), so nothing was changed."
+      "errNotSaved": "Line {line} couldn't be saved ({error}), so nothing was changed.",
+      "errBadDate": "\"{value}\" is not a date (use YYYY-MM-DD, like 2027-03-01)"
     },
     "rewardOrder": {
       "up": "Move up",

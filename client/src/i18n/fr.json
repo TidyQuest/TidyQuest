@@ -393,7 +393,8 @@
       "takeBackHint": "Appuyé sur Fait par erreur ? Annule-le avant qu'un parent décide.",
       "importInvalid": "Ce n'est pas une sauvegarde TidyQuest : elle ne contient ni personnes ni pièces.",
       "importFailed": "Échec de l'import : {error}",
-      "importNotIn": "Cette sauvegarde ne vous contient pas ({name}) en tant qu'Admin : l'importer vous bloquerait l'accès. Connectez-vous avec un Admin présent dans la sauvegarde et réessayez."
+      "importNotIn": "Cette sauvegarde ne vous contient pas ({name}) en tant qu'Admin : l'importer vous bloquerait l'accès. Connectez-vous avec un Admin présent dans la sauvegarde et réessayez.",
+      "notYetDue": "Ce n'est pas encore à faire."
     },
     "admin": {
       "whoDidThisTask": "Qui a fait cette tâche ?",
@@ -1250,7 +1251,8 @@
       "errBadCost": "Le prix doit être un nombre entier d'au moins 1 (reçu « {value} »)",
       "errAmbiguousReward": "{n} récompenses s'appellent « {value} » ; renomme-en une d'abord",
       "errNewRewardCost": "Une nouvelle récompense a besoin d'un prix",
-      "errNotSaved": "La ligne {line} n'a pas pu être enregistrée ({error}), donc rien n'a été modifié."
+      "errNotSaved": "La ligne {line} n'a pas pu être enregistrée ({error}), donc rien n'a été modifié.",
+      "errBadDate": "« {value} » n'est pas une date (utilisez AAAA-MM-JJ, par exemple 2027-03-01)"
     },
     "rewardOrder": {
       "up": "Monter",

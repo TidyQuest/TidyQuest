@@ -43,15 +43,21 @@ const getRow = (day: string) => db.prepare('SELECT * FROM rescue_missions WHERE 
 
 /**
  * Today's mission, picked the first time anyone asks (null when switched off, skipped, or nothing is
- * overdue enough). Picked again if its chore was deleted before anyone did it.
+ * overdue enough). Picked again if its chore was deleted, paused or finished for good before anyone did it.
  */
 export function todaysMission(now: Date = new Date()): RescueRow | null {
   if (!isFeatureOn('rescue')) return null;
   const day = localDateStr(now);
   let row = getRow(day);
-  if (!row || (!row.skipped && !row.completedBy && row.taskId === null)) {
+  // Nobody has done it and its chore can't be done any more (deleted, paused, or a to-do that's finished)
+  const gone = !!row && !row.skipped && !row.completedBy && (row.taskId === null
+    || !db.prepare('SELECT 1 FROM tasks WHERE id = ? AND archivedAt IS NULL AND deletedAt IS NULL AND pausedAt IS NULL').get(row.taskId));
+  if (!row || gone) {
     const pick = rescueCandidates(now)[0];
-    if (!pick) return null;
+    if (!pick) {
+      if (gone) db.prepare('UPDATE rescue_missions SET taskId = NULL WHERE day = ?').run(day);
+      return null;
+    }
     db.prepare(`INSERT INTO rescue_missions (day, taskId, multiplier) VALUES (?, ?, ?)
                 ON CONFLICT(day) DO UPDATE SET taskId = excluded.taskId, multiplier = excluded.multiplier, completedBy = NULL, completionId = NULL`)
       .run(day, pick.id, rescueMultiplier());

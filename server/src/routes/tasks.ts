@@ -26,6 +26,7 @@ import { isFeatureOn } from '../utils/features';
 import { pauseTask, readPausedUntil, resumeTask } from '../utils/pause';
 import { earnShieldAt, lateStreak, nextStreak, noteBrokenStreak, settleStreak } from '../utils/streaks';
 import { baseCoinsOf, endTeamupsFor, groupTeamPending, openTeamupFor, teamShares, teamUpInfo, type Teamup } from '../utils/teamups';
+import { currentShares, isPerPerson, sharesCompleteAt, sharesFor } from '../utils/shares';
 import { isHosted } from '../hosted/context';
 import { fileUrl, oneFile, removeFile, uploadDir } from '../hosted/files';
 import { filesFullError, limits, overFilesLimit } from '../hosted/limits';
@@ -70,23 +71,20 @@ function applyApprovedCompletion(
   }
 
   const taskAssignees = db.prepare('SELECT userId FROM task_assignees WHERE taskId = ?').all(taskId) as { userId: number }[];
-  // lastCompletedAt only moves forward (a late log can be older than the last completion)
-  const setLastCompleted = () => db.prepare('UPDATE tasks SET lastCompletedAt = ? WHERE id = ? AND (lastCompletedAt IS NULL OR lastCompletedAt < ?)').run(now, taskId, now);
+  // lastCompletedAt only moves forward (a late log can be older than the last completion). The date it
+  // replaces is kept, so undoing this completion can put it back.
+  const setLastCompleted = (at: string = now) => db.prepare(
+    'UPDATE tasks SET prevLastCompletedAt = lastCompletedAt, lastCompletedAt = ? WHERE id = ? AND (lastCompletedAt IS NULL OR lastCompletedAt < ?)'
+  ).run(at, taskId, at);
 
   // A one-time chore is finished: it leaves every list (its history stays)
   if (task.oneTime) db.prepare('UPDATE tasks SET archivedAt = ? WHERE id = ?').run(now, taskId);
 
-  if (task.assignmentMode === 'shared' || task.assignmentMode === 'custom') {
-    if (taskAssignees.length > 0) {
-      const doneCount = db.prepare(
-        `SELECT COUNT(*) as cnt
-         FROM task_completions
-         WHERE taskId = ? AND status = 'approved' AND ${daySql('completedAt')} = ${daySql('?')}`
-      ).get(taskId, now) as { cnt: number };
-      if (doneCount.cnt >= taskAssignees.length) setLastCompleted();
-    } else {
-      setLastCompleted();
-    }
+  if (isPerPerson(task) && taskAssignees.length > 0) {
+    // Clean once every assignee's share is in, whichever days they did them (BUG-26)
+    const current = db.prepare('SELECT * FROM tasks WHERE id = ?').get(taskId) as any;
+    const cleanAt = sharesCompleteAt(current, taskAssignees.map((a) => a.userId), new Date(now));
+    if (cleanAt) setLastCompleted(cleanAt);
   } else {
     setLastCompleted();
   }
@@ -148,11 +146,13 @@ function approveOne(completionId: number, adminId: number, extras: { note: strin
   if (!task) return 'task_not_found';
   const gamifRow = db.prepare("SELECT value FROM app_settings WHERE key = 'gamificationEnabled'").get() as { value: string } | undefined;
   const gamificationOn = gamifRow ? gamifRow.value !== '0' : true;
+  // The streak counts the day the chore was done, not the day a parent got round to approving it (BUG-29)
+  const doneDay = localDateStr(new Date(completion.completedAt));
   applyApprovedCompletion(task, completion.taskId, completion.userId, completion.coinsEarned, completion.completedAt, gamificationOn, {
     completionId: completion.id,
     approvedByUserId: adminId,
     approvedAt: new Date().toISOString(),
-    lateDay: completion.loggedAt ? localDateStr(new Date(completion.completedAt)) : undefined,
+    lateDay: completion.loggedAt || doneDay < localDateStr() ? doneDay : undefined,
   });
   // The turn moves on once the parent approves (it used to stay stuck under Strict Mode); a late log
   // only moves it if nothing was done since
@@ -317,7 +317,7 @@ router.get('/rooms/:roomId/tasks', (req: AuthRequest, res: Response) => {
       completedTodayBy: completedTodayByTask.get(t.id) || null,
       teamUp: teamUpInfo(t, req.userId!),
       assignmentMode: mode,
-      sharedCompletions: (mode === 'shared' || mode === 'custom') ? (sharedCompletionsByTask.get(t.id) || []) : undefined,
+      sharedCompletions: (mode === 'shared' || mode === 'custom') ? sharesFor(t) : undefined,
       health: (() => {
         const taskVac = effectiveAssignedUserIds.length === 1
           ? resolveVacation(vacation, getUserVacation(effectiveAssignedUserIds[0]))
@@ -465,7 +465,11 @@ export function updateTask(id: number | string, body: any): TaskWriteResult {
   if (frequencyDays !== undefined) { setClauses.push('frequencyDays = COALESCE(?, frequencyDays)'); params.push(frequencyDays); }
   if (effort !== undefined) { setClauses.push('effort = COALESCE(?, effort)'); params.push(effort); }
   if (isSeasonal !== undefined) { setClauses.push('isSeasonal = ?'); params.push(isSeasonal ? 1 : 0); }
-  if (lastCompletedAt !== undefined) { setClauses.push('lastCompletedAt = COALESCE(?, lastCompletedAt)'); params.push(lastCompletedAt); }
+  if (lastCompletedAt !== undefined) {
+    setClauses.push('lastCompletedAt = COALESCE(?, lastCompletedAt)'); params.push(lastCompletedAt);
+    // The health slider starts a shared chore's shares over, like Reset to dirty
+    setClauses.push('sharesResetAt = ?'); params.push(new Date().toISOString());
+  }
   if (iconKey !== undefined) { setClauses.push('iconKey = COALESCE(?, iconKey)'); params.push(iconKey); }
   if (resolvedAssignedToChildren !== undefined) { setClauses.push('assignedToChildren = ?'); params.push(resolvedAssignedToChildren); }
   const resolvedMode = assignmentMode !== undefined ? (['shared', 'custom', 'rotating'].includes(assignmentMode) ? assignmentMode : 'first') : undefined;
@@ -514,9 +518,11 @@ export function updateTask(id: number | string, body: any): TaskWriteResult {
       }
       // Clear assignedToChildren when specific users are set
       db.prepare('UPDATE tasks SET assignedToChildren = 0 WHERE id = ?').run(id);
-      // (Re-)set rotation start user when switching to rotating mode
+      // The turn starts with the first person when the chore becomes rotating, or when the person whose
+      // turn it was is taken off it; any other edit leaves the turn alone (BUG-27)
       const effectiveMode = resolvedMode ?? task.assignmentMode;
-      if (effectiveMode === 'rotating') {
+      const turnStillValid = task.assignmentMode === 'rotating' && assignedUserIds.map(Number).includes(Number(task.rotationCurrentUserId));
+      if (effectiveMode === 'rotating' && !turnStillValid) {
         db.prepare('UPDATE tasks SET rotationCurrentUserId = ? WHERE id = ?').run(Number(assignedUserIds[0]), id);
       }
     } else {
@@ -722,6 +728,7 @@ router.post('/tasks/:id/reset', (req: AuthRequest, res: Response) => {
       db.prepare('UPDATE users SET coins = MAX(0, coins - ?) WHERE id = ?')
         .run(completion.coinsEarned, completion.userId);
     }
+    releaseRescue(completion.id); // the Rescue Mission is open again
   }
 
   removeProofPhotos(`taskId = ? AND ${daySql('completedAt')} = ${daySql('?')}`, task.id, now);
@@ -733,7 +740,8 @@ router.post('/tasks/:id/reset', (req: AuthRequest, res: Response) => {
   const dirtyAt = hasFixedSchedule(task)
     ? lastCompletedAtForHealth(task, 0)
     : new Date(Date.now() - effectiveFrequency * 86400000).toISOString();
-  db.prepare('UPDATE tasks SET lastCompletedAt = ? WHERE id = ?').run(dirtyAt, task.id);
+  // Everyone's share of a shared chore is open again
+  db.prepare('UPDATE tasks SET lastCompletedAt = ?, sharesResetAt = ? WHERE id = ?').run(dirtyAt, now, task.id);
 
   res.json({
     success: true,
@@ -754,6 +762,16 @@ function advanceRotation(task: any, completedByUserId: number) {
     const currentIdx = rotationAssignees.findIndex(a => a.userId === (task.rotationCurrentUserId ?? completedByUserId));
     const nextIdx = (currentIdx + 1) % rotationAssignees.length;
     db.prepare('UPDATE tasks SET rotationCurrentUserId = ? WHERE id = ?').run(rotationAssignees[nextIdx].userId, task.id);
+  }
+}
+
+/** Undo of advanceRotation: the turn goes back to the assignee before the current one. */
+function retreatRotation(task: any) {
+  if (task.assignmentMode !== 'rotating' || task.rotationPeriod === 'week') return;
+  const assignees = db.prepare('SELECT userId FROM task_assignees WHERE taskId = ? ORDER BY userId ASC').all(task.id) as { userId: number }[];
+  const idx = assignees.findIndex((a) => a.userId === task.rotationCurrentUserId);
+  if (assignees.length > 1 && idx >= 0) {
+    db.prepare('UPDATE tasks SET rotationCurrentUserId = ? WHERE id = ?').run(assignees[(idx - 1 + assignees.length) % assignees.length].userId, task.id);
   }
 }
 
@@ -786,10 +804,24 @@ function dueOnDay(task: any, userId: number, when: string): boolean {
      AND ${daySql('completedAt')} < ${daySql('?')}${perPerson ? ' AND userId = ?' : ''}
      ORDER BY completedAt DESC LIMIT 1`
   ).get(...(perPerson ? [task.id, when, userId] : [task.id, when])) as { completedAt: string } | undefined;
-  if (!prev || task.allowEarlyCompletion) return true;
-  const endOfDay = endOfDayOf(when);
-  const due = nextDueAt({ ...task, lastCompletedAt: prev.completedAt }, endOfDay);
-  return !due || due.getTime() <= endOfDay.getTime();
+  if (task.allowEarlyCompletion) return true;
+  if (prev) {
+    const endOfDay = endOfDayOf(when);
+    const due = nextDueAt({ ...task, lastCompletedAt: prev.completedAt }, endOfDay);
+    if (due && due.getTime() > endOfDay.getTime()) return false;
+  }
+  // ...and from the completion after it: done on that day, the chore wouldn't have been due again yet (BUG-28)
+  const next = db.prepare(
+    `SELECT completedAt FROM task_completions WHERE taskId = ? AND status IN ('approved', 'pending')
+     AND ${daySql('completedAt')} > ${daySql('?')}${perPerson ? ' AND userId = ?' : ''}
+     ORDER BY completedAt ASC LIMIT 1`
+  ).get(...(perPerson ? [task.id, when, userId] : [task.id, when])) as { completedAt: string } | undefined;
+  if (next) {
+    const endOfNext = endOfDayOf(next.completedAt);
+    const due = nextDueAt({ ...task, lastCompletedAt: when }, endOfNext);
+    if (due && due.getTime() > endOfNext.getTime()) return false;
+  }
+  return true;
 }
 
 // Complete task
@@ -826,7 +858,8 @@ router.post('/tasks/:id/complete', (req: AuthRequest, res: Response) => {
     : req.userId!;
 
   // Team-ups: once someone has joined, the chore belongs to the team for the day (a late log is for another day)
-  const team = lateDay ? null : openTeamupFor(task.id);
+  // (and with Team-ups switched off, a team left open no longer holds the chore)
+  const team = lateDay || !isFeatureOn('teamups') ? null : openTeamupFor(task.id);
   const teamClaimed = !!team && team.members.length >= 2;
   if (teamClaimed && !team!.members.some((m) => m.userId === effectiveUserId)) {
     return res.status(409).json({ error: 'claimed_by_team', names: team!.members.map((m) => m.displayName) });
@@ -881,19 +914,28 @@ router.post('/tasks/:id/complete', (req: AuthRequest, res: Response) => {
     }
 
     // Block if frequency cooldown hasn't elapsed (task not yet due); a one-time chore can be done any time
+    // A Done that waits for approval counts as done (BUG-28): lastCompletedAt only moves when a parent approves
+    const waiting = isPerPerson(task) ? undefined : db.prepare(
+      "SELECT completedAt FROM task_completions WHERE taskId = ? AND status = 'pending' ORDER BY completedAt DESC LIMIT 1"
+    ).get(task.id) as { completedAt: string } | undefined;
+    const lastDone: string | null = waiting && (!task.lastCompletedAt || new Date(waiting.completedAt) > new Date(task.lastCompletedAt))
+      ? waiting.completedAt : task.lastCompletedAt;
     if (lateDay) {
       if (!task.oneTime && !dueOnDay(task, effectiveUserId, when)) return res.status(409).json({ error: 'not_yet_due' });
-    } else if (task.lastCompletedAt && !task.oneTime) {
+    } else if (isPerPerson(task) && !task.oneTime && currentShares(task, new Date(now), true).some((s) => s.userId === effectiveUserId)) {
+      // Shared chore: this person's share is done until the chore comes due for them again (BUG-26)
+      return res.status(409).json({ error: 'not_yet_due' });
+    } else if (lastDone && !task.oneTime) {
       const globalVac = getGlobalVacation();
       const taskAssigneesForVac = db.prepare('SELECT userId FROM task_assignees WHERE taskId = ?').all(task.id) as { userId: number }[];
       const taskVac = taskAssigneesForVac.length === 1
         ? resolveVacation(globalVac, getUserVacation(taskAssigneesForVac[0].userId))
         : globalVac;
-      const currentHealth = taskHealth(task, taskVac);
+      const currentHealth = taskHealth({ ...task, lastCompletedAt: lastDone }, taskVac);
       if (currentHealth > 0) {
         // allowEarlyCompletion: bypass cooldown if completed on a previous calendar day
         if (task.allowEarlyCompletion) {
-          const lastDay = localDateStr(new Date(task.lastCompletedAt));
+          const lastDay = localDateStr(new Date(lastDone));
           const today = localDateStr();
           if (lastDay >= today) {
             return res.status(409).json({ error: 'not_yet_due', health: currentHealth });
@@ -1056,7 +1098,11 @@ router.post('/completions/approve-batch', (req: AuthRequest, res: Response) => {
   if (!ensureAdmin(req.userId)) return res.status(403).json({ error: 'Admin only' });
   const ids = batchIds(req.body);
   if (!ids) return res.status(400).json({ error: 'ids must be a non-empty array of completion ids' });
-  const results = db.transaction(() => ids.map((id) => ({ id, error: approvePendingCompletion(id, req.userId!) })))();
+  // Oldest first, so several days approved together each count for the streak
+  const doneAt = new Map((db.prepare(`SELECT id, completedAt FROM task_completions WHERE id IN (${ids.map(() => '?').join(',')})`)
+    .all(...ids) as { id: number; completedAt: string }[]).map((c) => [c.id, c.completedAt]));
+  const inOrder = [...ids].sort((a, b) => (doneAt.get(a) ?? '').localeCompare(doneAt.get(b) ?? ''));
+  const results = db.transaction(() => inOrder.map((id) => ({ id, error: approvePendingCompletion(id, req.userId!) })))();
   res.json({ approved: results.filter((r) => !r.error).map((r) => r.id), skipped: results.filter((r) => r.error) });
 });
 
@@ -1139,12 +1185,13 @@ router.delete('/tasks/:id/snooze', (req: AuthRequest, res: Response) => {
 // still waits for approval. A team's completions are undone together and the team-up reopens.
 router.delete('/completions/:completionId', (req: AuthRequest, res: Response) => {
   const completion = db.prepare(
-    'SELECT id, taskId, userId, coinsEarned, status, teamupId FROM task_completions WHERE id = ?'
-  ).get(req.params.completionId) as { id: number; taskId: number; userId: number; coinsEarned: number; status: string; teamupId: number | null } | undefined;
+    'SELECT id, taskId, userId, coinsEarned, status, teamupId, completedAt FROM task_completions WHERE id = ?'
+  ).get(req.params.completionId) as { id: number; taskId: number; userId: number; coinsEarned: number; status: string; teamupId: number | null; completedAt: string } | undefined;
   if (!completion) return res.status(404).json({ error: 'Completion not found' });
 
+  type Row = { id: number; userId: number; coinsEarned: number; status: string; completedAt: string };
   const rows = completion.teamupId
-    ? db.prepare('SELECT id, userId, coinsEarned, status FROM task_completions WHERE teamupId = ?').all(completion.teamupId) as Array<{ id: number; userId: number; coinsEarned: number; status: string }>
+    ? db.prepare('SELECT id, userId, coinsEarned, status, completedAt FROM task_completions WHERE teamupId = ?').all(completion.teamupId) as Row[]
     : [completion];
   if (!ensureAdmin(req.userId)) {
     const mine = rows.some((r) => r.userId === req.userId);
@@ -1166,12 +1213,22 @@ router.delete('/completions/:completionId', (req: AuthRequest, res: Response) =>
     }
     if (completion.teamupId) db.prepare("UPDATE teamups SET status = 'open' WHERE id = ?").run(completion.teamupId);
 
-    // Update task.lastCompletedAt to the previous completion's completedAt (or NULL if none)
+    // A Done that was still waiting never changed the chore, so taking it back changes nothing either (BUG-46)
+    const approved = rows.filter((r) => r.status === 'approved');
+    if (approved.length === 0) return;
+    const task = db.prepare('SELECT * FROM tasks WHERE id = ?').get(completion.taskId) as any;
+    if (!task) return;
     const prev = db.prepare(
       "SELECT completedAt FROM task_completions WHERE taskId = ? AND status = 'approved' ORDER BY completedAt DESC LIMIT 1"
     ).get(completion.taskId) as { completedAt: string } | undefined;
-    db.prepare('UPDATE tasks SET lastCompletedAt = ? WHERE id = ?')
-      .run(prev?.completedAt || null, completion.taskId);
+    // Only the completion that set the last-done date takes it back: to the date it replaced, or (when
+    // that's unknown) to the completion before it. A shared chore's other shares still stand.
+    if (approved.some((r) => r.completedAt === task.lastCompletedAt)) {
+      const back = task.prevLastCompletedAt ?? (isPerPerson(task) ? null : prev?.completedAt ?? null);
+      db.prepare('UPDATE tasks SET lastCompletedAt = ?, prevLastCompletedAt = NULL WHERE id = ?').run(back, task.id);
+    }
+    // The turn it passed on comes back, unless someone has done the chore since (BUG-27)
+    if (!prev || approved.some((r) => new Date(r.completedAt) > new Date(prev.completedAt))) retreatRotation(task);
     // Undoing a one-time chore's completion brings it back
     if (!prev) db.prepare('UPDATE tasks SET archivedAt = NULL WHERE id = ? AND oneTime = 1').run(completion.taskId);
   })();

@@ -393,7 +393,8 @@
       "takeBackHint": "Hai toccato Fatto per sbaglio? Annullalo prima che decida un genitore.",
       "importInvalid": "Questo non è un backup di TidyQuest: non contiene persone né stanze.",
       "importFailed": "Importazione non riuscita: {error}",
-      "importNotIn": "Questo backup non ti include ({name}) come Admin, quindi importarlo ti chiuderebbe fuori. Accedi con un Admin presente nel backup e riprova."
+      "importNotIn": "Questo backup non ti include ({name}) come Admin, quindi importarlo ti chiuderebbe fuori. Accedi con un Admin presente nel backup e riprova.",
+      "notYetDue": "Non è ancora da fare."
     },
     "admin": {
       "whoDidThisTask": "Chi ha completato questo compito?",
@@ -1250,7 +1251,8 @@
       "errBadCost": "Il prezzo deve essere un numero intero di almeno 1 (ricevuto «{value}»)",
       "errAmbiguousReward": "{n} ricompense si chiamano «{value}»; rinominane prima una",
       "errNewRewardCost": "Una nuova ricompensa ha bisogno di un prezzo",
-      "errNotSaved": "Non è stato possibile salvare la riga {line} ({error}), quindi non è cambiato nulla."
+      "errNotSaved": "Non è stato possibile salvare la riga {line} ({error}), quindi non è cambiato nulla.",
+      "errBadDate": "«{value}» non è una data (usa AAAA-MM-GG, per esempio 2027-03-01)"
     },
     "rewardOrder": {
       "up": "Sposta su",

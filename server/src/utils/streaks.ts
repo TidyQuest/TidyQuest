@@ -42,7 +42,7 @@ const addDays = (day: string, n: number) =>
 
 export function hadDueTaskOnDate(dateIsoDay: string): boolean {
   const endOfDay = dayAt(dateIsoDay, 23, 59, 59, 999).getTime();
-  const tasks = db.prepare('SELECT * FROM tasks WHERE archivedAt IS NULL AND deletedAt IS NULL AND pausedAt IS NULL AND oneTime = 0').all() as Array<ScheduledTask & {
+  const tasks = db.prepare('SELECT * FROM tasks WHERE archivedAt IS NULL AND deletedAt IS NULL AND pausedAt IS NULL AND oneTime = 0 AND onDemand = 0').all() as Array<ScheduledTask & {
     id: number; isSeasonal: number;
   }>;
 
@@ -88,7 +88,9 @@ export function noteBrokenStreak(userId: number, streak: number, lastCounted: st
  * A chore logged late for `day` ("Done earlier…", ENH-7) counts for the streak on that day:
  * - after the streak's last counted day, the streak goes on (or restarts) as a chore on that day would have;
  * - inside the gap that last broke the streak, once no missed day is left in it, the old streak comes back,
- *   with the days filled in and the days counted since.
+ *   with the days filled in and the days counted since;
+ * - on a day inside the current run that had no counted chore yet, the streak is one day longer.
+ * A chore a parent approves on a later day counts the same way, for the day it was done (BUG-29).
  */
 export function lateStreak(userId: number, day: string): void {
   if (resolveVacation(getGlobalVacation(), getUserVacation(userId)).isVacation) return;
@@ -105,9 +107,19 @@ export function lateStreak(userId: number, day: string): void {
     return;
   }
   const { brokenStreak: old, brokenStreakAfter: after, brokenStreakOn: restarted } = u;
-  if (!old || !after || !restarted || day <= after || day >= restarted) return;
-  if (missedStreakDays(userId, after, addDays(restarted, -1), 1).length > 0) return;
   const doneDay = daySql('completedAt');
+  if (!old || !after || !restarted || day <= after || day >= restarted) {
+    // A day inside the current run that hasn't counted yet (its only chore was waiting for a parent, or
+    // is logged now): one more day. Days before the run's first day belong to a streak that's gone.
+    if (restarted && day < restarted) return;
+    const thatDay = (db.prepare(`SELECT COUNT(*) AS n FROM task_completions WHERE userId = ? AND status = 'approved' AND ${doneDay} = ?`)
+      .get(userId, day) as { n: number }).n;
+    if (thatDay !== 1 || missedStreakDays(userId, day, addDays(u.lastActiveDate, -1), 1).length > 0) return;
+    db.prepare('UPDATE users SET currentStreak = currentStreak + 1 WHERE id = ?').run(userId);
+    earnShieldAt(userId, u.currentStreak + 1);
+    return;
+  }
+  if (missedStreakDays(userId, after, addDays(restarted, -1), 1).length > 0) return;
   const filled = (db.prepare(
     `SELECT COUNT(DISTINCT ${doneDay}) AS n FROM task_completions
      WHERE userId = ? AND status = 'approved' AND ${doneDay} > ? AND ${doneDay} < ?`
@@ -137,12 +149,13 @@ export function earnShieldAt(userId: number, streak: number): boolean {
  */
 export function settleStreak(userId: number, now: Date = new Date()): number {
   if (!shieldsOn()) return 0;
+  // First: a vacation that has just ended moves the last counted day past the days away
+  if (resolveVacation(getGlobalVacation(), getUserVacation(userId)).isVacation) return 0;
   const user = db.prepare('SELECT currentStreak, lastActiveDate, streakShields FROM users WHERE id = ?').get(userId) as
     { currentStreak: number; lastActiveDate: string | null; streakShields: number } | undefined;
   if (!user || user.streakShields < 1 || user.currentStreak < 1 || !user.lastActiveDate) return 0;
   const yesterday = addDays(localDateStr(now), -1);
   if (user.lastActiveDate >= yesterday) return 0;
-  if (resolveVacation(getGlobalVacation(), getUserVacation(userId)).isVacation) return 0;
   const missed = missedStreakDays(userId, user.lastActiveDate, yesterday, user.streakShields + 1);
   if (missed.length === 0 || missed.length > user.streakShields) return 0;
 

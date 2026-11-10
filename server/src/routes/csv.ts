@@ -4,7 +4,7 @@ import { AuthRequest, authMiddleware } from '../middleware/auth';
 import { ensureAdmin } from '../utils/adminHelpers';
 import { parseCsv, toCsv, type CsvRecord } from '../utils/csv';
 import { createTask, updateTask } from './tasks';
-import { MAX_TIMER_MINUTES } from '../utils/schedule';
+import { MAX_TIMER_MINUTES, isRealDay } from '../utils/schedule';
 import { MAX_STEP_LENGTH, MAX_STEPS, parseSteps, readSteps } from '../utils/focus';
 import { tr } from '../utils/i18n';
 
@@ -16,7 +16,7 @@ import { tr } from '../utils/i18n';
 const router = Router();
 router.use(authMiddleware);
 
-export const TASK_COLUMNS = ['room', 'task', 'notes', 'every_days', 'effort', 'coins', 'on_demand', 'show_on_home', 'early', 'assignees', 'icon', 'timer_minutes', 'steps'];
+export const TASK_COLUMNS = ['room', 'task', 'notes', 'every_days', 'effort', 'coins', 'on_demand', 'show_on_home', 'early', 'assignees', 'icon', 'timer_minutes', 'steps', 'one_time', 'do_by'];
 export const REWARD_COLUMNS = ['title', 'description', 'cost', 'active', 'category'];
 const MAX_ROWS = 5000;
 
@@ -24,7 +24,7 @@ const MAX_ROWS = 5000;
 const ALIASES: Record<string, string> = {
   name: 'task', task_name: 'task', room_name: 'room',
   frequency: 'every_days', frequency_days: 'every_days', every: 'every_days', days: 'every_days',
-  custom_coins: 'coins', anytime: 'on_demand', ondemand: 'on_demand',
+  custom_coins: 'coins', anytime: 'on_demand', ondemand: 'on_demand', onetime: 'one_time', todo: 'one_time', to_do: 'one_time', doby: 'do_by', due: 'do_by',
   home: 'show_on_home', show_in_dashboard: 'show_on_home', allow_early: 'early', early_completion: 'early',
   assignee: 'assignees', owner: 'assignees', owners: 'assignees', who: 'assignees', icon_key: 'icon',
   timer: 'timer_minutes', timer_min: 'timer_minutes', minutes: 'timer_minutes',
@@ -107,7 +107,7 @@ router.get('/tasks', (req: AuthRequest, res: Response) => {
   const rows = rooms.flatMap((room) => tasks.filter((t) => t.roomId === room.id).map((t) => [
     room.name, t.name, t.notes ?? '', t.frequencyDays, t.effort, t.customCoins ?? '',
     yesNo(t.onDemand), yesNo(t.showInDashboard), yesNo(t.allowEarlyCompletion), (assignees.get(t.id) || []).join('+'), t.iconKey ?? '',
-    t.timerMinutes ?? '', parseSteps(t.steps).join('\n'),
+    t.timerMinutes ?? '', parseSteps(t.steps).join('\n'), yesNo(t.oneTime), t.doBy ?? '',
   ]));
   csvFile(res, 'tidyquest-tasks.csv', toCsv(TASK_COLUMNS, rows));
 });
@@ -200,6 +200,18 @@ function planTaskImport(csv: unknown, lang: string) {
         else v.steps = steps.value ? JSON.parse(steps.value) : null;
       }
 
+      // A to-do (done once, then gone) and the day it should be done by
+      if (has('one_time')) {
+        const b = parseBool(cell(r, 'one_time'));
+        if (b === null) fail('bad_boolean', msg('errBadBoolean', { value: cell(r, 'one_time').trim() }), 'one_time', cell(r, 'one_time').trim());
+        v.oneTime = b;
+      }
+      if (has('do_by')) {
+        const raw = cell(r, 'do_by').trim();
+        if (raw !== '' && !isRealDay(raw)) fail('bad_date', msg('errBadDate', { value: raw }), 'do_by', raw);
+        v.doBy = raw || null;
+      }
+
       const roomMatches = rooms.filter((rm) => norm(rm.name) === norm(roomName));
       if (roomMatches.length > 1) fail('ambiguous', msg('errAmbiguousRoom', { n: roomMatches.length, value: roomName }), 'room', roomName);
       const room = roomMatches[0];
@@ -243,6 +255,8 @@ function planTaskImport(csv: unknown, lang: string) {
         change('steps', parseSteps(t.steps).join(' / '), (v.steps ?? []).join(' / '));
       }
       if (v.timerMinutes !== undefined && v.timerMinutes !== (t.timerMinutes ?? null)) { body.timerMinutes = v.timerMinutes; change('timer_minutes', t.timerMinutes, v.timerMinutes); }
+      if (v.oneTime !== undefined && v.oneTime !== !!t.oneTime) { body.oneTime = v.oneTime; change('one_time', yesNo(t.oneTime), yesNo(v.oneTime)); }
+      if (v.doBy !== undefined && v.doBy !== (t.doBy ?? null)) { body.doBy = v.doBy; change('do_by', t.doBy, v.doBy); }
       result.action = result.changes.length > 0 ? 'update' : 'unchanged';
       if (result.changes.length > 0) ops.push({ line: r.line, kind: 'update', taskId: t.id, body });
     } catch (e) {

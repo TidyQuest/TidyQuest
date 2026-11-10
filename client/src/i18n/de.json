@@ -393,7 +393,8 @@
       "takeBackHint": "Aus Versehen auf Erledigt getippt? Nimm es zurück, bevor ein Elternteil entscheidet.",
       "importInvalid": "Das ist keine TidyQuest-Sicherung: Sie enthält keine Personen oder Räume.",
       "importFailed": "Import fehlgeschlagen: {error}",
-      "importNotIn": "Diese Sicherung führt dich ({name}) nicht als Admin, ein Import würde dich aussperren. Melde dich als Admin an, der in der Sicherung steht, und versuche es erneut."
+      "importNotIn": "Diese Sicherung führt dich ({name}) nicht als Admin, ein Import würde dich aussperren. Melde dich als Admin an, der in der Sicherung steht, und versuche es erneut.",
+      "notYetDue": "Das ist noch nicht fällig."
     },
     "admin": {
       "whoDidThisTask": "Wer hat diese Aufgabe erledigt?",
@@ -1250,7 +1251,8 @@
       "errBadCost": "Der Preis muss eine ganze Zahl von mindestens 1 sein (erhalten: „{value}“)",
       "errAmbiguousReward": "{n} Belohnungen heißen „{value}“; benenne zuerst eine um",
       "errNewRewardCost": "Eine neue Belohnung braucht einen Preis",
-      "errNotSaved": "Zeile {line} konnte nicht gespeichert werden ({error}), daher wurde nichts geändert."
+      "errNotSaved": "Zeile {line} konnte nicht gespeichert werden ({error}), daher wurde nichts geändert.",
+      "errBadDate": "„{value}“ ist kein Datum (bitte JJJJ-MM-TT, z. B. 2027-03-01)"
     },
     "rewardOrder": {
       "up": "Nach oben",

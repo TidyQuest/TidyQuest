@@ -343,6 +343,8 @@ function AppContent() {
         setTaskErrorMsg(t('repeat.limitReached'));
       } else if (msg === 'not_assigned') {
         setTaskErrorMsg(t('app.notAssigned'));
+      } else if (msg === 'not_yet_due') {
+        setTaskErrorMsg(t('app.notYetDue'));
       } else {
         setTaskErrorMsg(msg || t('common.error'));
       }

@@ -1,6 +1,7 @@
 import { todoCounts, todoRoomId } from '../utils/todoRoom';
 import { Router, Response } from 'express';
 import { pinnedTaskIds } from '../utils/homeSections';
+import { sharesFor } from '../utils/shares';
 import db from '../database';
 import { AuthRequest, authMiddleware } from '../middleware/auth';
 import { isSeasonalNow, scheduleFields, taskHealth } from '../utils/schedule';
@@ -221,7 +222,7 @@ router.get('/', (req: AuthRequest, res: Response) => {
         myPendingId: myPendingByTask.get(t.id)?.lastId ?? null,
         myRepeatCount: myRepeatCounts.get(t.id) || 0,
         assignmentMode: mode,
-        sharedCompletions: (mode === 'shared' || mode === 'custom') ? (sharedCompletionsByTask.get(t.id) || []) : undefined,
+        sharedCompletions: (mode === 'shared' || mode === 'custom') ? sharesFor(t) : undefined,
         health: (() => {
           const taskVac = effectiveAssignedUserIds.length === 1
             ? resolveVacation(vacation, getUserVacation(effectiveAssignedUserIds[0]))
@@ -358,7 +359,7 @@ router.put('/:id', (req: AuthRequest, res: Response) => {
       if (!targetUser) return res.status(400).json({ error: 'User not found' });
 
       // Check for tasks in this room already assigned to DIFFERENT users
-      const roomTasks = db.prepare('SELECT id, name FROM tasks WHERE roomId = ?').all(req.params.id) as { id: number; name: string }[];
+      const roomTasks = db.prepare('SELECT id, name FROM tasks WHERE roomId = ? AND deletedAt IS NULL AND archivedAt IS NULL').all(req.params.id) as { id: number; name: string }[];
       if (roomTasks.length > 0) {
         const taskIds = roomTasks.map(t => t.id);
         const conflicting = db.prepare(
@@ -399,7 +400,7 @@ router.put('/:id', (req: AuthRequest, res: Response) => {
   // If a new assignedUserId was just set, assign all tasks in this room to that user
   if ('assignedUserId' in req.body && req.body.assignedUserId != null) {
     const newUserId = Number(req.body.assignedUserId);
-    const roomTasks = db.prepare('SELECT id FROM tasks WHERE roomId = ?').all(req.params.id) as { id: number }[];
+    const roomTasks = db.prepare('SELECT id FROM tasks WHERE roomId = ? AND deletedAt IS NULL AND archivedAt IS NULL').all(req.params.id) as { id: number }[];
     const insertAssignee = db.prepare('INSERT OR IGNORE INTO task_assignees (taskId, userId, coinPercentage) VALUES (?, ?, 0)');
     for (const t of roomTasks) {
       insertAssignee.run(t.id, newUserId);

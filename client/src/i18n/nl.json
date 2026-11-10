@@ -393,7 +393,8 @@
       "takeBackHint": "Per ongeluk op Klaar getikt? Neem het terug voordat een ouder beslist.",
       "importInvalid": "Dit is geen TidyQuest-back-up: er staan geen personen of kamers in.",
       "importFailed": "Importeren mislukt: {error}",
-      "importNotIn": "Deze back-up heeft jou ({name}) niet als Admin, dus importeren zou je buitensluiten. Log in als een Admin die in de back-up staat en probeer het opnieuw."
+      "importNotIn": "Deze back-up heeft jou ({name}) niet als Admin, dus importeren zou je buitensluiten. Log in als een Admin die in de back-up staat en probeer het opnieuw.",
+      "notYetDue": "Dit hoeft nog niet."
     },
     "admin": {
       "whoDidThisTask": "Wie heeft dit klusje gedaan?",
@@ -1250,7 +1251,8 @@
       "errBadCost": "De prijs moet een heel getal van minstens 1 zijn (kreeg ‘{value}’)",
       "errAmbiguousReward": "{n} beloningen heten ‘{value}’; geef er eerst één een andere naam",
       "errNewRewardCost": "Een nieuwe beloning heeft een prijs nodig",
-      "errNotSaved": "Regel {line} kon niet worden opgeslagen ({error}), dus er is niets veranderd."
+      "errNotSaved": "Regel {line} kon niet worden opgeslagen ({error}), dus er is niets veranderd.",
+      "errBadDate": "‘{value}’ is geen datum (gebruik JJJJ-MM-DD, bijvoorbeeld 2027-03-01)"
     },
     "rewardOrder": {
       "up": "Omhoog",

@@ -328,6 +328,11 @@ const NEW_COLUMNS: string[] = [
   `ALTER TABLE users ADD COLUMN canLogIn INTEGER NOT NULL DEFAULT 1`,
   // The parent who bought this reward for someone (ENH-16); NULL = the person bought it themselves
   `ALTER TABLE reward_redemptions ADD COLUMN boughtBy INTEGER`,
+  // Shared chores (BUG-26, utils/shares.ts): shares done before this moment no longer count (set by Reset to
+  // dirty and the health slider, so everyone can do theirs again).
+  `ALTER TABLE tasks ADD COLUMN sharesResetAt TEXT`,
+  // The last-done date the latest completion replaced, so undoing that completion puts it back (BUG-46)
+  `ALTER TABLE tasks ADD COLUMN prevLastCompletedAt TEXT`,
 ];
 
 /** Fork tables included in backup export/import: key in the backup file -> table. */

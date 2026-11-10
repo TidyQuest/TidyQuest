@@ -394,8 +394,8 @@ export function RoomDetail({ room, language, isAdmin, currentUserId, currentUser
       return { disabled: true, label: t(task.repeatPeriod === 'day' ? 'repeat.doneToday' : 'repeat.doneThisWeek') };
     }
 
-    // Rotating mode: disabled if it's not the current user's turn
-    if (task.assignmentMode === 'rotating' && task.rotationCurrentUserId !== undefined) {
+    // Rotating mode: disabled if it's not the current user's turn (parents can do it on anyone's turn, as on Home)
+    if (task.assignmentMode === 'rotating' && task.rotationCurrentUserId != null && currentUserRole !== 'admin' && currentUserRole !== 'member') {
       if (currentUserId !== undefined && task.rotationCurrentUserId !== currentUserId) {
         const turnUser = task.assignedUsers?.find(u => u.id === task.rotationCurrentUserId);
         return { disabled: true, label: t('roomDetail.waitingForTurn').replace('{name}', turnUser?.displayName || '?') };
@@ -532,7 +532,7 @@ export function RoomDetail({ room, language, isAdmin, currentUserId, currentUser
     setNewFreqValue(7);
     setNewFreqUnit('days');
     setNewTaskEffort(2);
-    setNewTaskHealth(100);
+    setNewTaskHealth(0);
     setNewTaskIconKey('sparkle');
     setNewAssignmentType('none');
     setNewAssignmentUserIds([]);
@@ -1423,7 +1423,7 @@ export function RoomDetail({ room, language, isAdmin, currentUserId, currentUser
                 const addSaveDisabled = newAssignmentMode === 'custom' && addCustomTotal !== 100;
                 return (
                   <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
-                    <button onClick={() => { setShowAddTask(false); setNewTaskName(''); setNewTaskNotes(''); setNewTaskHealth(100); setNewTaskIconKey('sparkle'); setNewAssignmentType('none'); setNewAssignmentUserIds([]); setNewAssignmentMode('first'); setNewAssignmentPercentages({}); }}
+                    <button onClick={() => { setShowAddTask(false); setNewTaskName(''); setNewTaskNotes(''); setNewTaskHealth(0); setNewTaskIconKey('sparkle'); setNewAssignmentType('none'); setNewAssignmentUserIds([]); setNewAssignmentMode('first'); setNewAssignmentPercentages({}); }}
                       className="tq-btn tq-btn-secondary tq-btn-sm">{t('common.cancel')}</button>
                     <button onClick={addTask} disabled={addSaveDisabled} className="tq-btn tq-btn-primary tq-btn-sm"
                       style={{ opacity: addSaveDisabled ? 0.5 : 1 }}>{t('roomDetail.addTask')}</button>
