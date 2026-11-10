@@ -14,6 +14,8 @@ import { notifyCoinsAdjusted } from '../utils/notifyMessages';
 import { NOTIFICATION_KINDS, NotificationTypeSettings, sendTelegramMessageDetailed, sendNtfyMessageDetailed } from '../utils/notifications';
 import { pushOn } from '../utils/push';
 import { ensureAdmin, getCoinsByEffortConfig, getGlobalVacation, isHidePrivateRoomsEnabled, isStrictModeEnabled } from '../utils/adminHelpers';
+import { endDueVacations, endFamilyVacation, endPersonVacation } from '../utils/vacation';
+import { isRealDay } from '../utils/schedule';
 import { realignWeeklyGoals, syncPrimaryGoal } from '../utils/goals';
 import { UNLOCKABLE_THEMES, canUse } from '../utils/unlocks';
 import { currentLocalWeek, weekStartDay } from '../utils/periods';
@@ -348,8 +350,7 @@ router.put('/:id/settings', (req: AuthRequest, res: Response) => {
       db.prepare('UPDATE users SET isVacationMode = 1, vacationStartDate = ? WHERE id = ?')
         .run(new Date().toISOString(), userId);
     } else if (!isVacationMode && user.isVacationMode) {
-      db.prepare('UPDATE users SET isVacationMode = 0, vacationStartDate = NULL WHERE id = ?')
-        .run(userId);
+      endPersonVacation(userId);
     }
   }
 
@@ -482,22 +483,23 @@ router.put('/:id/vacation', (req: AuthRequest, res: Response) => {
   if (!target) return res.status(404).json({ error: 'User not found' });
 
   const { isVacationMode, vacationEndDate } = req.body as { isVacationMode?: boolean; vacationEndDate?: string | null };
+  if (vacationEndDate && !isRealDay(String(vacationEndDate))) return res.status(400).json({ error: 'invalid_return_date' });
 
   // Handle vacation toggle
   if (isVacationMode !== undefined) {
     if (isVacationMode && !target.isVacationMode) {
-      db.prepare('UPDATE users SET isVacationMode = 1, vacationStartDate = ? WHERE id = ?')
+      db.prepare('UPDATE users SET isVacationMode = 1, vacationStartDate = ?, vacationEndDate = NULL WHERE id = ?')
         .run(new Date().toISOString(), targetId);
     } else if (!isVacationMode && target.isVacationMode) {
-      db.prepare('UPDATE users SET isVacationMode = 0, vacationStartDate = NULL, vacationEndDate = NULL WHERE id = ?')
-        .run(targetId);
+      endPersonVacation(targetId);
     }
   }
 
-  // Handle vacation end date (independent update)
+  // Handle vacation end date (independent update): the day they're back, over from the start of it
   if (vacationEndDate !== undefined) {
-    db.prepare('UPDATE users SET vacationEndDate = ? WHERE id = ?')
-      .run(vacationEndDate || null, targetId);
+    db.prepare('UPDATE users SET vacationEndDate = ? WHERE id = ? AND (isVacationMode = 1 OR ? IS NULL)')
+      .run(vacationEndDate || null, targetId, vacationEndDate || null);
+    endDueVacations();
   }
 
   const updated = db.prepare(`SELECT ${USER_SELECT} FROM users WHERE id = ?`).get(targetId);
@@ -871,22 +873,22 @@ router.put('/vacation-config', (req: AuthRequest, res: Response) => {
   if (!ensureAdmin(req.userId)) return res.status(403).json({ error: 'Admin only' });
 
   const { vacationMode, vacationEndDate } = req.body as { vacationMode?: boolean; vacationEndDate?: string | null };
+  if (vacationEndDate && !isRealDay(String(vacationEndDate))) return res.status(400).json({ error: 'invalid_return_date' });
 
   if (vacationMode !== undefined) {
     const currentMode = (db.prepare("SELECT value FROM app_settings WHERE key = 'vacationMode'").get() as any)?.value;
     if (vacationMode && currentMode !== '1') {
       db.prepare("UPDATE app_settings SET value = '1', updatedAt = datetime('now') WHERE key = 'vacationMode'").run();
       db.prepare("UPDATE app_settings SET value = ?, updatedAt = datetime('now') WHERE key = 'vacationStartDate'").run(new Date().toISOString());
+      db.prepare("UPDATE app_settings SET value = '', updatedAt = datetime('now') WHERE key = 'vacationEndDate'").run(); // no return date left from last time
     } else if (!vacationMode) {
-      db.prepare("UPDATE app_settings SET value = '0', updatedAt = datetime('now') WHERE key = 'vacationMode'").run();
-      db.prepare("UPDATE app_settings SET value = '', updatedAt = datetime('now') WHERE key = 'vacationStartDate'").run();
-      db.prepare("UPDATE app_settings SET value = '', updatedAt = datetime('now') WHERE key = 'vacationEndDate'").run();
+      endFamilyVacation();
     }
   }
 
   if (vacationEndDate !== undefined) {
     db.prepare("UPDATE app_settings SET value = ?, updatedAt = datetime('now') WHERE key = 'vacationEndDate'")
-      .run(vacationEndDate ? new Date(vacationEndDate).toISOString() : '');
+      .run(vacationEndDate || ''); // the day itself: it ends when that day starts here, not at midnight UTC (BUG-45)
   }
 
   const v = getGlobalVacation();

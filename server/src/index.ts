@@ -34,6 +34,7 @@ import { proxyHint, trustProxySetting } from './utils/proxy';
 import { sourceUrl } from './utils/source';
 import { closeOldTeamups } from './utils/teamups';
 import { settleAllStreaks } from './utils/streaks';
+import { endDueVacations } from './utils/vacation';
 import { snapshotOverdueChores } from './utils/insights';
 import { resumeDuePauses } from './utils/pause';
 import { expireTrash } from './utils/trash';
@@ -144,6 +145,7 @@ export const backgroundJobs: Job[] = [
   sendCoinBoostNotificationsIfNeeded,
   runScheduledNotifications,
   closeOldTeamups,
+  endDueVacations, // before the streaks are settled: the days away aren't missed days
   settleAllStreaks,
   snapshotOverdueChores,
   resumeDuePauses,

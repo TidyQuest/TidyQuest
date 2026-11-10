@@ -34,7 +34,7 @@ import { TimeZonePicker } from '../shared/TimeZonePicker';
 import { DeleteFamily, FamilyCodeCard, SignInEmailCard } from '../shared/HostedAccount';
 import { LegalLinks, WithLinks } from '../shared/LegalLinks';
 import { hostedError, limitError, useHosted, useSourceUrl, type HostedAccount } from '../../utils/hosted';
-import { dateStr, endOfHomeDay } from '../../utils/clock';
+import { dateStr, endOfHomeDay, startOfDay } from '../../utils/clock';
 import { rewardDescText, rewardTextToSave, rewardTitleText } from '../../utils/presetRewards';
 
 interface FamilyUser {
@@ -211,6 +211,8 @@ export function Settings({
   const [coinAdjust, setCoinAdjust] = useState<Record<number, string>>({});
   const [coinAdjustMsg, setCoinAdjustMsg] = useState<Record<number, string>>({});
   const [memberVacation, setMemberVacation] = useState<Record<number, boolean>>({});
+  // Return dates picked here (the family list isn't reloaded after each change)
+  const [memberReturn, setMemberReturn] = useState<Record<number, string | null>>({});
   const [memberParticipant, setMemberParticipant] = useState<Record<number, boolean>>({});
   const [memberView, setMemberView] = useState<Record<number, { taskView: 'all' | 'mine' | 'mineOnly'; kidMode: boolean; focusMode: FocusModeSetting }>>({});
   const [hidePrivateRooms, setHidePrivateRooms] = useState(true);
@@ -860,7 +862,7 @@ export function Settings({
                     type="date"
                     className="tq-input-compact"
                     value={vacationEndDate ? vacationEndDate.slice(0, 10) : ''}
-                    min={dateStr()}
+                    min={dateStr(startOfDay(new Date(), 1))}
                     onChange={async (e) => {
                       const val = e.target.value || null;
                       setVacationEndDate(val);
@@ -876,6 +878,7 @@ export function Settings({
                 <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--warm-text-secondary)', marginBottom: 2 }}>{t('settings.perUserVacation')}</div>
                 {family.filter((u) => u.role !== 'admin').map((u) => {
                   const isOn = !!(memberVacation[u.id] ?? u.isVacationMode);
+                  const returnDate = u.id in memberReturn ? memberReturn[u.id] : (u.vacationEndDate ?? null);
                   return (
                     <div key={u.id} style={{ padding: '8px 10px', borderRadius: 12, backgroundColor: 'var(--warm-bg-subtle)', border: '1px solid var(--warm-border)' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -890,6 +893,7 @@ export function Settings({
                           setMemberVacation((prev) => ({ ...prev, [u.id]: val }));
                           try {
                             await api.updateUserVacation(u.id, { isVacationMode: val });
+                            setMemberReturn((prev) => ({ ...prev, [u.id]: null })); // a new vacation starts without one
                           } catch {
                             setMemberVacation((prev) => ({ ...prev, [u.id]: !val }));
                           }
@@ -903,13 +907,18 @@ export function Settings({
                           <input
                             type="date"
                             className="tq-input-compact"
-                            value={u.vacationEndDate ? u.vacationEndDate.slice(0, 10) : ''}
-                            min={dateStr()}
+                            value={returnDate ? returnDate.slice(0, 10) : ''}
+                            min={dateStr(startOfDay(new Date(), 1))}
                             onChange={async (e) => {
                               const val = e.target.value || null;
+                              setMemberReturn((prev) => ({ ...prev, [u.id]: val }));
                               try {
-                                await api.updateUserVacation(u.id, { vacationEndDate: val });
-                              } catch { /* ignore */ }
+                                const saved = await api.updateUserVacation(u.id, { vacationEndDate: val });
+                                // Today or earlier: they're back, so the vacation is over
+                                if (saved && !saved.isVacationMode) setMemberVacation((prev) => ({ ...prev, [u.id]: false }));
+                              } catch {
+                                setMemberReturn((prev) => ({ ...prev, [u.id]: returnDate })); // not saved: show what is
+                              }
                             }}
                             style={{ fontSize: 11 }}
                           />

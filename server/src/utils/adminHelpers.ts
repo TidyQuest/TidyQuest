@@ -1,22 +1,30 @@
 import db from '../database';
 import { DEFAULT_COINS_BY_EFFORT, normalizeCoinsByEffortConfig } from './health';
+import { endFamilyVacation, endPersonVacation, returnDay, returnMoment } from './vacation';
 
 export function getGlobalVacation(): { isVacation: boolean; startDate: string | null; endDate: string | null } {
   const mode = (db.prepare("SELECT value FROM app_settings WHERE key = 'vacationMode'").get() as any)?.value;
   const startDate = (db.prepare("SELECT value FROM app_settings WHERE key = 'vacationStartDate'").get() as any)?.value || null;
-  const endDate = (db.prepare("SELECT value FROM app_settings WHERE key = 'vacationEndDate'").get() as any)?.value || null;
-  if (mode === '1' && endDate && new Date(endDate) < new Date()) {
-    db.prepare("UPDATE app_settings SET value = '0', updatedAt = datetime('now') WHERE key = 'vacationMode'").run();
-    db.prepare("UPDATE app_settings SET value = '', updatedAt = datetime('now') WHERE key = 'vacationStartDate'").run();
-    db.prepare("UPDATE app_settings SET value = '', updatedAt = datetime('now') WHERE key = 'vacationEndDate'").run();
+  // The return date is a day ('YYYY-MM-DD'): the vacation is over from the start of it (utils/vacation.ts)
+  const endDate = returnDay((db.prepare("SELECT value FROM app_settings WHERE key = 'vacationEndDate'").get() as any)?.value);
+  const back = returnMoment(endDate);
+  if (mode === '1' && back && back.getTime() <= Date.now()) {
+    endFamilyVacation(back);
     return { isVacation: false, startDate: null, endDate: null };
   }
-  return { isVacation: mode === '1', startDate: startDate || null, endDate: endDate || null };
+  return { isVacation: mode === '1', startDate: startDate || null, endDate };
 }
 
 export function getUserVacation(userId: number): { isVacation: boolean; startDate: string | null } {
-  const user = db.prepare('SELECT isVacationMode, vacationStartDate FROM users WHERE id = ?').get(userId) as { isVacationMode: number; vacationStartDate: string | null } | undefined;
+  const user = db.prepare('SELECT isVacationMode, vacationStartDate, vacationEndDate FROM users WHERE id = ?').get(userId) as
+    { isVacationMode: number; vacationStartDate: string | null; vacationEndDate: string | null } | undefined;
   if (!user) return { isVacation: false, startDate: null };
+  // Their return day has come (BUG-30)
+  const back = user.isVacationMode === 1 ? returnMoment(user.vacationEndDate) : null;
+  if (back && back.getTime() <= Date.now()) {
+    endPersonVacation(userId, back);
+    return { isVacation: false, startDate: null };
+  }
   return { isVacation: user.isVacationMode === 1, startDate: user.vacationStartDate || null };
 }
 
