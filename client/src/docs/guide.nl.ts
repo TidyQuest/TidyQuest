@@ -114,7 +114,7 @@ export const GUIDE_NL: GuideSection[] = [
         'Klusjesweergave: Alle (ze kiezen zelf), Begint bij Mijn klusjes, of Alleen eigen (vergrendeld).',
         'Kindermodus: grotere knoppen, minder kaarten, munten en doel vooraan.',
         'Thema en feestdagkleuren volgen de persoon naar elk apparaat (ze kunnen die aanpassen in Profiel).',
-        'Vakantie per gezinslid: beschermt de streak en bevriest de gezondheid van de klusjes zolang iemand weg is.',
+        'Vakantie per gezinslid: beschermt de streak en bevriest de gezondheid van de klusjes zolang iemand weg is. Met een Terugkomst datum stopt die vanzelf op die ochtend.',
         'Munten aanpassen (Gezinslid beheren): munten erbij of eraf halen, met een reden. Het getal is een verandering, geen nieuw saldo: 10 voegt 10 toe, -10 haalt er 10 af. Werkt ook voor ouders, jezelf inbegrepen. Details in "Munten, beloningen en doelen" → Munten aanpassen.',
         'Wachtwoord: een ouder kan een nieuw wachtwoord instellen als iemand het vergeten is. Diegene wordt dan op elk apparaat uitgelogd en logt weer in met het nieuwe.',
       ] },
@@ -208,7 +208,7 @@ export const GUIDE_NL: GuideSection[] = [
       { ul: [
         'Niemand toegewezen: iedereen. Wie het eerst klaar is krijgt de munten ("wie het eerst komt, het eerst maalt").',
         'Aan sommige mensen toegewezen: alleen zij kunnen het doen.',
-        'Samen delen: elke toegewezen persoon doet zijn deel en krijgt een gelijk deel.',
+        'Samen delen: elke toegewezen persoon doet zijn deel en krijgt een gelijk deel. Het klusje is weer schoon zodra iedereen zijn deel heeft gedaan, op welke dag dan ook. Tot het weer aan de beurt is, kan ieder zijn deel maar één keer doen.',
         'Eigen verdeling: elke toegewezen persoon krijgt een vast percentage.',
         'Om de beurt: beurtelings, per voltooiing of per kalenderweek.',
       ] },
@@ -355,7 +355,7 @@ export const GUIDE_NL: GuideSection[] = [
       ] },
       { h: 'Reeksschilden' },
       { ul: [
-        'Een reeks telt de dagen op rij met minstens één taak. Na elke 7 dagen op rij verdien je een 🛡️ schild; je kunt er 2 bewaren.',
+        'Een reeks telt de dagen op rij met minstens één taak. Na elke 7 dagen op rij verdien je een 🛡️ schild; je kunt er 2 bewaren. Een klusje dat op goedkeuring van een ouder wacht, telt voor de dag waarop het is gedaan.',
         'Koop een schild op de reekskaart van Home (standaard 25 munten; ouders stellen de prijs in bij Instellingen → Functies).',
         'Een gemiste dag gebruikt vanzelf een schild, net na middernacht, en de reeks gaat door (de gemiste dag telt niet mee). Twee gemiste dagen vragen twee schilden; zijn er te weinig, dan wordt er geen gebruikt en begint de reeks opnieuw.',
         'Een taak die wacht op goedkeuring van een ouder telt voor zijn dag.',
@@ -439,7 +439,7 @@ export const GUIDE_NL: GuideSection[] = [
       { ul: [
         'Instellingen → Privacy & Gegevens → Exporteren: een volledige JSON-back-up. Bewaar er een voor je grote wijzigingen doet.',
         'Importeren zet een back-up terug en VERVANGT alles. Wie al een account op deze server heeft (zelfde gebruikersnaam), houdt het huidige wachtwoord. Wie nieuw is op deze server krijgt een willekeurig wachtwoord, dus stel daarna hun wachtwoorden in bij Gezinsleden. Je moet als Admin in de back-up staan (zelfde gebruikersnaam), anders wordt het importeren geweigerd. Sommige apparaten worden daarna uitgelogd; log daar opnieuw in met hetzelfde wachtwoord.',
-        'Instellingen → Spreadsheets: download klusjes of beloningen, bewerk ze in een spreadsheetprogramma en laad ze weer terug. Je ziet eerst een voorbeeld en er wordt niets verwijderd.',
+        'Instellingen → Spreadsheets: download klusjes of beloningen, bewerk ze in een spreadsheetprogramma en laad ze weer terug. Je ziet eerst een voorbeeld en er wordt niets verwijderd. Eenmalige klusjes houden hun datum (kolommen one_time en do_by).',
         'Om een klusje te verwijderen open je het met Bewerken; Klusje verwijderen staat onderaan het formulier. Het gaat 30 dagen naar Instellingen → Onlangs verwijderd en kan daar worden teruggezet. Beloningen werken hetzelfde.',
         'Verwijderen haalt nooit munten weg en wist niet wat gedaan is: eerdere voltooiingen blijven onder de naam van het klusje zichtbaar in Activiteit, het Scorebord en de doelen, ook nadat het uit Onlangs verwijderd is.',
         'Een verwijderde beloning houdt zijn historie op dezelfde manier: wat eerder gekocht is, blijft onder zijn naam in Inzichten. Een aanvraag die nog wacht, blijft in Aangevraagde beloningen (onder de winkel), zodat een ouder hem nog kan goedkeuren of afwijzen; bij afwijzen komen de munten terug.',
@@ -624,6 +624,7 @@ export const GUIDE_NL: GuideSection[] = [
         ] },
         { q: 'Een streak brak terwijl we weg waren', a: [
           'Gebruik Vakantiemodus (het hele huis, Instellingen → Algemeen) of vakantie per gezinslid (Gezinsleden) voordat je vertrekt; het beschermt streaks en bevriest de gezondheid van klusjes.',
+          'Als een vakantie eindigt (uitgezet, of op de Terugkomst datum), gaan klusjes verder waar ze bij het begin waren: de dagen weg tellen niet als verwaarlozing. Reeksen gaan door vanaf de dag dat je terug bent.',
         ] },
         { q: 'Een schild heeft de reeks niet gered', a: [
           'Elke gemiste dag heeft een eigen schild nodig. Met minder schilden dan gemiste dagen wordt er geen gebruikt: de reeks begint opnieuw en de schilden blijven.',

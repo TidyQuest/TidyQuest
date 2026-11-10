@@ -9,6 +9,16 @@ What changed in each release, in plain language, newest first. Releases up to v0
 
 ## Unreleased
 
+### Changed
+
+- **Chores pick up where they left off after a vacation** (BUG-45). When Vacation Mode ends, for the family or for
+  one person, the days away no longer count as neglect: each chore is as clean or as dirty as it was the day the
+  vacation began, instead of the whole house opening red. One person's vacation does this for the chores that are
+  only theirs.
+- **A vacation's Return date is the day you're back**: the vacation ends at the start of that day in the family's
+  time zone, and the earliest date you can pick is tomorrow. The family's Return date used to end it the evening
+  before in the Americas, and picking today ended it at once.
+
 ### Fixed
 
 - **Custom coins can be set when adding a chore to a room.** The room page's Add form has the same Custom coins box
@@ -34,6 +44,34 @@ What changed in each release, in plain language, newest first. Releases up to v0
   were matched by the UTC date, so in the Americas two people finishing one in the late afternoon or evening could
   show as two entries, and one done just before midnight was merged with the next day's. They now follow the
   family's day, and so does who may see a shared chore's proof photo.
+- **Shared chores pay each person once, and turn clean when everyone has done their part** (BUG-26). Two kids
+  sharing a weekly chore who did it on different days left it overdue, and the first one could tap Done and get
+  their share again every day. Each person's share now counts until the chore is due again, whichever day they did
+  it, and someone who isn't on the chore doesn't count as one of its people.
+- **Rotating chores keep track of whose turn it is** (BUG-27). Editing one (even just its notes) no longer hands the
+  turn back to the first person, undoing a Done gives the turn back, and on a room page a parent can tap Done on a
+  kid's turn, as on Home.
+- **One chore can't be paid twice** (BUG-28). With Strict Mode, a chore that's waiting for a parent's approval can't
+  be done again by someone else, and "Done earlier…" refuses a day when the chore had already been done since.
+- **Taking back a waiting Done leaves the chore's due date alone** (BUG-46). With Strict Mode it could turn a chore
+  into "never done", or make it look not due.
+- **Streaks count the right days** (BUG-29):
+  - With Strict Mode, a chore counts on the day it was done, not the day a parent approves it. Approving five days
+    on Friday adds five days to the streak, not one.
+  - A vacation keeps the streak after it ends, and doesn't use up a shield.
+  - An Anytime quest no longer counts as "a chore was due", so a day with nothing scheduled can't break a streak.
+- **One person's vacation ends by itself on its Return date** (BUG-30), like the family's. The Return date box in
+  Settings → Family Members keeps the date you pick, and health never shows above 100% for chores done during a
+  vacation.
+- **Rescue Mission and Team-ups** (BUG-32): "Reset to dirty" opens today's Rescue Mission again, a new mission is
+  picked when its chore is deleted, paused or finished for good, and switching Team-ups off frees a chore a team
+  had claimed.
+- **Small chore and room fixes** (BUG-33, BUG-46):
+  - Every new chore on a room page starts dirty, not only the first one you add.
+  - Home's Scheduled card says "Tomorrow" for a chore due tomorrow morning, also late in the evening.
+  - Giving a room an owner leaves finished one-time chores and chores in the trash alone.
+  - The chores spreadsheet has `one_time` and `do_by` columns, so open to-dos no longer come back as weekly chores.
+  - A Do-by, Starts-on or Return date that doesn't exist (February 31) is refused instead of rolling into March.
 - **Importing a backup can no longer leave a phone signed in as someone else** (BUG-21). Logins are tied to each
   person's place in the family, and a backup can put someone else in that place, so a kid's tablet could open a
   parent's account after an import. Anyone whose place changed is now signed out once and signs in again with

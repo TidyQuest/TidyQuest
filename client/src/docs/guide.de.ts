@@ -114,7 +114,7 @@ export const GUIDE_DE: GuideSection[] = [
         'Aufgabenansicht: Alle (die Person wählt selbst), Startet bei Meine oder Nur eigene (gesperrt).',
         'Kindermodus: größere Knöpfe, weniger Karten, Münzen und Ziel ganz vorn.',
         'Design und Feiertagsfarben folgen der Person auf jedes Gerät (sie kann sie im Profil ändern).',
-        'Urlaub pro Mitglied: schützt die Serie und friert die Gesundheit der Aufgaben ein, solange die Person weg ist.',
+        'Urlaub pro Mitglied: schützt die Serie und friert die Gesundheit der Aufgaben ein, solange die Person weg ist. Mit einem Rückkehrdatum endet er an dem Morgen von selbst.',
         'Münzen anpassen (Mitglied verwalten): Münzen mit einem Grund hinzufügen oder abziehen. Die Zahl ist eine Änderung, kein neues Guthaben: 10 fügt 10 hinzu, -10 zieht 10 ab. Funktioniert auch bei Eltern, dich selbst eingeschlossen. Details unter „Münzen, Belohnungen und Ziele“ → Münzen anpassen.',
         'Passwort: Ein Elternteil kann ein neues festlegen, wenn jemand seins vergisst. Die Person wird dann auf allen Geräten abgemeldet und meldet sich mit dem neuen wieder an.',
       ] },
@@ -208,7 +208,7 @@ export const GUIDE_DE: GuideSection[] = [
       { ul: [
         'Niemand zugewiesen: alle. Wer sie zuerst erledigt, bekommt die Münzen („wer zuerst kommt, mahlt zuerst“).',
         'Einigen Personen zugewiesen: nur diese können sie machen.',
-        'Geteilt: Jede zugewiesene Person macht ihren Teil und bekommt einen gleich großen Anteil.',
+        'Geteilt: Jede zugewiesene Person macht ihren Teil und bekommt einen gleich großen Anteil. Die Aufgabe ist wieder sauber, sobald alle ihren Teil gemacht haben, egal an welchen Tagen. Bis sie wieder fällig ist, kann jede Person ihren Teil nur einmal machen.',
         'Benutzerdefiniert: Jede zugewiesene Person bekommt einen festen Prozentsatz.',
         'Rotation: abwechselnd, nach jeder Erledigung oder pro Kalenderwoche.',
       ] },
@@ -355,7 +355,7 @@ export const GUIDE_DE: GuideSection[] = [
       ] },
       { h: 'Serienschilde' },
       { ul: [
-        'Eine Serie zählt die Tage am Stück mit mindestens einer Aufgabe. Alle 7 Tage am Stück gibt es einen 🛡️ Schild; du kannst 2 behalten.',
+        'Eine Serie zählt die Tage am Stück mit mindestens einer Aufgabe. Alle 7 Tage am Stück gibt es einen 🛡️ Schild; du kannst 2 behalten. Eine Aufgabe, die auf die Bestätigung eines Elternteils wartet, zählt für den Tag, an dem sie erledigt wurde.',
         'Kauf einen Schild auf der Serienkarte der Startseite (standardmäßig 25 Münzen; Eltern legen den Preis in Einstellungen → Funktionen fest).',
         'Ein verpasster Tag verbraucht von selbst einen Schild, kurz nach Mitternacht, und die Serie läuft weiter (der verpasste Tag zählt nicht mit). Zwei verpasste Tage brauchen zwei Schilde; reichen sie nicht, wird keiner verbraucht und die Serie beginnt neu.',
         'Eine Aufgabe, die auf die Freigabe der Eltern wartet, zählt für ihren Tag.',
@@ -439,7 +439,7 @@ export const GUIDE_DE: GuideSection[] = [
       { ul: [
         'Einstellungen → Daten & Datenschutz → Exportieren: ein vollständiges JSON-Backup. Hebe vor großen Änderungen eins auf.',
         'Importieren stellt ein Backup wieder her und ERSETZT alles. Wer auf diesem Server schon ein Konto hat (gleicher Benutzername), behält das aktuelle Passwort. Wer neu auf diesem Server ist, bekommt ein zufälliges; lege deren Passwörter danach unter Familienmitglieder fest. Du musst im Backup als Admin stehen (gleicher Benutzername), sonst wird der Import abgelehnt. Manche Geräte werden danach abgemeldet; dort einfach mit demselben Passwort wieder anmelden.',
-        'Einstellungen → Tabellen: Lade Aufgaben oder Belohnungen herunter, bearbeite sie in einer beliebigen Tabellenkalkulation und lade sie wieder hoch. Du siehst vorher eine Vorschau, und nichts wird gelöscht.',
+        'Einstellungen → Tabellen: Lade Aufgaben oder Belohnungen herunter, bearbeite sie in einer beliebigen Tabellenkalkulation und lade sie wieder hoch. Du siehst vorher eine Vorschau, und nichts wird gelöscht. Einmalige Aufgaben behalten ihr Datum (Spalten one_time und do_by).',
         'Um eine Aufgabe zu löschen, öffne sie mit Bearbeiten; Aufgabe löschen steht unten im Formular. Sie landet 30 Tage lang unter Einstellungen → Zuletzt gelöscht und kann von dort wiederhergestellt werden. Belohnungen funktionieren genauso.',
         'Löschen nimmt nie Münzen weg und löscht nicht, was erledigt wurde: Frühere Erledigungen erscheinen weiter unter Aktivität, auf dem Board und in Zielen unter dem Namen der Aufgabe, auch nachdem sie aus Zuletzt gelöscht verschwunden ist.',
         'Eine gelöschte Belohnung behält ihren Verlauf genauso: Was schon gekauft wurde, bleibt unter ihrem Namen in der Auswertung. Eine noch offene Anfrage bleibt in Belohnungsanfragen (unter dem Katalog), sodass ein Elternteil sie noch freigeben oder ablehnen kann; beim Ablehnen gibt es die Münzen zurück.',
@@ -624,6 +624,7 @@ export const GUIDE_DE: GuideSection[] = [
         ] },
         { q: 'Eine Serie ist gerissen, während wir weg waren', a: [
           'Nutze vor der Abreise den Urlaubsmodus (ganzes Haus, Einstellungen → Allgemein) oder Urlaub pro Mitglied (Familienmitglieder); er schützt Serien und friert die Gesundheit der Aufgaben ein.',
+          'Wenn ein Urlaub endet (ausgeschaltet oder am Rückkehrdatum), machen die Aufgaben dort weiter, wo sie zu Beginn standen: Die Tage unterwegs zählen nicht als vernachlässigt. Serien laufen ab dem Tag der Rückkehr weiter.',
         ] },
         { q: 'Ein Schild hat die Serie nicht gerettet', a: [
           'Jeder verpasste Tag braucht seinen eigenen Schild. Mit weniger Schilden als verpassten Tagen wird keiner verbraucht: die Serie beginnt neu und die Schilde bleiben.',

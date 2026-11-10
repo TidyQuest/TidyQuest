@@ -114,7 +114,7 @@ export const GUIDE_IT: GuideSection[] = [
         'Vista compiti: Tutti (sceglie lui), Parte da I miei, o Solo i suoi (bloccata).',
         'Modalità bambino: pulsanti più grandi, meno schede, monete e obiettivo in primo piano.',
         'Tema e colori delle feste seguono la persona su ogni dispositivo (li può cambiare in Profilo).',
-        'Vacanza per membro: protegge la sua serie e congela la salute delle sue faccende mentre è via.',
+        'Vacanza per membro: protegge la sua serie e congela la salute delle sue faccende mentre è via. Con una Data di ritorno finisce da sola quella mattina.',
         'Regola monete (Gestisci membro): aggiungi o togli monete con un motivo. Il numero è una variazione, non un nuovo saldo: 10 aggiunge 10, -10 ne toglie 10. Vale anche per i genitori, te compreso. Dettagli in "Monete, ricompense e obiettivi" → Regolare le monete.',
         'Password: un genitore può impostarne una nuova se qualcuno dimentica la sua. La persona viene disconnessa da tutti i dispositivi e rientra con quella nuova.',
       ] },
@@ -208,7 +208,7 @@ export const GUIDE_IT: GuideSection[] = [
       { ul: [
         'Nessuno assegnato: chiunque. Il primo che la finisce prende le monete ("chi prima arriva vince").',
         'Assegnata ad alcune persone: solo loro possono farla.',
-        'Condivisa: ogni assegnato fa la sua parte e riceve una quota uguale.',
+        'Condivisa: ogni assegnato fa la sua parte e riceve una quota uguale. La faccenda torna pulita quando tutti hanno fatto la propria parte, in qualunque giorno. Finché non è di nuovo da fare, ognuno può fare la sua una volta sola.',
         'Divisione personalizzata: ogni assegnato riceve una percentuale stabilita.',
         'A rotazione: a turno, per completamento o per settimana di calendario.',
       ] },
@@ -355,7 +355,7 @@ export const GUIDE_IT: GuideSection[] = [
       ] },
       { h: 'Scudi della serie' },
       { ul: [
-        'Una serie conta i giorni di fila con almeno un’attività. Ogni 7 giorni di fila guadagni uno 🛡️ scudo; puoi tenerne 2.',
+        'Una serie conta i giorni di fila con almeno un’attività. Ogni 7 giorni di fila guadagni uno 🛡️ scudo; puoi tenerne 2. Una faccenda che aspetta l’approvazione di un genitore conta per il giorno in cui è stata fatta.',
         'Compra uno scudo sulla scheda della serie in Home (25 monete di base; i genitori scelgono il prezzo in Impostazioni → Funzioni).',
         'Un giorno saltato usa uno scudo da solo, subito dopo mezzanotte, e la serie continua (il giorno saltato non si somma). Due giorni saltati richiedono due scudi; se non bastano, non se ne usa nessuno e la serie ricomincia.',
         'Un’attività in attesa dell’approvazione di un genitore conta per il suo giorno.',
@@ -439,7 +439,7 @@ export const GUIDE_IT: GuideSection[] = [
       { ul: [
         'Impostazioni → Dati e privacy → Esporta: un backup JSON completo. Tienine uno prima dei grandi cambiamenti.',
         'Importa ripristina un backup e SOSTITUISCE tutto. Chi ha già un account su questo server (stesso nome utente) mantiene la password attuale. Chi è nuovo su questo server ne riceve una casuale, quindi imposta le loro password in Membri della famiglia dopo. Devi essere nel backup come Admin (stesso nome utente), altrimenti l’importazione viene rifiutata. Alcuni dispositivi potrebbero uscire dall’account dopo; basta accedere di nuovo con la stessa password.',
-        'Impostazioni → Fogli di calcolo: scarica faccende o ricompense, modificale in qualsiasi app di fogli di calcolo e ricaricale. Prima vedi un’anteprima e non viene eliminato nulla.',
+        'Impostazioni → Fogli di calcolo: scarica faccende o ricompense, modificale in qualsiasi app di fogli di calcolo e ricaricale. Prima vedi un’anteprima e non viene eliminato nulla. Le faccende da fare una volta sola mantengono la loro data (colonne one_time e do_by).',
         'Per eliminare una faccenda, aprila con Modifica; Elimina attività è in fondo al modulo. Va in Impostazioni → Eliminati di recente per 30 giorni e da lì si può ripristinare. Le ricompense funzionano allo stesso modo.',
         'Eliminare non toglie mai monete né cancella quanto fatto: i completamenti passati continuano a comparire in Attività, nella Classifica e negli obiettivi con il nome della faccenda, anche dopo che esce da Eliminati di recente.',
         'Una ricompensa eliminata conserva la sua cronologia allo stesso modo: ciò che è stato comprato resta in Statistiche con il suo nome. Una richiesta ancora in attesa resta in Richieste ricompensa (sotto il catalogo), così un genitore può ancora approvarla o rifiutarla; rifiutandola le monete tornano indietro.',
@@ -624,6 +624,7 @@ export const GUIDE_IT: GuideSection[] = [
         ] },
         { q: 'Una serie si è spezzata mentre eravamo via', a: [
           'Usa la Modalità vacanza (tutta la casa, Impostazioni → Generale) o la vacanza per membro (Membri della famiglia) prima di partire; protegge le serie e congela la salute delle faccende.',
+          'Quando una vacanza finisce (disattivata, o alla sua Data di ritorno), le faccende riprendono da dov’erano all’inizio: i giorni di assenza non contano come trascuratezza. Le serie continuano dal giorno del rientro.',
         ] },
         { q: 'Uno scudo non ha salvato la serie', a: [
           'Ogni giorno saltato richiede il suo scudo. Con meno scudi che giorni saltati, non se ne usa nessuno: la serie ricomincia e gli scudi restano.',

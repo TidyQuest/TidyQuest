@@ -114,7 +114,7 @@ export const GUIDE_FR: GuideSection[] = [
         'Affichage des tâches : Toutes (au choix), Commence sur les miennes, ou Seulement les siennes (verrouillé).',
         'Mode enfant : des boutons plus gros, moins de cartes, les pièces et l’objectif en avant.',
         'Le thème et les couleurs des fêtes suivent la personne sur tous ses appareils (elle peut les changer dans Profil).',
-        'Vacances par membre : protège sa série et gèle la santé de ses tâches pendant son absence.',
+        'Vacances par membre : protège sa série et gèle la santé de ses tâches pendant son absence. Avec une Date de retour, elles se terminent toutes seules ce matin-là.',
         'Ajuster les pièces (Gérer le membre) : ajoute ou retire des pièces avec une raison. Le nombre est une variation, pas un nouveau solde : 10 ajoute 10, -10 retire 10. Fonctionne aussi pour les parents, toi compris. Détails dans « Pièces, récompenses et objectifs » → Ajuster les pièces.',
         'Mot de passe : un parent peut en définir un nouveau si quelqu’un oublie le sien. La personne est alors déconnectée de tous ses appareils et se reconnecte avec le nouveau.',
       ] },
@@ -208,7 +208,7 @@ export const GUIDE_FR: GuideSection[] = [
       { ul: [
         'Personne d’attribué : n’importe qui. La première personne qui la termine gagne les pièces (« le premier gagne »).',
         'Attribuée à quelques personnes : seules elles peuvent la faire.',
-        'Partagée : chaque personne attribuée fait sa part et reçoit une part égale.',
+        'Partagée : chaque personne attribuée fait sa part et reçoit une part égale. La tâche redevient propre une fois que chacun a fait sa part, quel que soit le jour. Jusqu’à sa prochaine échéance, chacun ne peut faire la sienne qu’une fois.',
         'Répartition personnalisée : chaque personne attribuée reçoit un pourcentage fixé.',
         'En rotation : chacun son tour, à chaque réalisation ou chaque semaine du calendrier.',
       ] },
@@ -355,7 +355,7 @@ export const GUIDE_FR: GuideSection[] = [
       ] },
       { h: 'Boucliers de série' },
       { ul: [
-        'Une série compte les jours d’affilée avec au moins une tâche. Tous les 7 jours d’affilée, tu gagnes un 🛡️ bouclier ; tu peux en garder 2.',
+        'Une série compte les jours d’affilée avec au moins une tâche. Tous les 7 jours d’affilée, tu gagnes un 🛡️ bouclier ; tu peux en garder 2. Une tâche qui attend l’approbation d’un parent compte pour le jour où elle a été faite.',
         'Achète un bouclier sur la carte de série de l’Accueil (25 pièces par défaut ; les parents fixent le prix dans Paramètres → Fonctionnalités).',
         'Un jour manqué utilise un bouclier tout seul, juste après minuit, et la série continue (le jour manqué ne compte pas). Deux jours manqués demandent deux boucliers ; s’il en manque, aucun n’est utilisé et la série recommence.',
         'Une tâche qui attend l’approbation d’un parent compte pour son jour.',
@@ -439,7 +439,7 @@ export const GUIDE_FR: GuideSection[] = [
       { ul: [
         'Paramètres → Données et confidentialité → Exporter : une sauvegarde JSON complète. Garde-en une avant les gros changements.',
         'Importer restaure une sauvegarde et REMPLACE tout. Les personnes qui ont déjà un compte sur ce serveur (même nom d’utilisateur) gardent leur mot de passe actuel. Les personnes nouvelles sur ce serveur en reçoivent un aléatoire, alors définis leur mot de passe dans Membres de la famille ensuite. Tu dois figurer dans la sauvegarde en tant qu’Admin (même nom d’utilisateur), sinon l’import est refusé. Certains appareils peuvent être déconnectés ensuite : il suffit de se reconnecter avec le même mot de passe.',
-        'Paramètres → Tableurs : télécharge les tâches ou les récompenses, modifie-les dans n’importe quelle appli de tableur, et recharge-les. Tu vois d’abord un aperçu et rien n’est supprimé.',
+        'Paramètres → Tableurs : télécharge les tâches ou les récompenses, modifie-les dans n’importe quelle appli de tableur, et recharge-les. Tu vois d’abord un aperçu et rien n’est supprimé. Les tâches à faire une seule fois gardent leur date (colonnes one_time et do_by).',
         'Pour supprimer une tâche, ouvre-la avec Modifier ; Supprimer la tâche est en bas du formulaire. Elle va dans Paramètres → Supprimés récemment pendant 30 jours et peut y être restaurée. Les récompenses fonctionnent de la même façon.',
         'Supprimer ne retire jamais de pièces et n’efface pas ce qui a été fait : les réalisations passées restent visibles dans Activité, le Tableau et les objectifs sous le nom de la tâche, même après qu’elle a quitté Supprimés récemment.',
         'Une récompense supprimée garde son historique de la même façon : ce qui a été acheté reste dans Statistiques sous son nom. Une demande encore en attente reste dans Demandes de récompenses (sous le catalogue) : un parent peut toujours la valider ou la refuser, ce qui rend les pièces.',
@@ -624,6 +624,7 @@ export const GUIDE_FR: GuideSection[] = [
         ] },
         { q: 'Une série s’est brisée pendant notre absence', a: [
           'Utilise le Mode vacances (toute la maison, Paramètres → Général) ou les vacances par membre (Membres de la famille) avant de partir ; cela protège les séries et gèle la santé des tâches.',
+          'Quand des vacances se terminent (désactivées, ou à leur Date de retour), les tâches reprennent là où elles en étaient au départ : les jours d’absence ne comptent pas comme un oubli. Les séries continuent dès le jour du retour.',
         ] },
         { q: 'Un bouclier n’a pas sauvé la série', a: [
           'Chaque jour manqué demande son propre bouclier. Avec moins de boucliers que de jours manqués, aucun n’est utilisé : la série recommence et les boucliers sont gardés.',

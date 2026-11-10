@@ -114,7 +114,7 @@ export const GUIDE_ES: GuideSection[] = [
         'Vista de tareas: Todos (elige cada uno), Empieza en Mías o Solo las suyas (bloqueada).',
         'Modo niño: botones más grandes, menos tarjetas, monedas y objetivo a la vista.',
         'El tema y los colores de fiesta acompañan a la persona en todos sus dispositivos (puede cambiarlos en Perfil).',
-        'Vacaciones por miembro: protege su racha y congela la salud de sus tareas mientras está fuera.',
+        'Vacaciones por miembro: protege su racha y congela la salud de sus tareas mientras está fuera. Con una Fecha de regreso terminan solas esa mañana.',
         'Ajustar monedas (Gestionar miembro): suma o resta monedas con un motivo. El número es un cambio, no un saldo nuevo: 10 suma 10, -10 resta 10. Sirve también para padres, incluido tú. Detalles en "Monedas, recompensas y objetivos" → Ajustar monedas.',
         'Contraseña: un padre o una madre puede poner una nueva si alguien olvida la suya. Eso cierra la sesión de esa persona en todos sus dispositivos, y vuelve a entrar con la nueva.',
       ] },
@@ -208,7 +208,7 @@ export const GUIDE_ES: GuideSection[] = [
       { ul: [
         'Sin asignar: cualquiera. La primera persona que la termina se lleva las monedas ("el primero gana").',
         'Asignada a algunas personas: solo ellas pueden hacerla.',
-        'Compartida: cada asignado hace su parte y recibe una parte igual.',
+        'Compartida: cada asignado hace su parte y recibe una parte igual. La tarea vuelve a estar limpia cuando todos han hecho su parte, sea el día que sea. Hasta que toque de nuevo, cada persona solo puede hacer la suya una vez.',
         'Reparto personalizado: cada asignado recibe un porcentaje fijo.',
         'Rotación: por turnos, por cada vez que se completa o por semana natural.',
       ] },
@@ -355,7 +355,7 @@ export const GUIDE_ES: GuideSection[] = [
       ] },
       { h: 'Escudos de racha' },
       { ul: [
-        'Una racha cuenta los días seguidos con al menos una tarea. Cada 7 días seguidos ganas un 🛡️ escudo; puedes guardar 2.',
+        'Una racha cuenta los días seguidos con al menos una tarea. Cada 7 días seguidos ganas un 🛡️ escudo; puedes guardar 2. Una tarea que espera la aprobación de un padre o una madre cuenta para el día en que se hizo.',
         'Compra un escudo en la tarjeta de racha de Inicio (25 monedas por defecto; los padres fijan el precio en Ajustes → Funciones).',
         'Un día perdido usa un escudo solo, justo después de medianoche, y la racha sigue (el día perdido no suma). Dos días perdidos necesitan dos escudos; si faltan, no se usa ninguno y la racha vuelve a empezar.',
         'Una tarea que espera la aprobación de un padre cuenta para su día.',
@@ -439,7 +439,7 @@ export const GUIDE_ES: GuideSection[] = [
       { ul: [
         'Ajustes → Datos y privacidad → Exportar: una copia de seguridad JSON completa. Guarda una antes de hacer cambios grandes.',
         'Importar restaura una copia de seguridad y REEMPLAZA todo. Quien ya tiene una cuenta en este servidor (mismo nombre de usuario) conserva su contraseña actual. Quien es nuevo en este servidor recibe una aleatoria, así que después pon sus contraseñas en Miembros de la familia. Tienes que estar en la copia como Admin (mismo nombre de usuario), o la importación se rechaza. Algunos dispositivos pueden cerrar sesión después; basta con volver a entrar con la misma contraseña.',
-        'Ajustes → Hojas de cálculo: descarga tareas o recompensas, edítalas en cualquier aplicación de hojas de cálculo y vuelve a cargarlas. Primero ves una vista previa y no se elimina nada.',
+        'Ajustes → Hojas de cálculo: descarga tareas o recompensas, edítalas en cualquier aplicación de hojas de cálculo y vuelve a cargarlas. Primero ves una vista previa y no se elimina nada. Las tareas de una sola vez conservan su fecha (columnas one_time y do_by).',
         'Para eliminar una tarea, ábrela con Editar; Eliminar tarea está al final del formulario. Va a Ajustes → Eliminados recientemente durante 30 días y se puede restaurar desde ahí. Las recompensas funcionan igual.',
         'Eliminar nunca quita monedas ni borra lo que se hizo: las veces que se completó siguen apareciendo en Actividad, el Tablero y los objetivos con el nombre de la tarea, incluso cuando ya no está en Eliminados recientemente.',
         'Una recompensa eliminada conserva su historial igual: lo que se compró sigue en Estadísticas con su nombre. Una solicitud que aún espera sigue en Solicitudes de recompensas (bajo el catálogo), así que un padre o una madre todavía puede aprobarla o rechazarla, y al rechazarla se devuelven las monedas.',
@@ -624,6 +624,7 @@ export const GUIDE_ES: GuideSection[] = [
         ] },
         { q: 'Una racha se rompió mientras estábamos fuera', a: [
           'Usa el Modo vacaciones (toda la casa, Ajustes → General) o las vacaciones por miembro (Miembros de la familia) antes de irte; protege las rachas y congela la salud de las tareas.',
+          'Cuando terminan unas vacaciones (al desactivarlas o en su Fecha de regreso), las tareas siguen donde estaban al empezar: los días fuera no cuentan como descuido. Las rachas continúan desde el día de la vuelta.',
         ] },
         { q: 'Un escudo no salvó la racha', a: [
           'Cada día perdido necesita su propio escudo. Con menos escudos que días perdidos, no se usa ninguno: la racha vuelve a empezar y los escudos se guardan.',

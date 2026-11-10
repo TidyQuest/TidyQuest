@@ -138,7 +138,7 @@ export const GUIDE_EN: GuideSection[] = [
         'Task view: All (they choose), Starts on Mine, or Only theirs (locked).',
         'Kid mode: bigger buttons, fewer cards, coins and goal up front.',
         'Theme and holiday colors follow the person to every device (they can change them in Profile).',
-        'Vacation per member: protects their streak and freezes their chores’ health while away.',
+        'Vacation per member: protects their streak and freezes their chores’ health while away. With a Return date it ends by itself that morning.',
         'Adjust coins (Manage member): add or take away coins with a reason. The number is a change, not a new balance: 10 adds 10, -10 takes 10 away. Works for parents too, including yourself. Details in "Coins, rewards and goals" → Adjusting coins.',
         'Password: a parent can set a new one if someone forgets theirs. That signs the person out on every device, so they log in again with the new one.',
       ] },
@@ -232,7 +232,7 @@ export const GUIDE_EN: GuideSection[] = [
       { ul: [
         'Nobody assigned: anyone. The first person to finish it gets the coins ("first one wins").',
         'Assigned to some people: only they can do it.',
-        'Shared: each assignee does their part and gets an even share.',
+        'Shared: each assignee does their part and gets an even share. The chore turns clean once everyone has done their part, on whichever days. Until it’s due again, each person can do theirs once.',
         'Custom split: each assignee gets a set percentage.',
         'Rotating: turn by turn, per completion or per calendar week.',
       ] },
@@ -379,7 +379,7 @@ export const GUIDE_EN: GuideSection[] = [
       ] },
       { h: 'Streak shields' },
       { ul: [
-        'A streak counts the days in a row with at least one chore. Every 7 days in a row earns a 🛡️ shield; you can hold 2.',
+        'A streak counts the days in a row with at least one chore. Every 7 days in a row earns a 🛡️ shield; you can hold 2. A chore that waits for a parent’s approval counts on the day it was done.',
         'Buy a shield on Home’s streak card (25 coins by default; parents set the price in Settings → Features).',
         'A missed day uses a shield by itself, just after midnight, and the streak carries on (the missed day doesn’t add to it). Two missed days need two shields; with too few, none are used and the streak starts again.',
         'A chore waiting for a parent’s approval counts for its day.',
@@ -463,7 +463,7 @@ export const GUIDE_EN: GuideSection[] = [
       { ul: [
         'Settings → Data & Privacy → Export: a full JSON backup. Keep one before big changes.',
         'Import restores a backup and REPLACES everything. Everyone who already has an account on this server (same username) keeps their current password. People who are new to this server get a random one, so set their passwords in Family Members afterwards. The backup must list you as an Admin (same username), or the import is refused. Some devices may be signed out afterwards; they sign in again with the same password.',
-        'Settings → Spreadsheets: download chores or rewards, edit them in any spreadsheet app, and load them back. You see a preview first and nothing is deleted.',
+        'Settings → Spreadsheets: download chores or rewards, edit them in any spreadsheet app, and load them back. You see a preview first and nothing is deleted. One-time chores keep their date (columns one_time and do_by).',
         'To delete a chore, open it with Edit; Delete task is at the bottom of the form. It goes to Settings → Recently deleted for 30 days and can be restored from there. Rewards work the same way.',
         'Deleting never takes coins away or erases what was done: past completions keep showing in Activity, the Board and goals under the chore’s name, even after it leaves Recently deleted.',
         'A deleted reward keeps its history the same way: what was bought before stays in Insights under its name. A request still waiting stays in Reward requests (under the catalog), so a parent can still approve it or turn it down, which gives the coins back.',
@@ -648,6 +648,7 @@ export const GUIDE_EN: GuideSection[] = [
         ] },
         { q: 'A streak broke while we were away', a: [
           'Use Vacation Mode (whole house, Settings → General) or vacation per member (Family Members) before leaving; it protects streaks and freezes chore health.',
+          'When a vacation ends (switched off, or on its Return date), chores pick up where they were when it began: the days away don’t count as neglect. Streaks carry on from the day you’re back.',
         ] },
         { q: 'A shield didn’t save the streak', a: [
           'Each missed day needs its own shield. With fewer shields than missed days, none are used: the streak starts again and the shields are kept.',
