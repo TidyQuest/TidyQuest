@@ -63,9 +63,9 @@ What changed in each release, in plain language, newest first. Releases up to v0
 - **One person's vacation ends by itself on its Return date** (BUG-30), like the family's. The Return date box in
   Settings → Family Members keeps the date you pick, and health never shows above 100% for chores done during a
   vacation.
-- **Rescue Mission and Team-ups** (BUG-32): "Reset to dirty" opens today's Rescue Mission again, a new mission is
-  picked when its chore is deleted, paused or finished for good, and switching Team-ups off frees a chore a team
-  had claimed.
+- **Rescue Mission and Team-ups** (BUG-32): a new mission is picked when its chore is deleted, paused or finished
+  for good, switching Team-ups off frees a chore a team had claimed, and Home Assistant's "Reset task" opens
+  today's Rescue Mission again.
 - **Small chore and room fixes** (BUG-33, BUG-46):
   - Every new chore on a room page starts dirty, not only the first one you add.
   - Home's Scheduled card says "Tomorrow" for a chore due tomorrow morning, also late in the evening.
