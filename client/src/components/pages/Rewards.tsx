@@ -5,6 +5,7 @@ import { matchesQuery } from '../../utils/tasks';
 import { useTranslation } from '../../hooks/useTranslation';
 import { api, type RewardAvailability, type RewardPot } from '../../hooks/useApi';
 import { formatCoins } from '../../utils/format';
+import { useBusy } from '../../hooks/useBusy';
 import { localeFor } from '../../utils/locale';
 import { byFeatured } from '../../utils/rewardRules';
 import { rewardDescText, rewardTitleText } from '../../utils/presetRewards';
@@ -79,6 +80,7 @@ function SharedPot({ pot, userCoins, language, onContribute }: { pot: RewardPot;
   const n = Math.round(Number(amount));
   const valid = Number.isFinite(n) && n >= 1 && n <= most;
   const [error, setError] = useState('');
+  const [busy, run] = useBusy();
   const pct = pot.target > 0 ? Math.min(100, Math.round((pot.saved / pot.target) * 100)) : 0;
   return (
     <div style={{ display: 'grid', gap: 6, marginTop: 8 }}>
@@ -95,12 +97,12 @@ function SharedPot({ pot, userCoins, language, onContribute }: { pot: RewardPot;
         <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexWrap: 'wrap' }}>
           <input type="number" min={0} max={most} className="tq-input-compact" value={amount} onChange={(e) => setAmount(e.target.value)}
             onFocus={(e) => e.target.select()} aria-label={t('rewardRules.chipIn')} style={{ width: 80 }} disabled={most < 1} />
-          <button className="tq-btn tq-btn-primary tq-btn-sm" disabled={!valid}
-            onClick={async () => {
+          <button className="tq-btn tq-btn-primary tq-btn-sm" disabled={!valid || busy}
+            onClick={() => void run(async () => {
               setError('');
               if (!valid) return;
               try { await onContribute(n); setAmount('0'); } catch (err) { setError(err instanceof Error ? err.message : t('common.error')); }
-            }}>
+            })}>
             {t('rewardRules.chipIn')}
           </button>
           {error && <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--warm-danger)' }}>{error}</span>}
@@ -171,7 +173,9 @@ export function Rewards({ language, rewards: ownRewards, mine: ownMine, userCoin
     backgroundColor: on ? 'var(--warm-accent-light)' : 'var(--warm-bg-input)', color: on ? 'var(--warm-accent)' : 'var(--warm-text-muted)',
   });
 
-  const confirmRedeem = async () => {
+  // One purchase at a time: a double tap on Buy spent the coins twice (BUG-35)
+  const [buying, runBuy] = useBusy();
+  const confirmRedeem = () => runBuy(async () => {
     if (!pendingReward) return;
     setRedeemError('');
     try {
@@ -195,7 +199,18 @@ export function Rewards({ language, rewards: ownRewards, mine: ownMine, userCoin
     }
     setSpendFx({ amount: pendingReward.costCoins, key: Date.now() });
     setPendingRewardId(null);
-  };
+  });
+
+  // A parent's Approve or Reject: one at a time, and a failure says so (BUG-36: the other parent had already
+  // decided it, and nothing happened). The list reloads either way.
+  const [deciding, runDecide] = useBusy();
+  const [decideFailed, setDecideFailed] = useState('');
+  const decide = (id: number, status: 'approved' | 'rejected') => runDecide(async () => {
+    setDecideFailed('');
+    try { await onRewardRequestAction?.(id, status); } catch (err) {
+      setDecideFailed(t((err as { status?: number }).status === 400 ? 'rewards.alreadyDecided' : 'common.actionFailed'));
+    }
+  });
 
   useEffect(() => {
     if (!spendFx) return;
@@ -276,9 +291,10 @@ export function Rewards({ language, rewards: ownRewards, mine: ownMine, userCoin
         {forFailed && <div role="alert" style={{ fontSize: 11, fontWeight: 700, color: 'var(--warm-danger)', marginTop: 6 }}>{t('common.actionFailed')}</div>}
       </div>
 
-      {isAdmin && pendingRequests && pendingRequests.filter(r => r.status === 'requested').length > 0 && (
+      {isAdmin && pendingRequests && (pendingRequests.filter(r => r.status === 'requested').length > 0 || decideFailed) && (
         <div className="tq-card tq-card-padded">
           <h3 className="tq-card-title">{t('dashboard.rewardRequestsTitle')}</h3>
+          {decideFailed && <div role="alert" style={{ fontSize: 12, fontWeight: 700, color: 'var(--warm-danger)', marginBottom: 8 }}>{decideFailed}</div>}
           <div style={{ display: 'grid', gap: 8 }}>
             {pendingRequests.filter(r => r.status === 'requested').map((r) => (
               <div key={r.id} style={{ border: '1.5px solid var(--warm-border)', borderRadius: 12, padding: 10, display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 10 }}>
@@ -287,8 +303,8 @@ export function Rewards({ language, rewards: ownRewards, mine: ownMine, userCoin
                   <div style={{ fontSize: 10, color: 'var(--warm-text-light)', fontWeight: 700 }}>{new Date(r.redeemedAt).toLocaleString(locale)} · {formatCoins(r.costCoins, locale)} {t('settings.coins')}</div>
                 </div>
                 <div style={{ display: 'flex', gap: 6 }}>
-                  <button className="tq-btn tq-btn-primary tq-btn-sm" onClick={() => onRewardRequestAction?.(r.id, 'approved')}>{t('dashboard.approve')}</button>
-                  <button className="tq-btn tq-btn-secondary tq-btn-sm" onClick={() => onRewardRequestAction?.(r.id, 'rejected')}>{t('dashboard.reject')}</button>
+                  <button className="tq-btn tq-btn-primary tq-btn-sm" disabled={deciding} onClick={() => void decide(r.id, 'approved')}>{t('dashboard.approve')}</button>
+                  <button className="tq-btn tq-btn-secondary tq-btn-sm" disabled={deciding} onClick={() => void decide(r.id, 'rejected')}>{t('dashboard.reject')}</button>
                 </div>
               </div>
             ))}
@@ -416,8 +432,8 @@ export function Rewards({ language, rewards: ownRewards, mine: ownMine, userCoin
             </div>
             {redeemError && <div role="alert" style={{ fontSize: 12, fontWeight: 700, color: 'var(--warm-danger)', marginBottom: 12 }}>{redeemError}</div>}
             <div className="rewards-confirm-actions" style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
-              <button className="tq-btn tq-btn-secondary tq-btn-sm" onClick={() => setPendingRewardId(null)}>{t('common.cancel')}</button>
-              <button className="tq-btn tq-btn-primary tq-btn-sm" onClick={confirmRedeem}>{t('rewards.confirmBuy')}</button>
+              <button className="tq-btn tq-btn-secondary tq-btn-sm" disabled={buying} onClick={() => setPendingRewardId(null)}>{t('common.cancel')}</button>
+              <button className="tq-btn tq-btn-primary tq-btn-sm" disabled={buying} onClick={() => void confirmRedeem()}>{t('rewards.confirmBuy')}</button>
             </div>
           </div>
         </div>

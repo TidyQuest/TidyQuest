@@ -23,6 +23,7 @@ import { formatCoins } from '../../utils/format';
 import { BellIcon, DownloadIcon, UploadIcon, LockIcon, CoinIcon } from '../icons/UIIcons';
 import { AVATAR_PRESETS } from '../icons/AvatarPresets';
 import { useTranslation } from '../../hooks/useTranslation';
+import { useBusy } from '../../hooks/useBusy';
 import type { User } from '../../hooks/useAuth';
 import { api, type FocusModeSetting, type RewardRules } from '../../hooks/useApi';
 import { CosmeticsContext } from '../../utils/unlocks';
@@ -210,6 +211,8 @@ export function Settings({
   const [memberGoalMsg, setMemberGoalMsg] = useState<Record<number, string>>({});
   const [coinAdjust, setCoinAdjust] = useState<Record<number, string>>({});
   const [coinAdjustMsg, setCoinAdjustMsg] = useState<Record<number, string>>({});
+  // One adjustment at a time: a double tap gave the coins twice (BUG-35)
+  const [adjustingCoins, runCoinAdjust] = useBusy();
   const [memberVacation, setMemberVacation] = useState<Record<number, boolean>>({});
   // Return dates picked here (the family list isn't reloaded after each change)
   const [memberReturn, setMemberReturn] = useState<Record<number, string | null>>({});
@@ -1657,20 +1660,26 @@ export function Settings({
                       placeholder={t('coins.reasonPlaceholder')}
                       style={{ flex: '1 1 140px', minWidth: 0 }}
                     />
-                    <button className="tq-btn tq-btn-secondary tq-btn-sm" onClick={async () => {
+                    <button className="tq-btn tq-btn-secondary tq-btn-sm" disabled={adjustingCoins} onClick={() => void runCoinAdjust(async () => {
                       const amt = parseInt(coinAdjust[u.id] || '0');
                       if (!amt) return;
                       const reason = (coinReason[u.id] || '').trim() || undefined;
-                      if (onAdjustCoins) {
-                        await onAdjustCoins(u.id, amt, reason);
-                      } else {
-                        await api.adjustCoins(u.id, amt, reason);
+                      try {
+                        if (onAdjustCoins) {
+                          await onAdjustCoins(u.id, amt, reason);
+                        } else {
+                          await api.adjustCoins(u.id, amt, reason);
+                        }
+                      } catch {
+                        // The boxes keep what was typed, to try again
+                        setCoinAdjustMsg((prev) => ({ ...prev, [u.id]: t('common.actionFailed') }));
+                        return;
                       }
                       setCoinAdjust((prev) => ({ ...prev, [u.id]: '' }));
                       setCoinReason((prev) => ({ ...prev, [u.id]: '' }));
                       setCoinAdjustMsg((prev) => ({ ...prev, [u.id]: `${amt > 0 ? '+' : ''}${amt} ✓` }));
                       setTimeout(() => setCoinAdjustMsg((prev) => ({ ...prev, [u.id]: '' })), 2000);
-                    }}>{t('settings.adjustCoins')}</button>
+                    })}>{t('settings.adjustCoins')}</button>
                     {coinAdjustMsg[u.id] && <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--warm-accent)' }}>{coinAdjustMsg[u.id]}</span>}
                   </div>}
                 </div>

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { api, forgetPhotos, forgetPush, type LoginDetails } from './useApi';
 import { deviceZone } from '../utils/clock';
 
@@ -30,19 +30,49 @@ export interface User {
   birthday?: string | null;
 }
 
+/** This device signs out: push stops here, and the token and the photos cookie go. */
+function forget(): void {
+  forgetPush();
+  localStorage.removeItem('tidyquest_token');
+  forgetPhotos();
+}
+
 export function useAuth() {
   const [user, setUser] = useState<User | null>(null);
   // Only a saved token needs checking; with none, the login page shows straight away
   const [loading, setLoading] = useState(() => !!localStorage.getItem('tidyquest_token'));
 
+  // The server couldn't be reached when the app opened (a restart, no Wi-Fi): still signed in, trying again
+  const [startFailed, setStartFailed] = useState(false);
+
+  const check = useCallback(() => api.me().then((userData) => {
+    setUser(userData);
+    setStartFailed(false);
+  }).catch((err: { status?: number }) => {
+    // Only a real "you're signed out" ends the login: apiFetch has already handled a 401, and a 404 is a
+    // person who was removed. Anything else (a 502 while the server restarts, no network, a 500) keeps the
+    // login and this phone's notifications, and the app tries again (BUG-34).
+    if (err?.status === 404) {
+      forget();
+      setStartFailed(false);
+    } else if (localStorage.getItem('tidyquest_token')) {
+      setStartFailed(true);
+    }
+  }).finally(() => setLoading(false)), []);
+
   useEffect(() => {
-    if (!localStorage.getItem('tidyquest_token')) return;
-    api.me().then(setUser).catch(() => {
-      forgetPush();
-      localStorage.removeItem('tidyquest_token');
-      forgetPhotos();
-    }).finally(() => setLoading(false));
-  }, []);
+    if (localStorage.getItem('tidyquest_token')) void check();
+  }, [check]);
+
+  useEffect(() => {
+    if (!startFailed) return;
+    const timer = setInterval(() => void check(), 5000);
+    window.addEventListener('online', check);
+    return () => {
+      clearInterval(timer);
+      window.removeEventListener('online', check);
+    };
+  }, [startFailed, check]);
 
   const login = async (details: LoginDetails) => {
     const { token, user: userData } = await api.login(details);
@@ -63,21 +93,21 @@ export function useAuth() {
   };
 
   const logout = () => {
-    forgetPush();
-    localStorage.removeItem('tidyquest_token');
-    forgetPhotos();
+    forget();
+    setStartFailed(false);
     setUser(null);
   };
 
-  const refreshUser = async () => {
+  const refreshUser = useCallback(async () => {
     try {
       const userData = await api.me();
       // Guard: don't restore session if user logged out during the in-flight request
       if (localStorage.getItem('tidyquest_token')) {
-        setUser(userData);
+        // Asked every 15 seconds (BUG-36): the same person object when nothing changed, so nothing redraws
+        setUser((prev) => (prev && JSON.stringify(prev) === JSON.stringify(userData) ? prev : userData));
       }
     } catch { /* ignore */ }
-  };
+  }, []);
 
-  return { user, loading, login, signIn, register, logout, refreshUser };
+  return { user, loading, startFailed, retryStart: check, login, signIn, register, logout, refreshUser };
 }

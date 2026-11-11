@@ -394,7 +394,12 @@
       "importInvalid": "Ce n'est pas une sauvegarde TidyQuest : elle ne contient ni personnes ni pièces.",
       "importFailed": "Échec de l'import : {error}",
       "importNotIn": "Cette sauvegarde ne vous contient pas ({name}) en tant qu'Admin : l'importer vous bloquerait l'accès. Connectez-vous avec un Admin présent dans la sauvegarde et réessayez.",
-      "notYetDue": "Ce n'est pas encore à faire."
+      "notYetDue": "Ce n'est pas encore à faire.",
+      "cantReachTitle": "Impossible de joindre TidyQuest",
+      "cantReachText": "Tu es toujours connecté. Nouvel essai toutes les quelques secondes…",
+      "notYourTurn": "Ce n'est pas ton tour pour celle-ci.",
+      "chorePaused": "Cette tâche est en pause.",
+      "claimedByTeam": "Une équipe a déjà réservé celle-ci."
     },
     "admin": {
       "whoDidThisTask": "Qui a fait cette tâche ?",
@@ -466,7 +471,8 @@
       "theirRequests": "Récompenses de {name}",
       "boughtBy": "acheté par {name}",
       "confirmTextFor": "Acheter \"{reward}\" pour {name} ? Cela coûte {coins} de ses pièces.",
-      "priceChanged": "Le prix vient de passer à {coins} pièces. Touche Confirmer pour payer ce prix, ou Annuler."
+      "priceChanged": "Le prix vient de passer à {coins} pièces. Touche Confirmer pour payer ce prix, ou Annuler.",
+      "alreadyDecided": "Cette demande a déjà été traitée. La liste est maintenant à jour."
     },
     "rewardsPreset": {
       "movie_night": {

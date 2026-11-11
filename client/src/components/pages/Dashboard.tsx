@@ -12,7 +12,7 @@ import { getRoomIcon } from '../icons/RoomIcons';
 import { TaskIcon } from '../icons/TaskIcons';
 import { getHealthColor } from '../../utils/health';
 import { useTranslation } from '../../hooks/useTranslation';
-import { isTaskForUser, taskCoins } from '../../utils/tasks';
+import { formatNextDue, isTaskForUser, taskCoins } from '../../utils/tasks';
 import { useTaskView } from '../../hooks/useTaskView';
 import { AllMineToggle } from '../shared/AllMineToggle';
 import { PendingApprovals, type PendingItem } from '../shared/PendingApprovals';
@@ -84,7 +84,11 @@ interface Quest {
   effectiveAssignedUserId?: number | null;
   effectiveAssignedUserIds?: number[];
   assignedUsers?: Array<{ id: number; displayName: string; avatarColor: string; avatarType?: string; avatarPreset?: string; avatarPhotoUrl?: string }>;
-  assignmentMode?: 'first' | 'shared';
+  assignmentMode?: 'first' | 'shared' | 'custom' | 'rotating';
+  /** Rotating chores: whose turn it is */
+  rotationCurrentUserId?: number | null;
+  allowEarlyCompletion?: number | boolean;
+  nextDueAt?: string | null;
   sharedCompletions?: Array<{ userId: number; displayName: string }>;
   completedTodayBy?: { userId: number; displayName: string; avatarColor: string } | null;
   /** Team-ups: can you start one, and has a team claimed it today? */
@@ -355,6 +359,17 @@ const Dashboard: React.FC<DashboardProps> = ({
   const [showTodoAdd, setShowTodoAdd] = useState(false);
   const [todoNotice, setTodoNotice] = useState('');
 
+  // Shared and split-coins chores are done once per person (BUG-37: only 'shared' counted, so the second
+  // person on a split-coins chore saw "Done by A")
+  const isPerPerson = (q: Quest) => q.assignmentMode === 'shared' || q.assignmentMode === 'custom';
+  // A rotating chore during someone else's turn: a kid can't do it (parents can, on anyone's turn)
+  const waitingForTurn = (q: Quest): string | null => {
+    const parent = currentUser.role === 'admin' || currentUser.role === 'member';
+    if (parent || q.assignmentMode !== 'rotating' || q.rotationCurrentUserId == null || q.rotationCurrentUserId === currentUser.id) return null;
+    const name = q.assignedUsers?.find((u) => u.id === q.rotationCurrentUserId)?.displayName || '?';
+    return t('roomDetail.waitingForTurn').replace('{name}', name);
+  };
+
   // The Done button for a chore in the newer Home sections (To-do, Your usual, Maybe you forgot,
   // Rescue Mission): the same rules as the lists above, for scheduled and anytime chores alike
   const doneState = (q: Quest): { disabled: boolean; label: string } => {
@@ -369,10 +384,17 @@ const Dashboard: React.FC<DashboardProps> = ({
       if (!isAdminOrMember && q.repeatLimit && (q.myRepeatCount ?? 0) >= q.repeatLimit) return { disabled: true, label: t(q.repeatPeriod === 'day' ? 'repeat.doneToday' : 'repeat.doneThisWeek') };
       return { disabled: false, label: t('roomDetail.done') };
     }
-    if (q.assignmentMode === 'shared') {
+    const turn = waitingForTurn(q);
+    if (turn) return { disabled: true, label: turn };
+    if (isPerPerson(q)) {
       if (q.sharedCompletions?.some((c) => c.userId === currentUser.id) && !isAdminOrMember) return { disabled: true, label: t('app.doneBy').replace('{name}', t('common.you')) };
     } else if (q.completedTodayBy && (!isAdminOrMember || !hasAssignees)) {
       return { disabled: true, label: t('app.doneBy').replace('{name}', q.completedTodayBy.displayName) };
+    }
+    // Not due yet (a pinned "usual" chore, mostly): the server would refuse it, so say when it's next due
+    // (BUG-37). Done early is fine once a day when the chore allows it.
+    if (!q.oneTime && q.health > 0 && q.lastCompletedAt && !(q.allowEarlyCompletion && dateStr(q.lastCompletedAt) < dateStr())) {
+      return { disabled: true, label: formatNextDue(q.lastCompletedAt, q.frequencyDays, t, language, q.health, q.nextDueAt).text };
     }
     return { disabled: false, label: t('roomDetail.done') };
   };
@@ -578,7 +600,7 @@ const Dashboard: React.FC<DashboardProps> = ({
     // The house mascot: mood, what it needs, and how close it is to growing
     mascot: data.mascot && isVisible('mascot') && (
         <MascotCard m={data.mascot} costume={seasonCostume} language={language} suggestions={mascotIdeas} userId={currentUser.id}
-          isParent={currentUser.role === 'admin'} coins={currentUser.coins} onChanged={() => onRefresh?.()} />
+          isParent={currentUser.role === 'admin'} coins={currentUser.coins} onChanged={() => { onRefresh?.(); onCoinsChanged?.(); }} />
       ),
     // Team-ups you're on, and invites you can join
     teamups: isVisible('teamups') && (
@@ -770,7 +792,7 @@ const Dashboard: React.FC<DashboardProps> = ({
             const hasAssignees = (q.effectiveAssignedUserIds && q.effectiveAssignedUserIds.length > 0) || q.assignedToChildren;
             let btnDisabled = false;
             let btnLabel = t('roomDetail.done');
-            if (q.assignmentMode === 'shared') {
+            if (isPerPerson(q)) {
               const myCompletion = q.sharedCompletions?.find(c => c.userId === currentUser.id);
               if (myCompletion && !isAdminOrMember) {
                 btnDisabled = true;
@@ -792,6 +814,8 @@ const Dashboard: React.FC<DashboardProps> = ({
               btnDisabled = true;
               btnLabel = t('app.waitingForApproval');
             }
+            const turn = waitingForTurn(q);
+            if (turn && !btnDisabled) { btnDisabled = true; btnLabel = turn; }
             const claimed = claimedLabel(q.teamUp);
             if (claimed) { btnDisabled = true; btnLabel = claimed; }
             const handleDone = () => {
@@ -1513,7 +1537,9 @@ const Dashboard: React.FC<DashboardProps> = ({
               await api.completeTask(adminModalQuest.id, uid);
             }
           } catch (e) {
-            console.error('Failed to complete task for some users:', e);
+            // The box stays open and says why (BUG-38); earlier people on the list may have gone through
+            onRefresh?.();
+            throw e;
           }
           setAdminModalQuest(null);
           onRefresh?.();

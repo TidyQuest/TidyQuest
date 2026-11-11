@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from '../../hooks/useTranslation';
+import { taskErrorText } from '../../utils/taskError';
 
 interface User {
   id: number;
@@ -33,6 +34,7 @@ export function AdminCompleteModal({ task, allUsers, language, onConfirm, onClos
   const { t } = useTranslation(language);
   const [selected, setSelected] = useState<number[]>([]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   // Determine candidate users
   const effectiveIds = task.effectiveAssignedUserIds || [];
@@ -69,8 +71,12 @@ export function AdminCompleteModal({ task, allUsers, language, onConfirm, onClos
   const handleConfirm = async () => {
     if (selected.length === 0) return;
     setLoading(true);
+    setError('');
     try {
       await onConfirm(selected);
+    } catch (err) {
+      // Stay open and say why (BUG-38): it used to close and flash green as if it had worked
+      setError(taskErrorText(err, t, true));
     } finally {
       setLoading(false);
     }
@@ -196,7 +202,8 @@ export function AdminCompleteModal({ task, allUsers, language, onConfirm, onClos
           </div>
         )}
 
-        <div style={{ display: 'flex', gap: 10, marginTop: 20, justifyContent: 'flex-end' }}>
+        {error && <div role="alert" style={{ fontSize: 12, fontWeight: 700, color: 'var(--warm-danger)', marginTop: 14 }}>{error}</div>}
+        <div style={{ display: 'flex', gap: 10, marginTop: error ? 10 : 20, justifyContent: 'flex-end' }}>
           <button
             onClick={onClose}
             className="tq-btn tq-btn-secondary"

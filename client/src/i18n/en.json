@@ -394,7 +394,12 @@
       "importInvalid": "This isn't a TidyQuest backup: it has no people or rooms.",
       "importFailed": "Import failed: {error}",
       "importNotIn": "This backup doesn't list you ({name}) as an Admin, so importing it would lock you out. Sign in as an Admin who is in the backup and try again.",
-      "notYetDue": "This isn't due yet."
+      "notYetDue": "This isn't due yet.",
+      "cantReachTitle": "Can't reach TidyQuest",
+      "cantReachText": "You're still signed in. Trying again every few seconds…",
+      "notYourTurn": "It's not your turn for this one.",
+      "chorePaused": "This chore is paused.",
+      "claimedByTeam": "A team-up has already claimed this one."
     },
     "admin": {
       "whoDidThisTask": "Who completed this task?",
@@ -466,7 +471,8 @@
       "theirRequests": "{name}'s rewards",
       "boughtBy": "bought by {name}",
       "confirmTextFor": "Buy \"{reward}\" for {name}? It costs {coins} of their coins.",
-      "priceChanged": "The price just changed to {coins} coins. Tap Confirm to pay that, or Cancel."
+      "priceChanged": "The price just changed to {coins} coins. Tap Confirm to pay that, or Cancel.",
+      "alreadyDecided": "That request was already decided. The list is up to date now."
     },
     "rewardsPreset": {
       "movie_night": {

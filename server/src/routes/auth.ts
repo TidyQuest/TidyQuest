@@ -2,7 +2,7 @@ import { Router, Response } from 'express';
 import { parseHomeLayout } from '../utils/homeLayout';
 import bcrypt from 'bcryptjs';
 import db from '../database';
-import { AuthRequest, authMiddleware, clearFilesCookie, loginToken, revokeTokens, setFilesCookie } from '../middleware/auth';
+import { AuthRequest, authMiddleware, clearFilesCookie, loginToken, renewedToken, revokeTokens, setFilesCookie } from '../middleware/auth';
 import { canonicalZone } from '../utils/clock';
 import { isHosted, runInFamily } from '../hosted/context';
 import { openFamily } from '../hosted/families';
@@ -167,6 +167,9 @@ router.get('/me', authMiddleware, (req: AuthRequest, res: Response) => {
   user.homeLayout = parseHomeLayout(user.homeLayout);
   // The app asks on every start: people signed in before NEW-29 get the photos cookie, and it's renewed
   setFilesCookie(res, req.userId!);
+  // So does the login itself: a token over a day old comes back fresh, and the app saves it (BUG-47)
+  const fresh = renewedToken(req);
+  if (fresh) user.renewedToken = fresh;
   res.json(user);
 });
 

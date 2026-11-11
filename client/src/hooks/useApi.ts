@@ -402,6 +402,7 @@ async function apiFetch<T>(path: string, options: RequestInit = {}): Promise<T> 
     const errorBody = await res.json().catch(() => ({ error: 'Request failed' }));
     const err = new Error(errorBody.error || 'Request failed') as any;
     err.body = errorBody;
+    err.status = res.status;
     throw err;
   }
 
@@ -443,7 +444,14 @@ export const api = {
   unsubscribe: (e: string, s: string) => apiFetch<{ ok: boolean }>('/hosted/unsubscribe', { method: 'POST', body: JSON.stringify({ e, s }) }),
   deleteFamily: (name: string, password: string) =>
     apiFetch<{ ok: boolean }>('/hosted/delete-family', { method: 'POST', body: JSON.stringify({ name, password }) }),
-  me: () => apiFetch<any>('/auth/me'),
+  me: async () => {
+    const sent = getToken();
+    const { renewedToken, ...user } = await apiFetch<any>('/auth/me');
+    // A login over a day old comes back renewed for another 30 days (BUG-47). Not when this device signed out
+    // or in again while the answer was on its way.
+    if (renewedToken && sent && getToken() === sent) localStorage.setItem('tidyquest_token', renewedToken);
+    return user;
+  },
 
   // Dashboard
   dashboard: () => apiFetch<any>('/dashboard'),

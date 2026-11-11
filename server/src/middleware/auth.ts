@@ -25,9 +25,11 @@ export interface AuthRequest extends Request {
   userId?: number;
   /** Hosted mode: the family this request belongs to. */
   familyId?: string;
+  /** When the login token was signed (seconds), so /me can hand out a fresh one (BUG-47). */
+  tokenIssuedAt?: number;
 }
 
-type TokenPayload = { userId: number; v?: number; fid?: string; aud?: unknown };
+type TokenPayload = { userId: number; v?: number; fid?: string; aud?: unknown; iat?: number };
 
 export function authMiddleware(req: AuthRequest, res: Response, next: NextFunction) {
   const header = req.headers.authorization;
@@ -95,6 +97,7 @@ function checkUser(req: AuthRequest, res: Response, next: NextFunction, payload:
     return res.status(401).json({ error: 'Signed out' });
   }
   req.userId = payload.userId;
+  req.tokenIssuedAt = payload.iat;
   next();
 }
 
@@ -107,6 +110,16 @@ function tokenPayload(userId: number): TokenPayload {
 /** A login token for this person, carrying their current token version. */
 export function generateToken(userId: number): string {
   return jwt.sign(tokenPayload(userId), JWT_SECRET, { expiresIn: '30d' });
+}
+
+/**
+ * A fresh login token for a request whose own is more than a day old, or null (BUG-47). The app saves it, so
+ * a login lasts as long as the app is opened at least once in 30 days. The request has already passed the
+ * token-version check, so a login ended by "Log out everywhere" or a new password is never renewed.
+ */
+export function renewedToken(req: AuthRequest): string | null {
+  const age = Date.now() / 1000 - (req.tokenIssuedAt ?? 0);
+  return req.userId && age > 24 * 60 * 60 ? generateToken(req.userId) : null;
 }
 
 /** A login token, plus the photos cookie for the same person (every answer that signs someone in uses this). */

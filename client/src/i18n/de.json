@@ -394,7 +394,12 @@
       "importInvalid": "Das ist keine TidyQuest-Sicherung: Sie enthält keine Personen oder Räume.",
       "importFailed": "Import fehlgeschlagen: {error}",
       "importNotIn": "Diese Sicherung führt dich ({name}) nicht als Admin, ein Import würde dich aussperren. Melde dich als Admin an, der in der Sicherung steht, und versuche es erneut.",
-      "notYetDue": "Das ist noch nicht fällig."
+      "notYetDue": "Das ist noch nicht fällig.",
+      "cantReachTitle": "TidyQuest ist nicht erreichbar",
+      "cantReachText": "Du bist weiterhin angemeldet. Neuer Versuch alle paar Sekunden…",
+      "notYourTurn": "Bei dieser Aufgabe bist du nicht an der Reihe.",
+      "chorePaused": "Diese Aufgabe ist pausiert.",
+      "claimedByTeam": "Ein Team hat diese Aufgabe schon übernommen."
     },
     "admin": {
       "whoDidThisTask": "Wer hat diese Aufgabe erledigt?",
@@ -466,7 +471,8 @@
       "theirRequests": "Belohnungen von {name}",
       "boughtBy": "gekauft von {name}",
       "confirmTextFor": "\"{reward}\" für {name} kaufen? Das kostet {coins} Münzen von {name}.",
-      "priceChanged": "Der Preis hat sich gerade auf {coins} Münzen geändert. Tippe auf Bestätigen, um so viel zu zahlen, oder auf Abbrechen."
+      "priceChanged": "Der Preis hat sich gerade auf {coins} Münzen geändert. Tippe auf Bestätigen, um so viel zu zahlen, oder auf Abbrechen.",
+      "alreadyDecided": "Über diese Anfrage wurde schon entschieden. Die Liste ist jetzt aktuell."
     },
     "rewardsPreset": {
       "movie_night": {

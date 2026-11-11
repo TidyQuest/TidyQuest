@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { api, type CoinBoost } from '../../hooks/useApi';
+import { useBusy } from '../../hooks/useBusy';
 import { useTranslation } from '../../hooks/useTranslation';
 import { localeFor } from '../../utils/locale';
 import { familyZone, toHomeInput, fromHomeInput } from '../../utils/clock';
@@ -30,7 +31,9 @@ export function CoinBoostsAdmin({ rooms, language }: { rooms: BoostRoom[]; langu
   const load = () => api.getBoosts().then((b) => { setBoosts(b); setNow(Date.now()); }).catch(() => setBoosts([]));
   useEffect(() => { void load(); }, []);
 
-  const create = async () => {
+  // One at a time: a double tap made the event twice (BUG-35)
+  const [creating, runCreate] = useBusy();
+  const create = () => runCreate(async () => {
     setError('');
     // An empty or half-typed date box can't be read
     const readable = (v: string) => !!v && !Number.isNaN((fromHomeInput(v) ?? new Date(v)).getTime());
@@ -50,7 +53,7 @@ export function CoinBoostsAdmin({ rooms, language }: { rooms: BoostRoom[]; langu
     } catch (err) {
       setError(serverErrorText(err, t));
     }
-  };
+  });
 
   const when = (iso: string) => new Date(iso).toLocaleString(locale, { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', timeZone: familyZone() });
   // Chores to aim the event at, on top of whole rooms
@@ -133,7 +136,7 @@ export function CoinBoostsAdmin({ rooms, language }: { rooms: BoostRoom[]; langu
           </div>
         )}
         <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
-          <button className="tq-btn tq-btn-primary tq-btn-sm" disabled={!title.trim()} onClick={create}>{t('boosts.create')}</button>
+          <button className="tq-btn tq-btn-primary tq-btn-sm" disabled={!title.trim() || creating} onClick={() => void create()}>{t('boosts.create')}</button>
           {error && <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--warm-danger)' }}>{error}</span>}
         </div>
       </div>

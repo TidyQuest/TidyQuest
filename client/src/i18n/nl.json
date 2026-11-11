@@ -394,7 +394,12 @@
       "importInvalid": "Dit is geen TidyQuest-back-up: er staan geen personen of kamers in.",
       "importFailed": "Importeren mislukt: {error}",
       "importNotIn": "Deze back-up heeft jou ({name}) niet als Admin, dus importeren zou je buitensluiten. Log in als een Admin die in de back-up staat en probeer het opnieuw.",
-      "notYetDue": "Dit hoeft nog niet."
+      "notYetDue": "Dit hoeft nog niet.",
+      "cantReachTitle": "TidyQuest is niet bereikbaar",
+      "cantReachText": "Je bent nog ingelogd. Elke paar seconden wordt het opnieuw geprobeerd…",
+      "notYourTurn": "Je bent niet aan de beurt voor dit klusje.",
+      "chorePaused": "Dit klusje is gepauzeerd.",
+      "claimedByTeam": "Een team heeft dit klusje al geclaimd."
     },
     "admin": {
       "whoDidThisTask": "Wie heeft dit klusje gedaan?",
@@ -466,7 +471,8 @@
       "theirRequests": "Beloningen van {name}",
       "boughtBy": "gekocht door {name}",
       "confirmTextFor": "\"{reward}\" kopen voor {name}? Het kost {coins} van de munten van {name}.",
-      "priceChanged": "De prijs is net veranderd naar {coins} munten. Tik op Ja, kopen! om dat te betalen, of op Annuleren."
+      "priceChanged": "De prijs is net veranderd naar {coins} munten. Tik op Ja, kopen! om dat te betalen, of op Annuleren.",
+      "alreadyDecided": "Over dat verzoek was al beslist. De lijst is nu bijgewerkt."
     },
     "rewardsPreset": {
       "movie_night": {

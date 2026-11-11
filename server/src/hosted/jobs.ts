@@ -79,8 +79,16 @@ async function dailyJobs(now: Date): Promise<void> {
 /** Tests: forget the last daily run. */
 export function resetDailyJobs() { dailyRunOn = ''; }
 
+let timer: ReturnType<typeof setInterval> | null = null;
+
 /** Server start: run the jobs now and every 30 seconds. */
 export function startJobs(jobs: Job[]): void {
   void runJobs(jobs);
-  setInterval(() => void runJobs(jobs), 30_000);
+  timer = setInterval(() => void runJobs(jobs), 30_000);
+}
+
+/** Server stop: no more runs. */
+export function stopJobs(): void {
+  if (timer) clearInterval(timer);
+  timer = null;
 }

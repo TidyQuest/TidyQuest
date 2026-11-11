@@ -48,7 +48,7 @@ interface LineTask {
   id: number; health: number; dueDate: string; onDemand?: number | boolean; isSeasonal?: boolean;
   oneTime?: number | boolean; doBy?: string | null; allowEarlyCompletion?: number | boolean; effectiveAssignedUserIds: number[];
   assignmentMode?: string; completedTodayBy?: { userId: number } | null; myPendingCount?: number;
-  teamUp?: { claimedBy: string[] | null } | null;
+  teamUp?: { claimedBy: string[] | null } | null; rotationCurrentUserId?: number | null;
 }
 
 /**
@@ -72,10 +72,12 @@ export function focusLine<T extends LineTask>(tasks: T[], userId: number, missio
     const due = new Date(t.dueDate).getTime();
     return due <= now.getTime() || (!!t.allowEarlyCompletion && due <= endOfToday);
   };
-  // Can this person still do it today? (someone else finished a first-one-wins chore, or a team claimed it)
+  // Can this person still do it today? (someone else finished a first-one-wins chore, a team claimed it, or
+  // it's a sibling's turn: Done would be refused, BUG-37)
   const available = (t: T) => !doneToday.has(t.id) && !(t.myPendingCount ?? 0)
     && !(t.assignmentMode !== 'shared' && t.completedTodayBy)
-    && !t.teamUp?.claimedBy;
+    && !t.teamUp?.claimedBy
+    && !(t.assignmentMode === 'rotating' && !!t.rotationCurrentUserId && t.rotationCurrentUserId !== userId);
   const byNeed = (a: T, b: T) => a.health - b.health || a.id - b.id;
 
   const own = tasks.filter((t) => mine(t) && t.id !== missionTaskId);

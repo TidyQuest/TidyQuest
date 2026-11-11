@@ -9,6 +9,8 @@ import { IconPicker } from '../shared/IconPicker';
 import { CheckIcon, BackIcon, PlusIcon, CoinIcon } from '../icons/UIIcons';
 import { getRoomHealth, notDueYet } from '../../utils/health';
 import { formatNextDue, isTaskForUser, taskNextDue } from '../../utils/tasks';
+import { taskErrorText } from '../../utils/taskError';
+import { useBusy } from '../../hooks/useBusy';
 import { TimerStartButton } from '../shared/ChoreTimer';
 import { useChoreTimer } from '../../hooks/useChoreTimer';
 import { DueOnPicker, ReminderPicker, RotationPeriodPicker, SeasonPicker, StartsOnPicker, StepsField, TimerPicker } from '../shared/ScheduleFields';
@@ -259,7 +261,6 @@ export function RoomDetail({ room, language, isAdmin, currentUserId, currentUser
   const [showTemplates, setShowTemplates] = useState(false);
   const [templateTasks, setTemplateTasks] = useState<Array<{ name: string; translationKey?: string; iconKey?: string; frequencyDays: number; effort: number; isSeasonal?: boolean; selected: boolean }>>([]);
   const [templateLoading, setTemplateLoading] = useState(false);
-  const [templateAdding, setTemplateAdding] = useState(false);
 
   // Initialize percentages evenly for custom mode
   const initPercentages = (userIds: number[]): Record<number, number> => {
@@ -316,15 +317,19 @@ export function RoomDetail({ room, language, isAdmin, currentUserId, currentUser
 
   const handleAdminModalConfirm = async (userIds: number[]) => {
     if (!adminModalTask) return;
+    const allNewAchievements: string[] = [];
     try {
-      const allNewAchievements: string[] = [];
       for (const uid of userIds) {
         const result = await api.completeTask(adminModalTask.id, uid);
         if (result.newAchievements?.length) allNewAchievements.push(...result.newAchievements);
       }
-      if (allNewAchievements.length > 0) onAchievementsUnlocked?.(allNewAchievements);
     } catch (e) {
-      console.error('Failed to complete task for some users:', e);
+      // It didn't go through (the kid already did it, no connection): no green flash, and the box stays open
+      // and says why (BUG-38). Earlier people on the list may have gone through, so reload.
+      onRefresh?.();
+      throw e;
+    } finally {
+      if (allNewAchievements.length > 0) onAchievementsUnlocked?.(allNewAchievements);
     }
     setAdminModalTask(null);
     setAnimatedTask(adminModalTask.id);
@@ -342,20 +347,31 @@ export function RoomDetail({ room, language, isAdmin, currentUserId, currentUser
       assignmentPercentages[u.id] = u.coinPercentage ?? 0;
     }
     const displayedName = translateTask(task.name, task.translationKey);
+    setSaveError('');
     setEditingTask(task.id);
     setEditSchedule(scheduleFromTask(task));
     setEditForm({ name: displayedName, originalName: displayedName, notes: task.notes || '', freqValue: value, freqUnit: unit, effort: task.effort, health: task.health, healthChanged: false, iconKey: task.iconKey || 'sparkle', onDemand: !!task.onDemand, showInDashboard: !!task.showInDashboard, assignmentType, assignmentUserIds, assignmentMode: (task.assignmentMode || 'first') as 'first' | 'shared' | 'custom' | 'rotating', assignmentPercentages, customCoins: task.customCoins ?? '', allowEarlyCompletion: !!task.allowEarlyCompletion, repeatLimit: task.repeatLimit ? String(task.repeatLimit) : '', repeatPeriod: task.repeatPeriod === 'day' ? 'day' : 'week', paused: !!task.pausedAt, pausedUntil: task.pausedUntil || '' });
   };
 
-  const saveEdit = async () => {
+  // One save at a time (BUG-35: a double tap added the chore twice), and a save that fails says so
+  // (BUG-38: Save did nothing)
+  const [saving, runSave] = useBusy();
+  const [saveError, setSaveError] = useState('');
+  const saveEdit = () => runSave(async () => {
     if (!editingTask || !editForm.name.trim()) return;
+    setSaveError('');
     const frequencyDays = freqToDays(editForm.freqValue, editForm.freqUnit);
     const assignmentPayload =
       editForm.assignmentType === 'users' ? { assignedToChildren: false, assignedUserIds: editForm.assignmentUserIds } :
       { assignedToChildren: false, assignedUserIds: [] };
     const assignedUserPercentages = editForm.assignmentMode === 'custom' ? editForm.assignmentPercentages : undefined;
     const nameChanged = editForm.name.trim() !== editForm.originalName.trim();
-    await api.updateTask(editingTask, { ...(nameChanged ? { name: editForm.name } : {}), notes: editForm.notes, frequencyDays, effort: editForm.effort, ...(editForm.healthChanged ? { health: editForm.health } : {}), iconKey: editForm.iconKey, onDemand: editForm.onDemand, showInDashboard: editForm.showInDashboard, assignmentMode: editForm.assignmentMode, assignedUserPercentages, customCoins: editForm.customCoins !== '' ? Number(editForm.customCoins) : null, allowEarlyCompletion: editForm.allowEarlyCompletion, repeatLimit: editForm.onDemand && editForm.repeatLimit ? Number(editForm.repeatLimit) : null, repeatPeriod: editForm.repeatPeriod, ...schedulePayload(editSchedule, { onDemand: editForm.onDemand, rotating: editForm.assignmentMode === 'rotating' }), ...assignmentPayload, paused: editForm.paused, pausedUntil: editForm.paused && editForm.pausedUntil ? editForm.pausedUntil : null });
+    try {
+      await api.updateTask(editingTask, { ...(nameChanged ? { name: editForm.name } : {}), notes: editForm.notes, frequencyDays, effort: editForm.effort, ...(editForm.healthChanged ? { health: editForm.health } : {}), iconKey: editForm.iconKey, onDemand: editForm.onDemand, showInDashboard: editForm.showInDashboard, assignmentMode: editForm.assignmentMode, assignedUserPercentages, customCoins: editForm.customCoins !== '' ? Number(editForm.customCoins) : null, allowEarlyCompletion: editForm.allowEarlyCompletion, repeatLimit: editForm.onDemand && editForm.repeatLimit ? Number(editForm.repeatLimit) : null, repeatPeriod: editForm.repeatPeriod, ...schedulePayload(editSchedule, { onDemand: editForm.onDemand, rotating: editForm.assignmentMode === 'rotating' }), ...assignmentPayload, paused: editForm.paused, pausedUntil: editForm.paused && editForm.pausedUntil ? editForm.pausedUntil : null });
+    } catch (err) {
+      setSaveError(taskErrorText(err, t));
+      return;
+    }
     const editedId = editingTask;
     setEditingTask(null);
     onRefresh?.();
@@ -367,7 +383,7 @@ export function RoomDetail({ room, language, isAdmin, currentUserId, currentUser
       el.classList.add('task-focus-flash');
       setTimeout(() => el.classList.remove('task-focus-flash'), 2000);
     }, 500);
-  };
+  });
 
   // Determine if Done button should be disabled for a task
   function getDoneButtonState(task: Task): { disabled: boolean; label: string } {
@@ -499,34 +515,40 @@ export function RoomDetail({ room, language, isAdmin, currentUserId, currentUser
     }
   };
 
-  const addTask = async () => {
+  const addTask = () => runSave(async () => {
     if (!newTaskName.trim()) {
       setAddTaskError(t('roomDetail.taskNameRequired'));
       return;
     }
     setAddTaskError('');
+    setSaveError('');
     const frequencyDays = freqToDays(newFreqValue, newFreqUnit);
     const assignmentPayload =
       newAssignmentType === 'users' ? { assignedToChildren: false, assignedUserIds: newAssignmentUserIds } :
       { assignedToChildren: false, assignedUserIds: [] };
     const assignedUserPercentages = newAssignmentMode === 'custom' ? newAssignmentPercentages : undefined;
-    await api.createTask(room.id, {
-      name: newTaskName.trim(),
-      notes: newTaskNotes.trim() || undefined,
-      frequencyDays,
-      effort: newTaskEffort,
-      health: newTaskHealth,
-      // Left on the sparkle: the server picks the icon the name suggests
-      iconKey: newTaskIconKey !== 'sparkle' ? newTaskIconKey : undefined,
-      onDemand: newTaskOnDemand,
-      showInDashboard: newTaskShowInDashboard,
-      customCoins: newTaskCustomCoins !== '' ? Number(newTaskCustomCoins) : null,
-      ...(newTaskOnDemand && newRepeatLimit ? { repeatLimit: Number(newRepeatLimit), repeatPeriod: newRepeatPeriod } : {}),
-      assignmentMode: newAssignmentMode,
-      assignedUserPercentages,
-      ...schedulePayload(newSchedule, { onDemand: newTaskOnDemand, rotating: newAssignmentMode === 'rotating' }),
-      ...assignmentPayload,
-    });
+    try {
+      await api.createTask(room.id, {
+        name: newTaskName.trim(),
+        notes: newTaskNotes.trim() || undefined,
+        frequencyDays,
+        effort: newTaskEffort,
+        health: newTaskHealth,
+        // Left on the sparkle: the server picks the icon the name suggests
+        iconKey: newTaskIconKey !== 'sparkle' ? newTaskIconKey : undefined,
+        onDemand: newTaskOnDemand,
+        showInDashboard: newTaskShowInDashboard,
+        customCoins: newTaskCustomCoins !== '' ? Number(newTaskCustomCoins) : null,
+        ...(newTaskOnDemand && newRepeatLimit ? { repeatLimit: Number(newRepeatLimit), repeatPeriod: newRepeatPeriod } : {}),
+        assignmentMode: newAssignmentMode,
+        assignedUserPercentages,
+        ...schedulePayload(newSchedule, { onDemand: newTaskOnDemand, rotating: newAssignmentMode === 'rotating' }),
+        ...assignmentPayload,
+      });
+    } catch (err) {
+      setSaveError(taskErrorText(err, t));
+      return;
+    }
     setNewTaskName('');
     setNewTaskNotes('');
     setNewFreqValue(7);
@@ -545,7 +567,7 @@ export function RoomDetail({ room, language, isAdmin, currentUserId, currentUser
     setNewSchedule(EMPTY_SCHEDULE);
     setShowAddTask(false);
     onRefresh?.();
-  };
+  });
 
   const colStyle = (key: SortKey): React.CSSProperties => ({
     cursor: 'pointer', userSelect: 'none',
@@ -876,7 +898,8 @@ export function RoomDetail({ room, language, isAdmin, currentUserId, currentUser
                       : 100;
                     const editSaveDisabled = editForm.assignmentMode === 'custom' && editCustomTotal !== 100;
                     return (
-                      <div style={{ display: 'flex', gap: 8, justifyContent: 'space-between' }}>
+                      <div style={{ display: 'flex', gap: 8, justifyContent: 'space-between', flexWrap: 'wrap' }}>
+                        {saveError && <div role="alert" style={{ flexBasis: '100%', fontSize: 12, color: 'var(--health-red)', fontWeight: 700, textAlign: 'right' }}>{saveError}</div>}
                         <button onClick={() => deleteTask(task.id)}
                           className="tq-btn-sm"
                           style={{
@@ -886,7 +909,7 @@ export function RoomDetail({ room, language, isAdmin, currentUserId, currentUser
                           }}>{t('roomDetail.deleteTask')}</button>
                         <div style={{ display: 'flex', gap: 8 }}>
                           <button onClick={() => setEditingTask(null)} className="tq-btn tq-btn-secondary tq-btn-sm">{t('common.cancel')}</button>
-                          <button onClick={saveEdit} disabled={editSaveDisabled} className="tq-btn tq-btn-primary tq-btn-sm"
+                          <button onClick={() => void saveEdit()} disabled={editSaveDisabled || saving} className="tq-btn tq-btn-primary tq-btn-sm"
                             style={{ opacity: editSaveDisabled ? 0.5 : 1 }}>{t('common.save')}</button>
                         </div>
                       </div>
@@ -1198,7 +1221,7 @@ export function RoomDetail({ room, language, isAdmin, currentUserId, currentUser
             </div>
           ) : (
             <div style={{ padding: '14px 8px' }}>
-              <button onClick={() => setShowAddTask(true)} className="tq-btn-md"
+              <button onClick={() => { setSaveError(''); setShowAddTask(true); }} className="tq-btn-md"
                 style={{ width: '100%', background: 'none', border: '1.5px dashed var(--warm-border)', borderRadius: 12, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, fontWeight: 700, color: 'var(--warm-text-light)', fontFamily: 'Nunito' }}>
                 <PlusIcon /> {t('todos.add')}
               </button>
@@ -1214,7 +1237,7 @@ export function RoomDetail({ room, language, isAdmin, currentUserId, currentUser
                 <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--warm-text-light)', minWidth: 70 }}>{t('roomDetail.name')}</label>
                 <input value={newTaskName}
                   onChange={(e) => { setNewTaskName(e.target.value); setAddTaskError(''); }}
-                  onKeyDown={(e) => e.key === 'Enter' && addTask()}
+                  onKeyDown={(e) => { if (e.key === 'Enter') void addTask(); }}
                   placeholder={t('roomDetail.taskName')}
                   className="tq-input"
                   style={{ flex: 1, fontWeight: 700, borderColor: addTaskError ? 'var(--health-red)' : undefined }} />
@@ -1422,10 +1445,11 @@ export function RoomDetail({ room, language, isAdmin, currentUserId, currentUser
                   : 100;
                 const addSaveDisabled = newAssignmentMode === 'custom' && addCustomTotal !== 100;
                 return (
-                  <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
+                  <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end', flexWrap: 'wrap' }}>
+                    {saveError && <div role="alert" style={{ flexBasis: '100%', fontSize: 12, color: 'var(--health-red)', fontWeight: 700, textAlign: 'right' }}>{saveError}</div>}
                     <button onClick={() => { setShowAddTask(false); setNewTaskName(''); setNewTaskNotes(''); setNewTaskHealth(0); setNewTaskIconKey('sparkle'); setNewAssignmentType('none'); setNewAssignmentUserIds([]); setNewAssignmentMode('first'); setNewAssignmentPercentages({}); }}
                       className="tq-btn tq-btn-secondary tq-btn-sm">{t('common.cancel')}</button>
-                    <button onClick={addTask} disabled={addSaveDisabled} className="tq-btn tq-btn-primary tq-btn-sm"
+                    <button onClick={() => void addTask()} disabled={addSaveDisabled || saving} className="tq-btn tq-btn-primary tq-btn-sm"
                       style={{ opacity: addSaveDisabled ? 0.5 : 1 }}>{t('roomDetail.addTask')}</button>
                   </div>
                 );
@@ -1434,7 +1458,7 @@ export function RoomDetail({ room, language, isAdmin, currentUserId, currentUser
           </div>
         ) : isAdmin ? (
           <div style={{ padding: '14px 8px', display: 'flex', gap: 8 }}>
-            <button onClick={() => setShowAddTask(true)}
+            <button onClick={() => { setSaveError(''); setShowAddTask(true); }}
               className="tq-btn-md"
               style={{
                 background: 'none', border: '1.5px dashed var(--warm-border)', borderRadius: 12,
@@ -1445,6 +1469,7 @@ export function RoomDetail({ room, language, isAdmin, currentUserId, currentUser
               <PlusIcon /> {t('roomDetail.addTask')}
             </button>
             <button onClick={() => {
+              setSaveError('');
               setShowTemplates(true);
               setTemplateLoading(true);
               api.getDefaultTasks(room.roomType).then((defaults) => {
@@ -1548,27 +1573,34 @@ export function RoomDetail({ room, language, isAdmin, currentUserId, currentUser
               ))}
             </div>
           )}
+          {saveError && <div role="alert" style={{ fontSize: 12, color: 'var(--health-red)', fontWeight: 700, marginTop: 12 }}>{saveError}</div>}
           <div style={{ display: 'flex', gap: 8, marginTop: 16 }}>
             <button className="tq-btn tq-btn-secondary" onClick={() => setShowTemplates(false)}
               style={{ flex: 1 }}>{t('common.cancel')}</button>
-            <button className="tq-btn tq-btn-primary" disabled={templateAdding || !templateTasks.some(t => t.selected)}
-              onClick={async () => {
-                setTemplateAdding(true);
-                const selected = templateTasks.filter(t => t.selected);
-                for (const tt of selected) {
-                  await api.createTask(room.id, {
-                    name: tt.name, effort: tt.effort,
-                    frequencyDays: tt.frequencyDays,
-                    iconKey: tt.iconKey || 'sparkle',
-                    translationKey: tt.translationKey,
-                  });
+            <button className="tq-btn tq-btn-primary" disabled={saving || !templateTasks.some(t => t.selected)}
+              onClick={() => void runSave(async () => {
+                setSaveError('');
+                try {
+                  // One by one; a chore that's added is unticked, so trying again after a failure adds only the rest
+                  for (const tt of templateTasks.filter(t => t.selected)) {
+                    await api.createTask(room.id, {
+                      name: tt.name, effort: tt.effort,
+                      frequencyDays: tt.frequencyDays,
+                      iconKey: tt.iconKey || 'sparkle',
+                      translationKey: tt.translationKey,
+                    });
+                    setTemplateTasks((prev) => prev.map((x) => (x === tt ? { ...x, selected: false } : x)));
+                  }
+                } catch (err) {
+                  setSaveError(taskErrorText(err, t));
+                  onRefresh?.();
+                  return;
                 }
-                setTemplateAdding(false);
                 setShowTemplates(false);
                 onRefresh?.();
-              }}
+              })}
               style={{ flex: 1 }}>
-              {templateAdding ? '...' : `${t('roomDetail.addTask')} (${templateTasks.filter(t => t.selected).length})`}
+              {saving ? '...' : `${t('roomDetail.addTask')} (${templateTasks.filter(t => t.selected).length})`}
             </button>
           </div>
         </div>
