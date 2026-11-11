@@ -7,6 +7,7 @@ import { createTask, updateTask } from './tasks';
 import { MAX_TIMER_MINUTES, isRealDay } from '../utils/schedule';
 import { MAX_STEP_LENGTH, MAX_STEPS, parseSteps, readSteps } from '../utils/focus';
 import { tr } from '../utils/i18n';
+import { completePotIfFull } from '../utils/rewardRules';
 
 /**
  * Tasks and rewards as spreadsheets (Settings → Data). Export writes every task / reward; import
@@ -383,6 +384,8 @@ router.post('/rewards/import', (req: AuthRequest, res: Response) => {
         } else {
           const cols = Object.keys(op.values);
           db.prepare(`UPDATE rewards SET ${cols.map((c) => `${c} = ?`).join(', ')} WHERE id = ?`).run(...cols.map((c) => op.values[c]), op.id);
+          // A lower price can fill a shared reward's pot
+          if ('costCoins' in op.values) completePotIfFull(op.id);
         }
       }
     })();

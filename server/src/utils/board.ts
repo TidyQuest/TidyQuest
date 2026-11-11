@@ -54,7 +54,7 @@ interface Person {
 }
 
 /** Kids, members and participating admins, plus any other admin who did a chore in the period (#152). */
-function participants(earners: Set<number>): Person[] {
+export function participants(earners: Set<number>): Person[] {
   const rows = db.prepare(
     `SELECT id, displayName, avatarColor, avatarType, avatarPreset, avatarPhotoUrl, coins, currentStreak, role, isParticipant FROM users
      ORDER BY displayName`

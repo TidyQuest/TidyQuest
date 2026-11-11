@@ -21,6 +21,7 @@ import { UNLOCKABLE_THEMES, canUse } from '../utils/unlocks';
 import { currentLocalWeek, weekStartDay } from '../utils/periods';
 import { canonicalZone, familyZone } from '../utils/clock';
 import { LOCALES, tr } from '../utils/i18n';
+import { releaseRewardsOf } from '../utils/rewardRules';
 import { isHosted } from '../hosted/context';
 import { removeAccount } from '../hosted/accounts';
 import { fileUrl, oneFile, removeFile, uploadDir } from '../hosted/files';
@@ -129,15 +130,19 @@ router.post('/', (req: AuthRequest, res: Response) => {
     return res.status(403).json({ error: 'Admin only' });
   }
 
-  const { password, displayName, avatarColor, language, role, canLogIn } = req.body as any;
+  const { password, avatarColor, language, role, canLogIn } = req.body as any;
   const noLogin = canLogIn === false;
-  if (!displayName || (!noLogin && (!req.body.username || !password))) {
+  // Spaces around a name are typos, and logging in ignores capitals, so `Wyatt` is taken when `wyatt` exists (BUG-44)
+  const clean = (v: unknown) => (typeof v === 'string' ? v.trim() : '');
+  const displayName = clean(req.body.displayName);
+  const typedUsername = clean(req.body.username);
+  if (!displayName || (!noLogin && (!typedUsername || !password))) {
     return res.status(400).json({ error: 'username, password, and displayName are required' });
   }
   if (noLogin && role === 'admin') return res.status(400).json(PARENT_LOGS_IN);
-  const username = req.body.username || freeUsername(String(displayName));
+  const username = typedUsername || freeUsername(displayName);
 
-  const existing = db.prepare('SELECT id FROM users WHERE username = ?').get(username);
+  const existing = db.prepare('SELECT id FROM users WHERE username = ? COLLATE NOCASE').get(username);
   if (existing) {
     return res.status(409).json({ error: 'Username already taken' });
   }
@@ -802,7 +807,11 @@ router.delete('/:id', (req: AuthRequest, res: Response) => {
   // Their completions go with them, and so do the proof photos on them and their avatar photo (NEW-34)
   const photos = db.prepare('SELECT photoUrl FROM task_completions WHERE userId = ? AND photoUrl IS NOT NULL').all(targetId) as { photoUrl: string }[];
   const avatar = db.prepare('SELECT avatarPhotoUrl FROM users WHERE id = ?').get(targetId) as { avatarPhotoUrl: string | null };
-  db.prepare('DELETE FROM users WHERE id = ?').run(targetId);
+  db.transaction(() => {
+    // Waiting shared rewards are refunded, and rewards only they could see are hidden (BUG-44)
+    releaseRewardsOf(targetId);
+    db.prepare('DELETE FROM users WHERE id = ?').run(targetId);
+  })();
   for (const p of photos) removeFile('proofs', p.photoUrl);
   removeFile('avatars', avatar.avatarPhotoUrl);
   // Hosted mode: their sign-in email goes with them
