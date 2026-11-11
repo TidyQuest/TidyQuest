@@ -60,7 +60,7 @@ export const GUIDE_NL: GuideSection[] = [
       { tip: 'Samsung Internet: tik onderaan op ☰ en dan op Pagina toevoegen aan → Startscherm.' },
       { h: 'Goed om te weten' },
       { ul: [
-        'Updates komen vanzelf: hij opent elke keer de nieuwste versie van de server. Ziet hij er na een update oud uit, sluit hem dan helemaal en open hem opnieuw.',
+        'Updates komen vanzelf: na een update van de server laadt de app de nieuwe versie zodra je hem weer opent of naar een andere pagina gaat. Ziet hij er dan nog oud uit, sluit hem dan helemaal en open hem opnieuw.',
         'Verwijder hem zoals elke andere app: houd het icoon ingedrukt. De gegevens van het gezin blijven op de server.',
         'Voor meldingen op deze telefoon open je TidyQuest vanaf het beginscherm en ga je naar Profiel → Mijn meldingen → Aanzetten op dit apparaat. Berichten kunnen ook via ntfy, Telegram of Home Assistant komen (zie "Meldingen").',
       ] },
@@ -479,6 +479,7 @@ export const GUIDE_NL: GuideSection[] = [
       { qa: [
         { q: 'De knop Klaar! is grijs', a: [
           'Het label zegt waarom: "Niet toegewezen" (klusje van iemand anders), "Wacht op goedkeuring" (een ouder heeft je vorige nog niet goedgekeurd), "Gedaan door …" (iemand heeft het vandaag al gedaan), "Vandaag gedaan / Deze week gedaan" (de herhaallimiet van een klusje voor op elk moment) of "🤝 namen" (een team heeft het vandaag opgeëist).',
+          '"Wachten op …" is een klusje Om de beurt waarbij iemand anders aan de beurt is. Staat er op de knop een dag in plaats van "Klaar!", dan hoeft het klusje pas dan weer.',
           'Als Klaar! een melding "nog niet aan de beurt" geeft: het klusje is nog niet weer aan de beurt. Een ouder kan "Vroegtijdig afronden toestaan" aanzetten voor dagelijkse routines.',
         ] },
         { q: 'Bij het klusje van een kind staat ▶ in plaats van Klaar!', a: [
@@ -642,7 +643,7 @@ export const GUIDE_NL: GuideSection[] = [
           'Op een iPhone of iPad is dat de eerste keer normaal: hij heeft een eigen login, los van die van Safari. Log één keer in en je blijft ingelogd.',
         ] },
         { q: 'Na een update ziet de app op het beginscherm er hetzelfde uit', a: [
-          'Sluit hem helemaal (veeg hem weg in de appkiezer) en open hem opnieuw: bij het starten laadt hij de nieuwste versie.',
+          'Hij laadt de nieuwe versie vanzelf zodra je hem weer opent of naar een andere pagina gaat. Nog steeds hetzelfde? Sluit hem helemaal (veeg hem weg in de appkiezer) en open hem opnieuw.',
         ] },
         { q: 'Iemand kan niet inloggen', a: [
           'Te veel foute wachtwoorden blokkeren inloggen tot 15 minuten: 10 voor één account of 20 vanaf één apparaat. Wacht en probeer opnieuw; een juist wachtwoord zet de teller van het account terug. Bij het wijzigen van je eigen wachtwoord of inlog-e-mailadres, of het verwijderen van het gezin, mag je 5 keer een fout wachtwoord typen in 15 minuten.',
@@ -693,10 +694,13 @@ export const GUIDE_NL: GuideSection[] = [
           'Een gekopieerde link naar een foto opent nergens anders, met opzet: zo blijven foto’s van kinderen privé.',
           'Op tidyquest.org zijn er geen foto’s te zien zolang het gezin gepauzeerd is of de gratis proefperiode voorbij is.',
         ] },
+        { q: 'Er staat "TidyQuest is niet bereikbaar"', a: [
+          'De app kon de server niet bereiken bij het openen: geen wifi of data, of de server start opnieuw op of wordt bijgewerkt. Je blijft ingelogd en de meldingen van dit apparaat blijven aan. Hij probeert het elke paar seconden opnieuw; Opnieuw proberen doet het meteen.',
+        ] },
         { q: 'Ik ben op elk apparaat uitgelogd', a: [
           'Een ouder heeft je wachtwoord veranderd of Uitloggen op alle apparaten gebruikt, of je hebt zelf je wachtwoord veranderd of Overal anders uitloggen gebruikt op een ander apparaat. Log opnieuw in met je huidige wachtwoord.',
           'Eerste ouder: wie de server beheert, heeft je wachtwoord daar misschien gereset (ADMIN_RESET_PASSWORD). Vraag om het nieuwe.',
-          'Een login stopt ook vanzelf na 30 dagen op elk apparaat.',
+          'Een login stopt alleen vanzelf op een apparaat dat TidyQuest 30 dagen niet heeft geopend. Een apparaat dat je gebruikt blijft ingelogd.',
         ] },
         { q: 'Er staat "Dat lukte niet"', a: [
           'De telefoon kon de server niet bereiken (geen wifi of data), of iemand veranderde op hetzelfde moment hetzelfde. De pagina laadt opnieuw; controleer het en probeer het nog eens.',

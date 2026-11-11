@@ -18,6 +18,12 @@ What changed in each release, in plain language, newest first. Releases up to v0
 - **A vacation's Return date is the day you're back**: the vacation ends at the start of that day in the family's
   time zone, and the earliest date you can pick is tomorrow. The family's Return date used to end it the evening
   before in the Americas, and picking today ended it at once.
+- **You stay signed in on the devices you use** (BUG-47). A login used to end 30 days after you signed in, however
+  often you opened the app, so everyone had to sign in again about once a month. It's now renewed while you use the
+  app, and only ends on a device that hasn't opened TidyQuest for 30 days.
+- **An open app picks up a new version by itself** (BUG-48). After the server is updated, the app reloads the next
+  time you come back to it or change page (never while you're typing), instead of showing a blank page until you
+  closed it. Stopping or updating the server now lets what's in progress finish first.
 
 ### Fixed
 
@@ -89,6 +95,24 @@ What changed in each release, in plain language, newest first. Releases up to v0
 - **tidyquest.org account clean-ups** (BUG-25): a parent changed to member or child lets their sign-in email go
   (they still sign in with the family code), used and expired email links are deleted each day, and wrong
   sign-ins or "Forgot password?" requests no longer count as the family using TidyQuest.
+- **A hiccup while the app opens no longer signs you out** (BUG-34). If the server was restarting or the Wi-Fi
+  dropped at that moment, the app signed the person out and turned off that device's notifications. It now says
+  "Can't reach TidyQuest", keeps you signed in, and tries again by itself every few seconds.
+- **Double taps do one thing** (BUG-35): Buy and Chip in on Rewards, Adjust coins in Settings, Done in One thing at
+  a time, adding chores and templates on a room page, Create on a double coins event, and Enter in "+ To-do" could
+  each go through twice. Adding chores from templates no longer gets stuck on "..." when one fails.
+- **Coins and reward requests keep up by themselves** (BUG-36). Your coin balance follows what others do (a parent's
+  approval, a gift) within a few seconds, also after buying something for the mascot; a parent's Rewards page shows
+  new requests without a reload; and Approve or Reject on a request someone else already decided says so and
+  updates the list.
+- **Home only offers Done where it works** (BUG-37). A shared chore with custom coins keeps its Done button for the
+  second person, a Rotating chore says "Waiting for (name)" during someone else's turn (and stays out of One thing
+  at a time), and Your usual shows when a chore is due again instead of a Done that fails. Refusals are in plain
+  words, not codes like "not_your_turn".
+- **Failures look like failures** (BUG-38). When "Who did this task?" can't record the chore, the box stays open and
+  says why, instead of closing or flashing green. A chore form whose save is refused says so and stays open, and
+  the Timer box stops at 240 minutes instead of Save silently doing nothing.
+- **Cheers from others show up on Home while it's open** (BUG-39), not only after a reload.
 
 ## v0.17.2 (2026-11-09)
 

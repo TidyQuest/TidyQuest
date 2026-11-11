@@ -84,7 +84,7 @@ export const GUIDE_EN: GuideSection[] = [
       { tip: 'Samsung Internet: tap ☰ at the bottom, then Add page to → Home screen.' },
       { h: 'Good to know' },
       { ul: [
-        'Updates arrive by themselves: it opens the newest version from the server every time. If it looks out of date after an update, close it fully and open it again.',
+        'Updates arrive by themselves: after the server is updated, the app loads the new version the next time you open it or change page. If it still looks out of date, close it fully and open it again.',
         'Remove it like any other app: press and hold the icon. The family’s data stays on the server.',
         'To get notifications on this phone, open TidyQuest from the home screen, then Profile → My notifications → Turn on for this device. Messages can also come through ntfy, Telegram or Home Assistant (see "Notifications").',
       ] },
@@ -503,6 +503,7 @@ export const GUIDE_EN: GuideSection[] = [
       { qa: [
         { q: 'The Done button is grey', a: [
           'Its label says why: "Not assigned" (someone else’s chore), "Waiting for approval" (a parent hasn’t approved your last one yet), "Done by …" (someone already did it today), "Done today / this week" (an anytime chore’s repeat limit), or "🤝 names" (a team has claimed it today).',
+          '"Waiting for …" is a Rotating chore on someone else’s turn. When the button shows a day instead of Done ("Tomorrow", "In 3 days"), the chore isn’t due again until then.',
           'If Done gives a "not yet due" message: the chore isn’t due again yet. A parent can turn on "Allow early completion" for daily routines.',
         ] },
         { q: 'A kid’s chore shows ▶ instead of Done', a: [
@@ -666,7 +667,7 @@ export const GUIDE_EN: GuideSection[] = [
           'On an iPhone or iPad that’s normal the first time: it keeps its own sign-in, apart from Safari’s. Sign in once and it stays signed in.',
         ] },
         { q: 'After an update the app on the home screen looks the same', a: [
-          'Close it fully (swipe it away in the app switcher) and open it again: it loads the newest version when it starts.',
+          'It loads the new version by itself the next time you open it or change page. Still the same? Close it fully (swipe it away in the app switcher) and open it again.',
         ] },
         { q: 'Someone can’t log in', a: [
           'Too many wrong passwords block logins for up to 15 minutes: 10 for one account, or 20 from one device. Wait and try again; a correct password clears the account’s count. Changing your own password or sign-in email, or deleting the family, allows 5 wrong passwords in 15 minutes.',
@@ -717,10 +718,13 @@ export const GUIDE_EN: GuideSection[] = [
           'A copied link to a photo doesn’t open anywhere else, on purpose: it keeps kids’ photos private.',
           'On tidyquest.org, no photos show while the family is paused or its free trial has ended.',
         ] },
+        { q: 'It says "Can’t reach TidyQuest"', a: [
+          'The app couldn’t reach the server when it opened: no Wi-Fi or data, or the server is restarting or being updated. You stay signed in and this device’s notifications stay on. It tries again every few seconds; Try again does it right away.',
+        ] },
         { q: 'I was signed out on every device', a: [
           'A parent changed your password or used Log out of all devices, or you changed your password or used Log out everywhere else on another device. Log in again with your current password.',
           'First parent: whoever runs the server may have reset your password there (ADMIN_RESET_PASSWORD). Ask them for the new one.',
-          'A login also ends by itself after 30 days on each device.',
+          'A login ends by itself only on a device that hasn’t opened TidyQuest for 30 days. A device you use stays signed in.',
         ] },
         { q: 'It says "That didn’t work"', a: [
           'The phone couldn’t reach the server (no Wi-Fi or data), or someone changed the same thing at the same moment. The page reloads; check it, then try again.',

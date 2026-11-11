@@ -60,7 +60,7 @@ export const GUIDE_FR: GuideSection[] = [
       { tip: 'Samsung Internet : touche ☰ en bas, puis Ajouter la page à → Écran d’accueil.' },
       { h: 'Bon à savoir' },
       { ul: [
-        'Les mises à jour arrivent toutes seules : l’app ouvre à chaque fois la dernière version du serveur. Si elle n’a pas l’air à jour après une mise à jour, ferme-la complètement et rouvre-la.',
+        'Les mises à jour arrivent toutes seules : après une mise à jour du serveur, l’app charge la nouvelle version la prochaine fois que tu l’ouvres ou que tu changes de page. Si elle n’a toujours pas l’air à jour, ferme-la complètement et rouvre-la.',
         'Supprime-la comme n’importe quelle app : appui long sur l’icône. Les données de la famille restent sur le serveur.',
         'Pour recevoir les notifications sur ce téléphone, ouvre TidyQuest depuis l’écran d’accueil, puis Profil → Mes notifications → Activer sur cet appareil. Les messages peuvent aussi passer par ntfy, Telegram ou Home Assistant (voir « Notifications »).',
       ] },
@@ -479,6 +479,7 @@ export const GUIDE_FR: GuideSection[] = [
       { qa: [
         { q: 'Le bouton Fait est grisé', a: [
           'Son libellé dit pourquoi : « Non attribuée » (la tâche de quelqu’un d’autre), « En attente de validation » (un parent n’a pas encore validé ta dernière), « Fait par … » (quelqu’un l’a déjà faite aujourd’hui), « Fait aujourd’hui / Fait cette semaine » (la limite de répétition d’une tâche à tout moment), ou « 🤝 noms » (une équipe l’a prise aujourd’hui).',
+          '« En attente de … » : une tâche en Rotation dont c’est le tour de quelqu’un d’autre. Quand le bouton affiche un jour à la place de Fait, la tâche n’est pas à refaire avant ce jour-là.',
           'Si Fait affiche un message « pas encore due » : la tâche n’est pas encore à refaire. Un parent peut activer « Complétion anticipée » pour les routines quotidiennes.',
         ] },
         { q: 'La tâche d’un enfant affiche ▶ au lieu de Fait', a: [
@@ -642,7 +643,7 @@ export const GUIDE_FR: GuideSection[] = [
           'Sur iPhone ou iPad, c’est normal la première fois : elle garde sa propre connexion, séparée de celle de Safari. Connecte-toi une fois et elle reste connectée.',
         ] },
         { q: 'Après une mise à jour, l’app de l’écran d’accueil n’a pas changé', a: [
-          'Ferme-la complètement (balaie-la dans le sélecteur d’apps) et rouvre-la : elle charge la dernière version au démarrage.',
+          'Elle charge la nouvelle version toute seule la prochaine fois que tu l’ouvres ou que tu changes de page. Toujours pareil ? Ferme-la complètement (balaie-la dans le sélecteur d’apps) et rouvre-la.',
         ] },
         { q: 'Quelqu’un ne peut pas se connecter', a: [
           'Trop de mots de passe erronés bloquent les connexions jusqu’à 15 minutes : 10 pour un compte, ou 20 depuis un appareil. Attends et réessaie ; un bon mot de passe remet à zéro le compteur du compte. Changer ton propre mot de passe ou ton e-mail de connexion, ou supprimer la famille, permet 5 mots de passe erronés en 15 minutes.',
@@ -693,10 +694,13 @@ export const GUIDE_FR: GuideSection[] = [
           'Un lien copié vers une photo ne s’ouvre nulle part ailleurs, exprès : les photos des enfants restent privées.',
           'Sur tidyquest.org, aucune photo ne s’affiche tant que la famille est en pause ou que son essai gratuit est terminé.',
         ] },
+        { q: 'Ça dit « Impossible de joindre TidyQuest »', a: [
+          'L’app n’a pas pu joindre le serveur à l’ouverture : pas de Wi-Fi ni de données, ou le serveur redémarre ou se met à jour. Tu restes connecté et les notifications de cet appareil restent activées. Elle réessaie toutes les quelques secondes ; Réessayer le fait tout de suite.',
+        ] },
         { q: 'J’ai été déconnecté de tous mes appareils', a: [
           'Un parent a changé ton mot de passe ou utilisé Déconnecter de tous les appareils, ou tu as changé ton mot de passe ou utilisé Se déconnecter partout ailleurs sur un autre appareil. Reconnecte-toi avec ton mot de passe actuel.',
           'Premier parent : la personne qui gère le serveur a peut-être réinitialisé ton mot de passe sur le serveur (ADMIN_RESET_PASSWORD). Demande-lui le nouveau.',
-          'Une connexion se termine aussi d’elle-même après 30 jours sur chaque appareil.',
+          'Une connexion ne se termine d’elle-même que sur un appareil qui n’a pas ouvert TidyQuest depuis 30 jours. Un appareil que tu utilises reste connecté.',
         ] },
         { q: 'Il est écrit « Ça n’a pas marché »', a: [
           'Le téléphone n’a pas pu joindre le serveur (pas de Wi-Fi ni de données), ou quelqu’un a changé la même chose au même moment. La page se recharge ; vérifie, puis réessaie.',

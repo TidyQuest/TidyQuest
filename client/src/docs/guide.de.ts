@@ -60,7 +60,7 @@ export const GUIDE_DE: GuideSection[] = [
       { tip: 'Samsung Internet: Tippe unten auf ☰, dann auf Seite hinzufügen zu → Startbildschirm.' },
       { h: 'Gut zu wissen' },
       { ul: [
-        'Updates kommen von selbst: Sie öffnet jedes Mal die neueste Version vom Server. Sieht sie nach einem Update alt aus, schließe sie ganz und öffne sie wieder.',
+        'Updates kommen von selbst: Nach einem Update des Servers lädt die App die neue Version, sobald du sie das nächste Mal öffnest oder die Seite wechselst. Sieht sie dann noch alt aus, schließe sie ganz und öffne sie wieder.',
         'Entfernen wie jede andere App: Symbol gedrückt halten. Die Daten der Familie bleiben auf dem Server.',
         'Für Benachrichtigungen auf diesem Handy öffne TidyQuest vom Home-Bildschirm, dann Profil → Meine Benachrichtigungen → Für dieses Gerät einschalten. Nachrichten können auch über ntfy, Telegram oder Home Assistant kommen (siehe „Benachrichtigungen“).',
       ] },
@@ -479,6 +479,7 @@ export const GUIDE_DE: GuideSection[] = [
       { qa: [
         { q: 'Der Erledigt-Knopf ist grau', a: [
           'Seine Beschriftung sagt, warum: „Nicht zugewiesen“ (die Aufgabe eines anderen), „Wartet auf Freigabe“ (ein Elternteil hat deine letzte noch nicht freigegeben), „Erledigt von …“ (jemand hat sie heute schon gemacht), „Heute erledigt / Diese Woche erledigt“ (das Limit einer jederzeit machbaren Aufgabe) oder „🤝 Namen“ (ein Team hat sie heute übernommen).',
+          '„Warten auf …“ ist eine Aufgabe mit Rotation, bei der jemand anderes an der Reihe ist. Zeigt der Knopf statt Erledigt einen Tag, ist die Aufgabe erst dann wieder fällig.',
           'Wenn Erledigt die Meldung „noch nicht fällig“ zeigt: Die Aufgabe ist noch nicht wieder fällig. Ein Elternteil kann „Frühe Erledigung“ für tägliche Routinen einschalten.',
         ] },
         { q: 'Bei der Aufgabe eines Kindes steht ▶ statt Erledigt', a: [
@@ -642,7 +643,7 @@ export const GUIDE_DE: GuideSection[] = [
           'Auf iPhone und iPad ist das beim ersten Mal normal: Sie hat ihre eigene Anmeldung, getrennt von Safari. Melde dich einmal an, dann bleibst du angemeldet.',
         ] },
         { q: 'Nach einem Update sieht die App auf dem Home-Bildschirm gleich aus', a: [
-          'Schließe sie ganz (im App-Umschalter wegwischen) und öffne sie wieder: Beim Start lädt sie die neueste Version.',
+          'Sie lädt die neue Version von selbst, sobald du sie das nächste Mal öffnest oder die Seite wechselst. Immer noch gleich? Schließe sie ganz (im App-Umschalter wegwischen) und öffne sie wieder.',
         ] },
         { q: 'Jemand kann sich nicht anmelden', a: [
           'Zu viele falsche Passwörter sperren Anmeldungen für bis zu 15 Minuten: 10 bei einem Konto oder 20 von einem Gerät. Warte und versuche es erneut; ein richtiges Passwort setzt den Zähler des Kontos zurück. Beim Ändern des eigenen Passworts oder der Anmelde-E-Mail und beim Löschen der Familie sind 5 falsche Passwörter in 15 Minuten erlaubt.',
@@ -693,10 +694,13 @@ export const GUIDE_DE: GuideSection[] = [
           'Ein kopierter Link zu einem Foto öffnet sich nirgendwo sonst, mit Absicht: So bleiben die Fotos der Kinder privat.',
           'Auf tidyquest.org werden keine Fotos angezeigt, solange die Familie pausiert ist oder ihre kostenlose Testphase vorbei ist.',
         ] },
+        { q: 'Da steht „TidyQuest ist nicht erreichbar“', a: [
+          'Die App hat den Server beim Öffnen nicht erreicht: kein WLAN oder mobile Daten, oder der Server startet gerade neu oder wird aktualisiert. Du bleibst angemeldet, und die Benachrichtigungen dieses Geräts bleiben an. Sie versucht es alle paar Sekunden erneut; Nochmal versuchen macht es sofort.',
+        ] },
         { q: 'Ich wurde auf allen Geräten abgemeldet', a: [
           'Ein Elternteil hat dein Passwort geändert oder Auf allen Geräten abmelden benutzt, oder du hast dein Passwort geändert oder Überall sonst abmelden auf einem anderen Gerät benutzt. Melde dich mit deinem aktuellen Passwort wieder an.',
           'Erster Elternteil: Wer den Server betreibt, hat dein Passwort vielleicht dort zurückgesetzt (ADMIN_RESET_PASSWORD). Frag nach dem neuen.',
-          'Eine Anmeldung endet außerdem nach 30 Tagen auf jedem Gerät von selbst.',
+          'Eine Anmeldung endet nur auf einem Gerät von selbst, das TidyQuest 30 Tage lang nicht geöffnet hat. Ein Gerät, das du benutzt, bleibt angemeldet.',
         ] },
         { q: 'Es erscheint „Das hat nicht geklappt“', a: [
           'Das Handy konnte den Server nicht erreichen (kein WLAN oder keine Daten), oder jemand hat im selben Moment dasselbe geändert. Die Seite lädt neu; prüfe es und versuche es dann noch einmal.',

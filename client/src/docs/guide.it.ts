@@ -60,7 +60,7 @@ export const GUIDE_IT: GuideSection[] = [
       { tip: 'Samsung Internet: tocca ☰ in basso, poi Aggiungi pagina a → Schermata Home.' },
       { h: 'Buono a sapersi' },
       { ul: [
-        'Gli aggiornamenti arrivano da soli: ogni volta apre la versione più recente dal server. Se dopo un aggiornamento sembra vecchia, chiudila del tutto e riaprila.',
+        'Gli aggiornamenti arrivano da soli: dopo un aggiornamento del server, l’app carica la nuova versione la prossima volta che la apri o cambi pagina. Se sembra ancora vecchia, chiudila del tutto e riaprila.',
         'Toglila come qualsiasi altra app: tieni premuta l’icona. I dati della famiglia restano sul server.',
         'Per ricevere le notifiche su questo telefono, apri TidyQuest dalla schermata Home, poi Profilo → Le mie notifiche → Attiva su questo dispositivo. I messaggi possono arrivare anche con ntfy, Telegram o Home Assistant (vedi "Notifiche").',
       ] },
@@ -479,6 +479,7 @@ export const GUIDE_IT: GuideSection[] = [
       { qa: [
         { q: 'Il pulsante Fatto è grigio', a: [
           'La sua etichetta dice perché: "Non assegnata" (la faccenda è di qualcun altro), "In attesa di approvazione" (un genitore non ha ancora approvato la tua ultima), "Fatto da …" (qualcuno l’ha già fatta oggi), "Fatto oggi / questa settimana" (il limite di ripetizioni di una faccenda libera) o "🤝 nomi" (una squadra l’ha presa oggi).',
+          '"In attesa di …" è una faccenda a Rotazione nel turno di qualcun altro. Quando il pulsante mostra un giorno al posto di Fatto, la faccenda non è da rifare fino ad allora.',
           'Se Fatto dà un messaggio "non ancora in scadenza": la faccenda non scade ancora. Un genitore può attivare "Completamento anticipato" per le routine quotidiane.',
         ] },
         { q: 'La faccenda di un bambino mostra ▶ invece di Fatto', a: [
@@ -642,7 +643,7 @@ export const GUIDE_IT: GuideSection[] = [
           'Su iPhone o iPad è normale la prima volta: ha un accesso tutto suo, separato da quello di Safari. Accedi una volta e resti connesso.',
         ] },
         { q: 'Dopo un aggiornamento l’app sulla schermata Home sembra uguale', a: [
-          'Chiudila del tutto (scorrila via nel selettore delle app) e riaprila: all’avvio carica la versione più recente.',
+          'Carica la nuova versione da sola la prossima volta che la apri o cambi pagina. Ancora uguale? Chiudila del tutto (scorrila via nel selettore delle app) e riaprila.',
         ] },
         { q: 'Qualcuno non riesce ad accedere', a: [
           'Troppe password sbagliate bloccano gli accessi fino a 15 minuti: 10 per un account, o 20 da un dispositivo. Aspetta e riprova; una password corretta azzera il conteggio dell’account. Per cambiare la tua password o l’email di accesso, o per eliminare la famiglia, sono ammesse 5 password sbagliate in 15 minuti.',
@@ -693,10 +694,13 @@ export const GUIDE_IT: GuideSection[] = [
           'Un link copiato a una foto non si apre da nessun’altra parte, apposta: così le foto dei bambini restano private.',
           'Su tidyquest.org nessuna foto si vede mentre la famiglia è in pausa o la sua prova gratuita è finita.',
         ] },
+        { q: 'Dice "Impossibile raggiungere TidyQuest"', a: [
+          'L’app non è riuscita a raggiungere il server all’apertura: niente Wi-Fi o dati, oppure il server si sta riavviando o aggiornando. Resti connesso e le notifiche di questo dispositivo restano attive. Riprova da sola ogni pochi secondi; Riprova lo fa subito.',
+        ] },
         { q: 'Sono stato disconnesso da tutti i dispositivi', a: [
           'Un genitore ha cambiato la tua password o ha usato Esci da tutti i dispositivi, oppure hai cambiato la tua password o usato Esci da tutti gli altri dispositivi su un altro dispositivo. Accedi di nuovo con la tua password attuale.',
           'Primo genitore: chi gestisce il server potrebbe aver reimpostato la tua password lì (ADMIN_RESET_PASSWORD). Chiedigli quella nuova.',
-          'Un accesso termina anche da solo dopo 30 giorni su ogni dispositivo.',
+          'Un accesso termina da solo soltanto su un dispositivo che non apre TidyQuest da 30 giorni. Un dispositivo che usi resta connesso.',
         ] },
         { q: 'Dice "Non ha funzionato"', a: [
           'Il telefono non è riuscito a raggiungere il server (niente Wi-Fi o dati), oppure qualcuno ha cambiato la stessa cosa nello stesso momento. La pagina si ricarica; controlla, poi riprova.',

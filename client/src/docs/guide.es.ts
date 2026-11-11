@@ -60,7 +60,7 @@ export const GUIDE_ES: GuideSection[] = [
       { tip: 'Samsung Internet: toca ☰ abajo y luego Añadir página a → Pantalla de inicio.' },
       { h: 'Conviene saber' },
       { ul: [
-        'Las actualizaciones llegan solas: siempre abre la versión más nueva del servidor. Si tras una actualización parece antigua, ciérrala del todo y ábrela de nuevo.',
+        'Las actualizaciones llegan solas: tras actualizar el servidor, la app carga la versión nueva la próxima vez que la abres o cambias de página. Si aún parece antigua, ciérrala del todo y ábrela de nuevo.',
         'Quítala como cualquier otra app: mantén pulsado el icono. Los datos de la familia se quedan en el servidor.',
         'Para recibir notificaciones en este móvil, abre TidyQuest desde la pantalla de inicio y ve a Perfil → Mis notificaciones → Activar en este dispositivo. Los mensajes también pueden llegar por ntfy, Telegram o Home Assistant (mira "Notificaciones").',
       ] },
@@ -479,6 +479,7 @@ export const GUIDE_ES: GuideSection[] = [
       { qa: [
         { q: 'El botón Hecho está gris', a: [
           'Su etiqueta dice por qué: "No asignada" (la tarea de otra persona), "Esperando aprobación" (un padre o una madre aún no ha aprobado tu última), "Hecho por …" (alguien ya la hizo hoy), "Hecho hoy / esta semana" (el límite de repeticiones de una tarea a demanda) o "🤝 nombres" (un equipo la ha reclamado hoy).',
+          '"Esperando a …" es una tarea en Rotación en el turno de otra persona. Cuando el botón muestra un día en vez de Hecho, la tarea no vuelve a tocar hasta entonces.',
           'Si Hecho da un mensaje de "todavía no toca": la tarea aún no toca de nuevo. Un padre o una madre puede activar "Completar antes" para rutinas diarias.',
         ] },
         { q: 'La tarea de un niño muestra ▶ en vez de Hecho', a: [
@@ -642,7 +643,7 @@ export const GUIDE_ES: GuideSection[] = [
           'En iPhone o iPad es normal la primera vez: guarda su propia sesión, aparte de la de Safari. Inicia sesión una vez y se queda así.',
         ] },
         { q: 'Tras una actualización, la app de la pantalla de inicio se ve igual', a: [
-          'Ciérrala del todo (deslízala fuera en el selector de apps) y ábrela otra vez: al arrancar carga la versión más nueva.',
+          'Carga la versión nueva sola la próxima vez que la abres o cambias de página. ¿Sigue igual? Ciérrala del todo (deslízala fuera en el selector de apps) y ábrela otra vez.',
         ] },
         { q: 'Alguien no puede iniciar sesión', a: [
           'Demasiadas contraseñas incorrectas bloquean los inicios de sesión hasta 15 minutos: 10 en una cuenta o 20 desde un dispositivo. Espera e inténtalo de nuevo; una contraseña correcta borra el recuento de la cuenta. Al cambiar tu propia contraseña o tu correo de inicio de sesión, o al eliminar la familia, se permiten 5 contraseñas incorrectas en 15 minutos.',
@@ -693,10 +694,13 @@ export const GUIDE_ES: GuideSection[] = [
           'Un enlace copiado a una foto no se abre en ningún otro sitio, a propósito: así las fotos de los niños siguen siendo privadas.',
           'En tidyquest.org no se ve ninguna foto mientras la familia está en pausa o su prueba gratuita ha terminado.',
         ] },
+        { q: 'Dice "No se puede conectar con TidyQuest"', a: [
+          'La app no pudo conectar con el servidor al abrirse: sin Wi-Fi ni datos, o el servidor se está reiniciando o actualizando. Sigues con la sesión iniciada y las notificaciones de este dispositivo siguen activadas. Lo vuelve a intentar cada pocos segundos; Reintentar lo hace al momento.',
+        ] },
         { q: 'Se cerró mi sesión en todos los dispositivos', a: [
           'Un padre o una madre cambió tu contraseña o usó Cerrar sesión en todos los dispositivos, o tú cambiaste tu contraseña o usaste Cerrar sesión en los demás dispositivos en otro dispositivo. Vuelve a iniciar sesión con tu contraseña actual.',
           'Primer padre o madre: quien gestiona el servidor puede haber restablecido tu contraseña allí (ADMIN_RESET_PASSWORD). Pídele la nueva.',
-          'Además, una sesión termina sola a los 30 días en cada dispositivo.',
+          'Una sesión solo termina sola en un dispositivo que lleva 30 días sin abrir TidyQuest. Un dispositivo que usas sigue con la sesión iniciada.',
         ] },
         { q: 'Dice "No funcionó"', a: [
           'El móvil no pudo llegar al servidor (sin Wi-Fi ni datos), o alguien cambió lo mismo en el mismo momento. La página se recarga; revísala y vuelve a intentarlo.',
