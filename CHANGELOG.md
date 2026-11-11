@@ -136,6 +136,18 @@ What changed in each release, in plain language, newest first. Releases up to v0
   says why, instead of closing or flashing green. A chore form whose save is refused says so and stays open, and
   the Timer box stops at 240 minutes instead of Save silently doing nothing.
 - **Cheers from others show up on Home while it's open** (BUG-39), not only after a reload.
+- **Lowering a shared reward's price gives the extra back** (BUG-44). With 80 coins chipped in toward 100 and the
+  price lowered to 60, the request was made for all 80 and 20 was never returned. The request is now for the new
+  price and the coins over it go back, newest chip-ins first. The same when the new price comes from a spreadsheet.
+- **Deleting a family member no longer strands other people's coins** (BUG-44). If their shared reward was still
+  waiting for a parent, the others' chip-ins vanished with it; it is now turned down first, so everyone else gets
+  their coins back. A reward only that person could see is hidden instead of suddenly showing for everyone
+  (Settings → Rewards Catalog → Show brings it back).
+- **Home's Leaderboard and Coins Status cards leave out parents who don't do chores** (BUG-44), as the Board page
+  already did. A parent with "Participates in tasks" off shows in a period when they did a chore.
+- **A username that differs only in capitals is refused** (BUG-44). Adding `Wyatt` when `wyatt` exists made an
+  account that could never sign in, because signing in ignores capitals. Spaces typed around a new username or name
+  are dropped.
 
 ## v0.17.2 (2026-11-09)
 

@@ -297,7 +297,7 @@ export const GUIDE_ES: GuideSection[] = [
         'Cada recompensa tiene un precio. Los niños la piden; un padre o una madre la aprueba o la rechaza.',
         '¿Aprobaste una por error? Solicitudes de recompensas (debajo del catálogo) tiene Reembolsar junto a cada recompensa aprobada: las monedas vuelven (en un bote compartido, a todos los que aportaron) y se muestra como rechazada.',
         'Reglas por recompensa: un límite (por día, semana, mes o total; por persona o para todos), una ventana de fechas, Rotativa (solo se muestran unas pocas cada semana), quién puede verla, un precio distinto por persona y una categoría.',
-        'Ahorro compartido: cualquiera puede aportar monedas a un bote; cuando está lleno pasa a un padre o una madre. La casilla de aportar empieza en 0 y cada aportación aparece en Actividad. Un bote lleno no se puede cancelar desde Mi historial de canjes ("Compartida: decide un padre o una madre"): un padre o una madre lo rechaza y todos recuperan sus monedas.',
+        'Ahorro compartido: cualquiera puede aportar monedas a un bote; cuando está lleno pasa a un padre o una madre. La casilla de aportar empieza en 0 y cada aportación aparece en Actividad. Un bote lleno no se puede cancelar desde Mi historial de canjes ("Compartida: decide un padre o una madre"): un padre o una madre lo rechaza y todos recuperan sus monedas. Si un padre o una madre baja el precio por debajo de lo que ya hay en el bote, el bote cuenta como lleno y las monedas que sobran se devuelven, empezando por las últimas aportaciones.',
       ] },
       { h: 'Comprar para otra persona' },
       { p: 'Padres: arriba en Recompensas, elige a alguien en Comprar para. La tienda muestra entonces sus monedas, sus precios y sus límites, y lo que compras se paga con sus monedas. Cuenta como entregado, así que nadie tiene que aprobarlo. Actividad y Estadísticas lo muestran como suyo, comprado por ti. Útil para alguien que no inicia sesión (ver "Personas y roles"). Las recompensas compartidas (bote) siguen como antes.' },
@@ -450,6 +450,7 @@ export const GUIDE_ES: GuideSection[] = [
         'Eliminar nunca quita monedas ni borra lo que se hizo: las veces que se completó siguen apareciendo en Actividad, el Tablero y los objetivos con el nombre de la tarea, incluso cuando ya no está en Eliminados recientemente.',
         'Una recompensa eliminada conserva su historial igual: lo que se compró sigue en Estadísticas con su nombre. Una solicitud que aún espera sigue en Solicitudes de recompensas (bajo el catálogo), así que un padre o una madre todavía puede aprobarla o rechazarla, y al rechazarla se devuelven las monedas.',
         'Eliminar una habitación (Habitaciones → 🗑) elimina también sus tareas, y la habitación no se puede recuperar. Su historial y sus monedas se quedan.',
+        'Eliminar a un miembro de la familia (Eliminar usuario, en Ajustes → Miembros de la familia) no se puede deshacer. Su recompensa compartida que aún esperaba a un padre o una madre se rechaza primero, para que los demás recuperen sus aportaciones. Una recompensa que solo esa persona podía ver se oculta en lugar de mostrarse a todos: toca Mostrar en Ajustes → Catálogo de recompensas si debe tenerla otra persona.',
       ] },
       { p: 'Las fotos de prueba van con su tarea: cuando una tarea sale de Eliminados recientemente (o se elimina su habitación), sus fotos se eliminan también, pero quién la hizo y las monedas se quedan. La foto de avatar de una persona se va cuando se la quita.' },
       { p: 'Cada foto se vuelve a dibujar en el móvil o el ordenador antes de subirse, lo que deja fuera dónde y con qué se hizo. Una foto que el navegador no puede leer (algunas fotos HEIC) se rechaza: envía un JPEG o una captura de pantalla.' },
@@ -506,7 +507,7 @@ export const GUIDE_ES: GuideSection[] = [
           'Algunas tarjetas solo aparecen cuando tienen algo (Lo de siempre, Quizá olvidaste estas, Programadas, Completadas hoy), y algunas son solo para padres.',
         ] },
         { q: 'Un padre o una madre no aparece en el Tablero', a: [
-          'Con Participa en tareas desactivado, un padre o una madre solo aparece en el Tablero en un periodo en que hizo una tarea. Para que siga ahí, actívalo en Ajustes → Miembros de la familia. Cada uno puede cambiarlo también en su propia tarjeta.',
+          'Con Participa en tareas desactivado, un padre o una madre solo aparece en el Tablero en un periodo en que hizo una tarea. Para que siga ahí, actívalo en Ajustes → Miembros de la familia. Cada uno puede cambiarlo también en su propia tarjeta. Las tarjetas Clasificación y Estado de monedas del inicio siguen la misma regla.',
         ] },
         { q: 'No aparece Una cosa cada vez, o falta una tarea', a: [
           'Para padres y miembros está desactivada salvo que se elija en Ajustes → Miembros de la familia. Los niños la tienen (un botón en el inicio) salvo que un padre la desactive ahí. También puede estar oculta en Inicio → Personalizar, o desactivada en Ajustes → Funciones.',

@@ -297,7 +297,7 @@ export const GUIDE_NL: GuideSection[] = [
         'Elke beloning heeft een prijs. Kinderen vragen hem aan; een ouder keurt goed of wijst af.',
         'Per ongeluk iets goedgekeurd? Bij Aangevraagde beloningen (onder de winkel) staat naast elke goedgekeurde beloning Terugbetalen: de munten gaan terug (bij een gedeelde pot naar iedereen die bijlegde) en de aanvraag staat als afgewezen.',
         'Regels per beloning: een limiet (per dag, week, maand of ooit; per persoon of voor iedereen), een datumvenster, Wisselend (er zijn er elke week maar een paar te zien), wie hem kan zien, een andere prijs per persoon en een categorie.',
-        'Samen sparen: iedereen kan munten in een pot leggen; als hij vol is gaat hij naar een ouder. Het bijleggen-vak begint op 0 en elke bijdrage staat in Activiteit. Een volle pot kan niet geannuleerd worden vanuit Mijn aanvragen ("Gedeeld: een ouder beslist"): een ouder wijst hem af en iedereen krijgt zijn munten terug.',
+        'Samen sparen: iedereen kan munten in een pot leggen; als hij vol is gaat hij naar een ouder. Het bijleggen-vak begint op 0 en elke bijdrage staat in Activiteit. Een volle pot kan niet geannuleerd worden vanuit Mijn aanvragen ("Gedeeld: een ouder beslist"): een ouder wijst hem af en iedereen krijgt zijn munten terug. Verlaagt een ouder de prijs tot onder wat al in de pot zit, dan telt de pot als vol en gaan de munten boven de nieuwe prijs terug, de nieuwste bijdragen eerst.',
       ] },
       { h: 'Kopen voor iemand anders' },
       { p: 'Ouders: kies bovenaan Beloningen iemand onder Kopen voor. De winkel toont dan hun munten, prijzen en limieten, en wat je koopt wordt met hun munten betaald. Het telt als gegeven, dus niemand hoeft het goed te keuren. Activiteit en Inzichten tonen het als van hen, gekocht door jou. Handig voor iemand die niet inlogt (zie "Mensen en rollen"). Gedeelde beloningen (samen sparen) blijven zoals ze waren.' },
@@ -450,6 +450,7 @@ export const GUIDE_NL: GuideSection[] = [
         'Verwijderen haalt nooit munten weg en wist niet wat gedaan is: eerdere voltooiingen blijven onder de naam van het klusje zichtbaar in Activiteit, het Scorebord en de doelen, ook nadat het uit Onlangs verwijderd is.',
         'Een verwijderde beloning houdt zijn historie op dezelfde manier: wat eerder gekocht is, blijft onder zijn naam in Inzichten. Een aanvraag die nog wacht, blijft in Aangevraagde beloningen (onder de winkel), zodat een ouder hem nog kan goedkeuren of afwijzen; bij afwijzen komen de munten terug.',
         'Een kamer verwijderen (Kamers → 🗑) verwijdert ook de klusjes en de kamer kan niet worden teruggehaald. Hun historie en munten blijven.',
+        'Een gezinslid verwijderen (Gebruiker wissen, in Instellingen → Gezinsleden) kan niet ongedaan worden gemaakt. Een gedeelde beloning van diegene die nog op een ouder wachtte, wordt eerst afgewezen, zodat de anderen hun bijdragen terugkrijgen. Een beloning die alleen diegene kon zien, wordt verborgen in plaats van aan iedereen getoond: tik op Tonen in Instellingen → Beloningen Winkel als iemand anders hem moet krijgen.',
       ] },
       { p: 'Bewijsfoto’s horen bij hun klusje: als een klusje uit Onlangs verwijderd gaat (of de kamer wordt verwijderd), gaan de foto’s ook weg, maar wie het deed en de munten blijven. De avatarfoto van iemand gaat weg als die persoon wordt verwijderd.' },
       { p: 'Elke foto wordt op de telefoon of computer opnieuw getekend voor het uploaden, zodat er niet meer in staat waar en waarmee hij is gemaakt. Een foto die de browser niet kan lezen (sommige HEIC-foto’s) wordt geweigerd: stuur dan een JPEG of een schermafbeelding.' },
@@ -506,7 +507,7 @@ export const GUIDE_NL: GuideSection[] = [
           'Sommige kaarten verschijnen alleen als er iets in staat (Je vaste klusjes, Misschien vergeten, Ingepland, Vandaag gedaan), en sommige zijn alleen voor ouders.',
         ] },
         { q: 'Een ouder staat niet op het Scorebord', a: [
-          'Een ouder bij wie Doet mee aan klusjes uit staat, komt alleen op het Scorebord in een periode waarin hij een klusje deed. Zet het aan in Instellingen → Gezinsleden om hem er altijd op te houden. Elke ouder kan het ook op zijn eigen kaart omzetten.',
+          'Een ouder bij wie Doet mee aan klusjes uit staat, komt alleen op het Scorebord in een periode waarin hij een klusje deed. Zet het aan in Instellingen → Gezinsleden om hem er altijd op te houden. Elke ouder kan het ook op zijn eigen kaart omzetten. De kaarten Scorebord en Muntenstand op Home volgen dezelfde regel.',
         ] },
         { q: 'Eén ding tegelijk ontbreekt, of een klusje staat er niet in', a: [
           'Voor ouders en leden staat het uit, tenzij het is ingesteld bij Instellingen → Gezinsleden. Kinderen hebben het (een knop op Home), tenzij een ouder het daar uitzette. Het kan ook verborgen zijn via Home → Aanpassen, of uitgezet bij Instellingen → Functies.',

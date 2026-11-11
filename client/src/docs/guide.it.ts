@@ -297,7 +297,7 @@ export const GUIDE_IT: GuideSection[] = [
         'Ogni ricompensa ha un prezzo. I bambini la chiedono; un genitore la approva o la rifiuta.',
         'Approvata per sbaglio? Richieste ricompensa (sotto il catalogo) ha Rimborsa accanto a ogni ricompensa approvata: le monete tornano indietro (in un salvadanaio condiviso, a tutti quelli che hanno contribuito) e risulta rifiutata.',
         'Regole per ricompensa: un limite (al giorno, alla settimana, al mese o in totale; per persona o per tutti), un intervallo di date, A rotazione (ogni settimana ne compaiono solo alcune), chi può vederla, un prezzo diverso per persona e una categoria.',
-        'Risparmio condiviso: chiunque può versare monete in un salvadanaio; quando è pieno passa a un genitore. Il campo del contributo parte da 0 e ogni contributo compare in Attività. Un salvadanaio pieno non si può annullare dalle mie richieste ("Condiviso: decide un genitore"): un genitore lo rifiuta e tutti riavranno le loro monete.',
+        'Risparmio condiviso: chiunque può versare monete in un salvadanaio; quando è pieno passa a un genitore. Il campo del contributo parte da 0 e ogni contributo compare in Attività. Un salvadanaio pieno non si può annullare dalle mie richieste ("Condiviso: decide un genitore"): un genitore lo rifiuta e tutti riavranno le loro monete. Se un genitore abbassa il prezzo sotto quello che c’è già nel salvadanaio, il salvadanaio conta come pieno e le monete oltre il nuovo prezzo tornano indietro, a partire dagli ultimi contributi.',
       ] },
       { h: 'Comprare per qualcun altro' },
       { p: 'Genitori: in cima a Ricompense, scegliete qualcuno sotto Compra per. Il negozio mostra allora le sue monete, i suoi prezzi e i suoi limiti, e quello che comprate si paga con le sue monete. Conta come consegnato, quindi nessuno deve approvarlo. Attività e Statistiche lo mostrano come suo, comprato da voi. Comodo per chi non accede (vedi "Persone e ruoli"). Le ricompense condivise (salvadanaio) restano come prima.' },
@@ -450,6 +450,7 @@ export const GUIDE_IT: GuideSection[] = [
         'Eliminare non toglie mai monete né cancella quanto fatto: i completamenti passati continuano a comparire in Attività, nella Classifica e negli obiettivi con il nome della faccenda, anche dopo che esce da Eliminati di recente.',
         'Una ricompensa eliminata conserva la sua cronologia allo stesso modo: ciò che è stato comprato resta in Statistiche con il suo nome. Una richiesta ancora in attesa resta in Richieste ricompensa (sotto il catalogo), così un genitore può ancora approvarla o rifiutarla; rifiutandola le monete tornano indietro.',
         'Eliminare una stanza (Stanze → 🗑) elimina anche le sue faccende, e la stanza non si può riportare indietro. La loro cronologia e le monete restano.',
+        'Eliminare un membro della famiglia (Elimina utente, in Impostazioni → Membri della famiglia) è irreversibile. La sua ricompensa condivisa ancora in attesa di un genitore viene prima rifiutata, così gli altri riavranno i loro contributi. Una ricompensa che solo quella persona poteva vedere viene nascosta invece di essere mostrata a tutti: tocca Mostra in Impostazioni → Catalogo ricompense se deve averla qualcun altro.',
       ] },
       { p: 'Le foto di prova seguono la loro faccenda: quando una faccenda esce da Eliminati di recente (o la sua stanza viene eliminata), anche le sue foto vengono eliminate, ma chi l’ha fatta e le monete restano. La foto avatar di una persona se ne va quando la persona viene rimossa.' },
       { p: 'Ogni foto viene ridisegnata sul telefono o sul computer prima del caricamento, così non dice più dove e con cosa è stata scattata. Una foto che il browser non sa leggere (alcune foto HEIC) viene rifiutata: manda un JPEG o uno screenshot.' },
@@ -506,7 +507,7 @@ export const GUIDE_IT: GuideSection[] = [
           'Alcune schede compaiono solo quando contengono qualcosa (I tuoi soliti, Forse hai dimenticato queste, Programmate, Completate oggi), e alcune sono solo per i genitori.',
         ] },
         { q: 'Un genitore non compare nella Classifica', a: [
-          'Un genitore con Partecipa alle attività disattivato compare nella Classifica solo in un periodo in cui ha svolto un’attività. Per tenerlo sempre, attiva l’opzione in Impostazioni → Membri della famiglia. Ogni genitore può cambiarla anche sulla propria scheda.',
+          'Un genitore con Partecipa alle attività disattivato compare nella Classifica solo in un periodo in cui ha svolto un’attività. Per tenerlo sempre, attiva l’opzione in Impostazioni → Membri della famiglia. Ogni genitore può cambiarla anche sulla propria scheda. Le schede Classifica e Stato monete della Home seguono la stessa regola.',
         ] },
         { q: 'Una cosa alla volta non c’è, o manca una faccenda', a: [
           'Per genitori e membri è disattivata a meno che non sia scelta in Impostazioni → Membri della famiglia. I bambini ce l’hanno (un pulsante nella Home) a meno che un genitore non l’abbia disattivata lì. Può anche essere nascosta in Home → Personalizza, o disattivata in Impostazioni → Funzioni.',

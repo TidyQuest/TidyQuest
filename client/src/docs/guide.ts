@@ -321,7 +321,7 @@ export const GUIDE_EN: GuideSection[] = [
         'Each reward has a price. Kids request it; a parent approves or turns it down.',
         'Approved one by mistake? Reward requests (under the catalog) has Refund next to each approved reward: the coins go back (a shared pot to everyone who chipped in) and it shows as rejected.',
         'Rules per reward: a limit (per day, week, month or ever; per person or for everyone), a date window, Rotating (only a few show each week), who can see it, a different price per person, and a category.',
-        'Shared saving: anyone can chip coins into a pot; when it’s full it goes to a parent. The chip-in box starts at 0, and each chip-in shows in Activity. A full pot can’t be cancelled from My requests ("Shared: a parent decides"): a parent turns it down and everyone gets their coins back.',
+        'Shared saving: anyone can chip coins into a pot; when it’s full it goes to a parent. The chip-in box starts at 0, and each chip-in shows in Activity. A full pot can’t be cancelled from My requests ("Shared: a parent decides"): a parent turns it down and everyone gets their coins back. If a parent lowers the price below what’s already in the pot, the pot counts as full and the coins over the new price go back, newest chip-ins first.',
       ] },
       { h: 'Buying for someone else' },
       { p: 'Parents: at the top of Rewards, pick someone under Buying for. The shop then shows their coins, their prices and their limits, and what you buy is paid from their coins. It counts as handed over, so nobody has to approve it. Activity and Insights show it as theirs, bought by you. Handy for someone who doesn’t log in (see "People and roles"). Shared rewards (chip-in) work as before.' },
@@ -474,6 +474,7 @@ export const GUIDE_EN: GuideSection[] = [
         'Deleting never takes coins away or erases what was done: past completions keep showing in Activity, the Board and goals under the chore’s name, even after it leaves Recently deleted.',
         'A deleted reward keeps its history the same way: what was bought before stays in Insights under its name. A request still waiting stays in Reward requests (under the catalog), so a parent can still approve it or turn it down, which gives the coins back.',
         'Deleting a room (Rooms → 🗑) deletes its chores too, and the room can’t be brought back. Their history and coins stay.',
+        'Deleting a family member (Delete user, in Settings → Family Members) can’t be undone. A shared reward of theirs that was still waiting for a parent is turned down first, so everyone else gets their chip-ins back. A reward that only they could see is hidden, not shown to everyone: tap Show in Settings → Rewards Catalog if someone else should have it.',
       ] },
       { p: 'Proof photos go with their chore: when a chore leaves Recently deleted (or its room is deleted), its photos are deleted too, while who did it and the coins stay. A person’s avatar photo goes when they’re removed.' },
       { p: 'Every photo is redrawn on the phone or computer before it uploads, which leaves out where and with what it was taken. A photo the browser can’t read (some HEIC photos) is refused: send a JPEG or a screenshot instead.' },
@@ -530,7 +531,7 @@ export const GUIDE_EN: GuideSection[] = [
           'Some cards only show when they have something in them (Your usual, Maybe you forgot, Scheduled, Completed today), and some are for parents only.',
         ] },
         { q: 'A parent is missing from the Board', a: [
-          'A parent with Participates in tasks off shows on the Board only in a period when they did a chore. To keep them on it, turn the switch on in Settings → Family Members. Each parent can switch it on their own card too.',
+          'A parent with Participates in tasks off shows on the Board only in a period when they did a chore. To keep them on it, turn the switch on in Settings → Family Members. Each parent can switch it on their own card too. Home’s Leaderboard and Coins Status cards follow the same rule.',
         ] },
         { q: 'One thing at a time is missing, or a chore isn’t in it', a: [
           'For parents and members it’s off unless it’s set in Settings → Family Members. Kids get it (a button on Home) unless a parent turned it off there. It can also be hidden in Home → Customise, or switched off in Settings → Features.',
