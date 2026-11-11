@@ -27,6 +27,29 @@ What changed in each release, in plain language, newest first. Releases up to v0
 
 ### Fixed
 
+- **"Earned a badge" messages arrive after a normal Done** (BUG-40). The pop-up in the app showed, but the kid and
+  the parents only got the 🏆 message when a parent approved a chore. On a team-up, the person who tapped Done now
+  gets theirs too.
+- **A message that waited out quiet hours isn't sent when it's no longer true** (BUG-41). A 21:00 "Still not done"
+  for a chore finished at 21:30 used to arrive at 07:00 anyway. Held messages are now checked again before they go
+  out, and dropped when the chore got done, the day they were about is over ("due today", the morning list, the
+  evening nudge, "for tomorrow", team-up messages), the team-up was called off, the double coins event has ended,
+  the approval was already handled, or that kind was switched off meanwhile. A first reminder that's still waiting
+  when the second one is due is replaced by it, instead of both arriving together.
+- **Starter chores are named in the reader's language in notifications** (BUG-42). A French family saw "Faire la
+  vaisselle" in the app and "Wash Dishes" in the morning list, reminders, nudges, Rescue Mission, approval, cheer,
+  team-up and double coins messages. People with their own channel now get the chore's name in their language.
+- **Evening reminders finish after midnight** (BUG-43). With a reminder at 20:00 the parents' "Still not done" (due
+  at midnight) never came, and from 22:00 the second reminder didn't either.
+- **Each person can turn the Rescue Mission message off for themselves** (BUG-43): it was missing from the list in
+  Profile → My notifications and Settings → Who gets what.
+- **No chore messages on vacation** (BUG-49). Someone on vacation no longer gets "due today", reminders, the morning
+  list, the evening nudge or the Rescue Mission announcement, and the parents aren't told their chore is "still not
+  done"; during Vacation Mode nobody gets them. The Rescue Mission isn't picked during Vacation Mode, and isn't a
+  chore whose people are all away. Approvals, reward requests and the weekly recap still arrive.
+- **A chore waiting for approval counts as done in notifications** (BUG-49). With Strict Mode, the kid no longer
+  gets the second reminder and the evening nudge for it, and the parents no longer get "still not done" while the
+  approval sits in their list.
 - **Custom coins can be set when adding a chore to a room.** The room page's Add form has the same Custom coins box
   as Edit, so you no longer have to save the chore first and then edit it (FIX-29).
 - **Small fixes around the app** (FIX-31):

@@ -390,6 +390,12 @@ export const GUIDE_FR: GuideSection[] = [
         'Le Journal des notifications montre ce qui a été envoyé, mis en attente ou échoué, et pourquoi.',
       ] },
       { p: 'Sur tidyquest.org, les notifications arrivent directement sur les téléphones (web push), ou passent par ntfy.sh ou Telegram. Ton propre serveur ntfy et Home Assistant ne marchent que sur un serveur à la maison.' },
+      { ul: [
+        'Un message retenu pendant les heures calmes ne part que s’il est encore vrai. Il est abandonné si la tâche a été faite entre-temps, si la journée concernée est passée, si l’équipe ou l’événement pièces doublées est terminé, ou si ce type a été désactivé.',
+        'Une personne en vacances ne reçoit aucun message sur les tâches (à faire aujourd’hui, rappels, liste du matin, coup de pouce du soir, Mission sauvetage), et personne n’en reçoit pendant le Mode vacances. Les validations, les demandes de récompense et le bilan de la semaine arrivent toujours.',
+        'Une tâche qui attend la validation d’un parent compte comme faite : plus de rappels à son sujet.',
+        'Les tâches de départ portent leur nom dans la langue de chaque lecteur (sur son propre canal).',
+      ] },
       { h: 'Notifications sur le téléphone (web push)' },
       { p: 'Chacun peut recevoir ses notifications sur son propre téléphone ou ordinateur, directement depuis TidyQuest : pas besoin de ntfy ni de Telegram. Chaque personne l’active elle-même, sur l’appareil : Profil → Mes notifications → Activer sur cet appareil. Ça compte comme son propre canal : ses messages arrivent dans sa langue et ne passent plus par le canal de la famille.' },
       { ul: [
@@ -542,6 +548,11 @@ export const GUIDE_FR: GuideSection[] = [
           'Les types privés (résultats, résumés, rappels, encouragements) demandent le canal personnel de la personne.',
           'Les heures calmes et les heures d’école retiennent les messages jusqu’à leur fin.',
           'Le Journal des notifications montre chaque message et toute erreur.',
+        ] },
+        { q: 'Un rappel ou le message du matin n’est jamais arrivé', a: [
+          'Un message retenu par les heures calmes est abandonné s’il n’est plus vrai à leur fin : la tâche a été faite (ou attend la validation), sa journée est passée, ou l’équipe ou l’événement pièces doublées est terminé.',
+          'Pour une personne en vacances, et pour tout le monde pendant le Mode vacances, les messages sur les tâches ne sont pas envoyés du tout.',
+          'Les relances d’un rappel tardif peuvent arriver après minuit : 2 et 4 heures après l’heure du rappel.',
         ] },
         { q: 'Les notifications sur le téléphone ne s’activent pas', a: [
           '« Il faut une adresse sécurisée » : ouvre TidyQuest à son adresse https://, pas http:// ni un numéro comme 192.168…. Un serveur à la maison doit d’abord avoir HTTPS.',

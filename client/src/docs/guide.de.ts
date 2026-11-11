@@ -390,6 +390,12 @@ export const GUIDE_DE: GuideSection[] = [
         'Das Benachrichtigungsprotokoll zeigt, was gesendet, eingereiht oder fehlgeschlagen ist, und warum.',
       ] },
       { p: 'Auf tidyquest.org kommen Benachrichtigungen direkt aufs Handy (Web-Push) oder über ntfy.sh oder Telegram. Ein eigener ntfy-Server und Home Assistant funktionieren nur auf einem Server zu Hause.' },
+      { ul: [
+        'Eine Nachricht, die während der Ruhezeiten gewartet hat, geht nur raus, wenn sie noch stimmt. Sie entfällt, wenn die Aufgabe inzwischen erledigt wurde, ihr Tag vorbei ist, das Teamwork oder die Aktion mit doppelten Münzen beendet ist oder diese Art ausgeschaltet wurde.',
+        'Wer im Urlaub ist, bekommt keine Nachrichten zu Aufgaben (heute fällig, Erinnerungen, die Liste am Morgen, der Anstupser am Abend, Rettungsmission), und im Urlaubsmodus bekommt sie niemand. Bestätigungen, Belohnungswünsche und der Wochenrückblick kommen weiterhin an.',
+        'Eine Aufgabe, die auf die Bestätigung eines Elternteils wartet, zählt als erledigt: keine Erinnerungen mehr dazu.',
+        'Starter-Aufgaben heißen in der Sprache der Person, die die Nachricht liest (auf ihrem eigenen Kanal).',
+      ] },
       { h: 'Benachrichtigungen aufs Handy (Web-Push)' },
       { p: 'Jeder kann seine Benachrichtigungen direkt von TidyQuest auf das eigene Handy oder den eigenen Computer bekommen: ohne ntfy oder Telegram. Jeder schaltet es selbst ein, auf dem Gerät: Profil → Meine Benachrichtigungen → Für dieses Gerät einschalten. Das zählt als eigener Kanal: Die Nachrichten kommen in der eigenen Sprache und nicht mehr über den Familienkanal.' },
       { ul: [
@@ -542,6 +548,11 @@ export const GUIDE_DE: GuideSection[] = [
           'Private Arten (Ergebnisse, Zusammenfassungen, Hinweise, Anfeuern) brauchen den eigenen Kanal der Person.',
           'Ruhezeiten und Schulzeiten halten Nachrichten zurück, bis sie enden.',
           'Das Benachrichtigungsprotokoll zeigt jede Nachricht und jeden Fehler.',
+        ] },
+        { q: 'Eine Erinnerung oder die Nachricht am Morgen kam nie an', a: [
+          'Eine von den Ruhezeiten zurückgehaltene Nachricht entfällt, wenn sie an deren Ende nicht mehr stimmt: Die Aufgabe wurde erledigt (oder wartet auf Bestätigung), ihr Tag ist vorbei, oder das Teamwork oder die Aktion mit doppelten Münzen ist beendet.',
+          'Für jemanden im Urlaub, und für alle im Urlaubsmodus, werden Nachrichten zu Aufgaben gar nicht erst verschickt.',
+          'Die Folgenachrichten einer späten Erinnerung können nach Mitternacht kommen: 2 und 4 Stunden nach der Erinnerungszeit.',
         ] },
         { q: 'Benachrichtigungen aufs Handy lassen sich nicht einschalten', a: [
           '„Braucht eine sichere Adresse“: Öffne TidyQuest über seine https://-Adresse, nicht über http:// oder eine Zahl wie 192.168…. Ein Server zu Hause braucht zuerst HTTPS.',

@@ -414,6 +414,12 @@ export const GUIDE_EN: GuideSection[] = [
         'The Notification log shows what was sent, queued or failed, and why.',
       ] },
       { p: 'On tidyquest.org, notifications go straight to phones (web push), or through ntfy.sh or Telegram. Your own ntfy server and Home Assistant only work on a home server.' },
+      { ul: [
+        'A message that waited out quiet hours only goes out if it still holds. It’s dropped when the chore got done meanwhile, the day it was about is over, the team-up or double coins event has ended, or that kind was switched off.',
+        'Nobody on vacation gets chore messages (due today, reminders, the morning list, the evening nudge, Rescue Mission), and during Vacation Mode nobody does. Approvals, reward requests and the weekly recap still arrive.',
+        'A chore that’s waiting for a parent’s approval counts as done: no more reminders about it.',
+        'Starter chores are named in each reader’s own language (on their own channel).',
+      ] },
       { h: 'Phone notifications (web push)' },
       { p: 'Everyone can get their notifications on their own phone or computer, straight from TidyQuest: no ntfy or Telegram needed. Each person turns it on themselves, on that device: Profile → My notifications → Turn on for this device. It counts as their own channel, so their messages come in their own language and no longer go to the family channel.' },
       { ul: [
@@ -566,6 +572,11 @@ export const GUIDE_EN: GuideSection[] = [
           'Private kinds (outcomes, summaries, nudges, cheers) need the person’s own channel.',
           'Quiet hours and school hours hold messages until they end.',
           'The Notification log shows each message and any error.',
+        ] },
+        { q: 'A reminder or morning message never came', a: [
+          'A message held by quiet hours is dropped if it no longer holds when they end: the chore was done (or is waiting for approval), its day is over, or the team-up or double coins event has ended.',
+          'For someone on vacation, and for everyone during Vacation Mode, chore messages aren’t sent at all.',
+          'The follow-ups of a late reminder can come after midnight: 2 and 4 hours after the reminder time.',
         ] },
         { q: 'Phone notifications won’t turn on', a: [
           '“Needs a secure address”: open TidyQuest at its https:// address, not http:// or a number like 192.168…. A home server needs HTTPS set up first.',

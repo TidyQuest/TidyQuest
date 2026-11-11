@@ -390,6 +390,12 @@ export const GUIDE_ES: GuideSection[] = [
         'El Registro de notificaciones muestra lo que se envió, quedó en cola o falló, y por qué.',
       ] },
       { p: 'En tidyquest.org, las notificaciones llegan directamente al móvil (web push), o van por ntfy.sh o Telegram. Tu propio servidor ntfy y Home Assistant solo funcionan en un servidor en casa.' },
+      { ul: [
+        'Un mensaje que esperó durante las horas de silencio solo sale si sigue siendo cierto. Se descarta si la tarea ya se hizo, si su día ya pasó, si el equipo o el evento de monedas dobles terminó, o si ese tipo se desactivó.',
+        'Quien está de vacaciones no recibe mensajes sobre tareas (para hoy, recordatorios, la lista de la mañana, el aviso de la tarde, Misión de rescate), y durante el Modo vacaciones no los recibe nadie. Las aprobaciones, las peticiones de recompensa y el resumen semanal siguen llegando.',
+        'Una tarea que espera la aprobación de un padre o una madre cuenta como hecha: no hay más recordatorios sobre ella.',
+        'Las tareas iniciales llevan su nombre en el idioma de quien lee el mensaje (en su propio canal).',
+      ] },
       { h: 'Notificaciones en el móvil (web push)' },
       { p: 'Cada uno puede recibir sus notificaciones en su propio móvil u ordenador, directamente desde TidyQuest: sin necesidad de ntfy ni Telegram. Cada persona las activa ella misma, en el dispositivo: Perfil → Mis notificaciones → Activar en este dispositivo. Cuenta como su propio canal: sus mensajes llegan en su idioma y ya no van al canal de la familia.' },
       { ul: [
@@ -542,6 +548,11 @@ export const GUIDE_ES: GuideSection[] = [
           'Los tipos privados (resultados, resúmenes, avisos, ánimos) necesitan el canal propio de la persona.',
           'Las horas de silencio y el horario escolar retienen los mensajes hasta que terminan.',
           'El Registro de notificaciones muestra cada mensaje y cualquier error.',
+        ] },
+        { q: 'Un recordatorio o el mensaje de la mañana nunca llegó', a: [
+          'Un mensaje retenido por las horas de silencio se descarta si ya no es cierto cuando terminan: la tarea se hizo (o espera aprobación), su día ya pasó, o el equipo o el evento de monedas dobles terminó.',
+          'Para quien está de vacaciones, y para todos durante el Modo vacaciones, los mensajes sobre tareas no se envían.',
+          'Los avisos siguientes de un recordatorio tardío pueden llegar después de medianoche: 2 y 4 horas después de la hora del recordatorio.',
         ] },
         { q: 'Las notificaciones en el móvil no se activan', a: [
           '"Necesita una dirección segura": abre TidyQuest en su dirección https://, no http:// ni un número como 192.168…. Un servidor en casa necesita HTTPS primero.',

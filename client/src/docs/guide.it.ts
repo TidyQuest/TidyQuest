@@ -390,6 +390,12 @@ export const GUIDE_IT: GuideSection[] = [
         'Il Registro notifiche mostra cosa è stato inviato, messo in coda o fallito, e perché.',
       ] },
       { p: 'Su tidyquest.org le notifiche arrivano direttamente sul telefono (web push), oppure passano da ntfy.sh o Telegram. Un tuo server ntfy e Home Assistant funzionano solo su un server di casa.' },
+      { ul: [
+        'Un messaggio che ha aspettato durante le ore di silenzio parte solo se è ancora vero. Viene scartato se la faccenda è stata fatta nel frattempo, se il suo giorno è passato, se la squadra o l’evento monete doppie è finito, o se quel tipo è stato disattivato.',
+        'Chi è in vacanza non riceve messaggi sulle faccende (da fare oggi, promemoria, la lista del mattino, la spintarella della sera, Missione di salvataggio), e durante la Modalità vacanza non li riceve nessuno. Le approvazioni, le richieste di premi e il resoconto settimanale arrivano comunque.',
+        'Una faccenda in attesa dell’approvazione di un genitore conta come fatta: niente più promemoria.',
+        'Le faccende iniziali hanno il nome nella lingua di chi legge il messaggio (sul suo canale personale).',
+      ] },
       { h: 'Notifiche sul telefono (web push)' },
       { p: 'Ognuno può ricevere le sue notifiche sul proprio telefono o computer, direttamente da TidyQuest: senza bisogno di ntfy o Telegram. Ogni persona le attiva da sé, sul dispositivo: Profilo → Le mie notifiche → Attiva su questo dispositivo. Conta come il suo canale personale: i messaggi arrivano nella sua lingua e non passano più dal canale della famiglia.' },
       { ul: [
@@ -542,6 +548,11 @@ export const GUIDE_IT: GuideSection[] = [
           'I tipi privati (esiti, riepiloghi, promemoria, tifo) hanno bisogno del canale personale della persona.',
           'Le ore di silenzio e l’orario scolastico trattengono i messaggi fino alla fine.',
           'Il Registro notifiche mostra ogni messaggio ed eventuali errori.',
+        ] },
+        { q: 'Un promemoria o il messaggio del mattino non è mai arrivato', a: [
+          'Un messaggio trattenuto dalle ore di silenzio viene scartato se alla loro fine non è più vero: la faccenda è stata fatta (o è in attesa di approvazione), il suo giorno è passato, o la squadra o l’evento monete doppie è finito.',
+          'Per chi è in vacanza, e per tutti durante la Modalità vacanza, i messaggi sulle faccende non vengono inviati.',
+          'I solleciti di un promemoria serale possono arrivare dopo mezzanotte: 2 e 4 ore dopo l’ora del promemoria.',
         ] },
         { q: 'Le notifiche sul telefono non si attivano', a: [
           '"Serve un indirizzo sicuro": apri TidyQuest al suo indirizzo https://, non http:// o un numero come 192.168…. Un server di casa deve prima avere HTTPS.',

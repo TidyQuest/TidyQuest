@@ -390,6 +390,12 @@ export const GUIDE_NL: GuideSection[] = [
         'Het Meldingenlogboek toont wat er is verstuurd, in de wachtrij staat of mislukt is, en waarom.',
       ] },
       { p: 'Op tidyquest.org komen meldingen rechtstreeks op de telefoon (web push), of via ntfy.sh of Telegram. Een eigen ntfy-server en Home Assistant werken alleen op een server thuis.' },
+      { ul: [
+        'Een bericht dat tijdens de stille uren heeft gewacht, gaat alleen weg als het nog klopt. Het vervalt als het klusje intussen gedaan is, de dag waar het over ging voorbij is, het Samen doen of de actie met dubbele munten afgelopen is, of die soort is uitgezet.',
+        'Wie op vakantie is, krijgt geen berichten over klusjes (vandaag te doen, herinneringen, het ochtendlijstje, het duwtje ’s avonds, Reddingsmissie), en tijdens de Vakantiemodus krijgt niemand ze. Goedkeuringen, verzoeken om beloningen en de terugblik op de week komen nog wel aan.',
+        'Een klusje dat op goedkeuring van een ouder wacht, telt als gedaan: geen herinneringen meer.',
+        'Startklusjes heten in de taal van wie het bericht leest (op het eigen kanaal).',
+      ] },
       { h: 'Meldingen op je telefoon (web push)' },
       { p: 'Iedereen kan zijn meldingen rechtstreeks van TidyQuest op zijn eigen telefoon of computer krijgen: zonder ntfy of Telegram. Ieder zet het zelf aan, op dat apparaat: Profiel → Mijn meldingen → Aanzetten op dit apparaat. Het telt als een eigen kanaal: de berichten komen in de eigen taal en gaan niet meer naar het gezinskanaal.' },
       { ul: [
@@ -542,6 +548,11 @@ export const GUIDE_NL: GuideSection[] = [
           'Privésoorten (uitkomsten, overzichten, duwtjes, aanmoedigingen) hebben het eigen kanaal van de persoon nodig.',
           'Stille uren en schooltijden houden berichten vast tot ze afgelopen zijn.',
           'Het Meldingenlogboek toont elk bericht en eventuele fouten.',
+        ] },
+        { q: 'Een herinnering of het ochtendbericht is nooit aangekomen', a: [
+          'Een bericht dat door de stille uren is vastgehouden, vervalt als het aan het eind daarvan niet meer klopt: het klusje is gedaan (of wacht op goedkeuring), de dag is voorbij, of het Samen doen of de actie met dubbele munten is afgelopen.',
+          'Voor wie op vakantie is, en voor iedereen tijdens de Vakantiemodus, worden berichten over klusjes helemaal niet verstuurd.',
+          'De vervolgberichten van een late herinnering kunnen na middernacht komen: 2 en 4 uur na de herinneringstijd.',
         ] },
         { q: 'Meldingen op je telefoon gaan niet aan', a: [
           '"Werkt alleen via een veilig adres": open TidyQuest via het https://-adres, niet via http:// of een nummer zoals 192.168…. Een server thuis heeft eerst HTTPS nodig.',
