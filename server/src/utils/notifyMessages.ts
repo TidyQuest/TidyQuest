@@ -1,7 +1,9 @@
 import db, { prepared } from '../database';
-import { tr } from './i18n';
+import { endOfDay } from './clock';
+import { taskName, tr, type TaskLabel } from './i18n';
 import { notifyPeople, type Audience } from './notify';
 import { rotationTurnFor } from './schedule';
+import { awayNow } from './vacation';
 
 /**
  * Every notification the app sends, in each person's language (texts: the "notify" section of the
@@ -23,15 +25,37 @@ export function taskAudience(task: { id: number; roomId: number; assignmentMode?
   return owner ? [owner] : 'everyone';
 }
 
-const room = (name: string | null | undefined) => (name ? ` (${name})` : '');
-
-export function notifyTaskDue(task: { id: number; name: string; roomId: number; roomName: string | null; assignmentMode?: string | null; rotationPeriod?: string | null; rotationCurrentUserId?: number | null }, day: string) {
-  return notifyPeople(taskAudience(task), 'taskDue', (lang) => tr(lang, 'notify.taskDue', { task: task.name }) + room(task.roomName), { dedupeKey: `due:${task.id}:${day}` });
+/**
+ * The same people without the ones on vacation (BUG-49): chore messages don't follow anyone on holiday.
+ * Null when nobody's left to tell, or the whole family is away.
+ */
+export function atHome(audience: Audience, now: Date = new Date()): Audience | null {
+  const away = awayNow(now);
+  if (away.family) return null;
+  if (away.ids.size === 0) return audience;
+  const ids = Array.isArray(audience) ? audience
+    : (db.prepare('SELECT id, role FROM users').all() as Array<{ id: number; role: string }>)
+      .filter((u) => audience === 'everyone' || (audience === 'parents') === (u.role === 'admin')).map((u) => u.id);
+  const home = ids.filter((id) => !away.ids.has(id));
+  return home.length > 0 ? home : null;
 }
 
-export function notifyChoreWaiting(childId: number, taskName: string) {
+const room = (name: string | null | undefined) => (name ? ` (${name})` : '');
+
+/** "Due today", to the task's people who are home. Held past quiet hours only while it's still today and not done. */
+export function notifyTaskDue(task: TaskLabel & { id: number; roomId: number; roomName: string | null; assignmentMode?: string | null; rotationPeriod?: string | null; rotationCurrentUserId?: number | null }, day: string, now: Date = new Date()) {
+  const audience = atHome(taskAudience(task), now);
+  if (!audience) return Promise.resolve();
+  const by = endOfDay(now);
+  return notifyPeople(audience, 'taskDue', (lang) => tr(lang, 'notify.taskDue', { task: taskName(lang, task) }) + room(task.roomName),
+    { now, dedupeKey: `due:${task.id}:${day}`, expiresAt: by, onlyIf: { taskDue: task.id, by: by.toISOString() } });
+}
+
+/** To the parents; a message that waits out quiet hours is dropped if the Done was handled meanwhile. */
+export function notifyChoreWaiting(childId: number, task: TaskLabel, completionId?: number) {
   const name = nameOf(childId);
-  return notifyPeople('parents', 'choreApproval', (lang) => tr(lang, 'notify.choreApproval', { name, task: taskName }));
+  return notifyPeople('parents', 'choreApproval', (lang) => tr(lang, 'notify.choreApproval', { name, task: taskName(lang, task) }),
+    completionId ? { onlyIf: { waiting: completionId } } : {});
 }
 
 export function notifyRewardRequest(userId: number, reward: string, coins: number) {
@@ -54,17 +78,17 @@ export function notifyBadge(userId: number, badge: { titleKey: string | null; ti
 
 // ---------- Outcomes, to the kid only ----------
 
-export function notifyChoreApproved(childId: number, parentId: number, taskName: string, coins: number, extras: { note?: string | null; bonus?: number } = {}) {
+export function notifyChoreApproved(childId: number, parentId: number, task: TaskLabel, coins: number, extras: { note?: string | null; bonus?: number } = {}) {
   const parent = nameOf(parentId);
   // A bonus and a note from the parent ride along: "… +12 coins ⭐ +2 · “Great job!”"
   const more = `${extras.bonus ? ` ⭐ +${extras.bonus}` : ''}${extras.note ? ` · “${extras.note}”` : ''}`;
-  return notifyPeople([childId], 'outcome', (lang) => tr(lang, 'notify.choreApproved', { parent, task: taskName, coins }) + more);
+  return notifyPeople([childId], 'outcome', (lang) => tr(lang, 'notify.choreApproved', { parent, task: taskName(lang, task), coins }) + more);
 }
 
-export function notifyChoreRejected(childId: number, parentId: number, taskName: string, reason?: string | null) {
+export function notifyChoreRejected(childId: number, parentId: number, task: TaskLabel, reason?: string | null) {
   const parent = nameOf(parentId);
   return notifyPeople([childId], 'outcome', (lang) =>
-    reason ? tr(lang, 'notify.choreRejectedReason', { parent, task: taskName, reason }) : tr(lang, 'notify.choreRejected', { parent, task: taskName }));
+    reason ? tr(lang, 'notify.choreRejectedReason', { parent, task: taskName(lang, task), reason }) : tr(lang, 'notify.choreRejected', { parent, task: taskName(lang, task) }));
 }
 
 export function notifyRewardDecision(childId: number, parentId: number, reward: string, approved: boolean) {

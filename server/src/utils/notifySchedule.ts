@@ -1,10 +1,12 @@
 import db, { currentDatabase, prepared } from '../database';
-import { tr } from './i18n';
-import { flushNotificationQueue, notificationsOn, notifyPeople } from './notify';
-import { taskAudience } from './notifyMessages';
-import { isSeasonalNow, nextDueAt } from './schedule';
+import { taskName, tr, type TaskLabel } from './i18n';
+import { dropQueued, flushNotificationQueue, notificationsOn, notifyPeople } from './notify';
+import { atHome, taskAudience } from './notifyMessages';
+import { dueBy } from './notifyChecks';
+import { isSeasonalNow } from './schedule';
 import { localDateStr } from './dateHelpers';
-import { endOfDay, minuteOfDay, wall } from './clock';
+import { at, endOfDay, minuteOfDay, wall } from './clock';
+import { awayNow } from './vacation';
 import { buildBoard } from './board';
 import { weekStartDay } from './periods';
 import { todaysMission } from './rescue';
@@ -14,6 +16,9 @@ import { todaysMission } from './rescue';
  * "today's chores" for kids, the evening nudge, the Sunday recap for parents, and task reminders.
  * Each goes out once (a dedupe key per person and day), within a window after its time, so a restart
  * neither repeats nor sends a 7 am summary at 3 pm.
+ *
+ * Chore messages leave out whoever is on vacation, and say nothing during a family vacation (BUG-49). The
+ * ones about a day ("today's chores") aren't sent after it if they had to wait out quiet hours (BUG-41).
  */
 
 const WINDOW_MIN = 90;
@@ -29,41 +34,47 @@ const inWindow = (current: number, hm: string, offset = 0, window = WINDOW_MIN) 
   return start >= 0 && current >= start && current < start + window;
 };
 
-interface TaskRow { id: number; name: string; roomId: number; onDemand: number; isSeasonal: number; frequencyDays: number; lastCompletedAt: string | null;
+interface TaskRow { id: number; name: string; translationKey: string | null; roomId: number; onDemand: number; isSeasonal: number; frequencyDays: number; lastCompletedAt: string | null;
   scheduleWeekdays: number | null; seasonStartMonth: number | null; seasonEndMonth: number | null; assignmentMode: string | null;
   rotationPeriod: string | null; rotationCurrentUserId: number | null; reminderTime: string | null; reminderDayBefore: number }
 
 const scheduledTasks = (now: Date, only = '') => (prepared(`SELECT * FROM tasks WHERE onDemand = 0 AND archivedAt IS NULL AND deletedAt IS NULL AND pausedAt IS NULL ${only}`).all() as TaskRow[]).filter((t) => !isSeasonalNow(t, now));
-/** Not done and due by the end of `by` */
-const dueBy = (t: TaskRow, by: Date, now: Date) => (nextDueAt(t, now)?.getTime() ?? now.getTime()) <= by.getTime();
-
-/** Each person's own chores still due today (not ones open to anyone), worked out once for everyone. */
-function choresDue(now: Date): Map<number, string[]> {
-  const due = new Map<number, string[]>();
+/**
+ * Each person's own chores still due today (not ones open to anyone, nor ones done and waiting for a
+ * parent), worked out once for everyone.
+ */
+function choresDue(now: Date): Map<number, TaskLabel[]> {
+  const due = new Map<number, TaskLabel[]>();
   const by = endOfDay(now);
   for (const t of scheduledTasks(now)) {
     const audience = taskAudience(t);
     if (!Array.isArray(audience) || !dueBy(t, by, now)) continue;
-    for (const id of audience) due.set(id, [...(due.get(id) ?? []), t.name]);
+    for (const id of audience) due.set(id, [...(due.get(id) ?? []), t]);
   }
   return due;
 }
 
-function list(lang: string, names: string[]) {
-  const shown = names.slice(0, 6).join(', ');
-  return names.length > 6 ? `${shown} ${tr(lang, 'notify.moreItems', { n: names.length - 6 })}` : shown;
+function list(lang: string, tasks: TaskLabel[]) {
+  const shown = tasks.slice(0, 6).map((t) => taskName(lang, t)).join(', ');
+  return tasks.length > 6 ? `${shown} ${tr(lang, 'notify.moreItems', { n: tasks.length - 6 })}` : shown;
 }
 
-const kids = () => db.prepare("SELECT id, displayName, currentStreak, lastActiveDate FROM users WHERE role != 'admin'").all() as Array<{ id: number; displayName: string; currentStreak: number; lastActiveDate: string | null }>;
+/** The kids who are home: nobody during a family vacation, and not the ones on their own */
+function kids(now: Date) {
+  const away = awayNow(now);
+  if (away.family) return [];
+  return (db.prepare("SELECT id, displayName, currentStreak, lastActiveDate FROM users WHERE role != 'admin'").all() as Array<{ id: number; displayName: string; currentStreak: number; lastActiveDate: string | null }>)
+    .filter((k) => !away.ids.has(k.id));
+}
 
 async function morningSummaries(now: Date) {
   if (!notificationsOn('summary') || !inWindow(nowMinutes(now), setting('morningTime'))) return;
   const day = localDateStr(now);
   const due = choresDue(now);
-  for (const kid of kids()) {
+  for (const kid of kids(now)) {
     const chores = due.get(kid.id) ?? [];
     if (chores.length === 0) continue;
-    await notifyPeople([kid.id], 'summary', (lang) => tr(lang, 'notify.morning', { name: kid.displayName, list: list(lang, chores) }), { now, dedupeKey: `morning:${day}` });
+    await notifyPeople([kid.id], 'summary', (lang) => tr(lang, 'notify.morning', { name: kid.displayName, list: list(lang, chores) }), { now, dedupeKey: `morning:${day}`, expiresAt: endOfDay(now) });
   }
 }
 
@@ -74,15 +85,17 @@ async function rescueAnnouncement(now: Date) {
   if (!mission || mission.completedBy || !mission.taskId) return;
   const task = db.prepare('SELECT * FROM tasks WHERE id = ?').get(mission.taskId) as TaskRow | undefined;
   if (!task) return;
+  const audience = atHome(taskAudience(task), now);
+  if (!audience) return;
   const m = String(Math.round(mission.multiplier * 100) / 100);
-  await notifyPeople(taskAudience(task), 'rescue', (lang) => tr(lang, 'notify.rescue', { task: task.name, multiplier: m }), { now, dedupeKey: `rescue:${mission.day}` });
+  await notifyPeople(audience, 'rescue', (lang) => tr(lang, 'notify.rescue', { task: taskName(lang, task), multiplier: m }), { now, dedupeKey: `rescue:${mission.day}`, expiresAt: endOfDay(now) });
 }
 
 async function eveningNudges(now: Date) {
   if (!notificationsOn('nudge') || !inWindow(nowMinutes(now), setting('eveningTime'))) return;
   const day = localDateStr(now);
   const due = choresDue(now);
-  for (const kid of kids()) {
+  for (const kid of kids(now)) {
     const chores = due.get(kid.id) ?? [];
     const streakAtRisk = kid.currentStreak >= 2 && kid.lastActiveDate !== day;
     // This week's goal, if it's close (a quarter or less to go)
@@ -101,7 +114,7 @@ async function eveningNudges(now: Date) {
       chores.length ? tr(lang, 'notify.evening', { list: list(lang, chores) }) : '',
       streakAtRisk ? tr(lang, 'notify.streakRisk', { n: kid.currentStreak }) : '',
       toGoal ? tr(lang, 'notify.goalClose', { n: toGoal }) : '',
-    ].filter(Boolean).join('\n'), { now, dedupeKey: `evening:${day}` });
+    ].filter(Boolean).join('\n'), { now, dedupeKey: `evening:${day}`, expiresAt: endOfDay(now) });
   }
 }
 
@@ -119,29 +132,52 @@ async function weeklyRecap(now: Date) {
   ].filter(Boolean).join('\n'), { now, dedupeKey: `recap:${localDateStr(now)}` });
 }
 
+const STAGE_GAP_MIN = 120;
+const STAGE_WINDOW_MIN = 60;
+
 /**
  * Task reminders: at the task's reminder time on its due day (or the evening before), again two
  * hours later if it's still not done, and two hours after that a parent hears about it.
+ *
+ * A late reminder's follow-ups fall after midnight (20:00 → 22:00 → 00:00), so each stage is looked for
+ * from today's reminder time and from yesterday's (BUG-43). Every stage is tied to the chore still not
+ * being done, also when it has to wait out quiet hours (BUG-41).
  */
 async function taskReminders(now: Date) {
-  if (!notificationsOn('reminder')) return;
-  const current = nowMinutes(now);
+  if (!notificationsOn('reminder') || awayNow(now).family) return;
+  const today = wall(now);
   for (const t of scheduledTasks(now, "AND reminderTime IS NOT NULL AND reminderTime != ''")) {
-    const target = endOfDay(now, t.reminderDayBefore ? 1 : 0);
-    const day = localDateStr(target);
-    for (const stage of [1, 2, 3] as const) {
-      if (!inWindow(current, t.reminderTime!, (stage - 1) * 120, 60)) continue;
-      if (!dueBy(t, target, now)) continue;
-      const audience = taskAudience(t);
-      const key = `reminder:${t.id}:${day}:${stage}`;
-      if (stage < 3) {
-        const msg = stage === 2 ? 'notify.reminderAgain' : t.reminderDayBefore ? 'notify.reminderTomorrow' : 'notify.reminder';
-        await notifyPeople(audience, 'reminder', (lang) => tr(lang, msg, { task: t.name }), { now, dedupeKey: key });
-      } else {
-        const names = Array.isArray(audience)
-          ? (db.prepare(`SELECT displayName FROM users WHERE id IN (${audience.map(() => '?').join(',')})`).all(...audience) as Array<{ displayName: string }>).map((u) => u.displayName).join(', ')
-          : '';
-        await notifyPeople('parents', 'reminder', (lang) => tr(lang, 'notify.reminderParents', { task: t.name }) + (names ? ` (${names})` : ''), { now, dedupeKey: key });
+    const time = minutes(t.reminderTime!);
+    if (time < 0) continue;
+    for (const daysBack of [0, 1]) {
+      // The reminder time on the day this round of reminders began
+      const first = at(today.year, today.month, today.date - daysBack, Math.floor(time / 60), time % 60);
+      const target = endOfDay(first, t.reminderDayBefore ? 1 : 0);
+      const day = localDateStr(target);
+      for (const stage of [1, 2, 3] as const) {
+        const late = (now.getTime() - first.getTime()) / 60000 - (stage - 1) * STAGE_GAP_MIN;
+        if (late < 0 || late >= STAGE_WINDOW_MIN) continue;
+        if (!dueBy(t, target, now)) continue;
+        const people = taskAudience(t);
+        const audience = atHome(people, now);
+        if (!audience) continue; // everyone it's for is on vacation: the parents aren't told either
+        const key = (n: number) => `reminder:${t.id}:${day}:${n}`;
+        const onlyIf = { taskDue: t.id, by: target.toISOString() };
+        if (stage === 1) {
+          const tomorrow = !!t.reminderDayBefore;
+          await notifyPeople(audience, 'reminder', (lang) => tr(lang, tomorrow ? 'notify.reminderTomorrow' : 'notify.reminder', { task: taskName(lang, t) }),
+            { now, dedupeKey: key(1), onlyIf, ...(tomorrow ? { expiresAt: endOfDay(first) } : {}) });
+        } else if (stage === 2) {
+          dropQueued(key(1)); // a first reminder still waiting out quiet hours: this one takes its place
+          await notifyPeople(audience, 'reminder', (lang) => tr(lang, 'notify.reminderAgain', { task: taskName(lang, t) }), { now, dedupeKey: key(2), onlyIf });
+        } else {
+          const parents = atHome('parents', now);
+          if (!parents) continue;
+          const names = Array.isArray(audience)
+            ? (db.prepare(`SELECT displayName FROM users WHERE id IN (${audience.map(() => '?').join(',')})`).all(...audience) as Array<{ displayName: string }>).map((u) => u.displayName).join(', ')
+            : '';
+          await notifyPeople(parents, 'reminder', (lang) => tr(lang, 'notify.reminderParents', { task: taskName(lang, t) }) + (names ? ` (${names})` : ''), { now, dedupeKey: key(3), onlyIf });
+        }
       }
     }
   }

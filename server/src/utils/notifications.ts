@@ -1,6 +1,7 @@
 import db, { prepared } from '../database';
 import { isSeasonalNow, nextDueAt, type ScheduledTask } from './schedule';
 import { dateStr, wall } from './clock';
+import { withWaitingDone } from './notifyChecks';
 import { perFamily } from '../hosted/context';
 import { ntfyServerAllowed } from '../hosted/limits';
 
@@ -264,11 +265,15 @@ export async function sendDueTaskNotificationsIfNeeded(now: Date = new Date()): 
   ).all() as any[];
   // Loaded lazily: notifyMessages imports this module
   const { notifyTaskDue } = await import('./notifyMessages');
+  // Nothing is "due today" while the family is away; the chores come back as due on the return day (BUG-49)
+  const { awayNow } = await import('./vacation');
+  if (awayNow(now).family) return;
   for (const task of tasks) {
     if (isSeasonalNow(task, now)) continue; // outside its season
-    if (getDueIsoDay(task, now) !== today) continue;
+    const asSeen = withWaitingDone(task); // done and waiting for a parent isn't due (BUG-49)
+    if (!asSeen || getDueIsoDay(asSeen, now) !== today) continue;
     if (db.prepare('SELECT id FROM task_due_notifications WHERE taskId = ? AND dueDate = ?').get(task.id, today)) continue;
     db.prepare('INSERT OR IGNORE INTO task_due_notifications (taskId, dueDate) VALUES (?, ?)').run(task.id, today);
-    await notifyTaskDue(task, today);
+    await notifyTaskDue(task, today, now);
   }
 }

@@ -1,10 +1,11 @@
 import db from '../database';
 import { getCoinsByEffortConfig } from './adminHelpers';
+import { endOfDay } from './clock';
 import { localDateStr } from './dateHelpers';
 import { getCoinsForEffort } from './health';
 import { isFeatureOn } from './features';
 import { notifyPeople } from './notify';
-import { tr } from './i18n';
+import { taskName, tr, type TaskLabel } from './i18n';
 
 /**
  * Team-ups (round 3): doing one chore together. Someone invites a partner (or anyone); once someone
@@ -66,7 +67,9 @@ export function teamShares(base: number, members: TeamMember[], bonusPct = teamB
   return new Map(members.map((m) => [m.userId, earners.includes(m) ? share : 0]));
 }
 
-const taskName = (taskId: number) => (db.prepare('SELECT name FROM tasks WHERE id = ?').get(taskId) as { name: string } | undefined)?.name ?? '';
+const labelOf = (taskId: number): TaskLabel => (db.prepare('SELECT name, translationKey FROM tasks WHERE id = ?').get(taskId) as TaskLabel | undefined) ?? { name: '' };
+/** A team-up is for one day: a message about it that waits out quiet hours is dropped after that */
+const today = (now: Date) => ({ now, expiresAt: endOfDay(now) });
 const nameOf = (userId: number) => (db.prepare('SELECT displayName FROM users WHERE id = ?').get(userId) as { displayName: string } | undefined)?.displayName ?? '';
 
 /** Start a team-up on a chore: invite one person, or anyone who can do it. Returns an error code or the team-up. */
@@ -89,7 +92,9 @@ export function startTeamup(taskId: number, userId: number, partnerId: number | 
   const audience = partnerId != null ? [partnerId]
     : (db.prepare('SELECT id FROM users WHERE id != ?').all(userId) as { id: number }[]).map((u) => u.id).filter((uid) => canBeOnTeam(team, uid));
   const from = nameOf(userId);
-  void notifyPeople(audience, 'teamup', (lang) => tr(lang, partnerId != null ? 'notify.teamupInvite' : 'notify.teamupAnyone', { name: from, task: task.name }), { dedupeKey: `teamup:${id}` });
+  // An invite that waits out quiet hours is dropped once the team-up is done or called off (BUG-41)
+  void notifyPeople(audience, 'teamup', (lang) => tr(lang, partnerId != null ? 'notify.teamupInvite' : 'notify.teamupAnyone', { name: from, task: taskName(lang, task) }),
+    { ...today(now), dedupeKey: `teamup:${id}`, onlyIf: { teamupOpen: id } });
   return { teamup: getTeamup(id)! };
 }
 
@@ -104,7 +109,8 @@ export function joinTeamup(id: number, userId: number, now = new Date()): { erro
   if (!canBeOnTeam(teamableTask(task), userId)) return { error: 'not_assigned' };
   db.prepare('INSERT INTO teamup_members (teamupId, userId) VALUES (?, ?)').run(id, userId);
   const who = nameOf(userId);
-  void notifyPeople(t.members.map((m) => m.userId), 'teamup', (lang) => tr(lang, 'notify.teamupJoined', { name: who, task: taskName(t.taskId) }));
+  const label = labelOf(t.taskId);
+  void notifyPeople(t.members.map((m) => m.userId), 'teamup', (lang) => tr(lang, 'notify.teamupJoined', { name: who, task: taskName(lang, label) }), today(now));
   return { teamup: getTeamup(id)! };
 }
 
@@ -133,7 +139,8 @@ export function declineTeamup(id: number, userId: number, now = new Date()): { e
   if (t.invitedUserId !== userId) return { error: 'not_invited' };
   db.prepare("UPDATE teamups SET status = 'cancelled' WHERE id = ?").run(id);
   const who = nameOf(userId);
-  void notifyPeople([t.createdBy], 'teamup', (lang) => tr(lang, 'notify.teamupDeclined', { name: who, task: taskName(t.taskId) }));
+  const label = labelOf(t.taskId);
+  void notifyPeople([t.createdBy], 'teamup', (lang) => tr(lang, 'notify.teamupDeclined', { name: who, task: taskName(lang, label) }), today(now));
   return { ok: true };
 }
 

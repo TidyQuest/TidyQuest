@@ -1,6 +1,6 @@
 import db from '../database';
 import { notifyPeople } from './notify';
-import { tr } from './i18n';
+import { taskName, tr } from './i18n';
 
 /** The cheers anyone can give on someone else's finished chore */
 export const CHEER_EMOJI = ['👏', '🎉', '💪', '⭐'] as const;
@@ -41,8 +41,8 @@ export function cheersFor(completionIds: number[], viewerId: number): Map<number
 export function toggleCheer(completionId: number, fromUserId: number, emoji: string): { error: string } | { cheers: CheerSummary } {
   if (!(CHEER_EMOJI as readonly string[]).includes(emoji)) return { error: 'invalid_emoji' };
   const completion = db.prepare(`
-    SELECT c.id, c.userId, c.status, t.name AS taskName FROM task_completions c JOIN tasks t ON t.id = c.taskId WHERE c.id = ?
-  `).get(completionId) as { id: number; userId: number; status: string; taskName: string } | undefined;
+    SELECT c.id, c.userId, c.status, t.name, t.translationKey FROM task_completions c JOIN tasks t ON t.id = c.taskId WHERE c.id = ?
+  `).get(completionId) as { id: number; userId: number; status: string; name: string; translationKey: string | null } | undefined;
   if (!completion || completion.status !== 'approved') return { error: 'not_found' };
   if (completion.userId === fromUserId) return { error: 'own_chore' };
 
@@ -54,7 +54,7 @@ export function toggleCheer(completionId: number, fromUserId: number, emoji: str
   } else {
     db.prepare('INSERT INTO cheers (completionId, fromUserId, emoji) VALUES (?, ?, ?)').run(completionId, fromUserId, emoji);
     const from = (db.prepare('SELECT displayName FROM users WHERE id = ?').get(fromUserId) as { displayName: string }).displayName;
-    void notifyPeople([completion.userId], 'cheer', (lang) => tr(lang, 'notify.cheer', { name: from, task: completion.taskName, emoji }),
+    void notifyPeople([completion.userId], 'cheer', (lang) => tr(lang, 'notify.cheer', { name: from, task: taskName(lang, completion), emoji }),
       { dedupeKey: `cheer:${completionId}:${fromUserId}` });
   }
   return { cheers: cheersFor([completionId], fromUserId).get(completionId) ?? { counts: [], mine: null } };

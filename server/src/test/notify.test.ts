@@ -49,13 +49,13 @@ describe('Who gets what, where', () => {
 
   it('keeps private messages off the family channel, and respects what each person turned off', async () => {
     const { admin, kid } = await family();
-    await notifyChoreApproved(kid.user.id, admin.user.id, 'Feed the dogs', 5);
+    await notifyChoreApproved(kid.user.id, admin.user.id, { name: 'Feed the dogs' }, 5);
     expect(sent).toEqual([]); // the kid has no channel of their own: nothing goes to everyone
     channel('kid-topic', kid.user.id);
-    await notifyChoreApproved(kid.user.id, admin.user.id, 'Feed the dogs', 5);
+    await notifyChoreApproved(kid.user.id, admin.user.id, { name: 'Feed the dogs' }, 5);
     expect(sent.map((d) => d.message)).toEqual(['✅ Admin approved “Feed the dogs”: +5 coins']);
     db.prepare('UPDATE users SET notifyPrefs = ? WHERE id = ?').run(JSON.stringify({ outcome: false }), kid.user.id);
-    await notifyChoreApproved(kid.user.id, admin.user.id, 'Feed the dogs', 5);
+    await notifyChoreApproved(kid.user.id, admin.user.id, { name: 'Feed the dogs' }, 5);
     expect(sent).toHaveLength(1);
   });
 

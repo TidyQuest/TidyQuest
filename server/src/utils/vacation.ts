@@ -97,3 +97,14 @@ export function endDueVacations(now: Date = new Date()): void {
     if (back && back.getTime() <= now.getTime()) endPersonVacation(u.id, back);
   }
 }
+
+/**
+ * Who's away at `now`: everyone during a family vacation, otherwise the people on their own. Only reads
+ * (endDueVacations does the ending), so a vacation whose return day has come already counts as over.
+ */
+export function awayNow(now: Date = new Date()): { family: boolean; ids: Set<number> } {
+  const over = (endDate: string | null) => { const back = returnMoment(endDate); return !!back && back.getTime() <= now.getTime(); };
+  const family = setting('vacationMode') === '1' && !over(setting('vacationEndDate'));
+  const people = db.prepare('SELECT id, vacationEndDate FROM users WHERE isVacationMode = 1').all() as { id: number; vacationEndDate: string | null }[];
+  return { family, ids: new Set(people.filter((u) => !over(u.vacationEndDate)).map((u) => u.id)) };
+}

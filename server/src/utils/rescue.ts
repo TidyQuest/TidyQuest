@@ -3,6 +3,7 @@ import { localDateStr } from './dateHelpers';
 import { isFeatureOn, rescueMultiplier } from './features';
 import { intervalDays } from './homeSections';
 import { isSeasonalNow, nextDueAt, oneTimeDeadline } from './schedule';
+import { atHome, taskAudience } from './notifyMessages';
 
 /**
  * The Rescue Mission: once a day the most-forgotten chore pays extra (2× by default) to the first
@@ -34,8 +35,10 @@ function behind(t: any, now: Date): number {
 export function rescueCandidates(now: Date = new Date(), exclude: Set<number> = new Set()): Array<{ id: number; name: string; behind: number }> {
   return (db.prepare('SELECT * FROM tasks WHERE archivedAt IS NULL AND deletedAt IS NULL AND pausedAt IS NULL AND onDemand = 0').all() as any[])
     .filter((t) => !exclude.has(t.id) && !isSeasonalNow(t, now))
-    .map((t) => ({ id: t.id as number, name: t.name as string, behind: behind(t, now) }))
-    .filter((c) => c.behind >= 1)
+    .map((t) => ({ task: t, behind: behind(t, now) }))
+    // Not a chore nobody's home to do: none during a family vacation, nor one whose people are all away (BUG-49)
+    .filter((c) => c.behind >= 1 && atHome(taskAudience(c.task), now) !== null)
+    .map((c) => ({ id: c.task.id as number, name: c.task.name as string, behind: c.behind }))
     .sort((a, b) => b.behind - a.behind || a.id - b.id);
 }
 

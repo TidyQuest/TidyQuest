@@ -44,8 +44,9 @@ describe('Cheers', () => {
 
     // Only the first cheer from each person is a message, and only to Cecil's own phone
     await new Promise((r) => setTimeout(r, 20));
-    expect(sent.filter((d) => d.target === 'cecil-phone').map((d) => d.message)).toEqual(['👏 Cylis cheered your “Clean Shower”', '👏 Admin cheered your “Clean Shower”']);
-    expect(sent.filter((d) => d.target === 'family')).toHaveLength(0);
+    // (the Done itself also earned a badge, which Cecil now hears about: BUG-40)
+    expect(sent.filter((d) => d.target === 'cecil-phone' && !d.message.startsWith('🏆')).map((d) => d.message)).toEqual(['👏 Cylis cheered your “Clean Shower”', '👏 Admin cheered your “Clean Shower”']);
+    expect(sent.filter((d) => d.target === 'family' && !d.message.startsWith('🏆'))).toHaveLength(0);
 
     // Shown on Home's "Completed today" and in Activity, with the viewer's own cheer
     const today = (await agent.get('/api/dashboard').set(auth(cylis.token))).body.completedToday;

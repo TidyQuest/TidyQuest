@@ -1,6 +1,6 @@
 import db from '../database';
 import { familyZone } from './clock';
-import { LOCALES, tr } from './i18n';
+import { LOCALES, taskName, tr, type TaskLabel } from './i18n';
 import { notificationsOn, notifyPeople, type Builder } from './notify';
 
 /** A double (triple…) coins event, e.g. getting the house ready for a party. */
@@ -76,7 +76,8 @@ export const boostTaskNames = (b: CoinBoost) => names('tasks', b.taskIds, 'name'
 
 /** "Kitchen, Clean Shower & Tub, Vacuum Living Room +2 more"; '' when it covers everything */
 function targetNames(b: CoinBoost, lang: string): string {
-  const all = [...names('rooms', b.roomIds, 'sortOrder, id'), ...boostTaskNames(b)];
+  const tasks = !b.taskIds ? [] : db.prepare(`SELECT name, translationKey FROM tasks WHERE id IN (${b.taskIds.map(() => '?').join(',')}) ORDER BY name`).all(...b.taskIds) as TaskLabel[];
+  const all = [...names('rooms', b.roomIds, 'sortOrder, id'), ...tasks.map((t) => taskName(lang, t))];
   return all.length > 3 ? `${all.slice(0, 3).join(', ')} ${tr(lang, 'notify.andMore', { n: all.length - 3 })}` : all.join(', ');
 }
 
@@ -99,8 +100,9 @@ function boostMessage(b: CoinBoost, which: 'start' | 'ending'): Builder {
  */
 export async function sendCoinBoostNotificationsIfNeeded(
   now: Date = new Date(),
-  sendFn: (message: string, build: Builder) => Promise<boolean> = async (_message, build) => {
-    await notifyPeople('everyone', 'coinBoost', build, { now });
+  sendFn: (message: string, build: Builder, boostId: number) => Promise<boolean> = async (_message, build, boostId) => {
+    // One that waits out quiet hours is dropped if the event is over by then (BUG-41)
+    await notifyPeople('everyone', 'coinBoost', build, { now, onlyIf: { boost: boostId } });
     return true;
   },
 ): Promise<void> {
@@ -121,7 +123,7 @@ export async function sendCoinBoostNotificationsIfNeeded(
     if (!b.notifiedStart && claim(b.id, 'notifiedStart')) {
       if (skipEnding) claim(b.id, 'notifiedEnding');
       const build = boostMessage(b, 'start');
-      const ok = await sendFn(build('en', null) ?? '', build).catch(() => false);
+      const ok = await sendFn(build('en', null) ?? '', build, b.id).catch(() => false);
       if (!ok) {
         release(b.id, 'notifiedStart');
         if (skipEnding) release(b.id, 'notifiedEnding');
@@ -131,7 +133,7 @@ export async function sendCoinBoostNotificationsIfNeeded(
 
     if (inLastHour && !b.notifiedEnding && claim(b.id, 'notifiedEnding')) {
       const build = boostMessage(b, 'ending');
-      const ok = await sendFn(build('en', null) ?? '', build).catch(() => false);
+      const ok = await sendFn(build('en', null) ?? '', build, b.id).catch(() => false);
       if (!ok) release(b.id, 'notifiedEnding');
     }
   }

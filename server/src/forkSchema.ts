@@ -333,6 +333,9 @@ const NEW_COLUMNS: string[] = [
   `ALTER TABLE tasks ADD COLUMN sharesResetAt TEXT`,
   // The last-done date the latest completion replaced, so undoing that completion puts it back (BUG-46)
   `ALTER TABLE tasks ADD COLUMN prevLastCompletedAt TEXT`,
+  // A held message's end date and the one thing that must still be true when it goes out (BUG-41; utils/notifyChecks.ts)
+  `ALTER TABLE notification_queue ADD COLUMN expiresAt TEXT`,
+  `ALTER TABLE notification_queue ADD COLUMN onlyIf TEXT`,
 ];
 
 /** Fork tables included in backup export/import: key in the backup file -> table. */

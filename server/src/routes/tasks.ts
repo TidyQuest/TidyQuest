@@ -21,7 +21,7 @@ import { isNotificationTypeEnabled, sendNotification } from '../utils/notificati
 import { countInPeriod, parseRepeatLimit, repeatLimitOf } from '../utils/repeatLimits';
 import { boostMultiplierFor } from '../utils/boosts';
 import { trashTask } from '../utils/trash';
-import { tr } from '../utils/i18n';
+import { taskName, tr } from '../utils/i18n';
 import { isFeatureOn } from '../utils/features';
 import { pauseTask, readPausedUntil, resumeTask } from '../utils/pause';
 import { earnShieldAt, lateStreak, nextStreak, noteBrokenStreak, settleStreak } from '../utils/streaks';
@@ -163,9 +163,9 @@ function approveOne(completionId: number, adminId: number, extras: { note: strin
     const kidLang = (db.prepare('SELECT language FROM users WHERE id = ?').get(completion.userId) as { language: string | null } | undefined)?.language ?? 'en';
     db.prepare('UPDATE users SET coins = coins + ? WHERE id = ?').run(extras.bonus, completion.userId);
     db.prepare('INSERT INTO coin_adjustments (userId, amount, reason, createdBy, createdAt) VALUES (?, ?, ?, ?, ?)')
-      .run(completion.userId, extras.bonus, tr(kidLang, 'cheers.bonusReason', { task: task.name }), adminId, new Date().toISOString());
+      .run(completion.userId, extras.bonus, tr(kidLang, 'cheers.bonusReason', { task: taskName(kidLang, task) }), adminId, new Date().toISOString());
   }
-  void notifyChoreApproved(completion.userId, adminId, task.name, completion.coinsEarned, extras);
+  void notifyChoreApproved(completion.userId, adminId, task, completion.coinsEarned, extras);
   if (gamificationOn) void notifyAchievementUnlocksForUser(completion.userId);
   return null;
 }
@@ -198,11 +198,12 @@ function completeAsTeam(task: any, team: Teamup, tapperId: number, tapperIsAdult
   db.prepare("UPDATE teamups SET status = 'done' WHERE id = ?").run(team.id);
   if (rescued) setRescueCompletion(mission!.day, ids[0]);
   if (needsApproval) {
-    void notifyChoreWaiting(team.members.find((m) => m.role === 'child')!.userId, task.name);
+    void notifyChoreWaiting(team.members.find((m) => m.role === 'child')!.userId, task, ids[0]);
     return { coinsEarned: 0, health: task.health, pendingApproval: true, completionId: ids[0], rescued, team: true };
   }
+  // The tapper's badges are recorded here (for the pop-up), so their ids are handed on; a second check would find nothing new (BUG-40)
   const newAchievements = gamificationOn ? checkAndRecordNewAchievements(tapperId) : [];
-  for (const m of team.members) if (gamificationOn) void notifyAchievementUnlocksForUser(m.userId);
+  for (const m of team.members) if (gamificationOn) void notifyAchievementUnlocksForUser(m.userId, m.userId === tapperId ? newAchievements : undefined);
   return { coinsEarned: earned.get(tapperId) ?? 0, health: 100, pendingApproval: false, newAchievements, newAchievementInfo: badgeInfo(tapperId, newAchievements), completionId: ids[0], rescued, team: true };
 }
 
@@ -214,10 +215,11 @@ function removeProofPhotos(where: string, ...params: unknown[]) {
 
 /** Reject one waiting completion (it's removed with its photo; no coins). Returns an error code or null. */
 function rejectPendingCompletion(completionId: number, adminId?: number, reason: string | null = null): string | null {
-  const completion = db.prepare('SELECT c.id, c.status, c.userId, c.teamupId, t.name AS taskName FROM task_completions c LEFT JOIN tasks t ON t.id = c.taskId WHERE c.id = ?')
-    .get(completionId) as { id: number; status: string; userId: number; teamupId: number | null; taskName: string | null } | undefined;
+  const completion = db.prepare('SELECT c.id, c.status, c.userId, c.teamupId, t.name AS taskName, t.translationKey FROM task_completions c LEFT JOIN tasks t ON t.id = c.taskId WHERE c.id = ?')
+    .get(completionId) as { id: number; status: string; userId: number; teamupId: number | null; taskName: string | null; translationKey: string | null } | undefined;
   if (!completion) return 'not_found';
   if (completion.status !== 'pending') return 'completion_not_pending';
+  const label = { name: completion.taskName ?? '', translationKey: completion.translationKey };
   // A team's chore is turned down for everyone, and goes back to the team to try again
   if (completion.teamupId) {
     const team = db.prepare("SELECT id, userId FROM task_completions WHERE teamupId = ? AND status = 'pending' AND id != ?").all(completion.teamupId, completion.id) as { id: number; userId: number }[];
@@ -225,14 +227,14 @@ function rejectPendingCompletion(completionId: number, adminId?: number, reason:
       removeProofPhotos('id = ?', other.id);
       db.prepare('DELETE FROM task_completions WHERE id = ?').run(other.id);
       releaseRescue(other.id);
-      if (adminId) void notifyChoreRejected(other.userId, adminId, completion.taskName ?? '', reason);
+      if (adminId) void notifyChoreRejected(other.userId, adminId, label, reason);
     }
     db.prepare("UPDATE teamups SET status = 'open' WHERE id = ?").run(completion.teamupId);
   }
   removeProofPhotos('id = ?', completion.id);
   db.prepare('DELETE FROM task_completions WHERE id = ?').run(completion.id);
   releaseRescue(completion.id); // a rejected Rescue Mission is open again
-  if (adminId) void notifyChoreRejected(completion.userId, adminId, completion.taskName ?? '', reason);
+  if (adminId) void notifyChoreRejected(completion.userId, adminId, label, reason);
   return null;
 }
 
@@ -1012,7 +1014,7 @@ router.post('/tasks/:id/complete', (req: AuthRequest, res: Response) => {
     const pendingId = Number(db.prepare(
       "INSERT INTO task_completions (taskId, userId, completedAt, coinsEarned, status, note, loggedAt) VALUES (?, ?, ?, ?, 'pending', ?, ?)"
     ).run(task.id, effectiveUserId, when, coins, note, loggedAt).lastInsertRowid);
-    void notifyChoreWaiting(effectiveUserId, task.name);
+    void notifyChoreWaiting(effectiveUserId, task, pendingId);
     if (rescued) setRescueCompletion(mission!.day, pendingId);
     if (!lateDay) endTeamupsFor(task.id);
     return res.json({ coinsEarned: 0, health: task.health, pendingApproval: true, completionId: pendingId, rescued, late: !!lateDay });
@@ -1026,9 +1028,7 @@ router.post('/tasks/:id/complete', (req: AuthRequest, res: Response) => {
   if (!lateDay || isLatestCompletion(task.id, when)) advanceRotation(task, effectiveUserId);
 
   const newAchievements = gamificationOn ? checkAndRecordNewAchievements(effectiveUserId) : [];
-  if (newAchievements.length > 0) {
-    void notifyAchievementUnlocksForUser(effectiveUserId);
-  }
+  if (newAchievements.length > 0) void notifyAchievementUnlocksForUser(effectiveUserId, newAchievements);
   // Titles for the pop-up: parent-made and secret badges aren't in the page data the app already has
   const health = lateDay ? taskHealth(db.prepare('SELECT * FROM tasks WHERE id = ?').get(task.id) as ScheduledTask) : 100;
   res.json({ coinsEarned: coins, health, pendingApproval: false, newAchievements, newAchievementInfo: badgeInfo(effectiveUserId, newAchievements), completionId, rescued, late: !!lateDay });
