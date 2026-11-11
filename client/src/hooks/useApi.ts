@@ -696,11 +696,12 @@ export const api = {
     apiFetch<{ success: boolean }>('/users/notifications-test', { method: 'POST', body: JSON.stringify(data || {}) }),
   /** forUserId: a parent shopping for someone else (ENH-16) gets their rewards, prices and coins */
   getRewards: (forUserId?: number) =>
-    apiFetch<{ rewards: Array<{ id: number; title: string; description?: string | null; costCoins: number }>; mine: Array<{ id: number; title: string; costCoins: number; redeemedAt: string; status: string; boughtByName?: string | null }>; coins?: number }>(forUserId ? `/rewards?for=${forUserId}` : '/rewards'),
+    apiFetch<{ rewards: Array<{ id: number; title: string; description?: string | null; costCoins: number }>; mine: Array<{ id: number; title: string; costCoins: number; redeemedAt: string; status: string; boughtByName?: string | null; rejectNote?: string | null }>; coins?: number }>(forUserId ? `/rewards?for=${forUserId}` : '/rewards'),
   getRewardsAdmin: () =>
     apiFetch<{ rewards: any[]; redemptions: any[]; rotatingPerWeek?: number; rotatingThisWeek?: number[] }>('/rewards/admin'),
-  updateRedemptionStatus: (id: number, status: 'requested' | 'approved' | 'rejected') =>
-    apiFetch<any>(`/rewards/redemptions/${id}`, { method: 'PUT', body: JSON.stringify({ status }) }),
+  /** note: an optional one-line reason for the kid, with a rejection */
+  updateRedemptionStatus: (id: number, status: 'requested' | 'approved' | 'rejected', note?: string) =>
+    apiFetch<any>(`/rewards/redemptions/${id}`, { method: 'PUT', body: JSON.stringify({ status, note: note || undefined }) }),
   refundRedemption: (id: number) =>
     apiFetch<{ id: number; status: string }>(`/rewards/redemptions/${id}/refund`, { method: 'POST' }),
   cancelRedemption: (id: number) =>

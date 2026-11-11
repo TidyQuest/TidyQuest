@@ -472,7 +472,9 @@
       "boughtBy": "gekocht door {name}",
       "confirmTextFor": "\"{reward}\" kopen voor {name}? Het kost {coins} van de munten van {name}.",
       "priceChanged": "De prijs is net veranderd naar {coins} munten. Tik op Ja, kopen! om dat te betalen, of op Annuleren.",
-      "alreadyDecided": "Over dat verzoek was al beslist. De lijst is nu bijgewerkt."
+      "alreadyDecided": "Over dat verzoek was al beslist. De lijst is nu bijgewerkt.",
+      "rejectNotePlaceholder": "Waarom niet? (optioneel)",
+      "rejectNoteLabel": "Een berichtje voor {name}"
     },
     "rewardsPreset": {
       "movie_night": {
@@ -1457,7 +1459,8 @@
       "shieldsSaved": "🛡️ {count} schilden hebben je reeks van {n} dagen gered!",
       "shieldGiven": "🛡️ {name} gaf je een reeksschild. Het redt je reeks als je een dag mist.",
       "recapLastWeek": "📊 Vorige week: {lines}",
-      "testFamily": "👋 Test van TidyQuest, verstuurd door {name} om {time}: de gezinsmeldingen werken!"
+      "testFamily": "👋 Test van TidyQuest, verstuurd door {name} om {time}: de gezinsmeldingen werken!",
+      "parentSays": "{parent} zegt: {reason}"
     },
     "notifyAdmin": {
       "peopleTitle": "Wie krijgt wat",

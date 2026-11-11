@@ -11,7 +11,7 @@ import { notifyAchievementUnlocksForUser, checkAndRecordNewAchievements } from '
 import { badgeInfo } from '../utils/achievementStats';
 import { pinnedTaskIds } from '../utils/homeSections';
 import { claimRescue, releaseRescue, setRescueCompletion, todaysMission } from '../utils/rescue';
-import { notifyChoreApproved, notifyChoreRejected, notifyChoreWaiting } from '../utils/notifyMessages';
+import { notifyChoreApproved, notifyChoreRejected, notifyChoreWaiting, oneLineReason } from '../utils/notifyMessages';
 import { ensureAdmin, getCoinsByEffortConfig, getGlobalVacation, getUserVacation, resolveVacation, isStrictModeEnabled } from '../utils/adminHelpers';
 import { localDateStr } from '../utils/dateHelpers';
 import { dayAt, daySql, endOfDay as endOfDayOf, startOfDay } from '../utils/clock';
@@ -1057,9 +1057,7 @@ router.get('/completions/pending', (req: AuthRequest, res: Response) => {
 
 /** The optional one-line reason a parent gives when rejecting (sent to the kid). undefined = too long. */
 function parseRejectReason(body: any): string | null | undefined {
-  const reason = typeof body?.reason === 'string' ? body.reason.trim().replace(/\s+/g, ' ') : '';
-  if (reason.length > 200) return undefined;
-  return reason || null;
+  return oneLineReason(body?.reason);
 }
 
 const PENDING_ERRORS: Record<string, number> = { not_found: 404, task_not_found: 404, completion_not_pending: 409 };

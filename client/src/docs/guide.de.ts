@@ -294,7 +294,7 @@ export const GUIDE_DE: GuideSection[] = [
       { where: 'Einstellungen → Belohnungskatalog, Ziele pro Mitglied, Münzen pro Aufwand' },
       { h: 'Belohnungen' },
       { ul: [
-        'Jede Belohnung hat einen Preis. Kinder fragen sie an; ein Elternteil gibt sie frei oder lehnt sie ab.',
+        'Jede Belohnung hat einen Preis. Kinder fragen sie an; ein Elternteil gibt sie frei oder lehnt sie ab. Ablehnen öffnet ein Feld für eine optionale einzeilige Notiz (warum nicht, oder wann man wieder fragen kann). Das Kind bekommt sie mit seiner Benachrichtigung und sieht sie unter der Anfrage in Mein Einlöseverlauf; bleibt das Feld leer, wird ohne Notiz abgelehnt.',
         'Aus Versehen freigegeben? Unter Belohnungsanfragen (unter dem Katalog) steht neben jeder freigegebenen Belohnung Erstatten: Die Münzen gehen zurück (bei einem gemeinsamen Topf an alle, die eingezahlt haben), und sie wird als abgelehnt angezeigt.',
         'Regeln pro Belohnung: ein Limit (pro Tag, Woche, Monat oder insgesamt; pro Person oder für alle), ein Zeitfenster, Wechselnd (nur einige erscheinen pro Woche), wer sie sieht, ein anderer Preis pro Person und eine Kategorie.',
         'Gemeinsam sparen: Jeder kann Münzen in einen Topf beisteuern; ist er voll, geht er an ein Elternteil. Das Feld zum Beisteuern beginnt bei 0, und jede Einzahlung erscheint unter Aktivität. Ein voller Topf lässt sich unter „Meine Anfragen“ nicht absagen („Gemeinsam: ein Elternteil entscheidet“): Ein Elternteil lehnt ihn ab, und alle bekommen ihre Münzen zurück. Senkt ein Elternteil den Preis unter das, was schon im Topf ist, gilt der Topf als voll, und die Münzen über dem neuen Preis gehen zurück, die neuesten Einzahlungen zuerst.',

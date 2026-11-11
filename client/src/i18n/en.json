@@ -382,7 +382,7 @@
       "alreadyDoneToday": "You already completed this task today!",
       "alreadyDoneByOther": "Someone else already completed this task today!",
       "notAssigned": "This task is not assigned to you",
-      "pendingApproval": "Completion submitted. Waiting for admin approval.",
+      "pendingApproval": "Sent! Waiting for a parent to approve.",
       "doneBy": "Done by {name}",
       "childrenGroup": "Children",
       "tasksSubtitle": "Every task in every room",
@@ -472,7 +472,9 @@
       "boughtBy": "bought by {name}",
       "confirmTextFor": "Buy \"{reward}\" for {name}? It costs {coins} of their coins.",
       "priceChanged": "The price just changed to {coins} coins. Tap Confirm to pay that, or Cancel.",
-      "alreadyDecided": "That request was already decided. The list is up to date now."
+      "alreadyDecided": "That request was already decided. The list is up to date now.",
+      "rejectNotePlaceholder": "Why not? (optional)",
+      "rejectNoteLabel": "A note for {name}"
     },
     "rewardsPreset": {
       "movie_night": {
@@ -1457,7 +1459,8 @@
       "shieldsSaved": "🛡️ {count} shields saved your {n}-day streak!",
       "shieldGiven": "🛡️ {name} gave you a streak shield. It saves your streak if you miss a day.",
       "recapLastWeek": "📊 Last week: {lines}",
-      "testFamily": "👋 Test from TidyQuest, sent by {name} at {time}: family notifications work!"
+      "testFamily": "👋 Test from TidyQuest, sent by {name} at {time}: family notifications work!",
+      "parentSays": "{parent} says: {reason}"
     },
     "notifyAdmin": {
       "peopleTitle": "Who gets what",

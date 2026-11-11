@@ -108,7 +108,8 @@ function AppContent() {
   const roomsRefreshInFlight = useRef<Promise<void> | null>(null);
   const [gamificationEnabled, setGamificationEnabled] = useState(true);
   const [confetti, setConfetti] = useState(false);
-  const [taskErrorMsg, setTaskErrorMsg] = useState<string | null>(null);
+  // The short banner after a Done: red when it failed, green (ok) when it only waits for a parent (FIX-33)
+  const [taskMsg, setTaskMsg] = useState<{ text: string; ok?: boolean } | null>(null);
   const [photoProblem, setPhotoProblem] = useState<PhotoProblem | null>(null);
   const [unlockedAchievements, setUnlockedAchievements] = useState<string[]>([]);
   // Names for the pop-up from the completion itself (parent-made and secret badges aren't in the page data yet)
@@ -325,8 +326,8 @@ function AppContent() {
       }
       if (result.pendingApproval) {
         setConfetti(false);
-        setTaskErrorMsg(t('app.pendingApproval'));
-        setTimeout(() => setTaskErrorMsg(null), 3500);
+        setTaskMsg({ text: t('app.pendingApproval'), ok: true });
+        setTimeout(() => setTaskMsg(null), 3500);
         // Home and the room page both show "waiting for approval" once they reload
         await Promise.all([refreshRooms(), loadDashboard()]);
         return true;
@@ -342,8 +343,8 @@ function AppContent() {
       return true;
     } catch (err) {
       setConfetti(false);
-      setTaskErrorMsg(taskErrorText(err, t));
-      setTimeout(() => setTaskErrorMsg(null), 3500);
+      setTaskMsg({ text: taskErrorText(err, t) });
+      setTimeout(() => setTaskMsg(null), 3500);
       return false;
     }
   };
@@ -504,16 +505,16 @@ function AppContent() {
         />
       )}
 
-      {/* Task error toast */}
-      {taskErrorMsg && (
-        <div style={{
+      {/* After a Done: what went wrong (red), or that it now waits for a parent (green) */}
+      {taskMsg && (
+        <div role={taskMsg.ok ? 'status' : 'alert'} style={{
           position: 'fixed', top: 20, left: '50%', transform: 'translateX(-50%)',
-          zIndex: 9999, background: '#EF4444', color: '#fff',
+          zIndex: 9999, background: taskMsg.ok ? '#15803D' : '#EF4444', color: '#fff',
           padding: '12px 24px', borderRadius: 12, fontWeight: 700, fontSize: 15,
           boxShadow: '0 4px 16px rgba(0,0,0,0.18)', pointerEvents: 'none',
           width: 'max-content', maxWidth: 'calc(100vw - 32px)', boxSizing: 'border-box', textAlign: 'center',
         }}>
-          {taskErrorMsg}
+          {taskMsg.ok && '✅ '}{taskMsg.text}
         </div>
       )}
 
@@ -590,8 +591,8 @@ function AppContent() {
                   onNavigateToRooms={() => navigate('/rooms')}
                   onNavigateToTasks={(criticalOnly) => navigate(`/tasks?person=all${criticalOnly ? '&status=critical' : ''}`)}
                   onOpenFocus={() => navigate('/focus')}
-                  onRewardRequestAction={async (id, status) => {
-                    await api.updateRedemptionStatus(id, status);
+                  onRewardRequestAction={async (id, status, note) => {
+                    await api.updateRedemptionStatus(id, status, note);
                     await Promise.all([loadDashboard(), loadRewards()]);
                   }}
                 />
@@ -813,9 +814,9 @@ function AppContent() {
                 people={user.role === 'admin' ? familySettings.filter((u) => u.id !== user.id) : undefined}
                 onBoughtFor={() => void loadDashboard()}
                 pendingRequests={dashboardData?.pendingRewardRequests}
-                onRewardRequestAction={async (id, status) => {
+                onRewardRequestAction={async (id, status, note) => {
                   try {
-                    await api.updateRedemptionStatus(id, status);
+                    await api.updateRedemptionStatus(id, status, note);
                   } finally {
                     // Also when it failed: the other parent may have decided it already, so the list is out of date
                     await Promise.all([loadDashboard(), loadRewards()]);

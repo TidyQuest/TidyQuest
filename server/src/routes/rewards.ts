@@ -1,7 +1,7 @@
 import { Router, Response } from 'express';
 import db from '../database';
 import { AuthRequest, authMiddleware } from '../middleware/auth';
-import { notifyPotFull, notifyRewardDecision, notifyRewardRequest } from '../utils/notifyMessages';
+import { notifyPotFull, notifyRewardDecision, notifyRewardRequest, oneLineReason } from '../utils/notifyMessages';
 import { ensureAdmin } from '../utils/adminHelpers';
 import {
   LIMIT_PERIODS, LIMIT_SCOPES, adminRulesFor, catalogFor, completePotIfFull, getRotatingPerWeek, getRules,
@@ -24,7 +24,7 @@ router.get('/', (req: AuthRequest, res: Response) => {
     'SELECT id, title, description, costCoins, isActive, isPreset, createdBy, createdAt, category, sortOrder FROM rewards WHERE isActive = 1 AND deletedAt IS NULL ORDER BY costCoins ASC, id ASC'
   ).all();
   const mine = db.prepare(
-    `SELECT rr.id, rr.rewardId, rr.userId, rr.costCoins, rr.redeemedAt, rr.status, r.title,
+    `SELECT rr.id, rr.rewardId, rr.userId, rr.costCoins, rr.redeemedAt, rr.status, rr.rejectNote, r.title,
             EXISTS (SELECT 1 FROM reward_contributions c WHERE c.redemptionId = rr.id) AS isShared,
             b.displayName AS boughtByName
      FROM reward_redemptions rr
@@ -47,7 +47,7 @@ router.get('/admin', (req: AuthRequest, res: Response) => {
     'SELECT id, title, description, costCoins, isActive, isPreset, createdBy, createdAt, category, sortOrder FROM rewards WHERE deletedAt IS NULL ORDER BY isActive DESC, costCoins ASC, id ASC'
   ).all();
   const redemptions = db.prepare(
-    `SELECT rr.id, rr.rewardId, rr.userId, rr.costCoins, rr.redeemedAt, rr.status, r.title, u.displayName
+    `SELECT rr.id, rr.rewardId, rr.userId, rr.costCoins, rr.redeemedAt, rr.status, rr.rejectNote, r.title, u.displayName
      FROM reward_redemptions rr
      JOIN rewards r ON rr.rewardId = r.id
      JOIN users u ON rr.userId = u.id
@@ -204,7 +204,7 @@ function refundRedemption(id: number, row: { userId: number; costCoins: number }
 
 function adminRedemptionRow(id: number) {
   return db.prepare(
-    `SELECT rr.id, rr.rewardId, rr.userId, rr.costCoins, rr.redeemedAt, rr.status, r.title, u.displayName
+    `SELECT rr.id, rr.rewardId, rr.userId, rr.costCoins, rr.redeemedAt, rr.status, rr.rejectNote, r.title, u.displayName
      FROM reward_redemptions rr
      JOIN rewards r ON rr.rewardId = r.id
      JOIN users u ON rr.userId = u.id
@@ -219,19 +219,22 @@ router.put('/redemptions/:id', (req: AuthRequest, res: Response) => {
   if (!status || !['requested', 'approved', 'rejected'].includes(status)) {
     return res.status(400).json({ error: 'Invalid status' });
   }
+  // An optional one-line note for the kid; it only goes with a rejection (ENH-23)
+  const note = status === 'rejected' ? oneLineReason((req.body as { note?: unknown }).note) : null;
+  if (note === undefined) return res.status(400).json({ error: 'note_too_long' });
   const row = db.prepare('SELECT id, userId, costCoins, status FROM reward_redemptions WHERE id = ?').get(id) as any;
   if (!row) return res.status(404).json({ error: 'Redemption not found' });
   // Only a request that's still waiting can be decided. Changing a decision afterwards would
   // hand out a refunded reward for free (rejected -> approved); a mistaken approval uses /refund.
   if (row.status !== 'requested') return res.status(400).json({ error: 'This request was already decided' });
   db.transaction(() => {
-    db.prepare('UPDATE reward_redemptions SET status = ? WHERE id = ?').run(status, id);
+    db.prepare('UPDATE reward_redemptions SET status = ?, rejectNote = ? WHERE id = ?').run(status, note, id);
     if (status === 'rejected') refundRedemption(id, row);
   })();
   const updated = adminRedemptionRow(id);
   // Tell the kid when a request is decided
   if (status === 'approved' || status === 'rejected') {
-    void notifyRewardDecision(row.userId, req.userId!, updated?.title ?? '', status === 'approved');
+    void notifyRewardDecision(row.userId, req.userId!, updated?.title ?? '', status === 'approved', note);
   }
   res.json(updated);
 });

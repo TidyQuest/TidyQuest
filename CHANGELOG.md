@@ -9,6 +9,13 @@ What changed in each release, in plain language, newest first. Releases up to v0
 
 ## Unreleased
 
+### Added
+
+- **A note when you reject a reward request** (ENH-23). Reject, on the Rewards page and on Home, now opens a small
+  box for an optional one-line note, such as "Not on a school night, ask again on Friday". The kid gets it with their
+  "wasn't approved" notification and sees it under the request in My redemption history; parents see it in Settings →
+  Rewards Catalog → Reward requests. Leave the box empty to reject as before, or tap Cancel to change your mind.
+
 ### Changed
 
 - **Chores pick up where they left off after a vacation** (BUG-45). When Vacation Mode ends, for the family or for
@@ -27,6 +34,10 @@ What changed in each release, in plain language, newest first. Releases up to v0
 
 ### Fixed
 
+- **"Waiting for a parent" no longer looks like an error** (FIX-33). With Strict Mode on, a kid's Done showed its
+  "waiting for approval" message in the red banner the app uses for failures. It's now green with a ✅, and says
+  "Sent! Waiting for a parent to approve." instead of "Completion submitted. Waiting for admin approval." (reworded
+  in French, German, Spanish and Italian too).
 - **"Earned a badge" messages arrive after a normal Done** (BUG-40). The pop-up in the app showed, but the kid and
   the parents only got the 🏆 message when a parent approved a chore. On a team-up, the person who tapped Done now
   gets theirs too.

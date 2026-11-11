@@ -382,7 +382,7 @@
       "alreadyDoneToday": "¡Ya completaste esta tarea hoy!",
       "alreadyDoneByOther": "¡Alguien más ya completó esta tarea hoy!",
       "notAssigned": "Esta tarea no te está asignada",
-      "pendingApproval": "Tarea enviada. Esperando aprobación del admin.",
+      "pendingApproval": "¡Enviado! Esperando la aprobación de un padre.",
       "doneBy": "Hecho por {name}",
       "childrenGroup": "Niños",
       "tasksSubtitle": "Todas las tareas de todas las habitaciones",
@@ -472,7 +472,9 @@
       "boughtBy": "comprado por {name}",
       "confirmTextFor": "¿Comprar \"{reward}\" para {name}? Cuesta {coins} de sus monedas.",
       "priceChanged": "El precio acaba de cambiar a {coins} monedas. Toca Confirmar para pagarlo, o Cancelar.",
-      "alreadyDecided": "Esa solicitud ya estaba decidida. La lista ya está al día."
+      "alreadyDecided": "Esa solicitud ya estaba decidida. La lista ya está al día.",
+      "rejectNotePlaceholder": "¿Por qué no? (opcional)",
+      "rejectNoteLabel": "Una nota para {name}"
     },
     "rewardsPreset": {
       "movie_night": {
@@ -1457,7 +1459,8 @@
       "shieldsSaved": "🛡️ ¡{count} escudos salvaron tu racha de {n} días!",
       "shieldGiven": "🛡️ {name} te dio un escudo de racha. Salva tu racha si te saltas un día.",
       "recapLastWeek": "📊 La semana pasada: {lines}",
-      "testFamily": "👋 Prueba de TidyQuest enviada por {name} a las {time}: ¡las notificaciones de la familia funcionan!"
+      "testFamily": "👋 Prueba de TidyQuest enviada por {name} a las {time}: ¡las notificaciones de la familia funcionan!",
+      "parentSays": "{parent} dice: {reason}"
     },
     "notifyAdmin": {
       "peopleTitle": "Quién recibe qué",

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import HealthBar from '../shared/HealthBar';
 import { LevelStrip } from '../shared/LevelStrip';
 import { TodoQuickAdd } from '../shared/TodoQuickAdd';
+import { RewardRejectNote } from '../shared/RewardRejectNote';
 import { localeFor } from '../../utils/locale';
 import type { BadgeItem, LevelInfo } from '../../utils/badges';
 import RingGauge from '../shared/RingGauge';
@@ -234,7 +235,7 @@ interface DashboardProps {
   /** The task list for the whole family; criticalOnly shows only chores under 30% health */
   onNavigateToTasks?: (criticalOnly?: boolean) => void;
   onOpenFocus?: () => void;
-  onRewardRequestAction: (id: number, status: 'approved' | 'rejected') => void | Promise<void>;
+  onRewardRequestAction: (id: number, status: 'approved' | 'rejected', note?: string) => void | Promise<void>;
   gamificationEnabled?: boolean;
   leaderboardPeriod?: 'week' | 'month' | 'quarter' | 'year';
   /** The holiday showing now dresses the mascot (seasons.ts costume) */
@@ -286,6 +287,8 @@ const Dashboard: React.FC<DashboardProps> = ({
   const boostFor = (q: Quest) => multiplierFor(q.id, q.roomId);
   // The event whose chore list is open (tap the banner)
   const [openBoostId, setOpenBoostId] = useState<number | null>(null);
+  // The reward request whose Reject box (an optional note for the kid) is open
+  const [rejectingReward, setRejectingReward] = useState<number | null>(null);
   const openBoost = boosts.find((b) => b.id === openBoostId) ?? null;
   // "Kitchen, Clean Shower & Tub, Rake +2 more"
   const boostTargets = (b: CoinBoost) => {
@@ -1261,11 +1264,16 @@ const Dashboard: React.FC<DashboardProps> = ({
                     <button className="tq-btn tq-btn-secondary" onClick={() => onRewardRequestAction(rr.id, 'approved')} style={{ padding: '4px 7px', fontSize: 10 }}>
                       {t('dashboard.approve')}
                     </button>
-                    <button className="tq-btn" onClick={() => onRewardRequestAction(rr.id, 'rejected')} style={{ padding: '4px 7px', fontSize: 10, backgroundColor: 'var(--warm-danger-bg)', color: 'var(--warm-danger)', border: '1.5px solid var(--warm-danger-border)' }}>
+                    <button className="tq-btn" onClick={() => setRejectingReward(rejectingReward === rr.id ? null : rr.id)} aria-expanded={rejectingReward === rr.id} style={{ padding: '4px 7px', fontSize: 10, backgroundColor: 'var(--warm-danger-bg)', color: 'var(--warm-danger)', border: '1.5px solid var(--warm-danger-border)' }}>
                       {t('dashboard.reject')}
                     </button>
                   </div>
                 </div>
+                {rejectingReward === rr.id && (
+                  <RewardRejectNote language={language} name={rr.displayName}
+                    onReject={(note) => { setRejectingReward(null); void onRewardRequestAction(rr.id, 'rejected', note); }}
+                    onCancel={() => setRejectingReward(null)} />
+                )}
               </div>
             ))}
           </div>

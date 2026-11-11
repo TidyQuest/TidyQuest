@@ -189,7 +189,7 @@ export function Settings({
   const [coinReason, setCoinReason] = useState<Record<number, string>>({});
   const [goalDraft, setGoalDraft] = useState<Record<number, { title: string; goalCoins: string; rewardCoins: string; endAt: string }>>({});
   const [rewardsAdmin, setRewardsAdmin] = useState<Array<{ id: number; title: string; description?: string | null; costCoins: number; isActive?: boolean; isPreset?: boolean; category?: string | null; sortOrder?: number } & Partial<RewardRules>>>([]);
-  const [rewardRequests, setRewardRequests] = useState<Array<{ id: number; title: string; displayName: string; costCoins: number; redeemedAt: string; status: string }>>([]);
+  const [rewardRequests, setRewardRequests] = useState<Array<{ id: number; title: string; displayName: string; costCoins: number; redeemedAt: string; status: string; rejectNote?: string | null }>>([]);
   const [rewardDraft, setRewardDraft] = useState({ title: '', description: '', costCoins: '30' });
   const [editingRewardId, setEditingRewardId] = useState<number | null>(null);
   const [editingRewardTitle, setEditingRewardTitle] = useState('');
@@ -1383,7 +1383,10 @@ export function Settings({
               {rewardRequests.map((rr) => (
                 <div key={rr.id} className="rewards-requests-row" style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr 90px 110px 130px', gap: 8, alignItems: 'center', border: '1px solid var(--warm-border)', borderRadius: 10, padding: '8px 10px', backgroundColor: 'var(--warm-bg-subtle)' }}>
                   <div style={{ fontSize: 12, fontWeight: 800, color: 'var(--warm-text)' }}>{rr.displayName}</div>
-                  <div style={{ fontSize: 11, color: 'var(--warm-text-light)', fontWeight: 700 }}>{rewardTitle(rr)}</div>
+                  <div style={{ fontSize: 11, color: 'var(--warm-text-light)', fontWeight: 700, minWidth: 0, overflowWrap: 'anywhere' }}>
+                    {rewardTitle(rr)}
+                    {rr.status === 'rejected' && rr.rejectNote && <div style={{ color: 'var(--warm-text-muted)' }}>💬 {rr.rejectNote}</div>}
+                  </div>
                   <div style={{ fontSize: 11, fontWeight: 800, color: 'var(--warm-accent)', display: 'flex', alignItems: 'center', gap: 4, justifyContent: 'center' }}><CoinIcon /> {rr.costCoins}</div>
                   <div style={{ fontSize: 10, fontWeight: 800, color: rr.status === 'approved' ? '#15803D' : rr.status === 'rejected' ? '#B91C1C' : rr.status === 'cancelled' ? '#374151' : 'var(--warm-text-light)', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 4 }}>
                     {rewardStatusLabel(rr.status)}

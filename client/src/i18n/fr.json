@@ -382,7 +382,7 @@
       "alreadyDoneToday": "Tu as déjà fait cette tâche aujourd'hui !",
       "alreadyDoneByOther": "Cette tâche a déjà été faite par quelqu'un d'autre aujourd'hui !",
       "notAssigned": "Cette tâche ne t'est pas attribuée",
-      "pendingApproval": "Tâche envoyée. En attente d'approbation admin.",
+      "pendingApproval": "Envoyé ! En attente de la validation d'un parent.",
       "doneBy": "Fait par {name}",
       "childrenGroup": "Enfants",
       "tasksSubtitle": "Toutes les tâches de toutes les pièces",
@@ -472,7 +472,9 @@
       "boughtBy": "acheté par {name}",
       "confirmTextFor": "Acheter \"{reward}\" pour {name} ? Cela coûte {coins} de ses pièces.",
       "priceChanged": "Le prix vient de passer à {coins} pièces. Touche Confirmer pour payer ce prix, ou Annuler.",
-      "alreadyDecided": "Cette demande a déjà été traitée. La liste est maintenant à jour."
+      "alreadyDecided": "Cette demande a déjà été traitée. La liste est maintenant à jour.",
+      "rejectNotePlaceholder": "Pourquoi pas ? (facultatif)",
+      "rejectNoteLabel": "Un mot pour {name}"
     },
     "rewardsPreset": {
       "movie_night": {
@@ -1457,7 +1459,8 @@
       "shieldsSaved": "🛡️ {count} boucliers ont sauvé ta série de {n} jours !",
       "shieldGiven": "🛡️ {name} t'a donné un bouclier de série. Il protège ta série si tu manques un jour.",
       "recapLastWeek": "📊 La semaine dernière : {lines}",
-      "testFamily": "👋 Test TidyQuest envoyé par {name} à {time} : les notifications de la famille fonctionnent !"
+      "testFamily": "👋 Test TidyQuest envoyé par {name} à {time} : les notifications de la famille fonctionnent !",
+      "parentSays": "{parent} dit : {reason}"
     },
     "notifyAdmin": {
       "peopleTitle": "Qui reçoit quoi",

@@ -382,7 +382,7 @@
       "alreadyDoneToday": "Du hast diese Aufgabe heute bereits erledigt!",
       "alreadyDoneByOther": "Jemand anderes hat diese Aufgabe heute bereits erledigt!",
       "notAssigned": "Diese Aufgabe ist dir nicht zugewiesen",
-      "pendingApproval": "Erledigung gesendet. Warten auf Admin-Freigabe.",
+      "pendingApproval": "Gesendet! Wartet auf die Bestätigung eines Elternteils.",
       "doneBy": "Erledigt von {name}",
       "childrenGroup": "Kinder",
       "tasksSubtitle": "Alle Aufgaben aus allen Räumen",
@@ -472,7 +472,9 @@
       "boughtBy": "gekauft von {name}",
       "confirmTextFor": "\"{reward}\" für {name} kaufen? Das kostet {coins} Münzen von {name}.",
       "priceChanged": "Der Preis hat sich gerade auf {coins} Münzen geändert. Tippe auf Bestätigen, um so viel zu zahlen, oder auf Abbrechen.",
-      "alreadyDecided": "Über diese Anfrage wurde schon entschieden. Die Liste ist jetzt aktuell."
+      "alreadyDecided": "Über diese Anfrage wurde schon entschieden. Die Liste ist jetzt aktuell.",
+      "rejectNotePlaceholder": "Warum nicht? (optional)",
+      "rejectNoteLabel": "Eine Notiz für {name}"
     },
     "rewardsPreset": {
       "movie_night": {
@@ -1457,7 +1459,8 @@
       "shieldsSaved": "🛡️ {count} Schilde haben deine {n}-Tage-Serie gerettet!",
       "shieldGiven": "🛡️ {name} hat dir einen Serienschild geschenkt. Er rettet deine Serie, wenn du einen Tag verpasst.",
       "recapLastWeek": "📊 Letzte Woche: {lines}",
-      "testFamily": "👋 Test von TidyQuest, gesendet von {name} um {time}: Die Familien-Benachrichtigungen funktionieren!"
+      "testFamily": "👋 Test von TidyQuest, gesendet von {name} um {time}: Die Familien-Benachrichtigungen funktionieren!",
+      "parentSays": "{parent} sagt: {reason}"
     },
     "notifyAdmin": {
       "peopleTitle": "Wer bekommt was",

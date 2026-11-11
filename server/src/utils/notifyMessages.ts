@@ -91,9 +91,19 @@ export function notifyChoreRejected(childId: number, parentId: number, task: Tas
     reason ? tr(lang, 'notify.choreRejectedReason', { parent, task: taskName(lang, task), reason }) : tr(lang, 'notify.choreRejected', { parent, task: taskName(lang, task) }));
 }
 
-export function notifyRewardDecision(childId: number, parentId: number, reward: string, approved: boolean) {
+/** note: the parent's optional one-line reason for a rejection */
+export function notifyRewardDecision(childId: number, parentId: number, reward: string, approved: boolean, note?: string | null) {
   const parent = nameOf(parentId);
-  return notifyPeople([childId], 'outcome', (lang) => tr(lang, approved ? 'notify.rewardApproved' : 'notify.rewardRejected', { parent, reward }));
+  return notifyPeople([childId], 'outcome', (lang) =>
+    tr(lang, approved ? 'notify.rewardApproved' : 'notify.rewardRejected', { parent, reward })
+      + (!approved && note ? ` ${tr(lang, 'notify.parentSays', { parent, reason: note })}` : ''));
+}
+
+/** A parent's optional one-line reason (rejecting a chore or a reward request): trimmed onto one line. undefined = too long. */
+export function oneLineReason(value: unknown, max = 200): string | null | undefined {
+  const reason = typeof value === 'string' ? value.trim().replace(/\s+/g, ' ') : '';
+  if (reason.length > max) return undefined;
+  return reason || null;
 }
 
 export function notifyCoinsAdjusted(childId: number, parentId: number, amount: number, reason: string | null) {

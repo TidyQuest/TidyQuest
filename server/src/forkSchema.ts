@@ -336,6 +336,8 @@ const NEW_COLUMNS: string[] = [
   // A held message's end date and the one thing that must still be true when it goes out (BUG-41; utils/notifyChecks.ts)
   `ALTER TABLE notification_queue ADD COLUMN expiresAt TEXT`,
   `ALTER TABLE notification_queue ADD COLUMN onlyIf TEXT`,
+  // The optional one-line note a parent gave when rejecting this reward request (ENH-23)
+  `ALTER TABLE reward_redemptions ADD COLUMN rejectNote TEXT`,
 ];
 
 /** Fork tables included in backup export/import: key in the backup file -> table. */
