@@ -542,13 +542,15 @@ function AppContent() {
           <Route path="/" element={
             <>
               <PageHeader title={focusIsHome ? t('focus.title') : t('nav.home')} subtitle={today} homeDate={focusIsHome ? undefined : todayShort} user={user} onCoinsClick={() => navigate('/rewards')} onStreakClick={() => navigate('/achievements')} onPointsClick={handlePointsClick} userPoints={myPoints} pointsPeriodLabel={pointsPeriodLabel} gamificationEnabled={gamificationEnabled} shieldsOn={!!dashboardData?.shields} />
-              {season && <SeasonGreeting season={season} language={user.language} />}
+              {/* Today shows the countdown as a chip (ENH-26) */}
+              {season && focusIsHome && <SeasonGreeting season={season} language={user.language} />}
               {focusIsHome && focusPage(() => navigate('/?all=1'), t('focus.fullHome'))}
               {dashboardData && !focusIsHome && (
                 <Dashboard
                   data={dashboardData}
                   allRooms={activeRooms}
                   seasonCostume={season?.costume}
+                  season={season}
                   family={family}
                   users={familySettings}
                   language={user.language}

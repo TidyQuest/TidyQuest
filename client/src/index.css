@@ -537,18 +537,6 @@ body {
 .tq-page-medium { max-width: 700px; }
 .tq-page-wide { max-width: 900px; }
 
-/* Dashboard grid layout */
-.dashboard-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: var(--space-xl);
-  animation: fadeIn 0.3s ease;
-  align-items: start;
-}
-.dashboard-grid > .dashboard-hero {
-  grid-column: 1 / -1;
-}
-
 /* Settings grid — via CSS class, not inline */
 /* Settings: grouped cards in two columns that each grow at their own height (no stretched cards) */
 .settings-page {
@@ -1092,11 +1080,6 @@ html[data-theme='lava'] option {
     display: none !important;
   }
 
-  /* Dashboard: force single column on mobile */
-  .dashboard-grid {
-    grid-template-columns: 1fr !important;
-  }
-
   /* The top bar is one line on phones (ENH-24): the title or greeting, then coins, streak and one button.
      The subtitle, the search button's word and the points chip are for wider screens. */
   .page-header {
@@ -1594,18 +1577,6 @@ html[data-theme='lava'] option {
   max-width: 640px;
   margin: 0 auto;
 }
-.focus-card {
-  grid-column: 1 / -1;
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  width: 100%;
-  cursor: pointer;
-  font-family: Nunito, sans-serif;
-  border: 2px solid var(--warm-accent) !important;
-  background: var(--warm-accent-light) !important;
-  box-sizing: border-box;
-}
 
 /* Insights charts (NEW-7). Categorical slots and the blue ramp are the dataviz reference palette,
    validated for colorblind separation on the light card (#FFFFFF) and the dark theme cards. */
@@ -1774,3 +1745,140 @@ html[data-theme='lava'] input[type='date'], html[data-season-dark] input[type='d
 .kid-mode .chore-name { font-size: 16px; }
 .kid-mode .chore-sub { font-size: 13px; }
 .kid-mode .chore-tick { width: 46px; height: 46px; }
+
+/* Today (ENH-26, pages/Dashboard.tsx): the summary card, chips, the approvals notice, Mine / Everyone, the lists and
+   the week's standings. One column on phones; from 1100px a side column holds approvals, the mascot, house health
+   and the week. */
+.today { display: flex; flex-direction: column; gap: 14px; min-width: 0; animation: fadeIn 0.3s ease; }
+.today.wide { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 24px; align-items: start; }
+.today-main, .today-side { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.today-summary { padding: 16px; border-radius: 20px; background: var(--warm-accent-light); border: 1.5px solid var(--warm-border); min-width: 0; }
+.today-summary-top { display: grid; grid-template-columns: 72px minmax(0, 1fr); gap: 14px; align-items: center; }
+.today-ring { position: relative; width: 72px; height: 72px; }
+.today-ring svg { width: 72px; height: 72px; transform: rotate(-90deg); display: block; }
+.today-ring circle { fill: none; stroke-width: 8; }
+.today-ring-track { stroke: var(--warm-border); }
+.today-ring-fill { stroke: var(--warm-accent); stroke-linecap: round; transition: stroke-dasharray 0.4s ease; }
+.today-ring-n {
+  position: absolute; inset: 0; display: grid; place-content: center; text-align: center;
+  font-size: 22px; font-weight: 900; line-height: 1; color: var(--warm-text);
+}
+.today-ring-n small { display: block; margin-top: 2px; font-size: 11.5px; font-weight: 700; color: var(--warm-text-muted); }
+.today-summary-text { min-width: 0; }
+.today-summary-text h2 { margin: 0; font-size: 19px; font-weight: 900; line-height: 1.2; color: var(--warm-text); overflow-wrap: anywhere; }
+.today-summary-text p { margin: 2px 0 0; font-size: 13px; font-weight: 600; color: var(--warm-text-muted); }
+.today-level { margin-top: 10px; }
+.today-goal { margin-top: 10px; }
+.today-goal-top { display: flex; justify-content: space-between; gap: 8px; margin-bottom: 5px; font-size: 13px; font-weight: 800; color: var(--warm-text); }
+.today-goal-top span:first-child { min-width: 0; overflow-wrap: anywhere; }
+.today-goal-top span:last-child { color: var(--warm-text-muted); white-space: nowrap; }
+.today-bar { height: 8px; border-radius: 99px; background: var(--warm-border); overflow: hidden; }
+.today-bar span { display: block; height: 100%; border-radius: inherit; background: var(--warm-accent); }
+.today-goal-note { margin-top: 5px; font-size: 12px; font-weight: 700; color: var(--warm-text-muted); }
+.today-mascot-line {
+  display: flex; align-items: center; gap: 10px; width: 100%; margin-top: 12px; padding: 10px 0 0;
+  border: 0; border-top: 1px solid var(--warm-border); background: none; text-align: left; font: inherit; color: var(--warm-text); cursor: pointer;
+}
+.today-mascot-pic { width: 44px; height: 44px; flex: none; display: grid; place-items: center; overflow: hidden; }
+.today-mascot-text { flex: 1; min-width: 0; font-size: 13.5px; font-weight: 600; line-height: 1.35; overflow-wrap: anywhere; }
+.today-mascot-text b { font-weight: 900; }
+/* The chips scroll sideways inside their own row, never the page */
+.today-chips { display: flex; gap: 8px; min-width: 0; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; contain: inline-size; }
+.today-chips::-webkit-scrollbar { display: none; }
+.today-chip {
+  flex: none; height: 34px; padding: 0 12px; border-radius: 17px; display: inline-flex; align-items: center; gap: 4px; white-space: nowrap;
+  background: var(--warm-card); border: 1px solid var(--warm-border); font-family: inherit; font-size: 13px; font-weight: 700; color: var(--warm-text);
+}
+button.today-chip { cursor: pointer; }
+.today-chip em { font-style: normal; font-weight: 900; }
+.today-chip.hot { background: var(--warm-accent-light); border-color: var(--warm-accent); color: var(--warm-accent); }
+.today-chip.on { background: var(--warm-accent); border-color: var(--warm-accent); color: #fff; }
+.today-chip.on em { color: inherit !important; }
+.today-chip:focus-visible, .today-link:focus-visible, .today-tabs button:focus-visible, .today-more:focus-visible, .today-mascot-line:focus-visible {
+  outline: 2px solid var(--warm-accent); outline-offset: 2px;
+}
+.today-panel { min-width: 0; }
+.today-panel-note { margin-bottom: 8px; font-size: 13px; font-weight: 800; color: var(--warm-accent); }
+.today-notice-wrap { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.today-notice {
+  display: flex; align-items: center; gap: 10px; padding: 10px 10px 10px 14px; border-radius: 14px;
+  background: var(--warm-streak-bg); border: 1.5px solid var(--warm-streak-border); color: var(--warm-streak-text);
+  /* the one-line "Cylis · Morning Feeding…" is cut with … instead of widening the page */
+  contain: inline-size;
+}
+.today-notice-icon { flex: none; font-size: 22px; }
+.today-notice > div { flex: 1; min-width: 0; }
+.today-notice b { display: block; font-size: 14px; font-weight: 800; }
+.today-notice > div span { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12.5px; font-weight: 600; color: var(--warm-streak-subtext); }
+.today-notice .tq-btn { flex: none; }
+.today-tabs-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.today-tabs { display: inline-flex; max-width: 100%; border: 1px solid var(--warm-border); border-radius: 12px; overflow: hidden; background: var(--warm-card); }
+.today-tabs button {
+  min-height: 40px; padding: 0 14px; border: 0; background: none; cursor: pointer; white-space: nowrap;
+  font-family: inherit; font-size: 14px; font-weight: 800; color: var(--warm-text-muted);
+}
+.today-tabs button + button { border-left: 1px solid var(--warm-border); }
+.today-tabs button.on { background: var(--warm-accent-light); color: var(--warm-text); box-shadow: inset 0 -2px 0 var(--warm-accent); }
+.today-tabs i { margin-left: 3px; font-style: normal; font-weight: 700; opacity: 0.7; }
+.today-link {
+  border: 0; background: none; padding: 6px 2px; cursor: pointer; white-space: nowrap;
+  font-family: inherit; font-size: 14px; font-weight: 800; color: var(--warm-accent);
+}
+.today-link.quiet { font-size: 13px; font-weight: 700; color: var(--warm-text-muted); }
+.today-section { display: flex; flex-direction: column; min-width: 0; }
+.today-sec { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 4px 4px 8px; }
+.today-sec h3 { margin: 0; display: flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 800; color: var(--warm-text); }
+.today-sec.late h3 { color: var(--health-red); }
+.today-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--health-red); }
+.today-list { padding: 2px 6px; }
+.today-more {
+  display: block; width: 100%; padding: 12px; border: 0; background: none; cursor: pointer; text-align: center;
+  font-family: inherit; font-size: 14px; font-weight: 800; color: var(--warm-accent);
+}
+.today-next { padding: 14px 14px 16px; border: 2px solid var(--warm-accent); min-width: 0; }
+.today-next-head {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  font-size: 13px; font-weight: 900; letter-spacing: 0.04em; text-transform: uppercase; color: var(--warm-accent);
+}
+.today-next-head .today-link { font-size: 13px; letter-spacing: 0; text-transform: none; }
+.today-next .chore-row-top { padding-left: 0; padding-right: 0; }
+.today-next-acts { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; margin-top: 6px; }
+.today-next-acts > :only-child { grid-column: 1 / -1; }
+.today-done { min-height: 48px; justify-content: center; font-size: 17px; font-weight: 900; }
+.today-standings { display: flex; gap: 4px; padding: 12px 8px; overflow-x: auto; scrollbar-width: none; contain: inline-size; }
+.today-standings::-webkit-scrollbar { display: none; }
+.today-person { flex: 1 0 64px; min-width: 64px; display: flex; flex-direction: column; align-items: center; gap: 4px; text-align: center; }
+.today-rank { display: none; }
+.today-person-pic { position: relative; display: inline-flex; border-radius: 50%; }
+.today-person.first .today-person-pic { box-shadow: 0 0 0 3px var(--warm-accent); }
+.today-person-badge {
+  position: absolute; right: -3px; bottom: -3px; width: 16px; height: 16px; border-radius: 50%; display: grid; place-items: center;
+  font-size: 8px; font-weight: 900; color: #fff;
+}
+.today-person-name { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; font-weight: 800; color: var(--warm-text); }
+.today-person-pts { display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; font-size: 12px; font-weight: 700; color: var(--warm-text-muted); }
+.today-side .today-standings { flex-direction: column; gap: 0; padding: 4px 16px; overflow: visible; }
+.today-side .today-person { flex-direction: row; gap: 10px; min-width: 0; padding: 8px 0; text-align: left; }
+.today-side .today-person + .today-person { border-top: 1px solid var(--warm-border-subtle); }
+.today-side .today-rank { display: block; width: 16px; flex: none; font-size: 13px; font-weight: 800; color: var(--warm-text-light); }
+.today-side .today-person-name { flex: 1; min-width: 0; font-size: 14px; }
+.today-side .today-person-pts { font-size: 14px; font-weight: 900; color: var(--warm-text); }
+.today-side .today-person-pts small { display: none; }
+.today-side .today-person-pts svg { width: 16px; height: 16px; }
+.today-health h3 { margin: 0 0 10px; font-size: 15px; font-weight: 800; color: var(--warm-text); }
+.today-health-top { display: flex; align-items: center; gap: 14px; margin-bottom: 12px; }
+.today-health-top p { flex: 1; min-width: 0; margin: 0; font-size: 13.5px; font-weight: 600; line-height: 1.4; color: var(--warm-text-secondary); }
+.today-health-boxes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.today-health-boxes button {
+  padding: 8px 4px; border-radius: 12px; border: 1.5px solid var(--warm-border); background: var(--warm-card);
+  font-family: inherit; text-align: center; cursor: pointer; color: var(--warm-text);
+}
+.today-health-boxes button:disabled { cursor: default; }
+.today-health-boxes b { display: block; font-size: 20px; font-weight: 900; }
+.today-health-boxes span { display: block; font-size: 11px; font-weight: 700; color: var(--warm-text-light); overflow-wrap: anywhere; }
+.today-empty { text-align: center; font-size: 15px; font-weight: 700; color: var(--warm-text-muted); }
+.today-added { font-size: 13px; font-weight: 700; color: var(--health-green); }
+.today-customise { display: flex; justify-content: center; padding-top: 4px; }
+/* Kid mode: a bigger headline and Done! */
+.kid-mode .today-summary-text h2 { font-size: 21px; }
+.kid-mode .today-done { min-height: 54px; font-size: 19px; }

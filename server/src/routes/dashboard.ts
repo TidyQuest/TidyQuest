@@ -11,7 +11,7 @@ import { syncPrimaryGoal } from '../utils/goals';
 import { repeatCountsFor } from '../utils/repeatLimits';
 import { boostTaskNames, getActiveBoosts } from '../utils/boosts';
 import { achievementsFor } from '../utils/achievementStats';
-import { forgottenTasks, usualTasks } from '../utils/homeSections';
+import { forgottenTasks, todaySections, usualTasks } from '../utils/homeSections';
 import { rescueCandidates, todaysMission } from '../utils/rescue';
 import { getFeatures, holidaysOff, isFeatureOn } from '../utils/features';
 import { setupNeeded } from '../setup/apply';
@@ -205,6 +205,8 @@ router.get('/', (req: AuthRequest, res: Response) => {
   const features = getFeatures();
   const usualQuests = features.usual ? usualTasks(allTasks, req.userId!) : [];
   const forgottenQuests = features.forgot ? forgottenTasks(allTasks, req.userId!, new Date(), new Set(missionRow?.taskId ? [missionRow.taskId] : [])) : [];
+  // The Today page: every chore under Overdue, Today, Any time or Later (ENH-26)
+  const today = todaySections(allTasks, req.userId!, new Date(), { todos: features.todos });
 
   const focusMode = features.focus ? focusModeFor(user) : 'off';
   const focus = focusMode === 'off' ? null
@@ -348,6 +350,7 @@ router.get('/', (req: AuthRequest, res: Response) => {
     todoQuests,
     usualQuests,
     forgottenQuests,
+    today,
     rescueMission,
     rescueChoices,
     // One thing at a time: how this person sees it, and today's line (NEW-2)

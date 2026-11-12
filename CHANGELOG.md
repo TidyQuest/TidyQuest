@@ -37,6 +37,25 @@ What changed in each release, in plain language, newest first. Releases up to v0
   A kid's chore with a timer shows ▶ in place of ✓ until the time is up.
 - **Rooms have a Sort by list** (health, due date, name, how often, effort, coins, who) with a button that reverses
   the order. It replaces the column headings, and rooms look the same on computers as on phones.
+- **Home is now Today** (ENH-26, the third step of the new look). It starts with one summary card: a ring showing how
+  much of today is done, how many chores are left and overdue, the coins up for grabs, your level and the mascot.
+  Under it, a row of chips (Rescue Mission, house health, the next holiday, double coins events, your streak, goals)
+  that open when tapped, and one note when chores or rewards wait for a parent's OK, with a Review button.
+- **Your chores in three lists:** Overdue, Today (finished ones stay there, ticked and crossed out) and Any time
+  (anytime chores, to-dos without a date and Your usual). Mine / Everyone above them shows how many are left in each.
+  Chores due in the next 30 days are behind "Show N scheduled…", and the week's standings come last, with a link to
+  the Board. "+ To-do" sits next to Mine / Everyone.
+- **Kids get Next up:** one chore with a big Done! button and Pick another, then Today, Catch up, Already done and
+  Bonus quests.
+- **Snooze all** puts every overdue chore in the list away for 3 days, just for you, with Undo. A snoozed chore waits
+  in the scheduled list with a Bring back now button. "Maybe you forgot" is now part of Overdue, and its switch in
+  Settings → Features is called "Snooze overdue chores".
+- **Customise now only shows or hides parts of Today**; their order is fixed. An order saved on the old Home is kept
+  but not used, and anything you hid stays hidden.
+- **Rooms, Recent Activity, the coin status card and the big holiday greeting left Home**: they have their own pages,
+  and the holiday countdown is a chip. On computers, approvals, the mascot, house health and the standings sit in a
+  column on the right.
+- The first tab and the menu say Today, and "Show in Dashboard" on anytime chores is now "Show on Today".
 
 ### Fixed
 

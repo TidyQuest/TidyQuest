@@ -1,4 +1,5 @@
 import db from '../database';
+import { dateStr, endOfDay, startOfDay } from './clock';
 import { hasWeekdaySchedule, monthlyRule, nextDueAt, weekdayMask, type ScheduledTask } from './schedule';
 
 /**
@@ -61,4 +62,51 @@ export function forgottenTasks<T extends HomeTask>(tasks: T[], userId: number, n
     .sort((a, b) => b.ratio - a.ratio || a.t.id - b.t.id)
     .slice(0, limit)
     .map((x) => ({ ...x.t, overdueDays: Math.floor(x.days) }));
+}
+
+/**
+ * The Today page (ENH-26): every chore sorted into one of four lists.
+ * - overdue: due on an earlier day (a to-do past its do-by date), minus the ones this person snoozed
+ * - today:   due now, or later today when it may be done early (the same rule as One thing at a time)
+ * - anytime: anytime chores set to show on Home, and to-dos without a date
+ * - later:   due within `laterDays`, soonest first; snoozed overdue chores wait here too (snoozed: true)
+ * Out-of-season chores are left out. The page filters each list to Mine or Everyone itself.
+ */
+type TodayTask = HomeTask & { health: number; showInDashboard?: number | boolean; allowEarlyCompletion?: number | boolean; doBy?: string | null };
+export type TodayItem<T> = T & { overdueDays?: number; snoozed?: boolean; pinned?: boolean };
+export function todaySections<T extends TodayTask>(tasks: T[], userId: number, now: Date = new Date(), opts: { todos?: boolean; laterDays?: number } = {}) {
+  const snoozed = new Set((db.prepare('SELECT taskId FROM task_snoozes WHERE userId = ? AND until > ?').all(userId, now.toISOString()) as Array<{ taskId: number }>).map((r) => r.taskId));
+  const pinned = new Set(pinnedTaskIds(userId));
+  const today = dateStr(now);
+  const endOfToday = endOfDay(now).getTime();
+  const horizon = endOfDay(now, opts.laterDays ?? 30).getTime();
+  const lists = { overdue: [] as Array<TodayItem<T>>, today: [] as Array<TodayItem<T>>, anytime: [] as Array<TodayItem<T>>, later: [] as Array<TodayItem<T>> };
+  for (const t of tasks) {
+    if (t.isSeasonal) continue;
+    const item: TodayItem<T> = pinned.has(t.id) ? { ...t, pinned: true } : t;
+    if (t.onDemand) {
+      if (t.showInDashboard) lists.anytime.push(item);
+      continue;
+    }
+    if (t.oneTime && opts.todos === false) continue;
+    if (t.oneTime && !t.doBy) { lists.anytime.push(item); continue; }
+    // Never done: late since the day it was added (as "Maybe you forgot" counts it)
+    const since = !t.oneTime && !nextDueAt(t, now) && t.createdAt ? parseStored(t.createdAt) : new Date(t.dueDate);
+    const due = t.oneTime ? since.getTime() : new Date(t.dueDate).getTime();
+    const sinceDay = t.oneTime ? String(t.doBy) : dateStr(since);
+    if (sinceDay < today) {
+      const late = { ...item, overdueDays: Math.round((startOfDay(now).getTime() - startOfDay(since).getTime()) / DAY_MS) };
+      if (snoozed.has(t.id)) lists.later.push({ ...late, snoozed: true }); else lists.overdue.push(late);
+    } else if (sinceDay === today && (t.oneTime || due <= now.getTime() || t.allowEarlyCompletion)) {
+      lists.today.push(item);
+    } else if (due <= horizon) {
+      lists.later.push(item);
+    }
+  }
+  const dueAt = (t: T) => new Date(t.dueDate).getTime();
+  lists.overdue.sort((a, b) => (b.overdueDays ?? 0) - (a.overdueDays ?? 0) || a.health - b.health || a.id - b.id);
+  lists.today.sort((a, b) => dueAt(a) - dueAt(b) || a.id - b.id);
+  lists.anytime.sort((a, b) => Number(!!a.oneTime) - Number(!!b.oneTime) || a.health - b.health || a.id - b.id);
+  lists.later.sort((a, b) => Number(!!b.snoozed) - Number(!!a.snoozed) || dueAt(a) - dueAt(b) || a.id - b.id);
+  return lists;
 }
