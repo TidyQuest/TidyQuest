@@ -363,9 +363,12 @@
       "achievements": "Obiettivi",
       "tasks": "Compiti",
       "insights": "Statistiche",
-      "closeMenu": "Chiudi menu",
       "expandSidebar": "Espandi la barra laterale",
-      "collapseSidebar": "Comprimi la barra laterale"
+      "collapseSidebar": "Comprimi la barra laterale",
+      "more": "Altro",
+      "badges": "Obiettivi",
+      "hi": "Ciao, {name}",
+      "tabs": "Pagine principali"
     },
     "app": {
       "roomsConfigured": "stanze configurate",
@@ -711,7 +714,6 @@
       "error": "Qualcosa è andato storto",
       "close": "Chiudi",
       "actionFailed": "Non ha funzionato. Controlla la connessione e riprova.",
-      "openMenu": "Apri menu",
       "dismiss": "Chiudi",
       "daysShort": "{n} g"
     },

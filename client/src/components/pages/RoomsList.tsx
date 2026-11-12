@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { useHeaderAdd } from '../layout/headerAdd';
 import { useLocation, useNavigationType } from 'react-router-dom';
 import HealthBar from '../shared/HealthBar';
 import { getRoomIcon } from '../icons/RoomIcons';
@@ -112,6 +113,9 @@ const cacheZones = (z: Zone[]) => { zonesCache = z; return z; };
 export function RoomsList({ rooms, language, isAdmin, users, onSelectRoom, onOpenTask, onCreateRoom, onDeleteRoom, onAssignRoom, onRenameRoom, onRoomsChanged, viewer }: RoomsListProps) {
   const { taskName, t, roomName: translateRoomName, roomDisplayName } = useTranslation(language);
   const [showModal, setShowModal] = useState(false);
+  // On a phone "Add room" is the top bar's + (ENH-24); the button below is for wider screens
+  const openAddRoom = useCallback(() => setShowModal(true), []);
+  useHeaderAdd(isAdmin ? openAddRoom : null);
   const [step, setStep] = useState<1 | 2>(1);
   const [createAssignedUserId, setCreateAssignedUserId] = useState<string>('none');
   const [assigningRoomId, setAssigningRoomId] = useState<number | null>(null);
@@ -326,7 +330,7 @@ export function RoomsList({ rooms, language, isAdmin, users, onSelectRoom, onOpe
         </div>
       )}
       {isAdmin && (
-        <div style={{ marginBottom: 20 }}>
+        <div className="ph-desktop" style={{ marginBottom: 20 }}>
           <button className="tq-btn tq-btn-primary tq-btn-md"
             onClick={() => setShowModal(true)}
             style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>

@@ -363,9 +363,12 @@
       "achievements": "Succès",
       "tasks": "Tâches",
       "insights": "Statistiques",
-      "closeMenu": "Fermer le menu",
       "expandSidebar": "Déplier le menu",
-      "collapseSidebar": "Replier le menu"
+      "collapseSidebar": "Replier le menu",
+      "more": "Plus",
+      "badges": "Succès",
+      "hi": "Salut, {name}",
+      "tabs": "Pages principales"
     },
     "app": {
       "roomsConfigured": "pièces configurées",
@@ -711,7 +714,6 @@
       "error": "Une erreur s'est produite",
       "close": "Fermer",
       "actionFailed": "Ça n'a pas marché. Vérifie ta connexion et réessaie.",
-      "openMenu": "Ouvrir le menu",
       "dismiss": "Fermer",
       "daysShort": "{n} j"
     },

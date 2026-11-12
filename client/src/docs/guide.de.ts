@@ -270,6 +270,14 @@ export const GUIDE_DE: GuideSection[] = [
         'Erfolge: Abzeichen, dein Level und was als Nächstes kommt. Belohnungen: der Katalog und deine Anfragen.',
         'Suche: der 🔍-Knopf, oder drücke / oder Strg+K auf einer Tastatur.',
       ] },
+      { h: 'Sich zurechtfinden' },
+      { ul: [
+        'Auf dem Handy stehen die Seiten unten am Bildschirm: Startseite, Räume, Belohnungen, Board und Mehr. Kinder haben Startseite, Belohnungen, Board, Erfolge und Mehr. Ein Strich über einem Tab zeigt, wo du bist; tippe den Tab noch einmal an, um an den Seitenanfang zu springen.',
+        'Unter Mehr ist der Rest: Aufgaben, Kalender, Aktivität, Auswertung (Eltern), Erfolge und Einstellungen, ganz oben dein Profil. Für Kinder sind auch die Räume unter Mehr.',
+        'Oben auf jeder Seite steht eine Zeile: der Name der Seite (auf der Startseite dein Bild, ein Hallo und das Datum), deine Münzen, deine Serie und ein Knopf. Der Knopf ist 🔍 die Suche; für Eltern ist er + auf Räume (Raum hinzufügen) und in einem Raum (Aufgabe hinzufügen). Tippe auf deine Münzen für Belohnungen, auf deine Serie für Erfolge und auf dein Bild für dein Profil.',
+        'Am Computer oder auf einem quer gehaltenen Tablet stehen die Seiten im Menü links, und oben auf der Seite siehst du auch deine Punkte.',
+        'Wenn Gamification aus ist (Einstellungen → Allgemein), zeigt die Leiste unten Startseite, Räume, Aufgaben, Kalender und Mehr.',
+      ] },
       { h: 'Deine Startseite anordnen' },
       { ul: [
         'Anpassen (oben und unten auf der Startseite) zeigt deine Karten der Reihe nach. Ziehe eine Karte an ihrem ≡, um sie zu verschieben, oder nutze ▲▼; 👁️ blendet sie ein oder aus. Auf Standard zurücksetzen stellt alles wieder her.',
@@ -366,7 +374,7 @@ export const GUIDE_DE: GuideSection[] = [
       { ul: [
         'Rahmen: Bronze (2), Silber (6), Gold (9), Regenbogen (10). Kronen- und Diamant-Abzeichen schalten eigene Rahmen frei.',
         'Feiern: fallende Münzen (3), Feuerwerk (8). Themes: Wald (4), Galaxie (7), Lava (10). Die ersten 8 Themes sind kostenlos.',
-        'Titel (5): der Titel deines Levels oder jedes Abzeichen, das du verdient hast, angezeigt auf der Startseite, dem Board, in der Seitenleiste und unter Aktivität.',
+        'Titel (5): der Titel deines Levels oder jedes Abzeichen, das du verdient hast, angezeigt auf der Startseite, dem Board, im Menü (auf dem Handy unter Mehr) und unter Aktivität.',
       ] },
       { h: 'Abzeichen' },
       { p: 'Eingebaute Abzeichen werden von selbst freigeschaltet. Eltern können unter Einstellungen → Abzeichen eigene erstellen (zum Beispiel „Hausaufgaben 4 Wochen in Folge“), mit optionalen Bonusmünzen, und für jedes eingebaute Abzeichen Münzen festlegen.' },
@@ -421,7 +429,7 @@ export const GUIDE_DE: GuideSection[] = [
     title: 'Auswertung für Eltern',
     parents: true,
     blocks: [
-      { where: 'Auswertung im Menü (nur Eltern)' },
+      { where: 'Auswertung im Menü; auf dem Handy unter Mehr (nur Eltern)' },
       { ul: [
         'Erledigte Aufgaben: Balken für einen Tag (pro Stunde), eine Woche oder einen Monat (pro Tag) oder ein Jahr (pro Monat). Mit ◀ ▶ blätterst du zu früheren Zeiträumen. Tippe auf einen Balken für seine Zahlen, oder nimm Als Tabelle zeigen.',
         'Um weiter zurückzuschauen, tippe auf das Datum und wähle einen Tag im Kalender, oder nimm Zeitraum für Von–Bis; die Balken gehen dann nach Stunde, Tag, Woche oder Monat. Viel und wenig los und Münzen rein und raus enden ebenfalls an diesen Daten. Zurück zu heute bringt dich zur Gegenwart.',
@@ -484,6 +492,11 @@ export const GUIDE_DE: GuideSection[] = [
     title: 'Fehlerbehebung',
     blocks: [
       { qa: [
+        { q: 'Ich finde Einstellungen, Aufgaben oder den Kalender auf dem Handy nicht', a: [
+          'Sie sind unter Mehr, dem letzten Tab unten am Bildschirm, zusammen mit Aktivität, Auswertung (Eltern) und Erfolge. Dein Profil steht ganz oben unter Mehr.',
+          'Den Menüknopf ☰ gibt es auf dem Handy nicht mehr: die Leiste unten ersetzt ihn. Am Computer ist das Menü weiterhin links.',
+          'Die Punkte stehen auf dem Handy nicht mehr in der oberen Zeile: du findest sie auf dem Board.',
+        ] },
         { q: 'Der Erledigt-Knopf ist grau', a: [
           'Seine Beschriftung sagt, warum: „Nicht zugewiesen“ (die Aufgabe eines anderen), „Wartet auf Freigabe“ (ein Elternteil hat deine letzte noch nicht freigegeben), „Erledigt von …“ (jemand hat sie heute schon gemacht), „Heute erledigt / Diese Woche erledigt“ (das Limit einer jederzeit machbaren Aufgabe) oder „🤝 Namen“ (ein Team hat sie heute übernommen).',
           '„Warten auf …“ ist eine Aufgabe mit Rotation, bei der jemand anderes an der Reihe ist. Zeigt der Knopf statt Erledigt einen Tag, ist die Aufgabe erst dann wieder fällig.',

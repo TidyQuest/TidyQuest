@@ -270,6 +270,14 @@ export const GUIDE_IT: GuideSection[] = [
         'Obiettivi: distintivi, il tuo livello e cosa viene dopo. Ricompense: il catalogo e le tue richieste.',
         'Cerca: il pulsante 🔍, oppure premi / o Ctrl+K sulla tastiera.',
       ] },
+      { h: 'Muoversi nell’app' },
+      { ul: [
+        'Sul telefono le pagine sono in fondo allo schermo: Home, Stanze, Ricompense, Classifica e Altro. I bambini hanno Home, Ricompense, Classifica, Obiettivi e Altro. Una linea sopra la scheda mostra dove sei; toccala di nuovo per tornare all’inizio della pagina.',
+        'In Altro c’è il resto: Compiti, Calendario, Attività, Statistiche (genitori), Obiettivi e Impostazioni, con il tuo profilo in cima. Per i bambini anche Stanze è in Altro.',
+        'La parte alta di ogni pagina è una sola riga: il nome della pagina (nella Home la tua foto, un saluto e la data), le tue monete, la tua serie e un pulsante. Il pulsante è 🔍 la ricerca; per i genitori è + in Stanze (Aggiungi stanza) e dentro una stanza (Aggiungi attività). Tocca le monete per aprire Ricompense, la serie per aprire Obiettivi e la foto per aprire il tuo profilo.',
+        'Su un computer, o un tablet tenuto in orizzontale, le pagine sono nel menu a sinistra, e in alto nella pagina vedi anche i tuoi punti.',
+        'Se la Gamification è disattivata (Impostazioni → Generale), la barra in basso ha Home, Stanze, Compiti, Calendario e Altro.',
+      ] },
       { h: 'Organizza la tua Home' },
       { ul: [
         'Personalizza (in alto e in fondo alla Home) elenca le tue schede in ordine. Trascina una scheda dal suo ≡ per spostarla, oppure usa ▲▼; 👁️ la mostra o la nasconde. Ripristina l’ordine predefinito rimette tutto com’era.',
@@ -366,7 +374,7 @@ export const GUIDE_IT: GuideSection[] = [
       { ul: [
         'Cornici: bronzo (2), argento (6), oro (9), arcobaleno (10). I distintivi corona e diamante sbloccano le loro cornici.',
         'Festeggiamenti: pioggia di monete (3), fuochi d’artificio (8). Temi: Foresta (4), Galassia (7), Lava (10). I primi 8 temi sono gratuiti.',
-        'Titoli (5): il titolo del tuo livello o qualsiasi distintivo che hai guadagnato, mostrato nella Home, nella Classifica, nella barra laterale e in Attività.',
+        'Titoli (5): il titolo del tuo livello o qualsiasi distintivo che hai guadagnato, mostrato nella Home, nella Classifica, nel menu (sul telefono, in Altro) e in Attività.',
       ] },
       { h: 'Distintivi' },
       { p: 'I distintivi predefiniti si sbloccano da soli. I genitori possono crearne di propri in Impostazioni → Distintivi (per esempio "Compiti per 4 settimane di fila"), con monete bonus facoltative, e impostare le monete per ogni distintivo predefinito.' },
@@ -421,7 +429,7 @@ export const GUIDE_IT: GuideSection[] = [
     title: 'Statistiche per i genitori',
     parents: true,
     blocks: [
-      { where: 'Statistiche nel menu (solo genitori)' },
+      { where: 'Statistiche nel menu; sul telefono, in Altro (solo genitori)' },
       { ul: [
         'Faccende fatte: barre per un giorno (per ora), una settimana o un mese (per giorno), o un anno (per mese). ◀ ▶ torna ai periodi precedenti. Tocca una barra per vedere i suoi numeri, oppure usa Mostra come tabella.',
         'Per guardare più indietro, tocca la data e scegli un giorno dal calendario, oppure usa Date per un intervallo Dal–Al; le barre vanno allora per ora, giorno, settimana o mese. Momenti pieni e tranquilli e Monete in entrata e in uscita finiscono anch’esse a quelle date. Torna a oggi riporta al presente.',
@@ -484,6 +492,11 @@ export const GUIDE_IT: GuideSection[] = [
     title: 'Risoluzione dei problemi',
     blocks: [
       { qa: [
+        { q: 'Non trovo Impostazioni, Compiti o il Calendario sul telefono', a: [
+          'Sono in Altro, l’ultima scheda in fondo allo schermo, insieme ad Attività, Statistiche (genitori) e Obiettivi. Il tuo profilo è in cima ad Altro.',
+          'Il pulsante del menu ☰ non c’è più sul telefono: la barra in basso lo sostituisce. Su un computer il menu è ancora a sinistra.',
+          'I punti non sono più nella riga in alto sul telefono: li trovi nella Classifica.',
+        ] },
         { q: 'Il pulsante Fatto è grigio', a: [
           'La sua etichetta dice perché: "Non assegnata" (la faccenda è di qualcun altro), "In attesa di approvazione" (un genitore non ha ancora approvato la tua ultima), "Fatto da …" (qualcuno l’ha già fatta oggi), "Fatto oggi / questa settimana" (il limite di ripetizioni di una faccenda libera) o "🤝 nomi" (una squadra l’ha presa oggi).',
           '"In attesa di …" è una faccenda a Rotazione nel turno di qualcun altro. Quando il pulsante mostra un giorno al posto di Fatto, la faccenda non è da rifare fino ad allora.',

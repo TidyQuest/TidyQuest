@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { useHeaderAdd } from '../layout/headerAdd';
 import { createPortal } from 'react-dom';
 import { HealthBar } from '../shared/HealthBar';
 import { RingGauge } from '../shared/RingGauge';
@@ -357,6 +358,14 @@ export function RoomDetail({ room, language, isAdmin, currentUserId, currentUser
   // (BUG-38: Save did nothing)
   const [saving, runSave] = useBusy();
   const [saveError, setSaveError] = useState('');
+  // The phone top bar's + opens the add form here and brings it into view (ENH-24)
+  const addAnchor = useRef<HTMLDivElement>(null);
+  const openAddFromHeader = useCallback(() => {
+    setSaveError('');
+    setShowAddTask(true);
+    requestAnimationFrame(() => addAnchor.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }));
+  }, []);
+  useHeaderAdd(isAdmin ? openAddFromHeader : null);
   const saveEdit = () => runSave(async () => {
     if (!editingTask || !editForm.name.trim()) return;
     setSaveError('');
@@ -1210,6 +1219,7 @@ export function RoomDetail({ room, language, isAdmin, currentUserId, currentUser
         </div>)}{/* end room-table-scroll */}
 
         {/* Add Task */}
+        <div ref={addAnchor} style={{ scrollMarginTop: 12 }} />
         {/* To-dos room: "+ To-do" opens the short to-do form (the server makes it one-time) */}
         {isAdmin && room.isTodoRoom ? (
           showAddTask ? (

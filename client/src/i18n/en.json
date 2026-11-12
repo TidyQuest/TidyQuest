@@ -363,9 +363,12 @@
       "achievements": "Achievements",
       "tasks": "Tasks",
       "insights": "Insights",
-      "closeMenu": "Close menu",
       "expandSidebar": "Expand sidebar",
-      "collapseSidebar": "Collapse sidebar"
+      "collapseSidebar": "Collapse sidebar",
+      "more": "More",
+      "badges": "Badges",
+      "hi": "Hi, {name}",
+      "tabs": "Main pages"
     },
     "app": {
       "roomsConfigured": "rooms configured",
@@ -711,7 +714,6 @@
       "error": "Something went wrong",
       "close": "Close",
       "actionFailed": "That didn't work. Check your connection and try again.",
-      "openMenu": "Open menu",
       "dismiss": "Dismiss",
       "daysShort": "{n}d"
     },

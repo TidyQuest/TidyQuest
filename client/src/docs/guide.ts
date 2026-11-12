@@ -294,6 +294,14 @@ export const GUIDE_EN: GuideSection[] = [
         'Achievements: badges, your level and what’s next. Rewards: the catalog and your requests.',
         'Search: the 🔍 button, or press / or Ctrl+K on a keyboard.',
       ] },
+      { h: 'Getting around' },
+      { ul: [
+        'On a phone the pages are along the bottom of the screen: Home, Rooms, Rewards, Board and More. Kids get Home, Rewards, Board, Badges and More. A line over a tab shows where you are; tap that tab again to go back to the top of the page.',
+        'More has the rest: Tasks, Calendar, Activity, Insights (parents), Achievements and Settings, with your profile at the top. For kids, Rooms is under More too.',
+        'The top of every page is one line: the page’s name (on Home, your picture, a hello and the date), your coins, your streak and one button. The button is 🔍 search; for parents it’s + on Rooms (Add Room) and inside a room (Add Task). Tap your coins to open Rewards, your streak to open Achievements, and your picture to open your profile.',
+        'On a computer, or a tablet held sideways, the pages are in the menu on the left, and the top of the page also shows your points.',
+        'With Gamification off (Settings → General) the bottom bar is Home, Rooms, Tasks, Calendar and More.',
+      ] },
       { h: 'Arrange your Home' },
       { ul: [
         'Customise (at the top and the bottom of Home) lists your cards in order. Drag a card by its ≡ to move it, or use ▲▼; 👁️ shows or hides it. Reset to default puts everything back.',
@@ -390,7 +398,7 @@ export const GUIDE_EN: GuideSection[] = [
       { ul: [
         'Frames: bronze (2), silver (6), gold (9), rainbow (10). Crown and diamond badges unlock their own frames.',
         'Celebrations: falling coins (3), fireworks (8). Themes: Forest (4), Galaxy (7), Lava (10). The first 8 themes are free.',
-        'Titles (5): your level’s title or any badge you’ve earned, shown on Home, the Board, the sidebar and Activity.',
+        'Titles (5): your level’s title or any badge you’ve earned, shown on Home, the Board, the menu (on a phone, More) and Activity.',
       ] },
       { h: 'Badges' },
       { p: 'Built-in badges unlock by themselves. Parents can make their own in Settings → Badges (for example "Homework 4 weeks in a row"), with optional bonus coins, and set coins for every built-in badge.' },
@@ -445,7 +453,7 @@ export const GUIDE_EN: GuideSection[] = [
     title: 'Insights for parents',
     parents: true,
     blocks: [
-      { where: 'Insights in the menu (parents only)' },
+      { where: 'Insights in the menu; on a phone, under More (parents only)' },
       { ul: [
         'Chores done: bars for a day (by hour), a week or a month (by day), or a year (by month). ◀ ▶ steps back through earlier periods. Tap a bar for its numbers, or use Show as a table.',
         'To look further back, tap the date and pick any day from the calendar, or choose Custom for a From–To range; the bars then go by hour, day, week or month to fit. Busy and quiet times and Coins in and out end on the picked dates too. Back to today returns to now.',
@@ -508,6 +516,11 @@ export const GUIDE_EN: GuideSection[] = [
     title: 'Troubleshooting',
     blocks: [
       { qa: [
+        { q: 'I can’t find Settings, Tasks or the Calendar on my phone', a: [
+          'They’re under More, the last tab at the bottom of the screen, with Activity, Insights (parents) and Achievements. Your profile is at the top of More.',
+          'The ☰ menu button is gone from phones: the bar at the bottom replaces it. On a computer the menu is still on the left.',
+          'The points chip isn’t in the phone’s top line any more: your points are on the Board.',
+        ] },
         { q: 'The Done button is grey', a: [
           'Its label says why: "Not assigned" (someone else’s chore), "Waiting for approval" (a parent hasn’t approved your last one yet), "Done by …" (someone already did it today), "Done today / this week" (an anytime chore’s repeat limit), or "🤝 names" (a team has claimed it today).',
           '"Waiting for …" is a Rotating chore on someone else’s turn. When the button shows a day instead of Done ("Tomorrow", "In 3 days"), the chore isn’t due again until then.',

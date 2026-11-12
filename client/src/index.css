@@ -978,6 +978,10 @@ html[data-theme='lava'] option {
 
 /* Utility classes for responsive behavior */
 .mobile-only { display: none; }
+/* The phone's bottom bar (TabBar) and what shows only beside it. --tabbar-h lifts toasts and sticky bars above it. */
+:root { --tabbar-h: 0px; }
+.tabbar { display: none; }
+.ph-phone { display: none !important; }
 .history-mobile-meta { display: none; }
 .desktop-only { display: block; }
 
@@ -1093,22 +1097,78 @@ html[data-theme='lava'] option {
     grid-template-columns: 1fr !important;
   }
 
+  /* The top bar is one line on phones (ENH-24): the title or greeting, then coins, streak and one button.
+     The subtitle, the search button's word and the points chip are for wider screens. */
   .page-header {
-    flex-direction: column !important;
-    align-items: flex-start !important;
-    gap: 10px !important;
-    margin-bottom: 18px !important;
+    flex-wrap: nowrap !important;
+    gap: 8px !important;
+    margin-bottom: 14px !important;
+  }
+
+  .page-header-title {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+  }
+
+  .page-header h1 {
+    font-size: clamp(18px, 5.6vw, 22px) !important;
+    line-height: 1.15;
+    overflow-wrap: anywhere;
+  }
+
+  .page-header-sub {
+    display: none;
+  }
+
+  .page-header-home h1 {
+    font-size: 16px !important;
+    letter-spacing: 0 !important;
+  }
+
+  .page-header-home .page-header-sub {
+    display: block;
+    font-size: 12px !important;
+    margin-top: 1px !important;
+  }
+
+  .page-header-home h1,
+  .page-header-home .page-header-sub {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .page-header-actions {
-    width: 100%;
-    gap: 8px !important;
-    justify-content: flex-start !important;
-    flex-wrap: wrap;
+    flex: none;
+    flex-wrap: nowrap !important;
+    gap: 6px !important;
   }
 
   .page-header-actions > div {
-    padding: 7px 12px !important;
+    height: 38px;
+    padding: 0 9px !important;
+    border-radius: 12px !important;
+    gap: 4px !important;
+  }
+
+  .page-header-actions .ph-coins { order: 1; }
+  .page-header-actions .ph-streak { order: 2; }
+  .page-header-actions .ph-points { display: none !important; }
+
+  .page-header-actions .ph-button {
+    order: 3;
+    width: 40px;
+    height: 38px;
+    padding: 0 !important;
+    border-radius: 12px !important;
+    justify-content: center;
+  }
+
+  .search-button-label {
+    display: none;
   }
 
   .auth-card {
@@ -1382,8 +1442,9 @@ html[data-theme='lava'] option {
     width: 100%;
   }
 
+  /* minmax(0, …): a long name or button row wraps inside its card instead of widening the page (360px phones) */
   .family-members-grid {
-    grid-template-columns: 1fr !important;
+    grid-template-columns: minmax(0, 1fr) !important;
   }
 
   .family-member-card {
@@ -1429,49 +1490,94 @@ html[data-theme='lava'] option {
     width: 100% !important;
   }
 
-  /* Mobile sidebar - hidden by default, slides in when open */
+  /* Phones get the bottom bar instead of the side menu (ENH-24) */
   .sidebar {
-    transform: translateX(-100%);
+    display: none !important;
   }
 
-  .sidebar.mobile-open {
-    transform: translateX(0);
-    box-shadow: 4px 0 16px rgba(0, 0, 0, 0.2);
-  }
-
-  /* Show mobile overlay when sidebar is open */
-  .mobile-overlay {
-    display: block !important;
-  }
-
-  /* The page behind the open menu doesn't scroll (BUG-15: scrolling it hid the browser's toolbars and left a
-     strip of page under the menu) */
-  html.phone-menu-open {
-    overflow: hidden;
-  }
-
-  /* Show mobile-only close button */
   .mobile-only {
     display: block !important;
   }
 
-  /* The menu's close button: a 44px tap target. Collapsing is a desktop thing, so its button hides on phones */
-  .sidebar .sidebar-close {
-    display: flex !important;
-  }
-  .sidebar .sidebar-collapse {
-    display: none !important;
+  :root {
+    --tabbar-h: 60px;
   }
 
-  /* Show hamburger menu on mobile */
-  .hamburger-menu {
-    display: flex !important;
+  .tabbar {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 45;
+    height: calc(var(--tabbar-h) + env(safe-area-inset-bottom));
+    padding-bottom: env(safe-area-inset-bottom);
+    background: var(--warm-sidebar);
+    border-top: 1px solid var(--warm-sidebar-border);
   }
+
+  .tabbar-tab {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    min-width: 0;
+    padding: 0 2px;
+    text-decoration: none;
+    color: var(--warm-text-secondary);
+    font-size: clamp(10px, 2.9vw, 12px);
+    font-weight: 700;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .tabbar-tab span {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* The label is in the text colour, not the accent: several themes' accents are too pale for 11px words */
+  .tabbar-tab.on {
+    color: var(--warm-text);
+    font-weight: 800;
+  }
+
+  .tabbar-tab.on svg {
+    color: var(--warm-accent);
+  }
+
+  /* The marker over the tab you're on */
+  .tabbar-tab.on::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 24%;
+    right: 24%;
+    height: 3px;
+    border-radius: 0 0 3px 3px;
+    background: var(--warm-accent);
+  }
+
+  /* With the one-line top bar the garland is a thin line along the top of the screen */
+  .season-strip {
+    height: 22px;
+    font-size: 14px;
+    margin: -4px 0 6px;
+    padding-top: 2px;
+  }
+
+  .ph-phone { display: revert !important; }
+  .ph-desktop { display: none !important; }
+  button.ph-phone { display: flex !important; }
 
   /* Adjust main content for mobile - remove sidebar margin */
   .main-content {
     margin-left: 0 !important;
-    padding: 72px 16px 24px 16px !important;
+    padding: 12px 16px calc(24px + var(--tabbar-h) + env(safe-area-inset-bottom)) 16px !important;
   }
 }
 
@@ -1482,16 +1588,6 @@ html[data-theme='lava'] option {
   height: 100dvh;
 }
 
-/* Desktop - ensure sidebar is always visible */
-@media (min-width: 769px) {
-  .sidebar {
-    transform: translateX(0) !important;
-  }
-
-  .mobile-overlay {
-    display: none !important;
-  }
-}
 
 /* Task opened from search or the task list (RoomDetail adds this briefly) */
 [data-task-id] {
@@ -1691,7 +1787,7 @@ html[data-theme='lava'] input[type='date'], html[data-season-dark] input[type='d
 .setup-login { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .setup-login .tq-label, .setup-allowance, .setup-card > .tq-label { display: grid; gap: 4px; margin: 0; }
 .setup-add { display: flex; flex-wrap: wrap; gap: 8px; }
-.setup-nav { display: flex; justify-content: space-between; gap: 8px; position: sticky; bottom: 0; padding: 10px 0; background: var(--warm-bg); }
+.setup-nav { display: flex; justify-content: space-between; gap: 8px; position: sticky; bottom: var(--tabbar-h); padding: 10px 0; background: var(--warm-bg); }
 .setup-error { margin: 0; color: #DC2626; font-weight: 700; }
 .setup-tips { margin: 0; padding-left: 20px; display: grid; gap: 6px; font-weight: 600; }
 .setup-subhead { margin: 6px 0 0; font-size: 15px; font-weight: 800; }

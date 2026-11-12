@@ -75,7 +75,7 @@ export function BulkTaskBar({ ids, people, rooms, language, onApplied, onDeleted
 
   return (
     <div className="tq-card" style={{
-      position: 'sticky', bottom: 'calc(12px + env(safe-area-inset-bottom))', zIndex: 5, padding: 12,
+      position: 'sticky', bottom: 'calc(12px + var(--tabbar-h) + env(safe-area-inset-bottom))', zIndex: 5, padding: 12,
       display: 'flex', flexDirection: 'column', gap: 10, boxShadow: '0 6px 24px rgba(0,0,0,0.18)', border: '1.5px solid var(--warm-accent)',
     }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>

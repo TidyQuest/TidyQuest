@@ -270,6 +270,14 @@ export const GUIDE_NL: GuideSection[] = [
         'Medailles: badges, je level en wat er nog komt. Beloningen: de winkel en je aanvragen.',
         'Zoeken: de 🔍-knop, of druk op / of Ctrl+K op een toetsenbord.',
       ] },
+      { h: 'De weg vinden' },
+      { ul: [
+        'Op een telefoon staan de pagina’s onderaan het scherm: Home, Kamers, Beloningen, Scorebord en Meer. Kinderen hebben Home, Beloningen, Scorebord, Medailles en Meer. Een streepje boven een tab laat zien waar je bent; tik de tab nog een keer aan om terug te gaan naar het begin van de pagina.',
+        'Onder Meer staat de rest: Klusjes, Kalender, Activiteit, Inzichten (ouders), Medailles en Instellingen, met je profiel bovenaan. Voor kinderen staat Kamers ook onder Meer.',
+        'Bovenaan elke pagina staat één regel: de naam van de pagina (op Home je foto, een groet en de datum), je munten, je reeks en één knop. De knop is 🔍 zoeken; voor ouders is het + op Kamers (Kamer toevoegen) en in een kamer (Klusje Toevoegen). Tik op je munten voor Beloningen, op je reeks voor Medailles en op je foto voor je profiel.',
+        'Op een computer, of een tablet die je dwars houdt, staan de pagina’s in het menu links, en bovenaan de pagina zie je ook je punten.',
+        'Als Spelmodus (Gamification) uit staat (Instellingen → Algemeen), heeft de balk onderaan Home, Kamers, Klusjes, Kalender en Meer.',
+      ] },
       { h: 'Je Home indelen' },
       { ul: [
         'Aanpassen (boven- en onderaan Home) toont je kaarten op volgorde. Sleep een kaart aan zijn ≡ om hem te verplaatsen, of gebruik ▲▼; 👁️ toont of verbergt hem. Standaardvolgorde terugzetten zet alles terug.',
@@ -366,7 +374,7 @@ export const GUIDE_NL: GuideSection[] = [
       { ul: [
         'Lijsten: brons (2), zilver (6), goud (9), regenboog (10). Kroon- en diamantbadges ontgrendelen hun eigen lijsten.',
         'Vieringen: vallende munten (3), vuurwerk (8). Thema’s: Bos (4), Sterrenstelsel (7), Lava (10). De eerste 8 thema’s zijn gratis.',
-        'Titels (5): de titel van je level of een badge die je hebt verdiend, te zien op Home, het Scorebord, de zijbalk en Activiteit.',
+        'Titels (5): de titel van je level of een badge die je hebt verdiend, te zien op Home, het Scorebord, het menu (op een telefoon Meer) en Activiteit.',
       ] },
       { h: 'Badges' },
       { p: 'Ingebouwde badges ontgrendelen vanzelf. Ouders kunnen er zelf maken in Instellingen → Badges (bijvoorbeeld "4 weken op rij huiswerk"), met optionele bonusmunten, en munten instellen voor elke ingebouwde badge.' },
@@ -421,7 +429,7 @@ export const GUIDE_NL: GuideSection[] = [
     title: 'Inzichten voor ouders',
     parents: true,
     blocks: [
-      { where: 'Inzichten in het menu (alleen ouders)' },
+      { where: 'Inzichten in het menu; op een telefoon onder Meer (alleen ouders)' },
       { ul: [
         'Gedane klusjes: staven voor een dag (per uur), een week of een maand (per dag), of een jaar (per maand). Met ◀ ▶ ga je terug naar eerdere periodes. Tik op een staaf voor de cijfers, of kies Als tabel tonen.',
         'Om verder terug te kijken, tik op de datum en kies een dag in de kalender, of neem Datums voor een periode Van–Tot; de staven gaan dan per uur, dag, week of maand. Drukke en rustige momenten en Munten erin en eruit eindigen ook op die datums. Terug naar vandaag brengt je weer naar nu.',
@@ -484,6 +492,11 @@ export const GUIDE_NL: GuideSection[] = [
     title: 'Problemen oplossen',
     blocks: [
       { qa: [
+        { q: 'Ik kan Instellingen, Klusjes of de Kalender niet vinden op mijn telefoon', a: [
+          'Ze staan onder Meer, de laatste tab onderaan het scherm, samen met Activiteit, Inzichten (ouders) en Medailles. Je profiel staat bovenaan Meer.',
+          'De menuknop ☰ is weg op telefoons: de balk onderaan vervangt hem. Op een computer staat het menu nog steeds links.',
+          'Je punten staan op een telefoon niet meer in de bovenste regel: je vindt ze op het Scorebord.',
+        ] },
         { q: 'De knop Klaar! is grijs', a: [
           'Het label zegt waarom: "Niet toegewezen" (klusje van iemand anders), "Wacht op goedkeuring" (een ouder heeft je vorige nog niet goedgekeurd), "Gedaan door …" (iemand heeft het vandaag al gedaan), "Vandaag gedaan / Deze week gedaan" (de herhaallimiet van een klusje voor op elk moment) of "🤝 namen" (een team heeft het vandaag opgeëist).',
           '"Wachten op …" is een klusje Om de beurt waarbij iemand anders aan de beurt is. Staat er op de knop een dag in plaats van "Klaar!", dan hoeft het klusje pas dan weer.',

@@ -5,6 +5,8 @@ import { taskErrorText } from './utils/taskError';
 import { useAppUpdate } from './utils/appUpdate';
 import { api, NEW_TOKEN_EVENT } from './hooks/useApi';
 import { Sidebar } from './components/layout/Sidebar';
+import { TabBar } from './components/layout/TabBar';
+import { More } from './components/pages/More';
 import { PageHeader } from './components/layout/PageHeader';
 import { ConfettiEffect } from './components/shared/ConfettiEffect';
 import { ChoreTimerBar, ChoreTimerProvider } from './components/shared/ChoreTimer';
@@ -114,7 +116,6 @@ function AppContent() {
   const [unlockedAchievements, setUnlockedAchievements] = useState<string[]>([]);
   // Names for the pop-up from the completion itself (parent-made and secret badges aren't in the page data yet)
   const [unlockedInfo, setUnlockedInfo] = useState<Array<{ id: string; titleKey: string | null; title: string | null }>>([]);
-  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const openSearch = useCallback(() => setSearchOpen(true), []);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
@@ -438,6 +439,8 @@ function AppContent() {
   }
 
   const today = new Date().toLocaleDateString(localeFor(user.language), { weekday: 'long', month: 'long', day: 'numeric', timeZone: familyZone() });
+  // The phone's top bar on Home: "Hi, Dad" over a short date (ENH-24)
+  const todayShort = new Date().toLocaleDateString(localeFor(user.language), { weekday: 'short', month: 'short', day: 'numeric', timeZone: familyZone() });
   const periods: Array<'all' | 'week' | 'month' | 'year'> = ['all', 'week', 'month', 'year'];
   const myPoints = pointsPeriod === 'all'
     ? (user.points ?? 0)
@@ -523,42 +526,13 @@ function AppContent() {
           onClose={() => setPhotoProblem((p) => (p === photoProblem ? null : p))} />
       )}
 
-      {/* Mobile hamburger menu */}
-      <button
-        onClick={() => setIsMobileSidebarOpen(true)}
-        className="mobile-only hamburger-menu"
-        style={{
-          position: 'fixed',
-          top: 16,
-          left: 16,
-          zIndex: 40,
-          background: 'var(--warm-card)',
-          border: '1.5px solid var(--warm-border)',
-          borderRadius: 12,
-          width: 44,
-          height: 44,
-          display: 'none',
-          alignItems: 'center',
-          justifyContent: 'center',
-          cursor: 'pointer',
-          boxShadow: '0 2px 8px var(--warm-shadow)',
-          color: 'var(--warm-text)',
-        }}
-        aria-label={t('common.openMenu')}
-      >
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-          <path d="M3 12h18M3 6h18M3 18h18" />
-        </svg>
-      </button>
-
       <Sidebar
         user={user}
-        isMobileOpen={isMobileSidebarOpen}
-        onClose={() => setIsMobileSidebarOpen(false)}
         gamificationEnabled={gamificationEnabled}
         collapsed={sidebarCollapsed}
         onToggle={() => setSidebarCollapsed(prev => !prev)}
       />
+      <TabBar user={user} gamificationEnabled={gamificationEnabled} />
 
       <main style={{ marginLeft: sidebarCollapsed ? 60 : 240, flex: 1, padding: '28px 36px', maxWidth: 1320, backgroundColor: 'var(--warm-bg)', transition: 'margin-left 0.3s ease' }} className={`main-content${user.kidMode ? ' kid-mode' : ''}`}>
         <ChoreTimerBar language={user.language} />
@@ -567,7 +541,7 @@ function AppContent() {
         <Routes>
           <Route path="/" element={
             <>
-              <PageHeader title={focusIsHome ? t('focus.title') : t('nav.home')} subtitle={today} user={user} onCoinsClick={() => navigate('/rewards')} onStreakClick={() => navigate('/achievements')} onPointsClick={handlePointsClick} userPoints={myPoints} pointsPeriodLabel={pointsPeriodLabel} gamificationEnabled={gamificationEnabled} shieldsOn={!!dashboardData?.shields} />
+              <PageHeader title={focusIsHome ? t('focus.title') : t('nav.home')} subtitle={today} homeDate={focusIsHome ? undefined : todayShort} user={user} onCoinsClick={() => navigate('/rewards')} onStreakClick={() => navigate('/achievements')} onPointsClick={handlePointsClick} userPoints={myPoints} pointsPeriodLabel={pointsPeriodLabel} gamificationEnabled={gamificationEnabled} shieldsOn={!!dashboardData?.shields} />
               {season && <SeasonGreeting season={season} language={user.language} />}
               {focusIsHome && focusPage(() => navigate('/?all=1'), t('focus.fullHome'))}
               {dashboardData && !focusIsHome && (
@@ -602,7 +576,7 @@ function AppContent() {
 
           <Route path="/rooms" element={
             <>
-              <PageHeader title={t('nav.rooms')} subtitle={`${rooms.length} ${t('app.roomsConfigured')}`} user={user} onCoinsClick={() => navigate('/rewards')} onStreakClick={() => navigate('/achievements')} onPointsClick={handlePointsClick} userPoints={myPoints} pointsPeriodLabel={pointsPeriodLabel} gamificationEnabled={gamificationEnabled} shieldsOn={!!dashboardData?.shields} />
+              <PageHeader title={t('nav.rooms')} subtitle={`${rooms.length} ${t('app.roomsConfigured')}`} addLabel={user.role === 'admin' ? t('rooms.addRoom') : undefined} user={user} onCoinsClick={() => navigate('/rewards')} onStreakClick={() => navigate('/achievements')} onPointsClick={handlePointsClick} userPoints={myPoints} pointsPeriodLabel={pointsPeriodLabel} gamificationEnabled={gamificationEnabled} shieldsOn={!!dashboardData?.shields} />
               <RoomsList rooms={activeRooms} language={user.language} onSelectRoom={(id) => navigate(`/rooms/${id}`)}
                 onOpenTask={(roomId, taskId) => navigate(`/rooms/${roomId}?task=${taskId}`)}
                 isAdmin={user.role === 'admin'}
@@ -695,6 +669,13 @@ function AppContent() {
               <Insights language={user.language} gamificationEnabled={gamificationEnabled} />
             </>
           )} />
+
+          <Route path="/more" element={
+            <>
+              <PageHeader title={t('nav.more')} subtitle="" user={user} onCoinsClick={() => navigate('/rewards')} onStreakClick={() => navigate('/achievements')} onPointsClick={handlePointsClick} userPoints={myPoints} pointsPeriodLabel={pointsPeriodLabel} gamificationEnabled={gamificationEnabled} shieldsOn={!!dashboardData?.shields} />
+              <More user={user} gamificationEnabled={gamificationEnabled} />
+            </>
+          } />
 
           <Route path="/profile" element={
             <>
@@ -887,7 +868,7 @@ function RoomDetailWrapper({ rooms, roomsLoaded, strictMode, shieldsOn, allowOne
 
   return (
     <>
-      <PageHeader title={roomDisplayName(room.name, room.roomType)} subtitle={room.isTodoRoom ? t('todos.countLine').replace('{n}', String(room.todoCount ?? 0)) : `${room.tasks?.length || 0} ${t('rooms.tasksTracked')}`} user={user} onCoinsClick={() => navigate('/rewards')} onStreakClick={() => navigate('/achievements')} gamificationEnabled={gamificationEnabled} shieldsOn={shieldsOn} />
+      <PageHeader title={roomDisplayName(room.name, room.roomType)} subtitle={room.isTodoRoom ? t('todos.countLine').replace('{n}', String(room.todoCount ?? 0)) : `${room.tasks?.length || 0} ${t('rooms.tasksTracked')}`} addLabel={user?.role === 'admin' ? t(room.isTodoRoom ? 'todos.add' : 'roomDetail.addTask') : undefined} user={user} onCoinsClick={() => navigate('/rewards')} onStreakClick={() => navigate('/achievements')} gamificationEnabled={gamificationEnabled} shieldsOn={shieldsOn} />
       <RoomDetail room={room} language={user?.language} isAdmin={user?.role === 'admin'} currentUserId={user?.id} currentUserRole={user?.role} users={users} coinsByEffort={coinsByEffort} onCompleteTask={onCompleteTask} onBack={() => navigate('/rooms', { state: { fromRoom: room.id } })} onOpenRoom={(id) => navigate(`/rooms/${id}`)} allowOneTime={allowOneTime} allowPhotos={allowPhotos} allowPins={allowPins} focusTaskId={focusTaskId} strictMode={strictMode} onlyMine={user?.taskView === 'mineOnly' || !!user?.kidMode} onRefresh={onRefresh} onAchievementsUnlocked={onAchievementsUnlocked} />
     </>
   );

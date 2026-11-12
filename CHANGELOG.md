@@ -9,6 +9,26 @@ What changed in each release, in plain language, newest first. Releases up to v0
 
 ## Unreleased
 
+### Changed
+
+- **A bar of tabs along the bottom on phones** (ENH-24, the first step of the new look). The ☰ menu button and the
+  slide-out menu are gone from phones. Parents get Home, Rooms, Rewards, Board and More along the bottom of the
+  screen; kids get Home, Rewards, Board, Badges and More. More holds the rest (Tasks, Calendar, Activity, Insights,
+  Achievements, Settings, and Rooms for kids) with your profile at the top. A line over a tab shows where you are,
+  and tapping that tab again jumps back to the top of the page. With Gamification switched off the tabs are Home,
+  Rooms, Tasks, Calendar and More. Computers and wide tablets keep the menu on the left.
+- **The top of each page is one line on phones.** It shows the page's name (on Home: your picture, a hello and the
+  date), your coins, your streak and one button. The button is search; for parents it is + on Rooms (Add Room) and
+  inside a room (Add Task), so the separate Add Room button is gone from phones. The points chip and the small line
+  under the page name are hidden on phones; your points are still on the Board.
+- **The seasonal garland is a thin strip across the top on phones**, so it no longer pushes the page down.
+- Undo, "waiting for approval" and other pop-up notes now sit just above the bottom bar instead of under it.
+
+### Fixed
+
+- Settings no longer scrolls sideways on narrow phones (360px wide): the family member cards now wrap inside the
+  page.
+
 ## v0.18.0 (2026-11-11)
 
 ### Added

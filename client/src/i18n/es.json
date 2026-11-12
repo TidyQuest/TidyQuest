@@ -363,9 +363,12 @@
       "achievements": "Logros",
       "tasks": "Tareas",
       "insights": "Estadísticas",
-      "closeMenu": "Cerrar menú",
       "expandSidebar": "Expandir el menú lateral",
-      "collapseSidebar": "Contraer el menú lateral"
+      "collapseSidebar": "Contraer el menú lateral",
+      "more": "Más",
+      "badges": "Logros",
+      "hi": "Hola, {name}",
+      "tabs": "Páginas principales"
     },
     "app": {
       "roomsConfigured": "habitaciones configuradas",
@@ -711,7 +714,6 @@
       "error": "Algo salió mal",
       "close": "Cerrar",
       "actionFailed": "No funcionó. Revisa tu conexión e inténtalo de nuevo.",
-      "openMenu": "Abrir menú",
       "dismiss": "Cerrar",
       "daysShort": "{n} d"
     },

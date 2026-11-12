@@ -1553,13 +1553,13 @@ export function Settings({
                   await api.updateUserView(u.id, next).catch(() => setMemberView((prev) => ({ ...prev, [u.id]: view })));
                 };
                 return (
-                  <div style={{ marginTop: 10, paddingTop: 10, borderTop: '1px solid var(--warm-border)', display: 'grid', gap: 10 }}>
+                  <div style={{ marginTop: 10, paddingTop: 10, borderTop: '1px solid var(--warm-border)', display: 'grid', gridTemplateColumns: 'minmax(0, 1fr)', gap: 10 }}>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, flexWrap: 'wrap' }}>
                       <div style={{ flex: '1 1 160px' }}>
                         <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--warm-text)' }}>{t('settings.taskView')}</div>
                         <div style={{ fontSize: 11, color: 'var(--warm-text-light)', fontWeight: 500, marginTop: 2 }}>{t('settings.taskViewDesc')}</div>
                       </div>
-                      <select className="tq-input" value={view.taskView} style={{ width: 'auto', cursor: 'pointer', fontSize: 12 }}
+                      <select className="tq-input" value={view.taskView} style={{ width: 'auto', maxWidth: '100%', cursor: 'pointer', fontSize: 12 }}
                         onChange={(e) => saveView({ ...view, taskView: e.target.value as 'all' | 'mine' | 'mineOnly' })}>
                         <option value="all">{t('settings.taskViewAll')}</option>
                         <option value="mine">{t('settings.taskViewMine')}</option>
@@ -1578,7 +1578,7 @@ export function Settings({
                         <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--warm-text)' }}>🎯 {t('focus.title')}</div>
                         <div style={{ fontSize: 11, color: 'var(--warm-text-light)', fontWeight: 500, marginTop: 2 }}>{t('focus.settingDesc')}</div>
                       </div>
-                      <select className="tq-input" value={view.focusMode ?? ''} style={{ width: 'auto', cursor: 'pointer', fontSize: 12 }}
+                      <select className="tq-input" value={view.focusMode ?? ''} style={{ width: 'auto', maxWidth: '100%', cursor: 'pointer', fontSize: 12 }}
                         aria-label={t('focus.title')}
                         onChange={(e) => saveView({ ...view, focusMode: (e.target.value || null) as FocusModeSetting })}>
                         <option value="">{u.role === 'child' ? t('focus.defaultButton') : t('focus.defaultOff')}</option>

@@ -270,6 +270,14 @@ export const GUIDE_FR: GuideSection[] = [
         'Succès : les badges, ton niveau et la suite. Récompenses : le catalogue et tes demandes.',
         'Recherche : le bouton 🔍, ou appuie sur / ou Ctrl+K au clavier.',
       ] },
+      { h: 'Se déplacer' },
+      { ul: [
+        'Sur un téléphone, les pages sont en bas de l’écran : Accueil, Pièces, Récompenses, Tableau et Plus. Les enfants ont Accueil, Récompenses, Tableau, Succès et Plus. Un trait au-dessus d’un onglet montre où tu es ; touche-le encore pour revenir en haut de la page.',
+        'Plus contient le reste : Tâches, Calendrier, Activité, Statistiques (parents), Succès et Paramètres, avec ton profil tout en haut. Pour les enfants, Pièces se trouve aussi dans Plus.',
+        'Le haut de chaque page tient sur une ligne : le nom de la page (sur Accueil, ta photo, un bonjour et la date), tes pièces, ta série et un bouton. Le bouton est 🔍 la recherche ; pour les parents, c’est + sur Pièces (Ajouter une pièce) et dans une pièce (Ajouter une tâche). Touche tes pièces pour ouvrir Récompenses, ta série pour ouvrir Succès et ta photo pour ouvrir ton profil.',
+        'Sur un ordinateur, ou une tablette tenue à l’horizontale, les pages sont dans le menu à gauche, et le haut de la page affiche aussi tes points.',
+        'Si la Gamification est désactivée (Paramètres → Général), la barre du bas contient Accueil, Pièces, Tâches, Calendrier et Plus.',
+      ] },
       { h: 'Organiser votre accueil' },
       { ul: [
         'Personnaliser (en haut et en bas de l’accueil) liste vos cartes dans l’ordre. Faites glisser une carte par son ≡ pour la déplacer, ou utilisez ▲▼ ; 👁️ l’affiche ou la masque. Revenir à l’ordre par défaut remet tout comme avant.',
@@ -366,7 +374,7 @@ export const GUIDE_FR: GuideSection[] = [
       { ul: [
         'Cadres : bronze (2), argent (6), or (9), arc-en-ciel (10). Les badges couronne et diamant débloquent leurs propres cadres.',
         'Célébrations : les pièces qui pleuvent (3), feux d’artifice (8). Thèmes : Forêt (4), Galaxie (7), Lave (10). Les 8 premiers thèmes sont gratuits.',
-        'Titres (5) : le titre de ton niveau ou n’importe quel badge gagné, affiché sur Accueil, le Tableau, la barre latérale et Activité.',
+        'Titres (5) : le titre de ton niveau ou n’importe quel badge gagné, affiché sur Accueil, le Tableau, le menu (sur téléphone, Plus) et Activité.',
       ] },
       { h: 'Badges' },
       { p: 'Les badges intégrés se débloquent tout seuls. Les parents peuvent créer les leurs dans Paramètres → Badges (par exemple « Devoirs 4 semaines de suite »), avec des pièces bonus facultatives, et fixer des pièces pour chaque badge intégré.' },
@@ -421,7 +429,7 @@ export const GUIDE_FR: GuideSection[] = [
     title: 'Statistiques pour les parents',
     parents: true,
     blocks: [
-      { where: 'Statistiques dans le menu (parents seulement)' },
+      { where: 'Statistiques dans le menu ; sur téléphone, dans Plus (parents seulement)' },
       { ul: [
         'Tâches faites : des barres pour un jour (par heure), une semaine ou un mois (par jour), ou une année (par mois). ◀ ▶ remonte aux périodes précédentes. Touchez une barre pour voir ses chiffres, ou utilisez Voir en tableau.',
         'Pour remonter plus loin, touchez la date et choisissez un jour dans le calendrier, ou prenez Dates pour une période Du–Au ; les barres passent alors par heure, jour, semaine ou mois. Moments chargés et calmes et Pièces gagnées et dépensées s’arrêtent aussi à ces dates. Revenir à aujourd\'hui ramène au présent.',
@@ -484,6 +492,11 @@ export const GUIDE_FR: GuideSection[] = [
     title: 'Dépannage',
     blocks: [
       { qa: [
+        { q: 'Je ne trouve pas Paramètres, Tâches ou le Calendrier sur mon téléphone', a: [
+          'Ils sont dans Plus, le dernier onglet en bas de l’écran, avec Activité, Statistiques (parents) et Succès. Ton profil est tout en haut de Plus.',
+          'Le bouton de menu ☰ a disparu des téléphones : la barre du bas le remplace. Sur un ordinateur, le menu est toujours à gauche.',
+          'Les points ne sont plus dans la ligne du haut sur téléphone : tu les trouves sur le Tableau.',
+        ] },
         { q: 'Le bouton Fait est grisé', a: [
           'Son libellé dit pourquoi : « Non attribuée » (la tâche de quelqu’un d’autre), « En attente de validation » (un parent n’a pas encore validé ta dernière), « Fait par … » (quelqu’un l’a déjà faite aujourd’hui), « Fait aujourd’hui / Fait cette semaine » (la limite de répétition d’une tâche à tout moment), ou « 🤝 noms » (une équipe l’a prise aujourd’hui).',
           '« En attente de … » : une tâche en Rotation dont c’est le tour de quelqu’un d’autre. Quand le bouton affiche un jour à la place de Fait, la tâche n’est pas à refaire avant ce jour-là.',

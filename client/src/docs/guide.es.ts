@@ -270,6 +270,14 @@ export const GUIDE_ES: GuideSection[] = [
         'Logros: insignias, tu nivel y lo que viene después. Recompensas: el catálogo y tus solicitudes.',
         'Buscar: el botón 🔍, o pulsa / o Ctrl+K en un teclado.',
       ] },
+      { h: 'Moverse por la app' },
+      { ul: [
+        'En el móvil, las páginas están en la parte de abajo de la pantalla: Inicio, Habitaciones, Recompensas, Tablero y Más. Los niños tienen Inicio, Recompensas, Tablero, Logros y Más. Una raya sobre la pestaña muestra dónde estás; tócala otra vez para volver al principio de la página.',
+        'En Más está el resto: Tareas, Calendario, Actividad, Estadísticas (padres), Logros y Ajustes, con tu perfil arriba del todo. Para los niños, Habitaciones también está en Más.',
+        'La parte de arriba de cada página es una sola línea: el nombre de la página (en Inicio, tu foto, un saludo y la fecha), tus monedas, tu racha y un botón. El botón es 🔍 la búsqueda; para los padres es + en Habitaciones (Añadir habitación) y dentro de una habitación (Añadir tarea). Toca tus monedas para abrir Recompensas, tu racha para abrir Logros y tu foto para abrir tu perfil.',
+        'En un ordenador, o una tableta en horizontal, las páginas están en el menú de la izquierda, y arriba de la página también se ven tus puntos.',
+        'Si la Gamificación está desactivada (Ajustes → General), la barra de abajo tiene Inicio, Habitaciones, Tareas, Calendario y Más.',
+      ] },
       { h: 'Organiza tu inicio' },
       { ul: [
         'Personalizar (arriba y abajo del inicio) muestra tus tarjetas en orden. Arrastra una tarjeta por su ≡ para moverla, o usa ▲▼; 👁️ la muestra u oculta. Volver al orden por defecto lo deja todo como estaba.',
@@ -366,7 +374,7 @@ export const GUIDE_ES: GuideSection[] = [
       { ul: [
         'Marcos: bronce (2), plata (6), oro (9), arcoíris (10). Las insignias de corona y diamante desbloquean sus propios marcos.',
         'Celebraciones: lluvia de monedas (3), fuegos artificiales (8). Temas: Bosque (4), Galaxia (7), Lava (10). Los primeros 8 temas son gratis.',
-        'Títulos (5): el título de tu nivel o cualquier insignia que hayas ganado, que se muestra en Inicio, el Tablero, la barra lateral y Actividad.',
+        'Títulos (5): el título de tu nivel o cualquier insignia que hayas ganado, que se muestra en Inicio, el Tablero, el menú (en el móvil, Más) y Actividad.',
       ] },
       { h: 'Insignias' },
       { p: 'Las insignias integradas se desbloquean solas. Los padres pueden crear las suyas en Ajustes → Insignias (por ejemplo "Deberes 4 semanas seguidas"), con monedas de bonus opcionales, y fijar monedas para cada insignia integrada.' },
@@ -421,7 +429,7 @@ export const GUIDE_ES: GuideSection[] = [
     title: 'Estadísticas para padres',
     parents: true,
     blocks: [
-      { where: 'Estadísticas en el menú (solo padres)' },
+      { where: 'Estadísticas en el menú; en el móvil, en Más (solo padres)' },
       { ul: [
         'Tareas hechas: barras para un día (por hora), una semana o un mes (por día), o un año (por mes). ◀ ▶ retrocede a periodos anteriores. Toca una barra para ver sus números, o usa Ver como tabla.',
         'Para mirar más atrás, toca la fecha y elige un día en el calendario, o usa Fechas para un rango Desde–Hasta; las barras van entonces por hora, día, semana o mes. Momentos de más y menos actividad y Monedas que entran y salen también terminan en esas fechas. Volver a hoy regresa al presente.',
@@ -484,6 +492,11 @@ export const GUIDE_ES: GuideSection[] = [
     title: 'Solución de problemas',
     blocks: [
       { qa: [
+        { q: 'No encuentro Ajustes, Tareas o el Calendario en el móvil', a: [
+          'Están en Más, la última pestaña de abajo, junto con Actividad, Estadísticas (padres) y Logros. Tu perfil está arriba del todo en Más.',
+          'El botón de menú ☰ ya no está en el móvil: la barra de abajo lo sustituye. En un ordenador el menú sigue a la izquierda.',
+          'Los puntos ya no están en la línea de arriba en el móvil: los encuentras en el Tablero.',
+        ] },
         { q: 'El botón Hecho está gris', a: [
           'Su etiqueta dice por qué: "No asignada" (la tarea de otra persona), "Esperando aprobación" (un padre o una madre aún no ha aprobado tu última), "Hecho por …" (alguien ya la hizo hoy), "Hecho hoy / esta semana" (el límite de repeticiones de una tarea a demanda) o "🤝 nombres" (un equipo la ha reclamado hoy).',
           '"Esperando a …" es una tarea en Rotación en el turno de otra persona. Cuando el botón muestra un día en vez de Hecho, la tarea no vuelve a tocar hasta entonces.',
