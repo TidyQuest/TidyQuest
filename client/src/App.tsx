@@ -692,7 +692,7 @@ function AppContent() {
               <Guide language={user.language} />
             </>
           } />
-          <Route path="/settings" element={
+          <Route path="/settings/:section?" element={
             <>
               <PageHeader title={t('nav.settings')} subtitle={t('app.settingsSubtitle')} user={user} onCoinsClick={() => navigate('/rewards')} onStreakClick={() => navigate('/achievements')} onPointsClick={handlePointsClick} userPoints={myPoints} pointsPeriodLabel={pointsPeriodLabel} gamificationEnabled={gamificationEnabled} shieldsOn={!!dashboardData?.shields} />
               <Settings

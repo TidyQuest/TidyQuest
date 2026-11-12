@@ -1815,7 +1815,9 @@
       "family": "Famiglia",
       "coinsGoals": "Monete e obiettivi",
       "gameExtras": "Extra del gioco",
-      "rewards": "Premi"
+      "rewards": "Premi",
+      "choresCoins": "Faccende e monete",
+      "help": "Aiuto"
     },
     "timer": {
       "setting": "Timer",
@@ -2464,6 +2466,29 @@
       "streakChip": "serie di {n} giorni",
       "holiday": "Conto alla rovescia delle feste",
       "levelBlock": "Livello"
+    },
+    "settingsIndex": {
+      "search": "Cerca nelle impostazioni",
+      "noMatch": "Nessuna impostazione corrisponde.",
+      "on": "Attivo",
+      "generalSum": "Modalità rigida, inizio settimana, fuso orario",
+      "emailSum": "L'indirizzo con cui accedi",
+      "familySum": "{n} persone · {p} genitori",
+      "awaySum": "{n} via",
+      "approvalsSum": "{n} aspettano il tuo OK",
+      "approvalsNone": "Niente in attesa",
+      "coinsSum": "Quanto paga ogni livello di impegno",
+      "goalsSum": "Obiettivi di monete per ognuno",
+      "rewardsSum": "Cosa si compra con le monete",
+      "boostsSum": "Giorni in cui le faccende valgono il doppio",
+      "featuresSum": "Attiva o disattiva gli extra",
+      "badgesSum": "I badge della tua famiglia",
+      "dataSum": "Esporta, importa, il tuo account",
+      "csvSum": "Faccende e premi in un foglio di calcolo",
+      "trashSum": "Recupera faccende e premi eliminati",
+      "guideSum": "Come si collega tutto",
+      "troubleSum": "Quando qualcosa non va",
+      "setupSum": "Rifai la configurazione passo passo"
     }
   }
 }

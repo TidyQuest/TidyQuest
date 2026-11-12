@@ -11,6 +11,14 @@ What changed in each release, in plain language, newest first. Releases up to v0
 
 ### Changed
 
+- **Settings is a short index** (ENH-27). Instead of one very long page (about fifteen phone screens), Settings is a
+  list of its sections in five groups (Household, Chores & coins, Game extras, Data, Help), each with a one-line
+  summary such as "Notifications: Off" or "1 waiting for your OK". On a phone each section opens on its own page with
+  a ‹ Settings button to go back; on a computer the list stays on the left with the section beside it. A search box
+  finds a section by name or by a setting inside it ("strict" finds General), and a number shows next to Approvals
+  and the Rewards Catalog when something is waiting. Notifications and Vacation Mode now have their own sections
+  (they used to sit inside General), and the guide, troubleshooting and setup wizard links moved to Help at the bottom.
+  Nothing else was renamed, so "Settings → …" in the guide still points to the right place.
 - **A bar of tabs along the bottom on phones** (ENH-24, the first step of the new look). The ☰ menu button and the
   slide-out menu are gone from phones. Parents get Home, Rooms, Rewards, Board and More along the bottom of the
   screen; kids get Home, Rewards, Board, Badges and More. More holds the rest (Tasks, Calendar, Activity, Insights,

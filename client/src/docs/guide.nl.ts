@@ -23,9 +23,10 @@ export const GUIDE_NL: GuideSection[] = [
         'Download een back-up in Instellingen → Privacy & Gegevens als alles is ingesteld, en daarna af en toe weer.',
       ] },
       { tip: 'Begin klein: een handjevol klusjes per kind en een paar goedkope beloningen die ze in de eerste week kunnen verdienen. Je kunt altijd meer toevoegen.' },
+      { tip: 'Instellingen is een korte lijst in groepen (Huishouden, Taken en munten, Spelextra’s, Gegevens, Hulp): tik op een regel om hem te openen; op een computer blijft de lijst links staan. Typ in Instellingen zoeken om er een op naam te vinden, zoals “streng”. Een getal naast Goedkeuringen of Beloningen Winkel betekent dat er iets op je wacht.' },
       { h: 'De instelhulp' },
       { ul: [
-        'Een ouder van een nieuw gezin (nog geen kamers) komt er na het inloggen in terecht. Niet nu slaat hem over, en Instellingen → Instelhulp (bovenaan Instellingen) opent hem wanneer je wilt.',
+        'Een ouder van een nieuw gezin (nog geen kamers) komt er na het inloggen in terecht. Niet nu slaat hem over, en Instellingen → Instelhulp (onder Hulp) opent hem wanneer je wilt.',
         'Gezin: voeg kinderen toe per leeftijdsgroep (3–5, 6–8, 9–12, 13+) en andere volwassenen. Kinderen zijn niet verplicht, dus stellen en huisgenoten kunnen hem ook gebruiken. Een kind kan zelf inloggen (Kindermodus maakt de app eenvoudiger) of niet, en dan doet een ouder het voor het kind. De leeftijd kiest alleen de startklusjes en wordt niet bewaard.',
         'Huis: vink je kamers aan. Elk kind krijgt ook een eigen kamer, en kinderen vanaf 6 kunnen een Quests-kamer krijgen voor dagelijkse routines en schooldingen (huiswerk, op tijd de deur uit, lezen), als klusjes voor wanneer je wilt die op Home staan.',
         'Klusjes: een aangevinkte startlijst voor iedereen, gekozen op leeftijd, met Meer ideeën voor extra’s. Een klusje dat meerdere kinderen kunnen doen wordt gedeeld: wie het eerst doet, krijgt de munten. Klusjes waar geen kind oud genoeg voor is, gaan naar de volwassenen.',
@@ -389,7 +390,7 @@ export const GUIDE_NL: GuideSection[] = [
     title: 'Meldingen',
     parents: true,
     blocks: [
-      { where: 'Instellingen → Algemeen → Meldingen, daarna Wie krijgt wat, Tijden & stille uren en Meldingenlogboek' },
+      { where: 'Instellingen → Meldingen, daarna Wie krijgt wat, Tijden & stille uren en Meldingenlogboek' },
       { ol: [
         'Zet meldingen aan en kies welke soorten het gezin krijgt.',
         'Stel eventueel een gezinskanaal in (niet nodig als iedereen meldingen op de telefoon gebruikt, zie hieronder): ntfy (een server-URL en een topic waarop iedereen zich abonneert in de ntfy-app), Telegram (een bottoken en een chat-ID) of een Home Assistant notify-service. Gebruik de testknop.',
@@ -419,7 +420,7 @@ export const GUIDE_NL: GuideSection[] = [
       { p: 'Heeft je gezin de Home Assistant-app op de telefoon, dan kan TidyQuest daar berichten via sturen. Dit werkt alleen op een server thuis, niet op tidyquest.org.' },
       { ol: [
         'Open in Home Assistant je profiel (linksonder) en dan het tabblad Beveiliging. Maak helemaal onderaan een langdurig toegangstoken en kopieer het: Home Assistant laat het maar één keer zien.',
-        'Vul bij Instellingen → Algemeen → Meldingen → Home Assistant de Home Assistant-URL in zoals de TidyQuest-server die bereikt, bijv. http://homeassistant.local:8123 of http://192.168.1.20:8123, en plak het token.',
+        'Vul bij Instellingen → Meldingen → Home Assistant de Home Assistant-URL in zoals de TidyQuest-server die bereikt, bijv. http://homeassistant.local:8123 of http://192.168.1.20:8123, en plak het token.',
         'Voeg eventueel een gezinsmeldingsservice toe voor berichten die iedereen krijgt, bijv. notify.gezin (een notify-groep die je in Home Assistant hebt gemaakt). Tik dan op Opslaan.',
         'Geef bij "Wie krijgt wat" iedereen de service van hun telefoon: notify.mobile_app_ en de naam van de telefoon, bijv. notify.mobile_app_telefoon_alex. Home Assistant zet ze onder Ontwikkelhulpmiddelen → Acties (typ notify.). Een telefoon staat daar zodra de Home Assistant-app erop is ingelogd.',
         'Tik naast die persoon op Testbericht sturen. "ha: ✓" betekent dat het aankwam; anders zegt de melding wat er misging.',
@@ -739,7 +740,7 @@ export const GUIDE_NL: GuideSection[] = [
         ] },
         { q: 'De instelhulp ging niet open, of ik wil hem nog een keer', a: [
           'Hij gaat alleen vanzelf open voor een ouder, zolang het gezin nog geen kamers heeft (de kamer To-do’s telt niet), tot iemand hem afmaakt of op Niet nu tikt.',
-          'Open hem wanneer je wilt bovenaan Instellingen → Instelhulp. Opnieuw gebruiken voegt alleen toe, dus verwijder zelf kamers (Kamers → 🗑) of beloningen die je niet wilt.',
+          'Open hem wanneer je wilt via Instellingen → Instelhulp (onder Hulp). Opnieuw gebruiken voegt alleen toe, dus verwijder zelf kamers (Kamers → 🗑) of beloningen die je niet wilt.',
         ] },
         { q: 'Elk kind betaalt een andere prijs voor dezelfde beloning', a: [
           'De instelhulp gaf iedereen een eigen prijs, zodat iedereen ongeveer evenveel weken van zijn eigen klusjes betaalt: een kind met meer klusjes verdient meer en betaalt dus meer. Onder de beloning staat dan „eigen prijzen”.',

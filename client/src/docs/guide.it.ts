@@ -23,9 +23,10 @@ export const GUIDE_IT: GuideSection[] = [
         'Scarica un backup in Impostazioni → Dati e privacy quando tutto è pronto, e ogni tanto anche dopo.',
       ] },
       { tip: 'Parti in piccolo: una manciata di faccende per bambino e qualche ricompensa economica da guadagnare già nella prima settimana. Puoi aggiungerne altre quando vuoi.' },
+      { tip: 'Le Impostazioni sono un breve elenco a gruppi (Casa, Faccende e monete, Extra del gioco, Dati, Aiuto): tocca una riga per aprirla; su un computer l’elenco resta a sinistra. Scrivi in Cerca nelle impostazioni per trovarne una per nome, ad esempio “rigida”. Un numero accanto ad Approvazioni o Catalogo ricompense vuol dire che qualcosa ti aspetta.' },
       { h: 'La configurazione guidata' },
       { ul: [
-        'Il genitore di una nuova famiglia (ancora senza stanze) ci arriva dopo l’accesso. Non ora la salta, e Impostazioni → Configurazione guidata (in cima alle Impostazioni) la apre quando vuoi.',
+        'Il genitore di una nuova famiglia (ancora senza stanze) ci arriva dopo l’accesso. Non ora la salta, e Impostazioni → Configurazione guidata (sotto Aiuto) la apre quando vuoi.',
         'Famiglia: aggiungi i bambini per fascia d’età (3–5, 6–8, 9–12, 13+) e gli altri adulti. I bambini sono facoltativi, quindi possono usarla anche coppie e coinquilini. Un bambino può accedere da solo (la Modalità bambino rende l’app più semplice) oppure no, e lo fa un genitore per lui. L’età serve solo a scegliere le attività iniziali e non viene salvata.',
         'Casa: spunta le tue stanze. Ogni bambino ha anche la sua stanza, e i bambini dai 6 anni possono avere una stanza Missioni per le routine quotidiane e la scuola (compiti, uscire in orario, lettura), come attività quando vuoi visibili nella Home.',
         'Attività: una lista iniziale spuntata per ogni persona, scelta in base all’età, con Altre idee per gli extra. Un’attività che possono fare più bambini è condivisa: chi la fa per primo prende le monete. Le attività per cui nessun bambino ha l’età vanno agli adulti.',
@@ -389,7 +390,7 @@ export const GUIDE_IT: GuideSection[] = [
     title: 'Notifiche',
     parents: true,
     blocks: [
-      { where: 'Impostazioni → Generale → Notifiche, poi Chi riceve cosa, Orari e ore di silenzio e Registro notifiche' },
+      { where: 'Impostazioni → Notifiche, poi Chi riceve cosa, Orari e ore di silenzio e Registro notifiche' },
       { ol: [
         'Attiva le notifiche e scegli quali tipi riceve la famiglia.',
         'Se vuoi, configura un canale di famiglia (non serve se tutti usano le notifiche sul telefono, vedi sotto): ntfy (l’URL di un server e un argomento a cui tutti si iscrivono nell’app ntfy), Telegram (un token del bot e un ID chat) o un servizio notify di Home Assistant. Usa il pulsante di prova.',
@@ -419,7 +420,7 @@ export const GUIDE_IT: GuideSection[] = [
       { p: 'Se la tua famiglia ha l’app Home Assistant sul telefono, TidyQuest può mandare i messaggi da lì. Funziona solo su un server di casa, non su tidyquest.org.' },
       { ol: [
         'In Home Assistant apri il tuo profilo (in basso a sinistra), poi la scheda Sicurezza. In fondo crea un token di accesso a lunga durata e copialo: Home Assistant lo mostra una volta sola.',
-        'In Impostazioni → Generale → Notifiche → Home Assistant inserisci l’URL di Home Assistant come lo raggiunge il server TidyQuest, es. http://homeassistant.local:8123 o http://192.168.1.20:8123, e incolla il token.',
+        'In Impostazioni → Notifiche → Home Assistant inserisci l’URL di Home Assistant come lo raggiunge il server TidyQuest, es. http://homeassistant.local:8123 o http://192.168.1.20:8123, e incolla il token.',
         'Se vuoi, aggiungi un servizio di notifica di famiglia per i messaggi che ricevono tutti, es. notify.famiglia (un gruppo notify creato in Home Assistant). Poi tocca Salva.',
         'In "Chi riceve cosa" dai a ciascuno il servizio del suo telefono: notify.mobile_app_ e il nome del telefono, es. notify.mobile_app_telefono_alex. Home Assistant li elenca in Strumenti per sviluppatori → Azioni (scrivi notify.). Un telefono compare lì quando l’app Home Assistant ha fatto l’accesso su di esso.',
         'Tocca Invia notifica di test accanto a quella persona. "ha: ✓" vuol dire che è arrivata; altrimenti il messaggio dice cosa non va.',
@@ -739,7 +740,7 @@ export const GUIDE_IT: GuideSection[] = [
         ] },
         { q: 'La configurazione guidata non si è aperta, o voglio riaprirla', a: [
           'Si apre da sola solo per un genitore, finché la famiglia non ha stanze (la stanza Da fare non conta), fino a quando qualcuno la completa o tocca Non ora.',
-          'Aprila quando vuoi in cima a Impostazioni → Configurazione guidata. Riaprirla aggiunge soltanto, quindi elimina tu le stanze (Stanze → 🗑) o le ricompense che non vuoi.',
+          'Aprila quando vuoi da Impostazioni → Configurazione guidata (sotto Aiuto). Riaprirla aggiunge soltanto, quindi elimina tu le stanze (Stanze → 🗑) o le ricompense che non vuoi.',
         ] },
         { q: 'Ogni bambino paga un prezzo diverso per la stessa ricompensa', a: [
           'La configurazione guidata ha dato a ognuno il suo prezzo, così tutti pagano più o meno le stesse settimane delle proprie attività: un bambino con più attività guadagna di più, quindi paga di più. Sotto la ricompensa si vede «prezzi propri».',

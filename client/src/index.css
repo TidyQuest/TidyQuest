@@ -543,29 +543,97 @@ body {
   display: grid;
   gap: var(--space-xl);
 }
-.settings-cols {
+/* ENH-27: Settings as an index. Phones: the index, or one section on its own page. Desktops: the index on the
+   left and the open section beside it. */
+.settings-layout {
   display: grid;
-  grid-template-columns: 1fr 1fr;
   gap: var(--space-xl);
   align-items: start;
 }
-.settings-col {
+.settings-index, .settings-pane {
   display: flex;
   flex-direction: column;
   gap: var(--space-lg);
   min-width: 0;
 }
-.settings-group-title {
-  font-size: 11px;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--warm-text-light);
-  margin: var(--space-sm) 2px calc(-1 * var(--space-sm));
+.settings-index-group { display: grid; gap: var(--space-sm); }
+.settings-index .settings-group-title { margin: 0 2px; }
+.settings-search { width: 100%; box-sizing: border-box; }
+.settings-index-list { padding: 4px 0; overflow: hidden; }
+.settings-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 56px;
+  padding: 8px 14px;
+  border: 0;
+  border-top: 1px solid var(--warm-border-subtle);
+  background: none;
+  color: var(--warm-text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
 }
-.settings-col > .settings-group-title:first-child { margin-top: 0; }
-/* Kids only see a card or two: one column */
-.settings-cols.settings-cols-single { grid-template-columns: 1fr; }
+.settings-row:first-child { border-top: 0; }
+.settings-row:hover { background: var(--warm-bg-subtle); }
+.settings-row.on { background: var(--warm-accent-light); }
+.settings-row:focus-visible { outline: 2px solid var(--warm-accent); outline-offset: -2px; }
+.settings-row-icon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: var(--warm-bg-warm);
+  font-size: 18px;
+}
+.settings-row-text { flex: 1; min-width: 0; display: grid; gap: 2px; }
+.settings-row-text b { font-size: 14px; font-weight: 700; }
+.settings-row-text small {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--warm-text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.settings-row-badge {
+  flex: none;
+  min-width: 22px;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: var(--warm-accent);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 800;
+  text-align: center;
+  box-sizing: border-box;
+}
+.settings-row-chev { flex: none; font-size: 20px; color: var(--warm-text-light); }
+.settings-index-empty { padding: 12px 4px; font-size: 13px; font-weight: 600; color: var(--warm-text-muted); }
+.settings-back {
+  justify-self: start;
+  align-self: flex-start;
+  padding: 6px 2px;
+  border: 0;
+  background: none;
+  color: var(--warm-accent);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+}
+@media (max-width: 899px) {
+  .settings-layout.has-section .settings-index { display: none; }
+  .settings-layout:not(.has-section) .settings-pane { display: none; }
+}
+@media (min-width: 900px) {
+  .settings-layout { grid-template-columns: minmax(260px, 320px) minmax(0, 1fr); }
+  .settings-index { position: sticky; top: var(--space-lg); }
+  .settings-back { display: none; }
+}
 
 /* ========================================
    UNLOCKABLE THEMES (levels 4, 7 and 10; utils/unlocks.ts)
@@ -1060,9 +1128,6 @@ html[data-theme='lava'] option {
   }
 
   /* Page-specific responsive grids */
-  .settings-cols {
-    grid-template-columns: 1fr;
-  }
 
   .room-type-grid {
     grid-template-columns: repeat(2, 1fr) !important;

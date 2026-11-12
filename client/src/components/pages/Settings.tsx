@@ -17,6 +17,7 @@ import { CustomBadgesAdmin } from '../shared/CustomBadgesAdmin';
 import { FeaturesAdmin } from '../shared/FeaturesAdmin';
 import { NotificationLog, NotifyScheduleAdmin, PeopleNotifyAdmin } from '../shared/NotifyAdmin';
 import { CsvTransfer } from '../shared/CsvTransfer';
+import { SettingsIndex, type SettingsIndexGroup } from '../shared/SettingsIndex';
 import { UndoToast, type UndoState } from '../shared/UndoToast';
 import { byFeatured, rulesSummary } from '../../utils/rewardRules';
 import { formatCoins } from '../../utils/format';
@@ -27,7 +28,7 @@ import { useBusy } from '../../hooks/useBusy';
 import type { User } from '../../hooks/useAuth';
 import { api, type FocusModeSetting, type RewardRules } from '../../hooks/useApi';
 import { CosmeticsContext } from '../../utils/unlocks';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { localeFor } from '../../utils/locale';
 import { weekdayName } from '../../utils/schedule';
 import { useWeekStart } from '../../utils/week';
@@ -166,6 +167,7 @@ export function Settings({
   // Each person's level, so a parent sees which themes a kid has unlocked
   const cosmetics = useContext(CosmeticsContext);
   const navigate = useNavigate();
+  const { section: sectionParam } = useParams();
   const isAdmin = user.role === 'admin';
   // Hosted mode only sends to ntfy.sh and Telegram
   const hosted = useHosted();
@@ -694,26 +696,65 @@ export function Settings({
     setCoinsDraft({ 1: 5, 2: 10, 3: 15, 4: 20, 5: 25 });
   };
 
+  // ENH-27: Settings as an index. /settings/<section> opens one section: on a phone on its own page, on a desktop
+  // beside the index (General when none is picked). Nothing is renamed, so "Settings → X" in the guide still works.
+  const go = (id: string) => () => navigate(`/settings/${id}`);
+  const onOff = (on: boolean) => (on ? t('settingsIndex.on') : t('notifyAdmin.off'));
+  const awayCount = family.filter((u) => !!(memberVacation[u.id] ?? u.isVacationMode)).length;
+  const indexGroups: SettingsIndexGroup[] = [
+    { title: t('settingsGroups.household'), rows: [
+      { id: 'general', icon: '⚙️', title: t('settings.general'), summary: t('settingsIndex.generalSum'), onOpen: go('general'),
+        keywords: [t('settings.strictMode'), t('settings.weekStart'), t('settings.hidePrivateRooms'), t('settings.gamificationEnabled'), t('settings.registrationEnabled'), t('settings.version'), t('settings.timeZone')] },
+      ...(hostedAccount?.isParent ? [{ id: 'email', icon: '✉️', title: t('hosted.signInEmailTitle'), summary: t('settingsIndex.emailSum'), onOpen: go('email') }] : []),
+      { id: 'family', icon: '👨‍👩‍👧‍👦', title: t('settings.familyMembers'), onOpen: go('family'),
+        summary: t('settingsIndex.familySum').replace('{n}', String(family.length)).replace('{p}', String(family.filter((u) => u.role === 'admin').length)),
+        keywords: [t('settings.addMember'), t('settings.kidMode'), t('settings.resetPassword'), t('settings.adjustCoins'), t('settings.logoutAllDevices'), t('hosted.familyCodeTitle')] },
+      ...(user.role !== 'child' ? [{ id: 'notifications', icon: '🔔', title: t('settings.notifications'), onOpen: go('notifications'),
+        summary: isAdmin ? onOff(notifMasterEnabled) : undefined, keywords: ['Telegram', 'ntfy', 'Home Assistant', t('notifyAdmin.peopleTitle'), t('notifyAdmin.timingTitle'), t('notifyAdmin.logTitle')] }] : []),
+      ...(isAdmin ? [{ id: 'vacation', icon: '🏖️', title: t('settings.vacationMode'), onOpen: go('vacation'),
+        summary: vacationEnabled ? t('settingsIndex.on') : awayCount ? t('settingsIndex.awaySum').replace('{n}', String(awayCount)) : t('notifyAdmin.off'),
+        keywords: [t('settings.perUserVacation'), t('settings.vacationReturnDate')] }] : []),
+    ] },
+    { title: t('settingsGroups.choresCoins'), rows: !isAdmin ? [] : [
+      ...(strictModeEnabled ? [{ id: 'approvals', icon: '✅', title: t('settingsGroups.approvals'), onOpen: go('approvals'), badge: pendingCompletions.length,
+        summary: pendingCompletions.length ? t('settingsIndex.approvalsSum').replace('{n}', String(pendingCompletions.length)) : t('settingsIndex.approvalsNone'),
+        keywords: [t('settings.pendingValidations')] }] : []),
+      ...(gamificationEnabled ? [
+        { id: 'coins', icon: '🪙', title: t('settings.coinsPerEffort'), summary: t('settingsIndex.coinsSum'), onOpen: go('coins') },
+        { id: 'goals', icon: '🎯', title: t('settings.goalsSection'), summary: t('settingsIndex.goalsSum'), onOpen: go('goals') },
+        { id: 'rewards', icon: '🎁', title: t('settings.rewardsSection'), summary: t('settingsIndex.rewardsSum'), onOpen: go('rewards'), badge: rewardRequests.length },
+      ] : []),
+    ] },
+    { title: t('settingsGroups.gameExtras'), rows: !isAdmin ? [] : [
+      ...(gamificationEnabled ? [{ id: 'boosts', icon: '⚡', title: t('boosts.title'), summary: t('settingsIndex.boostsSum'), onOpen: go('boosts') }] : []),
+      { id: 'features', icon: '🧩', title: t('features.title'), summary: t('settingsIndex.featuresSum'), onOpen: go('features') },
+      ...(gamificationEnabled ? [{ id: 'badges', icon: '🏅', title: t('badges.adminTitle'), summary: t('settingsIndex.badgesSum'), onOpen: go('badges') }] : []),
+    ] },
+    { title: t('settingsGroups.data'), rows: !isAdmin ? [] : [
+      { id: 'data', icon: '💾', title: t('settings.dataPrivacy'), summary: t('settingsIndex.dataSum'), onOpen: go('data'),
+        keywords: [t('settings.exportData'), hostedAccount ? t('hosted.deleteFamilyTitle') : ''] },
+      { id: 'spreadsheets', icon: '📊', title: t('csv.title'), summary: t('settingsIndex.csvSum'), onOpen: go('spreadsheets'), keywords: ['CSV'] },
+      { id: 'deleted', icon: '🗑️', title: t('trash.title'), summary: t('settingsIndex.trashSum'), onOpen: go('deleted') },
+    ] },
+    { title: t('settingsGroups.help'), rows: [
+      { id: 'guide', icon: '📖', title: t('guide.title'), summary: t('settingsIndex.guideSum'), onOpen: () => navigate('/guide') },
+      { id: 'troubleshooting', icon: '🧰', title: t('guide.troubleshooting'), summary: t('settingsIndex.troubleSum'), onOpen: () => navigate('/guide#troubleshooting') },
+      ...(isAdmin ? [{ id: 'setup', icon: '🧙', title: t('setup.open'), summary: t('settingsIndex.setupSum'), onOpen: () => navigate('/setup') }] : []),
+    ] },
+  ].filter((g) => g.rows.length > 0);
+  const sectionIds = indexGroups.flatMap((g) => g.rows.map((r) => r.id));
+  // A section this person can't open (or not loaded yet) shows the index on a phone and General on a desktop
+  const section = sectionParam && sectionIds.includes(sectionParam) ? sectionParam : undefined;
+  const cur = section ?? 'general';
+  useEffect(() => { window.scrollTo(0, 0); }, [section]);
+
   return (
     <div className="page-enter settings-page">
-      {/* The guide: setup, how it all connects, troubleshooting (its own page) */}
-      <div className="tq-card tq-card-padded" style={{ display: 'grid', gap: 8 }}>
-        <h3 className="tq-card-title" style={{ margin: 0 }}>📖 {t('guide.title')}</h3>
-        <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--warm-text-light)' }}>{t('guide.settingsDesc')}</div>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-          <button type="button" className="tq-btn tq-btn-primary tq-btn-sm" onClick={() => navigate('/guide')}>{t('guide.open')}</button>
-          <button type="button" className="tq-btn tq-btn-secondary tq-btn-sm" onClick={() => navigate('/guide#troubleshooting')}>🧰 {t('guide.troubleshooting')}</button>
-          {/* Run the setup wizard again (NEW-17): it only adds */}
-          {isAdmin && <button type="button" className="tq-btn tq-btn-secondary tq-btn-sm" onClick={() => navigate('/setup')}>🧙 {t('setup.open')}</button>}
-        </div>
-      </div>
-      {/* Two columns that each grow at their own height, grouped; one column on phones. Long lists go full width below. */}
-      <div className={`settings-cols${isAdmin ? '' : ' settings-cols-single'}`}>
-        <div className="settings-col">
-          <div className="settings-group-title">🏠 {t('settingsGroups.household')}</div>
-          <div className="tq-card tq-card-padded">
-            <h3 className="tq-card-title">{t('settings.general')}</h3>
-            {user.role !== 'child' && (<>
+      <div className={`settings-layout${section ? ' has-section' : ''}`}>
+        <SettingsIndex groups={indexGroups} selected={cur} language={user.language} />
+        <div className="settings-pane" key={cur}>
+          <button type="button" className="settings-back" onClick={() => navigate('/settings')}>‹ {t('nav.settings')}</button>
+          {cur === 'notifications' && user.role !== 'child' && (<div className="tq-card tq-card-padded">
             {/* Master Notifications toggle */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '14px 0', borderBottom: (isAdmin && notifMasterEnabled) ? 'none' : '1px solid var(--warm-border)' }}>
               <BellIcon />
@@ -828,8 +869,8 @@ export function Settings({
                 )}
               </div>
             )}
-            </>)}
-            {isAdmin && (
+            </div>)}
+            {cur === 'vacation' && isAdmin && (<div className="tq-card tq-card-padded">
             <div style={{ padding: '14px 0' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
                 <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
@@ -932,7 +973,9 @@ export function Settings({
                 })}
               </div>
             </div>
-            )}
+            </div>)}
+          {cur === 'general' && (<div className="tq-card tq-card-padded">
+            <h3 className="tq-card-title">{t('settings.general')}</h3>
             {isAdmin && !hosted && (
               <div style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '14px 0', borderTop: '1px solid var(--warm-border)' }}>
                 <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
@@ -1062,11 +1105,10 @@ export function Settings({
                 v{__APP_VERSION__}{__APP_BUILD__ && <span style={{ display: 'block', fontSize: 11, color: 'var(--warm-text-light)' }}>{__APP_BUILD__}</span>}
               </span>
             </div>
-          </div>
-          {hostedAccount?.isParent && <SignInEmailCard account={hostedAccount} language={user.language} onChanged={onHostedChanged} />}
-          {hostedAccount && isAdmin && <FamilyCodeCard account={hostedAccount} language={user.language} onChanged={onHostedChanged} />}
-          {isAdmin && strictModeEnabled && <div className="settings-group-title">✅ {t('settingsGroups.approvals')}</div>}
-          {isAdmin && strictModeEnabled && (
+          </div>)}
+          {cur === 'email' && hostedAccount?.isParent && <SignInEmailCard account={hostedAccount} language={user.language} onChanged={onHostedChanged} />}
+          {cur === 'family' && hostedAccount && isAdmin && <FamilyCodeCard account={hostedAccount} language={user.language} onChanged={onHostedChanged} />}
+          {cur === 'approvals' && isAdmin && strictModeEnabled && (
             <div className="tq-card settings-admin-card" style={{ padding: 24 }}>
               <h3 style={{ fontSize: 15, fontWeight: 800, color: 'var(--warm-text)', margin: '0 0 12px' }}>{t('settings.pendingValidations')}</h3>
               <div style={{ fontSize: 11, color: 'var(--warm-text-light)', fontWeight: 600, marginBottom: 10 }}>{t('settings.pendingValidationsDesc')}</div>
@@ -1076,8 +1118,7 @@ export function Settings({
               )}
             </div>
           )}
-          {isAdmin && gamificationEnabled && <div className="settings-group-title">🪙 {t('settingsGroups.coinsGoals')}</div>}
-          {isAdmin && gamificationEnabled && (
+          {cur === 'coins' && isAdmin && gamificationEnabled && (
             <div className="tq-card tq-card-padded settings-admin-card">
               <h3 className="tq-card-title">{t('settings.coinsPerEffort')}</h3>
               <div style={{ fontSize: 11, color: 'var(--warm-text-light)', fontWeight: 600, marginBottom: 10 }}>{t('settings.coinsPerEffortDesc')}</div>
@@ -1106,7 +1147,7 @@ export function Settings({
               </div>
             </div>
           )}
-          {isAdmin && gamificationEnabled && (
+          {cur === 'goals' && isAdmin && gamificationEnabled && (
             <div className="tq-card tq-card-padded settings-admin-card">
               <h3 className="tq-card-title">{t('settings.goalsSection')}</h3>
               <div style={{ fontSize: 11, color: 'var(--warm-text-light)', fontWeight: 600, marginBottom: 10 }}>{t('settings.goalsSectionDesc')}</div>
@@ -1180,50 +1221,45 @@ export function Settings({
               </div>
             </div>
           )}
-        </div>
-        <div className="settings-col">
-          {isAdmin && notifMasterEnabled && <div className="settings-group-title">🔔 {t('settingsGroups.notifications')}</div>}
-          {isAdmin && notifMasterEnabled && (
+          {cur === 'notifications' && isAdmin && notifMasterEnabled && (
             <div className="tq-card tq-card-padded settings-admin-card">
               <h3 className="tq-card-title">👪 {t('notifyAdmin.peopleTitle')}</h3>
               <PeopleNotifyAdmin language={user.language} />
             </div>
           )}
-          {isAdmin && notifMasterEnabled && (
+          {cur === 'notifications' && isAdmin && notifMasterEnabled && (
             <div className="tq-card tq-card-padded settings-admin-card">
               <h3 className="tq-card-title">⏰ {t('notifyAdmin.timingTitle')}</h3>
               <NotifyScheduleAdmin language={user.language} />
             </div>
           )}
-          {isAdmin && notifMasterEnabled && (
+          {cur === 'notifications' && isAdmin && notifMasterEnabled && (
             <div className="tq-card tq-card-padded settings-admin-card">
               <h3 className="tq-card-title">📜 {t('notifyAdmin.logTitle')}</h3>
               <NotificationLog language={user.language} />
             </div>
           )}
-          {isAdmin && <div className="settings-group-title">✨ {t('settingsGroups.gameExtras')}</div>}
-          {isAdmin && gamificationEnabled && (
+          {cur === 'boosts' && isAdmin && gamificationEnabled && (
             <div className="tq-card tq-card-padded settings-admin-card">
               <h3 className="tq-card-title">{t('boosts.title')}</h3>
               <div style={{ fontSize: 11, color: 'var(--warm-text-light)', fontWeight: 600, marginBottom: 10 }}>{t('boosts.desc')}</div>
               <CoinBoostsAdmin rooms={rooms} language={user.language} />
             </div>
           )}
-          {isAdmin && (
+          {cur === 'features' && isAdmin && (
             <div className="tq-card tq-card-padded settings-admin-card">
               <h3 className="tq-card-title">🧩 {t('features.title')}</h3>
               <FeaturesAdmin language={user.language} onChanged={onDataChanged} />
             </div>
           )}
-          {isAdmin && gamificationEnabled && (
+          {cur === 'badges' && isAdmin && gamificationEnabled && (
             <div className="tq-card tq-card-padded settings-admin-card">
               <h3 className="tq-card-title">🏅 {t('badges.adminTitle')}</h3>
               <CustomBadgesAdmin rooms={rooms} language={user.language}
                 family={family.filter((m) => m.role !== 'admin' || m.isParticipant).map((m) => ({ id: m.id, displayName: m.displayName }))} />
             </div>
           )}
-          {isAdmin && <div className="settings-group-title">💾 {t('settingsGroups.data')}</div>}
-          {isAdmin && (
+          {cur === 'data' && isAdmin && (
           <div className="tq-card tq-card-padded">
             <h3 className="tq-card-title">{t('settings.dataPrivacy')}</h3>
             {[
@@ -1257,23 +1293,20 @@ export function Settings({
             )}
           </div>
           )}
-          {isAdmin && (
+          {cur === 'spreadsheets' && isAdmin && (
             <div className="tq-card tq-card-padded settings-admin-card">
               <h3 className="tq-card-title">{t('csv.title')}</h3>
               <CsvTransfer language={user.language} onImported={() => { onDataChanged?.(); void loadRewardsAdmin(); }} />
             </div>
           )}
-          {isAdmin && (
+          {cur === 'deleted' && isAdmin && (
             <div className="tq-card tq-card-padded settings-admin-card">
               <h3 className="tq-card-title">{t('trash.title')}</h3>
               <TrashAdmin rooms={rooms} language={user.language} reloadKey={trashVersion}
                 onRestored={() => { onDataChanged?.(); void loadRewardsAdmin(); }} />
             </div>
           )}
-        </div>
-      </div>
-      {isAdmin && gamificationEnabled && <div className="settings-group-title">🎁 {t('settingsGroups.rewards')}</div>}
-      {isAdmin && gamificationEnabled && (
+      {cur === 'rewards' && isAdmin && gamificationEnabled && (
         <div className="tq-card tq-card-padded settings-admin-card">
           <h3 className="tq-card-title">{t('settings.rewardsSection')}</h3>
           <div style={{ fontSize: 11, color: 'var(--warm-text-light)', fontWeight: 600, marginBottom: 10 }}>{t('settings.rewardsSectionDesc')}</div>
@@ -1411,8 +1444,7 @@ export function Settings({
           </div>
         </div>
       )}
-      <div className="settings-group-title">👨‍👩‍👧‍👦 {t('settingsGroups.family')}</div>
-      <div className="tq-card tq-card-padded settings-admin-card family-members-card" style={{ gridColumn: '1 / -1' }}>
+      {cur === 'family' && (<div className="tq-card tq-card-padded settings-admin-card family-members-card">
         <div className="family-members-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 18 }}>
           <h3 className="tq-card-title" style={{ margin: 0 }}>{t('settings.familyMembers')}</h3>
           <button className="tq-btn tq-btn-primary tq-btn-sm" onClick={() => isAdmin && setShowAddMember(true)} disabled={!isAdmin} style={{ opacity: isAdmin ? 1 : 0.5 }}>
@@ -1689,6 +1721,8 @@ export function Settings({
               )}
             </div>
           ))}
+        </div>
+      </div>)}
         </div>
       </div>
       <UndoToast undo={undo} language={user.language} onClose={closeUndo}

@@ -1815,7 +1815,9 @@
       "family": "Family",
       "coinsGoals": "Coins & goals",
       "gameExtras": "Game extras",
-      "rewards": "Rewards"
+      "rewards": "Rewards",
+      "choresCoins": "Chores & coins",
+      "help": "Help"
     },
     "timer": {
       "setting": "Timer",
@@ -2464,6 +2466,29 @@
       "streakChip": "{n}-day streak",
       "holiday": "Holiday countdown",
       "levelBlock": "Level"
+    },
+    "settingsIndex": {
+      "search": "Search settings",
+      "noMatch": "No setting matches that.",
+      "on": "On",
+      "generalSum": "Strict mode, week start, time zone",
+      "emailSum": "The address you sign in with",
+      "familySum": "{n} people · {p} parents",
+      "awaySum": "{n} away",
+      "approvalsSum": "{n} waiting for your OK",
+      "approvalsNone": "Nothing waiting",
+      "coinsSum": "What each effort level pays",
+      "goalsSum": "Coin goals for each person",
+      "rewardsSum": "What coins can buy",
+      "boostsSum": "Days when chores pay double",
+      "featuresSum": "Switch optional extras on or off",
+      "badgesSum": "Your family's own badges",
+      "dataSum": "Export, import, your account",
+      "csvSum": "Chores and rewards as a spreadsheet",
+      "trashSum": "Bring back deleted chores and rewards",
+      "guideSum": "How it all connects",
+      "troubleSum": "When something looks wrong",
+      "setupSum": "Walk through the set-up again"
     }
   }
 }

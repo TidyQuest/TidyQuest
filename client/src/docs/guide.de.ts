@@ -23,9 +23,10 @@ export const GUIDE_DE: GuideSection[] = [
         'Lade unter Einstellungen → Daten & Datenschutz ein Backup herunter, sobald alles eingerichtet ist, und danach ab und zu wieder.',
       ] },
       { tip: 'Fang klein an: ein paar Aufgaben pro Kind und ein paar günstige Belohnungen, die sie schon in der ersten Woche verdienen können. Mehr kannst du jederzeit hinzufügen.' },
+      { tip: 'Die Einstellungen sind eine kurze Liste in Gruppen (Haushalt, Aufgaben und Münzen, Spiel-Extras, Daten, Hilfe): Tippe auf eine Zeile, um sie zu öffnen; auf einem Computer bleibt die Liste links. Tippe in Einstellungen durchsuchen, um eine nach Namen zu finden, z. B. „streng“. Eine Zahl neben Genehmigungen oder Belohnungskatalog heißt, dass etwas auf dich wartet.' },
       { h: 'Der Einrichtungsassistent' },
       { ul: [
-        'Ein Elternteil einer neuen Familie (noch keine Räume) landet nach der Anmeldung darin. Nicht jetzt überspringt ihn, und Einstellungen → Einrichtungsassistent (oben in den Einstellungen) öffnet ihn jederzeit.',
+        'Ein Elternteil einer neuen Familie (noch keine Räume) landet nach der Anmeldung darin. Nicht jetzt überspringt ihn, und Einstellungen → Einrichtungsassistent (unter Hilfe) öffnet ihn jederzeit.',
         'Familie: Füge Kinder nach Altersgruppe (3–5, 6–8, 9–12, 13+) und weitere Erwachsene hinzu. Kinder sind optional, also können auch Paare und WGs ihn nutzen. Ein Kind kann sich selbst anmelden (der Kindermodus macht die App einfacher) oder nicht, dann macht es ein Elternteil. Das Alter wählt nur die Startaufgaben aus und wird nicht gespeichert.',
         'Zuhause: Hake deine Räume an. Jedes Kind bekommt außerdem einen eigenen Raum, und Kinder ab 6 können einen Quests-Raum für tägliche Routinen und Schulsachen bekommen (Hausaufgaben, pünktlich los, Lesen), als Aufgaben für jederzeit auf der Startseite.',
         'Aufgaben: eine angehakte Startliste für jede Person, nach Alter ausgewählt, mit Mehr Ideen für weitere. Eine Aufgabe, die mehrere Kinder machen können, wird geteilt: Wer sie zuerst erledigt, bekommt die Münzen. Aufgaben, für die kein Kind alt genug ist, gehen an die Erwachsenen.',
@@ -389,7 +390,7 @@ export const GUIDE_DE: GuideSection[] = [
     title: 'Benachrichtigungen',
     parents: true,
     blocks: [
-      { where: 'Einstellungen → Allgemein → Benachrichtigungen, dann Wer bekommt was, Zeiten & Ruhezeiten und Benachrichtigungsprotokoll' },
+      { where: 'Einstellungen → Benachrichtigungen, dann Wer bekommt was, Zeiten & Ruhezeiten und Benachrichtigungsprotokoll' },
       { ol: [
         'Schalte Benachrichtigungen ein und wähle, welche Arten die Familie bekommt.',
         'Richte bei Bedarf einen Familienkanal ein (nicht nötig, wenn alle Benachrichtigungen aufs Handy nutzen, siehe unten): ntfy (eine Server-URL und ein Topic, das alle in der ntfy-App abonnieren), Telegram (ein Bot-Token und eine Chat-ID) oder einen Home-Assistant-Notify-Dienst. Nutze den Test-Knopf.',
@@ -419,7 +420,7 @@ export const GUIDE_DE: GuideSection[] = [
       { p: 'Wenn deine Familie die Home-Assistant-App auf dem Handy hat, kann TidyQuest Nachrichten darüber schicken. Das geht nur auf einem Server zu Hause, nicht auf tidyquest.org.' },
       { ol: [
         'Öffne in Home Assistant dein Profil (unten links), dann den Tab Sicherheit. Ganz unten erstellst du ein langlebiges Zugriffstoken und kopierst es: Home Assistant zeigt es nur einmal.',
-        'Gib unter Einstellungen → Allgemein → Benachrichtigungen → Home Assistant die Home-Assistant-URL ein, unter der der TidyQuest-Server es erreicht, z. B. http://homeassistant.local:8123 oder http://192.168.1.20:8123, und füge das Token ein.',
+        'Gib unter Einstellungen → Benachrichtigungen → Home Assistant die Home-Assistant-URL ein, unter der der TidyQuest-Server es erreicht, z. B. http://homeassistant.local:8123 oder http://192.168.1.20:8123, und füge das Token ein.',
         'Auf Wunsch einen Familien-Notify-Dienst für Nachrichten an alle, z. B. notify.familie (eine Notify-Gruppe, die du in Home Assistant angelegt hast). Dann tippe auf Speichern.',
         'Gib bei „Wer bekommt was“ jeder Person den Dienst ihres Handys: notify.mobile_app_ und der Name des Handys, z. B. notify.mobile_app_alex_handy. Home Assistant listet sie unter Entwicklerwerkzeuge → Aktionen (tippe notify.). Ein Handy erscheint dort, sobald die Home-Assistant-App darauf angemeldet ist.',
         'Tippe neben dieser Person auf Testbenachrichtigung senden. „ha: ✓“ heißt, sie ist angekommen; sonst sagt die Meldung, was schiefging.',
@@ -739,7 +740,7 @@ export const GUIDE_DE: GuideSection[] = [
         ] },
         { q: 'Der Einrichtungsassistent hat sich nicht geöffnet, oder ich will ihn noch einmal', a: [
           'Er öffnet sich nur für ein Elternteil von selbst, solange die Familie noch keine Räume hat (der Raum Erledigen zählt nicht), bis ihn jemand abschließt oder auf Nicht jetzt tippt.',
-          'Öffne ihn jederzeit oben in Einstellungen → Einrichtungsassistent. Ein neuer Durchlauf fügt nur hinzu, also lösche Räume (Räume → 🗑) oder Belohnungen, die du nicht willst, selbst.',
+          'Öffne ihn jederzeit über Einstellungen → Einrichtungsassistent (unter Hilfe). Ein neuer Durchlauf fügt nur hinzu, also lösche Räume (Räume → 🗑) oder Belohnungen, die du nicht willst, selbst.',
         ] },
         { q: 'Jedes Kind zahlt für dieselbe Belohnung einen anderen Preis', a: [
           'Der Einrichtungsassistent hat jeder Person einen eigenen Preis gegeben, damit alle etwa gleich viele Wochen ihrer eigenen Aufgaben zahlen: Ein Kind mit mehr Aufgaben verdient mehr und zahlt deshalb mehr. Unter der Belohnung steht dann „eigene Preise“.',

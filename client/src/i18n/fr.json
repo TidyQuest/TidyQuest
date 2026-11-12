@@ -1815,7 +1815,9 @@
       "family": "Famille",
       "coinsGoals": "Pièces et objectifs",
       "gameExtras": "Extras du jeu",
-      "rewards": "Récompenses"
+      "rewards": "Récompenses",
+      "choresCoins": "Tâches et pièces",
+      "help": "Aide"
     },
     "timer": {
       "setting": "Minuteur",
@@ -2464,6 +2466,29 @@
       "streakChip": "série de {n} jours",
       "holiday": "Compte à rebours des fêtes",
       "levelBlock": "Niveau"
+    },
+    "settingsIndex": {
+      "search": "Rechercher un réglage",
+      "noMatch": "Aucun réglage ne correspond.",
+      "on": "Activé",
+      "generalSum": "Mode strict, début de semaine, fuseau horaire",
+      "emailSum": "L'adresse avec laquelle vous vous connectez",
+      "familySum": "{n} personnes · {p} parents",
+      "awaySum": "{n} absents",
+      "approvalsSum": "{n} en attente de votre accord",
+      "approvalsNone": "Rien en attente",
+      "coinsSum": "Ce que rapporte chaque niveau d'effort",
+      "goalsSum": "Objectifs de pièces de chacun",
+      "rewardsSum": "Ce que les pièces permettent d'acheter",
+      "boostsSum": "Les jours où les tâches rapportent double",
+      "featuresSum": "Activer ou désactiver les options",
+      "badgesSum": "Les badges de votre famille",
+      "dataSum": "Exporter, importer, votre compte",
+      "csvSum": "Tâches et récompenses en tableur",
+      "trashSum": "Récupérer des tâches et récompenses supprimées",
+      "guideSum": "Comment tout s'articule",
+      "troubleSum": "Quand quelque chose semble anormal",
+      "setupSum": "Refaire la configuration pas à pas"
     }
   }
 }

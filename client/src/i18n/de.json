@@ -1815,7 +1815,9 @@
       "family": "Familie",
       "coinsGoals": "Münzen & Ziele",
       "gameExtras": "Spiel-Extras",
-      "rewards": "Belohnungen"
+      "rewards": "Belohnungen",
+      "choresCoins": "Aufgaben und Münzen",
+      "help": "Hilfe"
     },
     "timer": {
       "setting": "Timer",
@@ -2464,6 +2466,29 @@
       "streakChip": "{n} Tage in Folge",
       "holiday": "Feiertags-Countdown",
       "levelBlock": "Level"
+    },
+    "settingsIndex": {
+      "search": "Einstellungen durchsuchen",
+      "noMatch": "Keine Einstellung passt dazu.",
+      "on": "An",
+      "generalSum": "Strenger Modus, Wochenbeginn, Zeitzone",
+      "emailSum": "Die Adresse, mit der du dich anmeldest",
+      "familySum": "{n} Personen · {p} Eltern",
+      "awaySum": "{n} weg",
+      "approvalsSum": "{n} warten auf dein OK",
+      "approvalsNone": "Nichts wartet",
+      "coinsSum": "Was jede Aufwandsstufe bringt",
+      "goalsSum": "Münzziele für jede Person",
+      "rewardsSum": "Was man mit Münzen kaufen kann",
+      "boostsSum": "Tage, an denen Aufgaben doppelt zählen",
+      "featuresSum": "Zusatzfunktionen ein- oder ausschalten",
+      "badgesSum": "Die eigenen Abzeichen der Familie",
+      "dataSum": "Exportieren, importieren, dein Konto",
+      "csvSum": "Aufgaben und Belohnungen als Tabelle",
+      "trashSum": "Gelöschte Aufgaben und Belohnungen zurückholen",
+      "guideSum": "Wie alles zusammenhängt",
+      "troubleSum": "Wenn etwas nicht stimmt",
+      "setupSum": "Die Einrichtung noch einmal durchgehen"
     }
   }
 }

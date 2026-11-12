@@ -1815,7 +1815,9 @@
       "family": "Gezin",
       "coinsGoals": "Munten & doelen",
       "gameExtras": "Spelextra's",
-      "rewards": "Beloningen"
+      "rewards": "Beloningen",
+      "choresCoins": "Taken en munten",
+      "help": "Hulp"
     },
     "timer": {
       "setting": "Timer",
@@ -2464,6 +2466,29 @@
       "streakChip": "{n} dagen op rij",
       "holiday": "Aftellen naar de feestdag",
       "levelBlock": "Level"
+    },
+    "settingsIndex": {
+      "search": "Instellingen zoeken",
+      "noMatch": "Geen instelling past daarbij.",
+      "on": "Aan",
+      "generalSum": "Strenge modus, begin van de week, tijdzone",
+      "emailSum": "Het adres waarmee je inlogt",
+      "familySum": "{n} personen · {p} ouders",
+      "awaySum": "{n} weg",
+      "approvalsSum": "{n} wachten op je OK",
+      "approvalsNone": "Niets wacht",
+      "coinsSum": "Wat elk inspanningsniveau oplevert",
+      "goalsSum": "Muntdoelen per persoon",
+      "rewardsSum": "Wat je met munten kunt kopen",
+      "boostsSum": "Dagen waarop taken dubbel opleveren",
+      "featuresSum": "Extra's aan- of uitzetten",
+      "badgesSum": "De eigen badges van je gezin",
+      "dataSum": "Exporteren, importeren, je account",
+      "csvSum": "Taken en beloningen als spreadsheet",
+      "trashSum": "Verwijderde taken en beloningen terughalen",
+      "guideSum": "Hoe alles samenhangt",
+      "troubleSum": "Als er iets niet klopt",
+      "setupSum": "De installatie nog eens doorlopen"
     }
   }
 }

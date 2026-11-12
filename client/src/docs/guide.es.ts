@@ -23,9 +23,10 @@ export const GUIDE_ES: GuideSection[] = [
         'Descarga una copia de seguridad en Ajustes → Datos y privacidad cuando todo esté listo, y de vez en cuando después.',
       ] },
       { tip: 'Empieza poco a poco: unas pocas tareas por peque y algunas recompensas baratas que puedan ganar la primera semana. Puedes añadir más cuando quieras.' },
+      { tip: 'Ajustes es una lista corta por grupos (Hogar, Tareas y monedas, Extras del juego, Datos, Ayuda): toca una fila para abrirla; en un ordenador la lista se queda a la izquierda. Escribe en Buscar ajustes para encontrar uno por su nombre, como «estricto». Un número junto a Aprobaciones o Catálogo de recompensas significa que algo te espera.' },
       { h: 'El asistente de configuración' },
       { ul: [
-        'Un padre o una madre de una familia nueva (aún sin habitaciones) llega a él al iniciar sesión. Ahora no lo salta, y Ajustes → Asistente de configuración (arriba en Ajustes) lo abre cuando quieras.',
+        'Un padre o una madre de una familia nueva (aún sin habitaciones) llega a él al iniciar sesión. Ahora no lo salta, y Ajustes → Asistente de configuración (en Ayuda) lo abre cuando quieras.',
         'Familia: añade a los niños por grupo de edad (3–5, 6–8, 9–12, 13+) y a otros adultos. Los niños son opcionales, así que parejas y compañeros de piso también pueden usarlo. Un niño puede iniciar sesión por su cuenta (el Modo niño simplifica la app) o no, y un padre o una madre lo hace por él. La edad solo elige las tareas iniciales y no se guarda.',
         'Casa: marca tus habitaciones. Cada niño también tiene su propia habitación, y los niños de 6 años o más pueden tener una habitación de Misiones para sus rutinas diarias y las cosas del cole (deberes, salir a tiempo, lectura), como tareas para cuando sea que salen en Inicio.',
         'Tareas: una lista inicial marcada para cada persona, elegida según la edad, con Más ideas para extras. Una tarea que pueden hacer varios niños se comparte: quien la hace primero se lleva las monedas. Las tareas para las que ningún niño tiene edad van a los adultos.',
@@ -389,7 +390,7 @@ export const GUIDE_ES: GuideSection[] = [
     title: 'Notificaciones',
     parents: true,
     blocks: [
-      { where: 'Ajustes → General → Notificaciones, después Quién recibe qué, Horarios y horas de silencio y Registro de notificaciones' },
+      { where: 'Ajustes → Notificaciones, después Quién recibe qué, Horarios y horas de silencio y Registro de notificaciones' },
       { ol: [
         'Activa las notificaciones y elige qué tipos recibe la familia.',
         'Si quieres, configura un canal familiar (no hace falta si todos usan las notificaciones en el móvil, mira abajo): ntfy (la URL de un servidor y un tema al que todos se suscriben en la app de ntfy), Telegram (un token de bot y un ID de chat) o un servicio notify de Home Assistant. Usa el botón de prueba.',
@@ -419,7 +420,7 @@ export const GUIDE_ES: GuideSection[] = [
       { p: 'Si tu familia tiene la app de Home Assistant en el móvil, TidyQuest puede enviar los mensajes por ahí. Solo funciona en un servidor en casa, no en tidyquest.org.' },
       { ol: [
         'En Home Assistant, abre tu perfil (abajo a la izquierda) y luego la pestaña Seguridad. Abajo del todo, crea un token de acceso de larga duración y cópialo: Home Assistant solo lo muestra una vez.',
-        'En Ajustes → General → Notificaciones → Home Assistant, escribe la URL de Home Assistant tal como la alcanza el servidor de TidyQuest, p. ej. http://homeassistant.local:8123 o http://192.168.1.20:8123, y pega el token.',
+        'En Ajustes → Notificaciones → Home Assistant, escribe la URL de Home Assistant tal como la alcanza el servidor de TidyQuest, p. ej. http://homeassistant.local:8123 o http://192.168.1.20:8123, y pega el token.',
         'Si quieres, añade un servicio de notificación familiar para los mensajes que reciben todos, p. ej. notify.familia (un grupo notify que creaste en Home Assistant). Luego toca Guardar.',
         'En "Quién recibe qué", da a cada persona el servicio de su móvil: notify.mobile_app_ y el nombre del móvil, p. ej. notify.mobile_app_telefono_alex. Home Assistant los muestra en Herramientas para desarrolladores → Acciones (escribe notify.). Un móvil aparece ahí cuando la app de Home Assistant tiene la sesión iniciada en él.',
         'Toca Enviar notificación de prueba junto a esa persona. "ha: ✓" significa que llegó; si no, el mensaje dice qué falló.',
@@ -739,7 +740,7 @@ export const GUIDE_ES: GuideSection[] = [
         ] },
         { q: 'El asistente de configuración no se abrió, o quiero volver a usarlo', a: [
           'Solo se abre solo para un padre o una madre, mientras la familia no tiene habitaciones (la habitación Pendientes no cuenta), hasta que alguien lo termina o toca Ahora no.',
-          'Ábrelo cuando quieras desde arriba en Ajustes → Asistente de configuración. Volver a usarlo solo añade, así que elimina tú las habitaciones (Habitaciones → 🗑) o recompensas que no quieras.',
+          'Ábrelo cuando quieras desde Ajustes → Asistente de configuración (en Ayuda). Volver a usarlo solo añade, así que elimina tú las habitaciones (Habitaciones → 🗑) o recompensas que no quieras.',
         ] },
         { q: 'Cada niño paga un precio distinto por la misma recompensa', a: [
           'El asistente de configuración dio a cada persona su propio precio para que todos paguen más o menos las mismas semanas de sus propias tareas: un niño con más tareas gana más, así que paga más. Se ve como «precios propios» bajo la recompensa.',

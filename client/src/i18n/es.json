@@ -1815,7 +1815,9 @@
       "family": "Familia",
       "coinsGoals": "Monedas y metas",
       "gameExtras": "Extras del juego",
-      "rewards": "Recompensas"
+      "rewards": "Recompensas",
+      "choresCoins": "Tareas y monedas",
+      "help": "Ayuda"
     },
     "timer": {
       "setting": "Temporizador",
@@ -2464,6 +2466,29 @@
       "streakChip": "racha de {n} días",
       "holiday": "Cuenta atrás de fiestas",
       "levelBlock": "Nivel"
+    },
+    "settingsIndex": {
+      "search": "Buscar ajustes",
+      "noMatch": "Ningún ajuste coincide.",
+      "on": "Activado",
+      "generalSum": "Modo estricto, inicio de semana, zona horaria",
+      "emailSum": "La dirección con la que inicias sesión",
+      "familySum": "{n} personas · {p} padres",
+      "awaySum": "{n} fuera",
+      "approvalsSum": "{n} esperan tu aprobación",
+      "approvalsNone": "Nada pendiente",
+      "coinsSum": "Lo que paga cada nivel de esfuerzo",
+      "goalsSum": "Metas de monedas de cada persona",
+      "rewardsSum": "Lo que se puede comprar con monedas",
+      "boostsSum": "Días en que las tareas pagan el doble",
+      "featuresSum": "Activar o desactivar extras opcionales",
+      "badgesSum": "Las insignias propias de tu familia",
+      "dataSum": "Exportar, importar, tu cuenta",
+      "csvSum": "Tareas y recompensas en hoja de cálculo",
+      "trashSum": "Recuperar tareas y recompensas eliminadas",
+      "guideSum": "Cómo encaja todo",
+      "troubleSum": "Cuando algo no parece ir bien",
+      "setupSum": "Repetir la configuración paso a paso"
     }
   }
 }

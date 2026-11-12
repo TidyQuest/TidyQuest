@@ -23,9 +23,10 @@ export const GUIDE_FR: GuideSection[] = [
         'Télécharge une sauvegarde dans Paramètres → Données et confidentialité une fois que tout est en place, puis de temps en temps.',
       ] },
       { tip: 'Commence petit : quelques tâches par enfant et quelques récompenses bon marché à gagner dès la première semaine. Tu pourras en ajouter à tout moment.' },
+      { tip: 'Les Paramètres sont une courte liste en groupes (Maison, Tâches et pièces, Extras du jeu, Données, Aide) : touche une ligne pour l’ouvrir ; sur un ordinateur, la liste reste à gauche. Tape dans Rechercher un réglage pour en trouver un par son nom, par exemple « strict ». Un nombre à côté de Validations ou Catalogue des récompenses signifie que quelque chose t’attend.' },
       { h: 'L’assistant de configuration' },
       { ul: [
-        'Le parent d’une nouvelle famille (sans pièces) y arrive après s’être connecté. Pas maintenant le passe, et Paramètres → Assistant de configuration (en haut des Paramètres) l’ouvre à tout moment.',
+        'Le parent d’une nouvelle famille (sans pièces) y arrive après s’être connecté. Pas maintenant le passe, et Paramètres → Assistant de configuration (sous Aide) l’ouvre à tout moment.',
         'Famille : ajoute les enfants par tranche d’âge (3–5, 6–8, 9–12, 13+) et les autres adultes. Les enfants sont facultatifs, donc les couples et les colocataires peuvent aussi l’utiliser. Un enfant peut se connecter tout seul (le Mode enfant simplifie l’appli) ou pas, et un parent le fait pour lui. L’âge sert seulement à choisir les tâches de départ et n’est pas enregistré.',
         'Maison : coche tes pièces. Chaque enfant a aussi sa propre pièce, et les enfants de 6 ans et plus peuvent avoir une pièce Quêtes pour les routines du quotidien et l’école (devoirs, partir à l’heure, lecture), en tâches à tout moment affichées sur l’accueil.',
         'Tâches : une liste de départ cochée pour chaque personne, choisie selon l’âge, avec Plus d’idées pour d’autres. Une tâche que plusieurs enfants peuvent faire est partagée : le premier qui la fait gagne les pièces. Les tâches pour lesquelles aucun enfant n’a l’âge vont aux adultes.',
@@ -389,7 +390,7 @@ export const GUIDE_FR: GuideSection[] = [
     title: 'Notifications',
     parents: true,
     blocks: [
-      { where: 'Paramètres → Général → Notifications, puis Qui reçoit quoi, Horaires et heures calmes et Journal des notifications' },
+      { where: 'Paramètres → Notifications, puis Qui reçoit quoi, Horaires et heures calmes et Journal des notifications' },
       { ol: [
         'Active les notifications et choisis les types que la famille reçoit.',
         'Si tu veux, configure un canal familial (inutile si tout le monde utilise les notifications sur le téléphone, voir plus bas) : ntfy (une URL de serveur et un sujet auquel tout le monde s’abonne dans l’appli ntfy), Telegram (un jeton de bot et un ID de chat), ou un service notify de Home Assistant. Utilise le bouton de test.',
@@ -419,7 +420,7 @@ export const GUIDE_FR: GuideSection[] = [
       { p: 'Si ta famille a l’appli Home Assistant sur son téléphone, TidyQuest peut envoyer les messages par là. Ça ne marche que sur un serveur à la maison, pas sur tidyquest.org.' },
       { ol: [
         'Dans Home Assistant, ouvre ton profil (en bas à gauche), puis l’onglet Sécurité. Tout en bas, crée un jeton d’accès longue durée et copie-le : Home Assistant ne l’affiche qu’une fois.',
-        'Dans Paramètres → Général → Notifications → Home Assistant, saisis l’URL de Home Assistant telle que le serveur TidyQuest l’atteint, ex. http://homeassistant.local:8123 ou http://192.168.1.20:8123, et colle le jeton.',
+        'Dans Paramètres → Notifications → Home Assistant, saisis l’URL de Home Assistant telle que le serveur TidyQuest l’atteint, ex. http://homeassistant.local:8123 ou http://192.168.1.20:8123, et colle le jeton.',
         'Si tu veux, ajoute un service de notification familial pour les messages que tout le monde reçoit, ex. notify.famille (un groupe notify créé dans Home Assistant). Puis touche Enregistrer.',
         'Dans Qui reçoit quoi, donne à chaque personne le service de son téléphone : notify.mobile_app_ suivi du nom du téléphone, ex. notify.mobile_app_telephone_alex. Home Assistant les liste dans Outils de développement → Actions (tape notify.). Un téléphone y apparaît une fois l’appli Home Assistant connectée dessus.',
         'Touche Envoyer une notification test à côté de cette personne. « ha: ✓ » veut dire que c’est arrivé ; sinon le message dit ce qui ne va pas.',
@@ -739,7 +740,7 @@ export const GUIDE_FR: GuideSection[] = [
         ] },
         { q: 'L’assistant de configuration ne s’est pas ouvert, ou je veux le relancer', a: [
           'Il s’ouvre tout seul seulement pour un parent, tant que la famille n’a pas de pièces (la pièce À faire ne compte pas), jusqu’à ce que quelqu’un le termine ou touche Pas maintenant.',
-          'Ouvre-le à tout moment en haut de Paramètres → Assistant de configuration. Le relancer ne fait qu’ajouter : supprime toi-même les pièces (Pièces → 🗑) ou les récompenses dont tu ne veux pas.',
+          'Ouvre-le à tout moment depuis Paramètres → Assistant de configuration (sous Aide). Le relancer ne fait qu’ajouter : supprime toi-même les pièces (Pièces → 🗑) ou les récompenses dont tu ne veux pas.',
         ] },
         { q: 'Chaque enfant paie un prix différent pour la même récompense', a: [
           'L’assistant de configuration a donné à chacun son propre prix, pour que tout le monde paie à peu près les mêmes semaines de ses propres tâches : un enfant qui a plus de tâches gagne plus, donc paie plus. On le voit avec « prix personnalisés » sous la récompense.',
