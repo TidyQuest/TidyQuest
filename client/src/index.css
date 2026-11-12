@@ -1119,6 +1119,14 @@ html[data-theme='lava'] option {
     overflow-wrap: anywhere;
   }
 
+  /* A long room name next to two buttons: two lines at most, then … */
+  .page-header:not(.page-header-home) h1 {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+  }
+
   .page-header-sub {
     display: none;
   }
@@ -1157,6 +1165,8 @@ html[data-theme='lava'] option {
   .page-header-actions .ph-coins { order: 1; }
   .page-header-actions .ph-streak { order: 2; }
   .page-header-actions .ph-points { display: none !important; }
+
+  .page-header-actions .ph-add { order: 4 !important; }
 
   .page-header-actions .ph-button {
     order: 3;

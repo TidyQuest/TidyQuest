@@ -274,7 +274,7 @@ export const GUIDE_NL: GuideSection[] = [
       { ul: [
         'Op een telefoon staan de pagina’s onderaan het scherm: Home, Kamers, Beloningen, Scorebord en Meer. Kinderen hebben Home, Beloningen, Scorebord, Medailles en Meer. Een streepje boven een tab laat zien waar je bent; tik de tab nog een keer aan om terug te gaan naar het begin van de pagina.',
         'Onder Meer staat de rest: Klusjes, Kalender, Activiteit, Inzichten (ouders), Medailles en Instellingen, met je profiel bovenaan. Voor kinderen staat Kamers ook onder Meer.',
-        'Bovenaan elke pagina staat één regel: de naam van de pagina (op Home je foto, een groet en de datum), je munten, je reeks en één knop. De knop is 🔍 zoeken; voor ouders is het + op Kamers (Kamer toevoegen) en in een kamer (Klusje Toevoegen). Tik op je munten voor Beloningen, op je reeks voor Medailles en op je foto voor je profiel.',
+        'Bovenaan elke pagina staat één regel: de naam van de pagina (op Home je foto, een groet en de datum), je munten, je reeks en de 🔍 zoekknop. Ouders hebben daarnaast ook een + op Kamers (Kamer toevoegen) en in een kamer (Klusje Toevoegen). Tik op je munten voor Beloningen, op je reeks voor Medailles en op je foto voor je profiel.',
         'Op een computer, of een tablet die je dwars houdt, staan de pagina’s in het menu links, en bovenaan de pagina zie je ook je punten.',
         'Als Spelmodus (Gamification) uit staat (Instellingen → Algemeen), heeft de balk onderaan Home, Kamers, Klusjes, Kalender en Meer.',
       ] },

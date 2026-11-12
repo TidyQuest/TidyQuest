@@ -274,7 +274,7 @@ export const GUIDE_IT: GuideSection[] = [
       { ul: [
         'Sul telefono le pagine sono in fondo allo schermo: Home, Stanze, Ricompense, Classifica e Altro. I bambini hanno Home, Ricompense, Classifica, Obiettivi e Altro. Una linea sopra la scheda mostra dove sei; toccala di nuovo per tornare all’inizio della pagina.',
         'In Altro c’è il resto: Compiti, Calendario, Attività, Statistiche (genitori), Obiettivi e Impostazioni, con il tuo profilo in cima. Per i bambini anche Stanze è in Altro.',
-        'La parte alta di ogni pagina è una sola riga: il nome della pagina (nella Home la tua foto, un saluto e la data), le tue monete, la tua serie e un pulsante. Il pulsante è 🔍 la ricerca; per i genitori è + in Stanze (Aggiungi stanza) e dentro una stanza (Aggiungi attività). Tocca le monete per aprire Ricompense, la serie per aprire Obiettivi e la foto per aprire il tuo profilo.',
+        'La parte alta di ogni pagina è una sola riga: il nome della pagina (nella Home la tua foto, un saluto e la data), le tue monete, la tua serie e il pulsante 🔍 di ricerca. I genitori hanno anche un + accanto in Stanze (Aggiungi stanza) e dentro una stanza (Aggiungi attività). Tocca le monete per aprire Ricompense, la serie per aprire Obiettivi e la foto per aprire il tuo profilo.',
         'Su un computer, o un tablet tenuto in orizzontale, le pagine sono nel menu a sinistra, e in alto nella pagina vedi anche i tuoi punti.',
         'Se la Gamification è disattivata (Impostazioni → Generale), la barra in basso ha Home, Stanze, Compiti, Calendario e Altro.',
       ] },

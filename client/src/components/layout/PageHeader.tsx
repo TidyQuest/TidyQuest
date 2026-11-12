@@ -58,7 +58,7 @@ export function PageHeader({ title, subtitle, user, onCoinsClick, onStreakClick,
             onClick={openSearch}
             aria-label={t('search.button')}
             title={`${t('search.button')} (/)`}
-            className={`ph-button${addLabel ? ' ph-desktop' : ''}`}
+            className="ph-button"
             style={{
               display: 'flex', alignItems: 'center', gap: 6,
               backgroundColor: 'var(--warm-accent-light)', borderRadius: 14, padding: '8px 14px',

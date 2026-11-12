@@ -274,7 +274,7 @@ export const GUIDE_ES: GuideSection[] = [
       { ul: [
         'En el móvil, las páginas están en la parte de abajo de la pantalla: Inicio, Habitaciones, Recompensas, Tablero y Más. Los niños tienen Inicio, Recompensas, Tablero, Logros y Más. Una raya sobre la pestaña muestra dónde estás; tócala otra vez para volver al principio de la página.',
         'En Más está el resto: Tareas, Calendario, Actividad, Estadísticas (padres), Logros y Ajustes, con tu perfil arriba del todo. Para los niños, Habitaciones también está en Más.',
-        'La parte de arriba de cada página es una sola línea: el nombre de la página (en Inicio, tu foto, un saludo y la fecha), tus monedas, tu racha y un botón. El botón es 🔍 la búsqueda; para los padres es + en Habitaciones (Añadir habitación) y dentro de una habitación (Añadir tarea). Toca tus monedas para abrir Recompensas, tu racha para abrir Logros y tu foto para abrir tu perfil.',
+        'La parte de arriba de cada página es una sola línea: el nombre de la página (en Inicio, tu foto, un saludo y la fecha), tus monedas, tu racha y el botón 🔍 de búsqueda. Los padres tienen además un + al lado en Habitaciones (Añadir habitación) y dentro de una habitación (Añadir tarea). Toca tus monedas para abrir Recompensas, tu racha para abrir Logros y tu foto para abrir tu perfil.',
         'En un ordenador, o una tableta en horizontal, las páginas están en el menú de la izquierda, y arriba de la página también se ven tus puntos.',
         'Si la Gamificación está desactivada (Ajustes → General), la barra de abajo tiene Inicio, Habitaciones, Tareas, Calendario y Más.',
       ] },

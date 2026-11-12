@@ -274,7 +274,7 @@ export const GUIDE_DE: GuideSection[] = [
       { ul: [
         'Auf dem Handy stehen die Seiten unten am Bildschirm: Startseite, Räume, Belohnungen, Board und Mehr. Kinder haben Startseite, Belohnungen, Board, Erfolge und Mehr. Ein Strich über einem Tab zeigt, wo du bist; tippe den Tab noch einmal an, um an den Seitenanfang zu springen.',
         'Unter Mehr ist der Rest: Aufgaben, Kalender, Aktivität, Auswertung (Eltern), Erfolge und Einstellungen, ganz oben dein Profil. Für Kinder sind auch die Räume unter Mehr.',
-        'Oben auf jeder Seite steht eine Zeile: der Name der Seite (auf der Startseite dein Bild, ein Hallo und das Datum), deine Münzen, deine Serie und ein Knopf. Der Knopf ist 🔍 die Suche; für Eltern ist er + auf Räume (Raum hinzufügen) und in einem Raum (Aufgabe hinzufügen). Tippe auf deine Münzen für Belohnungen, auf deine Serie für Erfolge und auf dein Bild für dein Profil.',
+        'Oben auf jeder Seite steht eine Zeile: der Name der Seite (auf der Startseite dein Bild, ein Hallo und das Datum), deine Münzen, deine Serie und der 🔍-Knopf für die Suche. Eltern haben daneben auch ein + auf Räume (Raum hinzufügen) und in einem Raum (Aufgabe hinzufügen). Tippe auf deine Münzen für Belohnungen, auf deine Serie für Erfolge und auf dein Bild für dein Profil.',
         'Am Computer oder auf einem quer gehaltenen Tablet stehen die Seiten im Menü links, und oben auf der Seite siehst du auch deine Punkte.',
         'Wenn Gamification aus ist (Einstellungen → Allgemein), zeigt die Leiste unten Startseite, Räume, Aufgaben, Kalender und Mehr.',
       ] },

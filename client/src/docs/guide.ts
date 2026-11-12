@@ -298,7 +298,7 @@ export const GUIDE_EN: GuideSection[] = [
       { ul: [
         'On a phone the pages are along the bottom of the screen: Home, Rooms, Rewards, Board and More. Kids get Home, Rewards, Board, Badges and More. A line over a tab shows where you are; tap that tab again to go back to the top of the page.',
         'More has the rest: Tasks, Calendar, Activity, Insights (parents), Achievements and Settings, with your profile at the top. For kids, Rooms is under More too.',
-        'The top of every page is one line: the page’s name (on Home, your picture, a hello and the date), your coins, your streak and one button. The button is 🔍 search; for parents it’s + on Rooms (Add Room) and inside a room (Add Task). Tap your coins to open Rewards, your streak to open Achievements, and your picture to open your profile.',
+        'The top of every page is one line: the page’s name (on Home, your picture, a hello and the date), your coins, your streak and the 🔍 search button. Parents also get a + next to it on Rooms (Add Room) and inside a room (Add Task). Tap your coins to open Rewards, your streak to open Achievements, and your picture to open your profile.',
         'On a computer, or a tablet held sideways, the pages are in the menu on the left, and the top of the page also shows your points.',
         'With Gamification off (Settings → General) the bottom bar is Home, Rooms, Tasks, Calendar and More.',
       ] },

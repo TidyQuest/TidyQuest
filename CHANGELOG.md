@@ -18,8 +18,8 @@ What changed in each release, in plain language, newest first. Releases up to v0
   and tapping that tab again jumps back to the top of the page. With Gamification switched off the tabs are Home,
   Rooms, Tasks, Calendar and More. Computers and wide tablets keep the menu on the left.
 - **The top of each page is one line on phones.** It shows the page's name (on Home: your picture, a hello and the
-  date), your coins, your streak and one button. The button is search; for parents it is + on Rooms (Add Room) and
-  inside a room (Add Task), so the separate Add Room button is gone from phones. The points chip and the small line
+  date), your coins, your streak and the search button. Parents also get a + next to it on Rooms (Add Room) and inside a
+  room (Add Task), so the separate Add Room button is gone from phones. The points chip and the small line
   under the page name are hidden on phones; your points are still on the Board.
 - **The seasonal garland is a thin strip across the top on phones**, so it no longer pushes the page down.
 - Undo, "waiting for approval" and other pop-up notes now sit just above the bottom bar instead of under it.

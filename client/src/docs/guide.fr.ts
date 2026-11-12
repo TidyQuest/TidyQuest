@@ -274,7 +274,7 @@ export const GUIDE_FR: GuideSection[] = [
       { ul: [
         'Sur un téléphone, les pages sont en bas de l’écran : Accueil, Pièces, Récompenses, Tableau et Plus. Les enfants ont Accueil, Récompenses, Tableau, Succès et Plus. Un trait au-dessus d’un onglet montre où tu es ; touche-le encore pour revenir en haut de la page.',
         'Plus contient le reste : Tâches, Calendrier, Activité, Statistiques (parents), Succès et Paramètres, avec ton profil tout en haut. Pour les enfants, Pièces se trouve aussi dans Plus.',
-        'Le haut de chaque page tient sur une ligne : le nom de la page (sur Accueil, ta photo, un bonjour et la date), tes pièces, ta série et un bouton. Le bouton est 🔍 la recherche ; pour les parents, c’est + sur Pièces (Ajouter une pièce) et dans une pièce (Ajouter une tâche). Touche tes pièces pour ouvrir Récompenses, ta série pour ouvrir Succès et ta photo pour ouvrir ton profil.',
+        'Le haut de chaque page tient sur une ligne : le nom de la page (sur Accueil, ta photo, un bonjour et la date), tes pièces, ta série et le bouton 🔍 de recherche. Les parents ont aussi un + à côté sur Pièces (Ajouter une pièce) et dans une pièce (Ajouter une tâche). Touche tes pièces pour ouvrir Récompenses, ta série pour ouvrir Succès et ta photo pour ouvrir ton profil.',
         'Sur un ordinateur, ou une tablette tenue à l’horizontale, les pages sont dans le menu à gauche, et le haut de la page affiche aussi tes points.',
         'Si la Gamification est désactivée (Paramètres → Général), la barre du bas contient Accueil, Pièces, Tâches, Calendrier et Plus.',
       ] },
