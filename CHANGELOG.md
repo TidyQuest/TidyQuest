@@ -9,6 +9,8 @@ What changed in each release, in plain language, newest first. Releases up to v0
 
 ## Unreleased
 
+## v0.18.0 (2026-11-11)
+
 ### Added
 
 - **A note when you reject a reward request** (ENH-23). Reject, on the Rewards page and on Home, now opens a small
