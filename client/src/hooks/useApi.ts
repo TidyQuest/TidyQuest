@@ -241,7 +241,7 @@ export interface FeaturesView { features: FeatureFlags; rescueMultiplier: number
   /** Every creature: the active one, resting ones (with their name and stage) and new eggs */
   mascotRoster?: Array<{ creature: string; status: 'active' | 'resting' | 'new'; name: string; stage: string }> }
 
-export type NotifyKind = 'taskDue' | 'rewardRequest' | 'achievementUnlocked' | 'choreApproval' | 'coinBoost' | 'outcome' | 'summary' | 'nudge' | 'reminder' | 'cheer' | 'teamup';
+export type NotifyKind = 'taskDue' | 'rewardRequest' | 'achievementUnlocked' | 'choreApproval' | 'coinBoost' | 'rescue' | 'outcome' | 'summary' | 'nudge' | 'reminder' | 'cheer' | 'teamup';
 
 export interface NotifySettings {
   morningTime: string;
@@ -402,6 +402,7 @@ async function apiFetch<T>(path: string, options: RequestInit = {}): Promise<T> 
     const errorBody = await res.json().catch(() => ({ error: 'Request failed' }));
     const err = new Error(errorBody.error || 'Request failed') as any;
     err.body = errorBody;
+    err.status = res.status;
     throw err;
   }
 
@@ -443,7 +444,14 @@ export const api = {
   unsubscribe: (e: string, s: string) => apiFetch<{ ok: boolean }>('/hosted/unsubscribe', { method: 'POST', body: JSON.stringify({ e, s }) }),
   deleteFamily: (name: string, password: string) =>
     apiFetch<{ ok: boolean }>('/hosted/delete-family', { method: 'POST', body: JSON.stringify({ name, password }) }),
-  me: () => apiFetch<any>('/auth/me'),
+  me: async () => {
+    const sent = getToken();
+    const { renewedToken, ...user } = await apiFetch<any>('/auth/me');
+    // A login over a day old comes back renewed for another 30 days (BUG-47). Not when this device signed out
+    // or in again while the answer was on its way.
+    if (renewedToken && sent && getToken() === sent) localStorage.setItem('tidyquest_token', renewedToken);
+    return user;
+  },
 
   // Dashboard
   dashboard: () => apiFetch<any>('/dashboard'),
@@ -628,8 +636,12 @@ export const api = {
 
   // Data
   exportData: () => apiFetch<any>('/export'),
-  importData: (data: any) =>
-    apiFetch<any>('/import', { method: 'POST', body: JSON.stringify(data) }),
+  importData: async (data: any) => {
+    const res = await apiFetch<{ token?: string }>('/import', { method: 'POST', body: JSON.stringify(data) });
+    // The backup may give you another id: it comes with a fresh login for this device (BUG-21)
+    if (res.token) saveNewToken(res.token);
+    return res;
+  },
   achievements: () => apiFetch<any>('/achievements'),
   getRegistrationStatus: () =>
     fetch('/api/auth/registration-status').then((r) => r.json()) as Promise<{ registrationEnabled: boolean }>,
@@ -684,11 +696,12 @@ export const api = {
     apiFetch<{ success: boolean }>('/users/notifications-test', { method: 'POST', body: JSON.stringify(data || {}) }),
   /** forUserId: a parent shopping for someone else (ENH-16) gets their rewards, prices and coins */
   getRewards: (forUserId?: number) =>
-    apiFetch<{ rewards: Array<{ id: number; title: string; description?: string | null; costCoins: number }>; mine: Array<{ id: number; title: string; costCoins: number; redeemedAt: string; status: string; boughtByName?: string | null }>; coins?: number }>(forUserId ? `/rewards?for=${forUserId}` : '/rewards'),
+    apiFetch<{ rewards: Array<{ id: number; title: string; description?: string | null; costCoins: number }>; mine: Array<{ id: number; title: string; costCoins: number; redeemedAt: string; status: string; boughtByName?: string | null; rejectNote?: string | null }>; coins?: number }>(forUserId ? `/rewards?for=${forUserId}` : '/rewards'),
   getRewardsAdmin: () =>
     apiFetch<{ rewards: any[]; redemptions: any[]; rotatingPerWeek?: number; rotatingThisWeek?: number[] }>('/rewards/admin'),
-  updateRedemptionStatus: (id: number, status: 'requested' | 'approved' | 'rejected') =>
-    apiFetch<any>(`/rewards/redemptions/${id}`, { method: 'PUT', body: JSON.stringify({ status }) }),
+  /** note: an optional one-line reason for the kid, with a rejection */
+  updateRedemptionStatus: (id: number, status: 'requested' | 'approved' | 'rejected', note?: string) =>
+    apiFetch<any>(`/rewards/redemptions/${id}`, { method: 'PUT', body: JSON.stringify({ status, note: note || undefined }) }),
   refundRedemption: (id: number) =>
     apiFetch<{ id: number; status: string }>(`/rewards/redemptions/${id}/refund`, { method: 'POST' }),
   cancelRedemption: (id: number) =>

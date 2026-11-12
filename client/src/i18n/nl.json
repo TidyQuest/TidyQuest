@@ -392,7 +392,14 @@
       "takeBack": "Terugnemen",
       "takeBackHint": "Per ongeluk op Klaar getikt? Neem het terug voordat een ouder beslist.",
       "importInvalid": "Dit is geen TidyQuest-back-up: er staan geen personen of kamers in.",
-      "importFailed": "Importeren mislukt: {error}"
+      "importFailed": "Importeren mislukt: {error}",
+      "importNotIn": "Deze back-up heeft jou ({name}) niet als Admin, dus importeren zou je buitensluiten. Log in als een Admin die in de back-up staat en probeer het opnieuw.",
+      "notYetDue": "Dit hoeft nog niet.",
+      "cantReachTitle": "TidyQuest is niet bereikbaar",
+      "cantReachText": "Je bent nog ingelogd. Elke paar seconden wordt het opnieuw geprobeerd…",
+      "notYourTurn": "Je bent niet aan de beurt voor dit klusje.",
+      "chorePaused": "Dit klusje is gepauzeerd.",
+      "claimedByTeam": "Een team heeft dit klusje al geclaimd."
     },
     "admin": {
       "whoDidThisTask": "Wie heeft dit klusje gedaan?",
@@ -464,7 +471,10 @@
       "theirRequests": "Beloningen van {name}",
       "boughtBy": "gekocht door {name}",
       "confirmTextFor": "\"{reward}\" kopen voor {name}? Het kost {coins} van de munten van {name}.",
-      "priceChanged": "De prijs is net veranderd naar {coins} munten. Tik op Ja, kopen! om dat te betalen, of op Annuleren."
+      "priceChanged": "De prijs is net veranderd naar {coins} munten. Tik op Ja, kopen! om dat te betalen, of op Annuleren.",
+      "alreadyDecided": "Over dat verzoek was al beslist. De lijst is nu bijgewerkt.",
+      "rejectNotePlaceholder": "Waarom niet? (optioneel)",
+      "rejectNoteLabel": "Een berichtje voor {name}"
     },
     "rewardsPreset": {
       "movie_night": {
@@ -759,7 +769,9 @@
       "forgotAskParent": "Vraag een ouder om een nieuw wachtwoord in te stellen in Instellingen → Gezinsleden.",
       "forgotNoParent": "Kan geen enkele ouder inloggen? Wie de server beheert, kan het wachtwoord van de eerste ouder resetten.",
       "forgotHowTo": "Zo reset je het",
-      "noLogin": "Een ouder heeft inloggen voor jou uitgezet. Vraag of die het weer aanzet in Instellingen → Gezinsleden."
+      "noLogin": "Een ouder heeft inloggen voor jou uitgezet. Vraag of die het weer aanzet in Instellingen → Gezinsleden.",
+      "tooManyTries": "Te veel verkeerde wachtwoorden. Wacht 15 minuten en probeer het opnieuw.",
+      "passwordMin": "Wachtwoorden moeten minstens {n} tekens hebben."
     },
     "achievements": {
       "familyProgress": "Gezinsvoortgang",
@@ -1247,7 +1259,8 @@
       "errBadCost": "De prijs moet een heel getal van minstens 1 zijn (kreeg ‘{value}’)",
       "errAmbiguousReward": "{n} beloningen heten ‘{value}’; geef er eerst één een andere naam",
       "errNewRewardCost": "Een nieuwe beloning heeft een prijs nodig",
-      "errNotSaved": "Regel {line} kon niet worden opgeslagen ({error}), dus er is niets veranderd."
+      "errNotSaved": "Regel {line} kon niet worden opgeslagen ({error}), dus er is niets veranderd.",
+      "errBadDate": "‘{value}’ is geen datum (gebruik JJJJ-MM-DD, bijvoorbeeld 2027-03-01)"
     },
     "rewardOrder": {
       "up": "Omhoog",
@@ -1446,7 +1459,8 @@
       "shieldsSaved": "🛡️ {count} schilden hebben je reeks van {n} dagen gered!",
       "shieldGiven": "🛡️ {name} gaf je een reeksschild. Het redt je reeks als je een dag mist.",
       "recapLastWeek": "📊 Vorige week: {lines}",
-      "testFamily": "👋 Test van TidyQuest, verstuurd door {name} om {time}: de gezinsmeldingen werken!"
+      "testFamily": "👋 Test van TidyQuest, verstuurd door {name} om {time}: de gezinsmeldingen werken!",
+      "parentSays": "{parent} zegt: {reason}"
     },
     "notifyAdmin": {
       "peopleTitle": "Wie krijgt wat",
@@ -2167,7 +2181,8 @@
       "deleteFamilyAction": "Het gezin voorgoed verwijderen",
       "deleteFamilyDone": "{family} is verwijderd. Bedankt dat jullie TidyQuest hebben gebruikt.",
       "errWrongName": "Dat is niet de naam van het gezin.",
-      "memberPrivacy": "Wat TidyQuest over elke persoon bewaart: {privacy}"
+      "memberPrivacy": "Wat TidyQuest over elke persoon bewaart: {privacy}",
+      "errChangePasswordFirst": "Om met een e-mailadres in te loggen heeft je wachtwoord minstens {n} tekens nodig. Wijzig het eerst bij Profiel."
     },
     "limits": {
       "people": "Een gezin kan maximaal {n} personen hebben.",
@@ -2295,7 +2310,7 @@
       "errAge": "Kies een leeftijdsgroep voor {name}.",
       "errUsername": "{name} heeft een gebruikersnaam nodig (zonder spaties).",
       "errUsernameTwice": "Twee personen hebben de gebruikersnaam {name}.",
-      "errPassword": "Het wachtwoord van {name} moet minstens 4 tekens hebben.",
+      "errPassword": "Het wachtwoord van {name} moet minstens {n} tekens hebben.",
       "errUsernameTaken": "Die gebruikersnaam bestaat al. Ga terug naar de stap Gezin en kies een andere.",
       "tipsTitle": "Volgende stappen",
       "tourStart": "Laat zien hoe ik dingen aanpas",

@@ -1,7 +1,8 @@
 import { Router, Response } from 'express';
 import bcrypt from 'bcryptjs';
+import crypto from 'crypto';
 import db from '../database';
-import { AuthRequest, authMiddleware } from '../middleware/auth';
+import { AuthRequest, authMiddleware, loginToken } from '../middleware/auth';
 import { ensureAdmin } from '../utils/adminHelpers';
 import { BACKUP_TABLES } from '../forkSchema';
 import { isHosted } from '../hosted/context';
@@ -94,20 +95,38 @@ router.post('/import', (req: AuthRequest, res: Response) => {
   const tooMany = tooManyPeople(users.length);
   if (tooMany) return res.status(403).json(tooMany);
 
-  // Password hashes are never accepted from a file. The importing admin keeps theirs, and anyone
-  // who already has an account here (same username) keeps their current password; new people get
-  // a random one and need a reset.
-  const currentAdmin = db.prepare('SELECT id, username, passwordHash FROM users WHERE id = ?').get(req.userId) as { id: number; username: string; passwordHash: string } | undefined;
-  const existing = db.prepare('SELECT username, passwordHash, tokenVersion, agreedAt, agreedTerms, agreedPrivacy FROM users').all() as
-    { username: string; passwordHash: string; tokenVersion: number; agreedAt: string | null; agreedTerms: string | null; agreedPrivacy: string | null }[];
+  // Password hashes are never accepted from a file. Everyone who already has an account here (same
+  // username, the importing admin included) keeps their current password; new people get a random one
+  // and need a reset. People are matched by username only: the file may give an id to someone else.
+  const currentAdmin = db.prepare('SELECT id, username FROM users WHERE id = ?').get(req.userId) as { id: number; username: string };
+  const adminName = currentAdmin.username.toLowerCase();
+  const adminInFile = users.find((u: any) => String(u?.username).toLowerCase() === adminName && u.role === 'admin');
+  // Importing a file without yourself as a parent would sign you out for good
+  if (!adminInFile) {
+    return res.status(400).json({ error: `This backup doesn't list you (${currentAdmin.username}) as a parent`, code: 'not-in-backup', username: currentAdmin.username });
+  }
+  const existing = db.prepare('SELECT id, username, passwordHash, tokenVersion, agreedAt, agreedTerms, agreedPrivacy FROM users').all() as
+    { id: number; username: string; passwordHash: string; tokenVersion: number; agreedAt: string | null; agreedTerms: string | null; agreedPrivacy: string | null }[];
   const existingHashes = new Map(existing.map((u) => [u.username.toLowerCase(), u.passwordHash]));
-  // Logins stay as they are: anyone already here keeps their token version (NEW-8)
-  const existingVersions = new Map(existing.map((u) => [u.username.toLowerCase(), u.tokenVersion]));
+  // Logins name people by id. They stay as they are (NEW-8) only where an id still belongs to the same
+  // person; anyone else gets a version no earlier login can carry, so a phone signed in as the old holder
+  // of that id (or as someone removed) doesn't open their account (BUG-21).
+  const existingById = new Map(existing.map((u) => [u.id, u]));
+  const versionFor = (id: unknown, name: string) => {
+    const before = existingById.get(Number(id));
+    return before && before.username.toLowerCase() === name ? before.tokenVersion : crypto.randomInt(1_000_000, 2 ** 31 - 1);
+  };
   // So do agreements to the terms (NEW-34): a file can't say someone agreed
   const existingAgreements = new Map(existing.map(({ username, agreedAt, agreedTerms, agreedPrivacy }) => [username.toLowerCase(), { agreedAt, agreedTerms, agreedPrivacy }]));
 
   // Hosted mode: parents' sign-in emails follow them to their ids in the file
   const accounts = isHosted() ? accountUsernames(req.familyId!) : [];
+
+  // Backups from before BUG-22 have no earned badges, and removing the people removes theirs: keep each
+  // person's from here (by username), or every badge they still qualify for would pay its bonus again
+  const keptBadges = Array.isArray(body.earnedBadges) ? [] : db.prepare(
+    'SELECT u.username, b.achievementId, b.sentAt FROM user_achievement_notifications b JOIN users u ON u.id = b.userId'
+  ).all() as { username: string; achievementId: string; sentAt: string }[];
 
   const importData = db.transaction(() => {
     // Web push devices belong to people's ids on this server, which the backup may give to someone else (NEW-5).
@@ -121,14 +140,10 @@ router.post('/import', (req: AuthRequest, res: Response) => {
     }
 
     const usersWithHashes = users.map((u: any) => {
-      const isCurrentAdmin = currentAdmin && (u.id === currentAdmin.id || u.username === currentAdmin.username);
-      const passwordHash = isCurrentAdmin
-        ? currentAdmin!.passwordHash
-        : existingHashes.get(String(u.username).toLowerCase())
-          ?? bcrypt.hashSync(require('crypto').randomBytes(32).toString('hex'), 10);
-      const { passwordHash: _ignored, tokenVersion: _v, agreedAt: _a, agreedTerms: _t, agreedPrivacy: _p, ...rest } = u;
       const name = String(u.username).toLowerCase();
-      return { ...rest, passwordHash, tokenVersion: existingVersions.get(name) ?? 0, ...existingAgreements.get(name) };
+      const passwordHash = existingHashes.get(name) ?? bcrypt.hashSync(crypto.randomBytes(32).toString('hex'), 10);
+      const { passwordHash: _ignored, tokenVersion: _v, agreedAt: _a, agreedTerms: _t, agreedPrivacy: _p, ...rest } = u;
+      return { ...rest, passwordHash, tokenVersion: versionFor(u.id, name), ...existingAgreements.get(name) };
     });
     insertRows('users', usersWithHashes);
 
@@ -161,13 +176,19 @@ router.post('/import', (req: AuthRequest, res: Response) => {
       if (['users', 'zones', 'rooms', 'tasks', 'task_assignees', 'task_completions'].includes(table)) continue;
       if (Array.isArray(body[key])) insertRows(table, body[key]);
     }
+    const keepBadge = db.prepare(`INSERT OR IGNORE INTO user_achievement_notifications (userId, achievementId, sentAt)
+      SELECT id, ?, ? FROM users WHERE username = ? COLLATE NOCASE`);
+    for (const b of keptBadges) keepBadge.run(b.achievementId, b.sentAt, b.username);
     // Hosted mode: no Home Assistant or custom ntfy server from a self-hosted backup
     dropRefusedAddresses();
   });
 
   importData();
   if (isHosted()) relinkAccounts(req.familyId!, accounts);
-  res.json({ success: true, imported: { users: users.length, rooms: rooms.length, tasks: tasks.length, completions: completions.length } });
+  // The importing admin may have a new id now: a fresh login (and photos cookie) for this device
+  const me = db.prepare('SELECT id FROM users WHERE username = ? COLLATE NOCASE').get(currentAdmin.username) as { id: number };
+  const token = loginToken(res, me.id);
+  res.json({ success: true, token, imported: { users: users.length, rooms: rooms.length, tasks: tasks.length, completions: completions.length } });
 });
 
 export default router;

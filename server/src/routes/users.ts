@@ -8,16 +8,20 @@ import bcrypt from 'bcryptjs';
 import crypto from 'crypto';
 import db from '../database';
 import { AuthRequest, authMiddleware, loginToken, revokeTokens } from '../middleware/auth';
+import { TOO_MANY_TRIES, checkOwnPassword, minPassword, shortPassword } from '../utils/passwords';
 import { DEFAULT_COINS_BY_EFFORT, normalizeCoinsByEffortConfig } from '../utils/health';
 import { notifyCoinsAdjusted } from '../utils/notifyMessages';
 import { NOTIFICATION_KINDS, NotificationTypeSettings, sendTelegramMessageDetailed, sendNtfyMessageDetailed } from '../utils/notifications';
 import { pushOn } from '../utils/push';
 import { ensureAdmin, getCoinsByEffortConfig, getGlobalVacation, isHidePrivateRoomsEnabled, isStrictModeEnabled } from '../utils/adminHelpers';
+import { endDueVacations, endFamilyVacation, endPersonVacation } from '../utils/vacation';
+import { isRealDay } from '../utils/schedule';
 import { realignWeeklyGoals, syncPrimaryGoal } from '../utils/goals';
 import { UNLOCKABLE_THEMES, canUse } from '../utils/unlocks';
 import { currentLocalWeek, weekStartDay } from '../utils/periods';
 import { canonicalZone, familyZone } from '../utils/clock';
 import { LOCALES, tr } from '../utils/i18n';
+import { releaseRewardsOf } from '../utils/rewardRules';
 import { isHosted } from '../hosted/context';
 import { removeAccount } from '../hosted/accounts';
 import { fileUrl, oneFile, removeFile, uploadDir } from '../hosted/files';
@@ -126,15 +130,19 @@ router.post('/', (req: AuthRequest, res: Response) => {
     return res.status(403).json({ error: 'Admin only' });
   }
 
-  const { password, displayName, avatarColor, language, role, canLogIn } = req.body as any;
+  const { password, avatarColor, language, role, canLogIn } = req.body as any;
   const noLogin = canLogIn === false;
-  if (!displayName || (!noLogin && (!req.body.username || !password))) {
+  // Spaces around a name are typos, and logging in ignores capitals, so `Wyatt` is taken when `wyatt` exists (BUG-44)
+  const clean = (v: unknown) => (typeof v === 'string' ? v.trim() : '');
+  const displayName = clean(req.body.displayName);
+  const typedUsername = clean(req.body.username);
+  if (!displayName || (!noLogin && (!typedUsername || !password))) {
     return res.status(400).json({ error: 'username, password, and displayName are required' });
   }
   if (noLogin && role === 'admin') return res.status(400).json(PARENT_LOGS_IN);
-  const username = req.body.username || freeUsername(String(displayName));
+  const username = typedUsername || freeUsername(displayName);
 
-  const existing = db.prepare('SELECT id FROM users WHERE username = ?').get(username);
+  const existing = db.prepare('SELECT id FROM users WHERE username = ? COLLATE NOCASE').get(username);
   if (existing) {
     return res.status(409).json({ error: 'Username already taken' });
   }
@@ -143,6 +151,7 @@ router.post('/', (req: AuthRequest, res: Response) => {
   if (tooMany) return res.status(403).json(tooMany);
 
   const safeRole = role === 'admin' ? 'admin' : role === 'child' ? 'child' : 'member';
+  if (!noLogin && String(password).length < minPassword(safeRole)) return res.status(400).json(shortPassword(minPassword(safeRole)));
   const passwordHash = noLogin ? unusableHash() : bcrypt.hashSync(password, 10);
   const result = db.prepare(
     'INSERT INTO users (username, displayName, passwordHash, role, avatarColor, language, canLogIn) VALUES (?, ?, ?, ?, ?, ?, ?)'
@@ -256,13 +265,12 @@ router.put('/:id/password', (req: AuthRequest, res: Response) => {
   const userId = parseInt(req.params.id as string);
   const { currentPassword, newPassword } = req.body as { currentPassword?: string; newPassword?: string };
 
-  if (!newPassword || newPassword.length < 4) {
-    return res.status(400).json({ error: 'newPassword must be at least 4 characters' });
-  }
-
   const requester = db.prepare('SELECT id, role FROM users WHERE id = ?').get(req.userId) as any;
   const target = db.prepare('SELECT id, role, passwordHash, canLogIn FROM users WHERE id = ?').get(userId) as any;
   if (!target) return res.status(404).json({ error: 'User not found' });
+  if (typeof newPassword !== 'string' || newPassword.length < minPassword(target.role)) {
+    return res.status(400).json(shortPassword(minPassword(target.role)));
+  }
   // Someone who doesn't log in gets a password by turning "Can log in" back on (PUT /:id/login)
   if (target.canLogIn === 0) return res.status(400).json({ error: 'They can\'t log in', code: 'cannot_log_in' });
 
@@ -276,10 +284,10 @@ router.put('/:id/password', (req: AuthRequest, res: Response) => {
     if (!currentPassword) {
       return res.status(400).json({ error: 'currentPassword is required' });
     }
-    // Not 401: the app treats a 401 as "signed out" and would drop this device's login
-    if (!bcrypt.compareSync(currentPassword, target.passwordHash)) {
-      return res.status(403).json({ error: 'Current password is incorrect' });
-    }
+    // Wrong ones count (BUG-23). Not 401: the app treats a 401 as "signed out" and would drop this device's login
+    const check = checkOwnPassword(`${req.familyId ?? ''}:${userId}`, currentPassword, target.passwordHash);
+    if (check === 'blocked') return res.status(429).json(TOO_MANY_TRIES);
+    if (check === 'wrong') return res.status(403).json({ error: 'Current password is incorrect', code: 'wrong-password' });
   }
 
   const hash = bcrypt.hashSync(newPassword, 10);
@@ -347,8 +355,7 @@ router.put('/:id/settings', (req: AuthRequest, res: Response) => {
       db.prepare('UPDATE users SET isVacationMode = 1, vacationStartDate = ? WHERE id = ?')
         .run(new Date().toISOString(), userId);
     } else if (!isVacationMode && user.isVacationMode) {
-      db.prepare('UPDATE users SET isVacationMode = 0, vacationStartDate = NULL WHERE id = ?')
-        .run(userId);
+      endPersonVacation(userId);
     }
   }
 
@@ -385,6 +392,9 @@ router.put('/:id/role', (req: AuthRequest, res: Response) => {
   }
 
   db.prepare('UPDATE users SET role = ? WHERE id = ?').run(role, targetId);
+  // Hosted: only parents sign in by email, so one who isn't a parent any more lets theirs go: no emails, no
+  // reset links, and the address is free again (BUG-25). They still sign in with the family code.
+  if (isHosted() && target.role === 'admin' && role !== 'admin') removeAccount(req.familyId!, targetId);
   const updated = db.prepare(`SELECT ${USER_SELECT} FROM users WHERE id = ?`).get(targetId);
   res.json(updated);
 });
@@ -478,22 +488,23 @@ router.put('/:id/vacation', (req: AuthRequest, res: Response) => {
   if (!target) return res.status(404).json({ error: 'User not found' });
 
   const { isVacationMode, vacationEndDate } = req.body as { isVacationMode?: boolean; vacationEndDate?: string | null };
+  if (vacationEndDate && !isRealDay(String(vacationEndDate))) return res.status(400).json({ error: 'invalid_return_date' });
 
   // Handle vacation toggle
   if (isVacationMode !== undefined) {
     if (isVacationMode && !target.isVacationMode) {
-      db.prepare('UPDATE users SET isVacationMode = 1, vacationStartDate = ? WHERE id = ?')
+      db.prepare('UPDATE users SET isVacationMode = 1, vacationStartDate = ?, vacationEndDate = NULL WHERE id = ?')
         .run(new Date().toISOString(), targetId);
     } else if (!isVacationMode && target.isVacationMode) {
-      db.prepare('UPDATE users SET isVacationMode = 0, vacationStartDate = NULL, vacationEndDate = NULL WHERE id = ?')
-        .run(targetId);
+      endPersonVacation(targetId);
     }
   }
 
-  // Handle vacation end date (independent update)
+  // Handle vacation end date (independent update): the day they're back, over from the start of it
   if (vacationEndDate !== undefined) {
-    db.prepare('UPDATE users SET vacationEndDate = ? WHERE id = ?')
-      .run(vacationEndDate || null, targetId);
+    db.prepare('UPDATE users SET vacationEndDate = ? WHERE id = ? AND (isVacationMode = 1 OR ? IS NULL)')
+      .run(vacationEndDate || null, targetId, vacationEndDate || null);
+    endDueVacations();
   }
 
   const updated = db.prepare(`SELECT ${USER_SELECT} FROM users WHERE id = ?`).get(targetId);
@@ -796,7 +807,11 @@ router.delete('/:id', (req: AuthRequest, res: Response) => {
   // Their completions go with them, and so do the proof photos on them and their avatar photo (NEW-34)
   const photos = db.prepare('SELECT photoUrl FROM task_completions WHERE userId = ? AND photoUrl IS NOT NULL').all(targetId) as { photoUrl: string }[];
   const avatar = db.prepare('SELECT avatarPhotoUrl FROM users WHERE id = ?').get(targetId) as { avatarPhotoUrl: string | null };
-  db.prepare('DELETE FROM users WHERE id = ?').run(targetId);
+  db.transaction(() => {
+    // Waiting shared rewards are refunded, and rewards only they could see are hidden (BUG-44)
+    releaseRewardsOf(targetId);
+    db.prepare('DELETE FROM users WHERE id = ?').run(targetId);
+  })();
   for (const p of photos) removeFile('proofs', p.photoUrl);
   removeFile('avatars', avatar.avatarPhotoUrl);
   // Hosted mode: their sign-in email goes with them
@@ -867,22 +882,22 @@ router.put('/vacation-config', (req: AuthRequest, res: Response) => {
   if (!ensureAdmin(req.userId)) return res.status(403).json({ error: 'Admin only' });
 
   const { vacationMode, vacationEndDate } = req.body as { vacationMode?: boolean; vacationEndDate?: string | null };
+  if (vacationEndDate && !isRealDay(String(vacationEndDate))) return res.status(400).json({ error: 'invalid_return_date' });
 
   if (vacationMode !== undefined) {
     const currentMode = (db.prepare("SELECT value FROM app_settings WHERE key = 'vacationMode'").get() as any)?.value;
     if (vacationMode && currentMode !== '1') {
       db.prepare("UPDATE app_settings SET value = '1', updatedAt = datetime('now') WHERE key = 'vacationMode'").run();
       db.prepare("UPDATE app_settings SET value = ?, updatedAt = datetime('now') WHERE key = 'vacationStartDate'").run(new Date().toISOString());
+      db.prepare("UPDATE app_settings SET value = '', updatedAt = datetime('now') WHERE key = 'vacationEndDate'").run(); // no return date left from last time
     } else if (!vacationMode) {
-      db.prepare("UPDATE app_settings SET value = '0', updatedAt = datetime('now') WHERE key = 'vacationMode'").run();
-      db.prepare("UPDATE app_settings SET value = '', updatedAt = datetime('now') WHERE key = 'vacationStartDate'").run();
-      db.prepare("UPDATE app_settings SET value = '', updatedAt = datetime('now') WHERE key = 'vacationEndDate'").run();
+      endFamilyVacation();
     }
   }
 
   if (vacationEndDate !== undefined) {
     db.prepare("UPDATE app_settings SET value = ?, updatedAt = datetime('now') WHERE key = 'vacationEndDate'")
-      .run(vacationEndDate ? new Date(vacationEndDate).toISOString() : '');
+      .run(vacationEndDate || ''); // the day itself: it ends when that day starts here, not at midnight UTC (BUG-45)
   }
 
   const v = getGlobalVacation();

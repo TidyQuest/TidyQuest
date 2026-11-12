@@ -1,6 +1,7 @@
 import { Router, Response } from 'express';
 import { focusLine, focusModeFor, OPEN_PER_DAY } from '../utils/focus';
 import { parseHomeLayout } from '../utils/homeLayout';
+import { isPerPerson, sharesFor } from '../utils/shares';
 import db from '../database';
 import { AuthRequest, authMiddleware } from '../middleware/auth';
 import { todoCounts, todoRoomId } from '../utils/todoRoom';
@@ -100,9 +101,8 @@ router.get('/', (req: AuthRequest, res: Response) => {
       // Rolling interval or set weekdays, and the season (utils/schedule.ts)
       const health = taskHealth(t, taskVac);
       const dueDateTs = nextDueAt(t)?.getTime() ?? nowTs;
-      const dueInDays = t.onDemand ? 0
-        : hasFixedSchedule(t) || beforeStart(t) ? calendarDaysUntil(new Date(dueDateTs))
-        : Math.max(0, Math.floor((dueDateTs - nowTs) / 86400000));
+      // Calendar days, so a chore due early tomorrow says Tomorrow, not Today
+      const dueInDays = t.onDemand ? 0 : Math.max(0, calendarDaysUntil(new Date(dueDateTs)));
       const taskWithHealth = {
         ...t,
         ...scheduleFields(t, taskAssigneesForTask.map((a: any) => a.userId)),
@@ -121,7 +121,7 @@ router.get('/', (req: AuthRequest, res: Response) => {
         // The latest one, so its owner can take it back (FIX-3)
         myPendingId: myPendingByTask.get(t.id)?.lastId ?? null,
         myRepeatCount: myRepeatCounts.get(t.id) || 0,
-        sharedCompletions: sharedCompletionsByTask.get(t.id) || [],
+        sharedCompletions: isPerPerson(t) ? sharesFor(t) : sharedCompletionsByTask.get(t.id) || [],
         completedTodayBy: completedTodayByTask.get(t.id) || null,
         teamUp: teamUpInfo(t, req.userId!),
         health,

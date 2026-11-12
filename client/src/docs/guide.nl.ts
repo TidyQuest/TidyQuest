@@ -60,7 +60,7 @@ export const GUIDE_NL: GuideSection[] = [
       { tip: 'Samsung Internet: tik onderaan op ☰ en dan op Pagina toevoegen aan → Startscherm.' },
       { h: 'Goed om te weten' },
       { ul: [
-        'Updates komen vanzelf: hij opent elke keer de nieuwste versie van de server. Ziet hij er na een update oud uit, sluit hem dan helemaal en open hem opnieuw.',
+        'Updates komen vanzelf: na een update van de server laadt de app de nieuwe versie zodra je hem weer opent of naar een andere pagina gaat. Ziet hij er dan nog oud uit, sluit hem dan helemaal en open hem opnieuw.',
         'Verwijder hem zoals elke andere app: houd het icoon ingedrukt. De gegevens van het gezin blijven op de server.',
         'Voor meldingen op deze telefoon open je TidyQuest vanaf het beginscherm en ga je naar Profiel → Mijn meldingen → Aanzetten op dit apparaat. Berichten kunnen ook via ntfy, Telegram of Home Assistant komen (zie "Meldingen").',
       ] },
@@ -114,7 +114,7 @@ export const GUIDE_NL: GuideSection[] = [
         'Klusjesweergave: Alle (ze kiezen zelf), Begint bij Mijn klusjes, of Alleen eigen (vergrendeld).',
         'Kindermodus: grotere knoppen, minder kaarten, munten en doel vooraan.',
         'Thema en feestdagkleuren volgen de persoon naar elk apparaat (ze kunnen die aanpassen in Profiel).',
-        'Vakantie per gezinslid: beschermt de streak en bevriest de gezondheid van de klusjes zolang iemand weg is.',
+        'Vakantie per gezinslid: beschermt de streak en bevriest de gezondheid van de klusjes zolang iemand weg is. Met een Terugkomst datum stopt die vanzelf op die ochtend.',
         'Munten aanpassen (Gezinslid beheren): munten erbij of eraf halen, met een reden. Het getal is een verandering, geen nieuw saldo: 10 voegt 10 toe, -10 haalt er 10 af. Werkt ook voor ouders, jezelf inbegrepen. Details in "Munten, beloningen en doelen" → Munten aanpassen.',
         'Wachtwoord: een ouder kan een nieuw wachtwoord instellen als iemand het vergeten is. Diegene wordt dan op elk apparaat uitgelogd en logt weer in met het nieuwe.',
       ] },
@@ -143,7 +143,7 @@ export const GUIDE_NL: GuideSection[] = [
         'Ouders loggen in met hun e-mail en wachtwoord. Alle anderen met de gezinscode, hun gebruikersnaam en hun wachtwoord (ouders kunnen dat ook).',
         'Instellingen → 🔑 Gezinscode toont de code (zoals sunny-otter-42), de gezinslink en een QR-code. Open de link of scan de code op de telefoon of tablet van een kind: het apparaat onthoudt het gezin, dus het kind typt alleen gebruikersnaam en wachtwoord. Hoofdletters, spaties en streepjes in de code maken niet uit.',
         'Nieuwe code geeft het gezin een nieuwe code. De oude code en link werken dan niet meer; wie ingelogd is, blijft ingelogd.',
-        'Instellingen → ✉️ Inlogmail: E-mail wijzigen stuurt een link naar het nieuwe adres, en de wijziging gaat in zodra je hem opent. Een tweede ouder kan met E-mail toevoegen een eigen adres instellen.',
+        'Instellingen → ✉️ Inlogmail: E-mail wijzigen stuurt een link naar het nieuwe adres, en de wijziging gaat in zodra je hem opent. Een tweede ouder kan met E-mail toevoegen een eigen adres instellen. Om met een e-mailadres in te loggen heeft het wachtwoord van een ouder minstens 8 tekens nodig. Een ouder die lid of kind wordt, verliest de inlogmail en logt dan in met de gezinscode.',
         'Bij het aanmelden sturen we een link om je adres te bevestigen. Door die te openen geeft een ouder ook toestemming, voor de kinderen, voor wat TidyQuest bewaart (de Amerikaanse privacywet voor kinderen, COPPA, vraagt dat). Tot een ouder heeft bevestigd, kunnen alleen ouders inloggen. Een gezin dat binnen 30 dagen geen e-mailadres van een ouder bevestigt, wordt verwijderd; een week eerder sturen we een herinnering.',
         'Wachtwoord vergeten? op het inlogscherm stuurt een ouder een link die één keer werkt, een uur lang. Kinderen en tieners vragen een ouder om een nieuw wachtwoord in te stellen bij Instellingen → Gezinsleden.',
       ] },
@@ -208,7 +208,7 @@ export const GUIDE_NL: GuideSection[] = [
       { ul: [
         'Niemand toegewezen: iedereen. Wie het eerst klaar is krijgt de munten ("wie het eerst komt, het eerst maalt").',
         'Aan sommige mensen toegewezen: alleen zij kunnen het doen.',
-        'Samen delen: elke toegewezen persoon doet zijn deel en krijgt een gelijk deel.',
+        'Samen delen: elke toegewezen persoon doet zijn deel en krijgt een gelijk deel. Het klusje is weer schoon zodra iedereen zijn deel heeft gedaan, op welke dag dan ook. Tot het weer aan de beurt is, kan ieder zijn deel maar één keer doen.',
         'Eigen verdeling: elke toegewezen persoon krijgt een vast percentage.',
         'Om de beurt: beurtelings, per voltooiing of per kalenderweek.',
       ] },
@@ -294,10 +294,10 @@ export const GUIDE_NL: GuideSection[] = [
       { where: 'Instellingen → Beloningen Winkel, Doelen per gezinslid, Munten per klusje' },
       { h: 'Beloningen' },
       { ul: [
-        'Elke beloning heeft een prijs. Kinderen vragen hem aan; een ouder keurt goed of wijst af.',
+        'Elke beloning heeft een prijs. Kinderen vragen hem aan; een ouder keurt goed of wijst af. Afkeuren opent een vakje voor een optioneel berichtje van één regel (waarom niet, of wanneer opnieuw vragen). Het kind krijgt het bij de melding en ziet het onder de aanvraag in Mijn gekochte beloningen; blijft het leeg, dan wordt er zonder berichtje afgekeurd.',
         'Per ongeluk iets goedgekeurd? Bij Aangevraagde beloningen (onder de winkel) staat naast elke goedgekeurde beloning Terugbetalen: de munten gaan terug (bij een gedeelde pot naar iedereen die bijlegde) en de aanvraag staat als afgewezen.',
         'Regels per beloning: een limiet (per dag, week, maand of ooit; per persoon of voor iedereen), een datumvenster, Wisselend (er zijn er elke week maar een paar te zien), wie hem kan zien, een andere prijs per persoon en een categorie.',
-        'Samen sparen: iedereen kan munten in een pot leggen; als hij vol is gaat hij naar een ouder. Het bijleggen-vak begint op 0 en elke bijdrage staat in Activiteit. Een volle pot kan niet geannuleerd worden vanuit Mijn aanvragen ("Gedeeld: een ouder beslist"): een ouder wijst hem af en iedereen krijgt zijn munten terug.',
+        'Samen sparen: iedereen kan munten in een pot leggen; als hij vol is gaat hij naar een ouder. Het bijleggen-vak begint op 0 en elke bijdrage staat in Activiteit. Een volle pot kan niet geannuleerd worden vanuit Mijn aanvragen ("Gedeeld: een ouder beslist"): een ouder wijst hem af en iedereen krijgt zijn munten terug. Verlaagt een ouder de prijs tot onder wat al in de pot zit, dan telt de pot als vol en gaan de munten boven de nieuwe prijs terug, de nieuwste bijdragen eerst.',
       ] },
       { h: 'Kopen voor iemand anders' },
       { p: 'Ouders: kies bovenaan Beloningen iemand onder Kopen voor. De winkel toont dan hun munten, prijzen en limieten, en wat je koopt wordt met hun munten betaald. Het telt als gegeven, dus niemand hoeft het goed te keuren. Activiteit en Inzichten tonen het als van hen, gekocht door jou. Handig voor iemand die niet inlogt (zie "Mensen en rollen"). Gedeelde beloningen (samen sparen) blijven zoals ze waren.' },
@@ -355,7 +355,7 @@ export const GUIDE_NL: GuideSection[] = [
       ] },
       { h: 'Reeksschilden' },
       { ul: [
-        'Een reeks telt de dagen op rij met minstens één taak. Na elke 7 dagen op rij verdien je een 🛡️ schild; je kunt er 2 bewaren.',
+        'Een reeks telt de dagen op rij met minstens één taak. Na elke 7 dagen op rij verdien je een 🛡️ schild; je kunt er 2 bewaren. Een klusje dat op goedkeuring van een ouder wacht, telt voor de dag waarop het is gedaan.',
         'Koop een schild op de reekskaart van Home (standaard 25 munten; ouders stellen de prijs in bij Instellingen → Functies).',
         'Een gemiste dag gebruikt vanzelf een schild, net na middernacht, en de reeks gaat door (de gemiste dag telt niet mee). Twee gemiste dagen vragen twee schilden; zijn er te weinig, dan wordt er geen gebruikt en begint de reeks opnieuw.',
         'Een taak die wacht op goedkeuring van een ouder telt voor zijn dag.',
@@ -390,6 +390,12 @@ export const GUIDE_NL: GuideSection[] = [
         'Het Meldingenlogboek toont wat er is verstuurd, in de wachtrij staat of mislukt is, en waarom.',
       ] },
       { p: 'Op tidyquest.org komen meldingen rechtstreeks op de telefoon (web push), of via ntfy.sh of Telegram. Een eigen ntfy-server en Home Assistant werken alleen op een server thuis.' },
+      { ul: [
+        'Een bericht dat tijdens de stille uren heeft gewacht, gaat alleen weg als het nog klopt. Het vervalt als het klusje intussen gedaan is, de dag waar het over ging voorbij is, het Samen doen of de actie met dubbele munten afgelopen is, of die soort is uitgezet.',
+        'Wie op vakantie is, krijgt geen berichten over klusjes (vandaag te doen, herinneringen, het ochtendlijstje, het duwtje ’s avonds, Reddingsmissie), en tijdens de Vakantiemodus krijgt niemand ze. Goedkeuringen, verzoeken om beloningen en de terugblik op de week komen nog wel aan.',
+        'Een klusje dat op goedkeuring van een ouder wacht, telt als gedaan: geen herinneringen meer.',
+        'Startklusjes heten in de taal van wie het bericht leest (op het eigen kanaal).',
+      ] },
       { h: 'Meldingen op je telefoon (web push)' },
       { p: 'Iedereen kan zijn meldingen rechtstreeks van TidyQuest op zijn eigen telefoon of computer krijgen: zonder ntfy of Telegram. Ieder zet het zelf aan, op dat apparaat: Profiel → Mijn meldingen → Aanzetten op dit apparaat. Het telt als een eigen kanaal: de berichten komen in de eigen taal en gaan niet meer naar het gezinskanaal.' },
       { ul: [
@@ -438,12 +444,13 @@ export const GUIDE_NL: GuideSection[] = [
     blocks: [
       { ul: [
         'Instellingen → Privacy & Gegevens → Exporteren: een volledige JSON-back-up. Bewaar er een voor je grote wijzigingen doet.',
-        'Importeren zet een back-up terug en VERVANGT alles. Wie al een account op deze server heeft (zelfde gebruikersnaam), houdt het huidige wachtwoord. Wie nieuw is op deze server krijgt een willekeurig wachtwoord, dus stel daarna hun wachtwoorden in bij Gezinsleden.',
-        'Instellingen → Spreadsheets: download klusjes of beloningen, bewerk ze in een spreadsheetprogramma en laad ze weer terug. Je ziet eerst een voorbeeld en er wordt niets verwijderd.',
+        'Importeren zet een back-up terug en VERVANGT alles. Wie al een account op deze server heeft (zelfde gebruikersnaam), houdt het huidige wachtwoord. Wie nieuw is op deze server krijgt een willekeurig wachtwoord, dus stel daarna hun wachtwoorden in bij Gezinsleden. Je moet als Admin in de back-up staan (zelfde gebruikersnaam), anders wordt het importeren geweigerd. Sommige apparaten worden daarna uitgelogd; log daar opnieuw in met hetzelfde wachtwoord.',
+        'Instellingen → Spreadsheets: download klusjes of beloningen, bewerk ze in een spreadsheetprogramma en laad ze weer terug. Je ziet eerst een voorbeeld en er wordt niets verwijderd. Eenmalige klusjes houden hun datum (kolommen one_time en do_by).',
         'Om een klusje te verwijderen open je het met Bewerken; Klusje verwijderen staat onderaan het formulier. Het gaat 30 dagen naar Instellingen → Onlangs verwijderd en kan daar worden teruggezet. Beloningen werken hetzelfde.',
         'Verwijderen haalt nooit munten weg en wist niet wat gedaan is: eerdere voltooiingen blijven onder de naam van het klusje zichtbaar in Activiteit, het Scorebord en de doelen, ook nadat het uit Onlangs verwijderd is.',
         'Een verwijderde beloning houdt zijn historie op dezelfde manier: wat eerder gekocht is, blijft onder zijn naam in Inzichten. Een aanvraag die nog wacht, blijft in Aangevraagde beloningen (onder de winkel), zodat een ouder hem nog kan goedkeuren of afwijzen; bij afwijzen komen de munten terug.',
         'Een kamer verwijderen (Kamers → 🗑) verwijdert ook de klusjes en de kamer kan niet worden teruggehaald. Hun historie en munten blijven.',
+        'Een gezinslid verwijderen (Gebruiker wissen, in Instellingen → Gezinsleden) kan niet ongedaan worden gemaakt. Een gedeelde beloning van diegene die nog op een ouder wachtte, wordt eerst afgewezen, zodat de anderen hun bijdragen terugkrijgen. Een beloning die alleen diegene kon zien, wordt verborgen in plaats van aan iedereen getoond: tik op Tonen in Instellingen → Beloningen Winkel als iemand anders hem moet krijgen.',
       ] },
       { p: 'Bewijsfoto’s horen bij hun klusje: als een klusje uit Onlangs verwijderd gaat (of de kamer wordt verwijderd), gaan de foto’s ook weg, maar wie het deed en de munten blijven. De avatarfoto van iemand gaat weg als die persoon wordt verwijderd.' },
       { p: 'Elke foto wordt op de telefoon of computer opnieuw getekend voor het uploaden, zodat er niet meer in staat waar en waarmee hij is gemaakt. Een foto die de browser niet kan lezen (sommige HEIC-foto’s) wordt geweigerd: stuur dan een JPEG of een schermafbeelding.' },
@@ -479,6 +486,7 @@ export const GUIDE_NL: GuideSection[] = [
       { qa: [
         { q: 'De knop Klaar! is grijs', a: [
           'Het label zegt waarom: "Niet toegewezen" (klusje van iemand anders), "Wacht op goedkeuring" (een ouder heeft je vorige nog niet goedgekeurd), "Gedaan door …" (iemand heeft het vandaag al gedaan), "Vandaag gedaan / Deze week gedaan" (de herhaallimiet van een klusje voor op elk moment) of "🤝 namen" (een team heeft het vandaag opgeëist).',
+          '"Wachten op …" is een klusje Om de beurt waarbij iemand anders aan de beurt is. Staat er op de knop een dag in plaats van "Klaar!", dan hoeft het klusje pas dan weer.',
           'Als Klaar! een melding "nog niet aan de beurt" geeft: het klusje is nog niet weer aan de beurt. Een ouder kan "Vroegtijdig afronden toestaan" aanzetten voor dagelijkse routines.',
         ] },
         { q: 'Bij het klusje van een kind staat ▶ in plaats van Klaar!', a: [
@@ -499,7 +507,7 @@ export const GUIDE_NL: GuideSection[] = [
           'Sommige kaarten verschijnen alleen als er iets in staat (Je vaste klusjes, Misschien vergeten, Ingepland, Vandaag gedaan), en sommige zijn alleen voor ouders.',
         ] },
         { q: 'Een ouder staat niet op het Scorebord', a: [
-          'Een ouder bij wie Doet mee aan klusjes uit staat, komt alleen op het Scorebord in een periode waarin hij een klusje deed. Zet het aan in Instellingen → Gezinsleden om hem er altijd op te houden. Elke ouder kan het ook op zijn eigen kaart omzetten.',
+          'Een ouder bij wie Doet mee aan klusjes uit staat, komt alleen op het Scorebord in een periode waarin hij een klusje deed. Zet het aan in Instellingen → Gezinsleden om hem er altijd op te houden. Elke ouder kan het ook op zijn eigen kaart omzetten. De kaarten Scorebord en Muntenstand op Home volgen dezelfde regel.',
         ] },
         { q: 'Eén ding tegelijk ontbreekt, of een klusje staat er niet in', a: [
           'Voor ouders en leden staat het uit, tenzij het is ingesteld bij Instellingen → Gezinsleden. Kinderen hebben het (een knop op Home), tenzij een ouder het daar uitzette. Het kan ook verborgen zijn via Home → Aanpassen, of uitgezet bij Instellingen → Functies.',
@@ -541,6 +549,11 @@ export const GUIDE_NL: GuideSection[] = [
           'Privésoorten (uitkomsten, overzichten, duwtjes, aanmoedigingen) hebben het eigen kanaal van de persoon nodig.',
           'Stille uren en schooltijden houden berichten vast tot ze afgelopen zijn.',
           'Het Meldingenlogboek toont elk bericht en eventuele fouten.',
+        ] },
+        { q: 'Een herinnering of het ochtendbericht is nooit aangekomen', a: [
+          'Een bericht dat door de stille uren is vastgehouden, vervalt als het aan het eind daarvan niet meer klopt: het klusje is gedaan (of wacht op goedkeuring), de dag is voorbij, of het Samen doen of de actie met dubbele munten is afgelopen.',
+          'Voor wie op vakantie is, en voor iedereen tijdens de Vakantiemodus, worden berichten over klusjes helemaal niet verstuurd.',
+          'De vervolgberichten van een late herinnering kunnen na middernacht komen: 2 en 4 uur na de herinneringstijd.',
         ] },
         { q: 'Meldingen op je telefoon gaan niet aan', a: [
           '"Werkt alleen via een veilig adres": open TidyQuest via het https://-adres, niet via http:// of een nummer zoals 192.168…. Een server thuis heeft eerst HTTPS nodig.',
@@ -624,6 +637,7 @@ export const GUIDE_NL: GuideSection[] = [
         ] },
         { q: 'Een streak brak terwijl we weg waren', a: [
           'Gebruik Vakantiemodus (het hele huis, Instellingen → Algemeen) of vakantie per gezinslid (Gezinsleden) voordat je vertrekt; het beschermt streaks en bevriest de gezondheid van klusjes.',
+          'Als een vakantie eindigt (uitgezet, of op de Terugkomst datum), gaan klusjes verder waar ze bij het begin waren: de dagen weg tellen niet als verwaarlozing. Reeksen gaan door vanaf de dag dat je terug bent.',
         ] },
         { q: 'Een schild heeft de reeks niet gered', a: [
           'Elke gemiste dag heeft een eigen schild nodig. Met minder schilden dan gemiste dagen wordt er geen gebruikt: de reeks begint opnieuw en de schilden blijven.',
@@ -641,13 +655,13 @@ export const GUIDE_NL: GuideSection[] = [
           'Op een iPhone of iPad is dat de eerste keer normaal: hij heeft een eigen login, los van die van Safari. Log één keer in en je blijft ingelogd.',
         ] },
         { q: 'Na een update ziet de app op het beginscherm er hetzelfde uit', a: [
-          'Sluit hem helemaal (veeg hem weg in de appkiezer) en open hem opnieuw: bij het starten laadt hij de nieuwste versie.',
+          'Hij laadt de nieuwe versie vanzelf zodra je hem weer opent of naar een andere pagina gaat. Nog steeds hetzelfde? Sluit hem helemaal (veeg hem weg in de appkiezer) en open hem opnieuw.',
         ] },
         { q: 'Iemand kan niet inloggen', a: [
-          'Te veel foute wachtwoorden blokkeren inloggen tot 15 minuten: 10 voor één account of 20 vanaf één apparaat. Wacht en probeer opnieuw; een juist wachtwoord zet de teller van het account terug.',
-          'Een ouder kan een nieuw wachtwoord instellen in Instellingen → Gezinsleden.',
+          'Te veel foute wachtwoorden blokkeren inloggen tot 15 minuten: 10 voor één account of 20 vanaf één apparaat. Wacht en probeer opnieuw; een juist wachtwoord zet de teller van het account terug. Bij het wijzigen van je eigen wachtwoord of inlog-e-mailadres, of het verwijderen van het gezin, mag je 5 keer een fout wachtwoord typen in 15 minuten.',
+          'Een ouder kan een nieuw wachtwoord instellen in Instellingen → Gezinsleden. Wachtwoorden hebben minstens 4 tekens nodig; op tidyquest.org heeft dat van een ouder er 8 nodig.',
           'Kan geen enkele ouder inloggen? Wie de server beheert, kan het wachtwoord van de eerste ouder resetten met ADMIN_RESET_PASSWORD (README, "Admin Password Recovery"). "Wachtwoord vergeten?" op het inlogscherm zegt hetzelfde.',
-          'Na het importeren van een back-up houdt iedereen die al een account op deze server had het eigen wachtwoord. Wie nieuw is op deze server heeft een wachtwoord nodig dat een ouder instelt bij Gezinsleden.',
+          'Na het importeren van een back-up houdt iedereen die al een account op deze server had het eigen wachtwoord. Wie nieuw is op deze server heeft een wachtwoord nodig dat een ouder instelt bij Gezinsleden. Sommige apparaten worden na een import uitgelogd; log daar opnieuw in met hetzelfde wachtwoord.',
         ] },
         { q: 'Iemand staat niet op het inlogscherm, of er staat dat inloggen uit staat', a: [
           'Een ouder heeft Kan inloggen voor diegene uitgezet: hun kaart bij Instellingen → Gezinsleden toont 🔒 Zonder login. Op tidyquest.org zegt het inloggen alleen dat de naam of het wachtwoord niet klopt.',
@@ -692,10 +706,13 @@ export const GUIDE_NL: GuideSection[] = [
           'Een gekopieerde link naar een foto opent nergens anders, met opzet: zo blijven foto’s van kinderen privé.',
           'Op tidyquest.org zijn er geen foto’s te zien zolang het gezin gepauzeerd is of de gratis proefperiode voorbij is.',
         ] },
+        { q: 'Er staat "TidyQuest is niet bereikbaar"', a: [
+          'De app kon de server niet bereiken bij het openen: geen wifi of data, of de server start opnieuw op of wordt bijgewerkt. Je blijft ingelogd en de meldingen van dit apparaat blijven aan. Hij probeert het elke paar seconden opnieuw; Opnieuw proberen doet het meteen.',
+        ] },
         { q: 'Ik ben op elk apparaat uitgelogd', a: [
           'Een ouder heeft je wachtwoord veranderd of Uitloggen op alle apparaten gebruikt, of je hebt zelf je wachtwoord veranderd of Overal anders uitloggen gebruikt op een ander apparaat. Log opnieuw in met je huidige wachtwoord.',
           'Eerste ouder: wie de server beheert, heeft je wachtwoord daar misschien gereset (ADMIN_RESET_PASSWORD). Vraag om het nieuwe.',
-          'Een login stopt ook vanzelf na 30 dagen op elk apparaat.',
+          'Een login stopt alleen vanzelf op een apparaat dat TidyQuest 30 dagen niet heeft geopend. Een apparaat dat je gebruikt blijft ingelogd.',
         ] },
         { q: 'Er staat "Dat lukte niet"', a: [
           'De telefoon kon de server niet bereiken (geen wifi of data), of iemand veranderde op hetzelfde moment hetzelfde. De pagina laadt opnieuw; controleer het en probeer het nog eens.',

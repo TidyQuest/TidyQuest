@@ -1,5 +1,6 @@
 import { currentFamily, isHosted, runInFamily } from './context';
 import { familyStatus, openFamily, purgeDeletedFamilies } from './families';
+import { forgetOldEmailLinks } from './accounts';
 import { mainDb } from './mainDb';
 import { endInactiveFamilies, endUnconfirmedFamilies, forgetOldWaitlist } from './privacy';
 import { endExpiredTrials } from './trials';
@@ -65,20 +66,29 @@ export async function runJobs(jobs: Job[], now?: Date): Promise<boolean> {
 
 /**
  * Once a day (UTC), hosted: remove families deleted 30+ days ago; warn about or delete expired trials,
- * families whose parent never confirmed, and families unused for a year; forget old waitlist entries.
+ * families whose parent never confirmed, and families unused for a year; forget old waitlist entries and used or
+ * expired email links.
  */
 async function dailyJobs(now: Date): Promise<void> {
   const day = now.toISOString().slice(0, 10);
   if (day === dailyRunOn) return;
   dailyRunOn = day;
-  for (const job of [purgeDeletedFamilies, endExpiredTrials, endUnconfirmedFamilies, endInactiveFamilies, forgetOldWaitlist]) await runJob(job, now);
+  for (const job of [purgeDeletedFamilies, endExpiredTrials, endUnconfirmedFamilies, endInactiveFamilies, forgetOldWaitlist, forgetOldEmailLinks]) await runJob(job, now);
 }
 
 /** Tests: forget the last daily run. */
 export function resetDailyJobs() { dailyRunOn = ''; }
 
+let timer: ReturnType<typeof setInterval> | null = null;
+
 /** Server start: run the jobs now and every 30 seconds. */
 export function startJobs(jobs: Job[]): void {
   void runJobs(jobs);
-  setInterval(() => void runJobs(jobs), 30_000);
+  timer = setInterval(() => void runJobs(jobs), 30_000);
+}
+
+/** Server stop: no more runs. */
+export function stopJobs(): void {
+  if (timer) clearInterval(timer);
+  timer = null;
 }

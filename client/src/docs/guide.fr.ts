@@ -60,7 +60,7 @@ export const GUIDE_FR: GuideSection[] = [
       { tip: 'Samsung Internet : touche ☰ en bas, puis Ajouter la page à → Écran d’accueil.' },
       { h: 'Bon à savoir' },
       { ul: [
-        'Les mises à jour arrivent toutes seules : l’app ouvre à chaque fois la dernière version du serveur. Si elle n’a pas l’air à jour après une mise à jour, ferme-la complètement et rouvre-la.',
+        'Les mises à jour arrivent toutes seules : après une mise à jour du serveur, l’app charge la nouvelle version la prochaine fois que tu l’ouvres ou que tu changes de page. Si elle n’a toujours pas l’air à jour, ferme-la complètement et rouvre-la.',
         'Supprime-la comme n’importe quelle app : appui long sur l’icône. Les données de la famille restent sur le serveur.',
         'Pour recevoir les notifications sur ce téléphone, ouvre TidyQuest depuis l’écran d’accueil, puis Profil → Mes notifications → Activer sur cet appareil. Les messages peuvent aussi passer par ntfy, Telegram ou Home Assistant (voir « Notifications »).',
       ] },
@@ -114,7 +114,7 @@ export const GUIDE_FR: GuideSection[] = [
         'Affichage des tâches : Toutes (au choix), Commence sur les miennes, ou Seulement les siennes (verrouillé).',
         'Mode enfant : des boutons plus gros, moins de cartes, les pièces et l’objectif en avant.',
         'Le thème et les couleurs des fêtes suivent la personne sur tous ses appareils (elle peut les changer dans Profil).',
-        'Vacances par membre : protège sa série et gèle la santé de ses tâches pendant son absence.',
+        'Vacances par membre : protège sa série et gèle la santé de ses tâches pendant son absence. Avec une Date de retour, elles se terminent toutes seules ce matin-là.',
         'Ajuster les pièces (Gérer le membre) : ajoute ou retire des pièces avec une raison. Le nombre est une variation, pas un nouveau solde : 10 ajoute 10, -10 retire 10. Fonctionne aussi pour les parents, toi compris. Détails dans « Pièces, récompenses et objectifs » → Ajuster les pièces.',
         'Mot de passe : un parent peut en définir un nouveau si quelqu’un oublie le sien. La personne est alors déconnectée de tous ses appareils et se reconnecte avec le nouveau.',
       ] },
@@ -143,7 +143,7 @@ export const GUIDE_FR: GuideSection[] = [
         'Les parents se connectent avec leur e-mail et leur mot de passe. Les autres se connectent avec le code de la famille, leur nom d’utilisateur et leur mot de passe (les parents aussi, s’ils veulent).',
         'Paramètres → 🔑 Code de la famille affiche le code (comme sunny-otter-42), le lien de la famille et un QR code. Ouvrez le lien ou scannez le code sur le téléphone ou la tablette d’un enfant : l’appareil retient la famille, il ne reste qu’à taper le nom d’utilisateur et le mot de passe. Majuscules, espaces et tirets dans le code n’ont pas d’importance.',
         'Nouveau code donne un nouveau code à la famille. L’ancien code et l’ancien lien ne marchent plus ; personne n’est déconnecté.',
-        'Paramètres → ✉️ E-mail de connexion : Changer d’e-mail envoie un lien à la nouvelle adresse, et le changement se fait quand vous l’ouvrez. Un deuxième parent peut Ajouter un e-mail pour se connecter avec le sien.',
+        'Paramètres → ✉️ E-mail de connexion : Changer d’e-mail envoie un lien à la nouvelle adresse, et le changement se fait quand vous l’ouvrez. Un deuxième parent peut Ajouter un e-mail pour se connecter avec le sien. Pour se connecter avec un e-mail, le mot de passe d’un parent doit avoir au moins 8 caractères. Un parent qui devient membre ou enfant perd son e-mail de connexion et se connecte alors avec le code de la famille.',
         'À l’inscription, nous envoyons un lien pour confirmer votre adresse. L’ouvrir, c’est aussi la façon dont un parent accepte, pour ses enfants, ce que TidyQuest garde (la loi américaine sur la vie privée des enfants, COPPA, le demande). Tant qu’un parent n’a pas confirmé, seuls les parents peuvent se connecter. Une famille qui n’a pas confirmé l’e-mail d’un parent en 30 jours est supprimée ; nous envoyons un rappel une semaine avant.',
         'Mot de passe oublié ? sur l’écran de connexion envoie à un parent un lien qui fonctionne une fois, pendant une heure. Les enfants et les ados demandent à un parent d’en choisir un nouveau dans Paramètres → Membres de la famille.',
       ] },
@@ -208,7 +208,7 @@ export const GUIDE_FR: GuideSection[] = [
       { ul: [
         'Personne d’attribué : n’importe qui. La première personne qui la termine gagne les pièces (« le premier gagne »).',
         'Attribuée à quelques personnes : seules elles peuvent la faire.',
-        'Partagée : chaque personne attribuée fait sa part et reçoit une part égale.',
+        'Partagée : chaque personne attribuée fait sa part et reçoit une part égale. La tâche redevient propre une fois que chacun a fait sa part, quel que soit le jour. Jusqu’à sa prochaine échéance, chacun ne peut faire la sienne qu’une fois.',
         'Répartition personnalisée : chaque personne attribuée reçoit un pourcentage fixé.',
         'En rotation : chacun son tour, à chaque réalisation ou chaque semaine du calendrier.',
       ] },
@@ -294,10 +294,10 @@ export const GUIDE_FR: GuideSection[] = [
       { where: 'Paramètres → Catalogue des récompenses, Objectifs par membre, Pièces par effort' },
       { h: 'Récompenses' },
       { ul: [
-        'Chaque récompense a un prix. Les enfants la demandent ; un parent la valide ou la refuse.',
+        'Chaque récompense a un prix. Les enfants la demandent ; un parent la valide ou la refuse. Refuser ouvre une case pour un mot facultatif d’une ligne (pourquoi pas, ou quand redemander). L’enfant le reçoit avec sa notification et le voit sous la demande dans Historique de mes demandes ; vide, la demande est refusée sans mot.',
         'Validée par erreur ? Demandes de récompenses (sous le catalogue) a Rembourser à côté de chaque récompense validée : les pièces sont rendues (à tous ceux qui ont contribué, pour une cagnotte partagée) et elle apparaît comme refusée.',
         'Règles par récompense : une limite (par jour, semaine, mois ou à vie ; par personne ou pour tout le monde), une période, En rotation (seules quelques-unes s’affichent chaque semaine), qui peut la voir, un prix différent par personne, et une catégorie.',
-        'Épargne partagée : chacun peut mettre des pièces dans une cagnotte ; quand elle est pleine, elle va à un parent. La case de contribution démarre à 0, et chaque contribution apparaît dans Activité. Une cagnotte pleine ne peut pas être annulée depuis Mes demandes (« Partagée : un parent décide ») : un parent la refuse et tout le monde récupère ses pièces.',
+        'Épargne partagée : chacun peut mettre des pièces dans une cagnotte ; quand elle est pleine, elle va à un parent. La case de contribution démarre à 0, et chaque contribution apparaît dans Activité. Une cagnotte pleine ne peut pas être annulée depuis Mes demandes (« Partagée : un parent décide ») : un parent la refuse et tout le monde récupère ses pièces. Si un parent baisse le prix sous ce que contient déjà la cagnotte, elle compte comme pleine et les pièces au-delà du nouveau prix sont rendues, en commençant par les dernières contributions.',
       ] },
       { h: 'Acheter pour quelqu’un d’autre' },
       { p: 'Parents : en haut de Récompenses, choisissez quelqu’un sous Acheter pour. La boutique montre alors ses pièces, ses prix et ses limites, et ce que vous achetez est payé avec ses pièces. C’est compté comme remis, donc personne n’a à valider. Activité et Statistiques le montrent comme à lui, acheté par vous. Pratique pour quelqu’un qui ne se connecte pas (voir « Personnes et rôles »). Les récompenses partagées (cagnotte) restent comme avant.' },
@@ -355,7 +355,7 @@ export const GUIDE_FR: GuideSection[] = [
       ] },
       { h: 'Boucliers de série' },
       { ul: [
-        'Une série compte les jours d’affilée avec au moins une tâche. Tous les 7 jours d’affilée, tu gagnes un 🛡️ bouclier ; tu peux en garder 2.',
+        'Une série compte les jours d’affilée avec au moins une tâche. Tous les 7 jours d’affilée, tu gagnes un 🛡️ bouclier ; tu peux en garder 2. Une tâche qui attend l’approbation d’un parent compte pour le jour où elle a été faite.',
         'Achète un bouclier sur la carte de série de l’Accueil (25 pièces par défaut ; les parents fixent le prix dans Paramètres → Fonctionnalités).',
         'Un jour manqué utilise un bouclier tout seul, juste après minuit, et la série continue (le jour manqué ne compte pas). Deux jours manqués demandent deux boucliers ; s’il en manque, aucun n’est utilisé et la série recommence.',
         'Une tâche qui attend l’approbation d’un parent compte pour son jour.',
@@ -390,6 +390,12 @@ export const GUIDE_FR: GuideSection[] = [
         'Le Journal des notifications montre ce qui a été envoyé, mis en attente ou échoué, et pourquoi.',
       ] },
       { p: 'Sur tidyquest.org, les notifications arrivent directement sur les téléphones (web push), ou passent par ntfy.sh ou Telegram. Ton propre serveur ntfy et Home Assistant ne marchent que sur un serveur à la maison.' },
+      { ul: [
+        'Un message retenu pendant les heures calmes ne part que s’il est encore vrai. Il est abandonné si la tâche a été faite entre-temps, si la journée concernée est passée, si l’équipe ou l’événement pièces doublées est terminé, ou si ce type a été désactivé.',
+        'Une personne en vacances ne reçoit aucun message sur les tâches (à faire aujourd’hui, rappels, liste du matin, coup de pouce du soir, Mission sauvetage), et personne n’en reçoit pendant le Mode vacances. Les validations, les demandes de récompense et le bilan de la semaine arrivent toujours.',
+        'Une tâche qui attend la validation d’un parent compte comme faite : plus de rappels à son sujet.',
+        'Les tâches de départ portent leur nom dans la langue de chaque lecteur (sur son propre canal).',
+      ] },
       { h: 'Notifications sur le téléphone (web push)' },
       { p: 'Chacun peut recevoir ses notifications sur son propre téléphone ou ordinateur, directement depuis TidyQuest : pas besoin de ntfy ni de Telegram. Chaque personne l’active elle-même, sur l’appareil : Profil → Mes notifications → Activer sur cet appareil. Ça compte comme son propre canal : ses messages arrivent dans sa langue et ne passent plus par le canal de la famille.' },
       { ul: [
@@ -438,12 +444,13 @@ export const GUIDE_FR: GuideSection[] = [
     blocks: [
       { ul: [
         'Paramètres → Données et confidentialité → Exporter : une sauvegarde JSON complète. Garde-en une avant les gros changements.',
-        'Importer restaure une sauvegarde et REMPLACE tout. Les personnes qui ont déjà un compte sur ce serveur (même nom d’utilisateur) gardent leur mot de passe actuel. Les personnes nouvelles sur ce serveur en reçoivent un aléatoire, alors définis leur mot de passe dans Membres de la famille ensuite.',
-        'Paramètres → Tableurs : télécharge les tâches ou les récompenses, modifie-les dans n’importe quelle appli de tableur, et recharge-les. Tu vois d’abord un aperçu et rien n’est supprimé.',
+        'Importer restaure une sauvegarde et REMPLACE tout. Les personnes qui ont déjà un compte sur ce serveur (même nom d’utilisateur) gardent leur mot de passe actuel. Les personnes nouvelles sur ce serveur en reçoivent un aléatoire, alors définis leur mot de passe dans Membres de la famille ensuite. Tu dois figurer dans la sauvegarde en tant qu’Admin (même nom d’utilisateur), sinon l’import est refusé. Certains appareils peuvent être déconnectés ensuite : il suffit de se reconnecter avec le même mot de passe.',
+        'Paramètres → Tableurs : télécharge les tâches ou les récompenses, modifie-les dans n’importe quelle appli de tableur, et recharge-les. Tu vois d’abord un aperçu et rien n’est supprimé. Les tâches à faire une seule fois gardent leur date (colonnes one_time et do_by).',
         'Pour supprimer une tâche, ouvre-la avec Modifier ; Supprimer la tâche est en bas du formulaire. Elle va dans Paramètres → Supprimés récemment pendant 30 jours et peut y être restaurée. Les récompenses fonctionnent de la même façon.',
         'Supprimer ne retire jamais de pièces et n’efface pas ce qui a été fait : les réalisations passées restent visibles dans Activité, le Tableau et les objectifs sous le nom de la tâche, même après qu’elle a quitté Supprimés récemment.',
         'Une récompense supprimée garde son historique de la même façon : ce qui a été acheté reste dans Statistiques sous son nom. Une demande encore en attente reste dans Demandes de récompenses (sous le catalogue) : un parent peut toujours la valider ou la refuser, ce qui rend les pièces.',
         'Supprimer une pièce (Pièces → 🗑) supprime aussi ses tâches, et la pièce ne peut pas être récupérée. Leur historique et leurs pièces restent.',
+        'Supprimer un membre de la famille (Supprimer l’utilisateur, dans Paramètres → Membres de la famille) est définitif. Sa récompense partagée encore en attente d’un parent est d’abord refusée, pour que les autres récupèrent leurs contributions. Une récompense que lui seul pouvait voir est masquée au lieu d’être montrée à tout le monde : touche Afficher dans Paramètres → Catalogue des récompenses si quelqu’un d’autre doit l’avoir.',
       ] },
       { p: 'Les photos de preuve suivent leur tâche : quand une tâche quitte Supprimés récemment (ou que sa pièce est supprimée), ses photos sont supprimées aussi, mais qui l’a faite et les pièces restent. La photo d’avatar d’une personne part quand elle est retirée.' },
       { p: 'Chaque photo est redessinée sur le téléphone ou l’ordinateur avant l’envoi, ce qui retire où et avec quoi elle a été prise. Une photo que le navigateur ne sait pas lire (certaines photos HEIC) est refusée : envoie plutôt un JPEG ou une capture d’écran.' },
@@ -479,6 +486,7 @@ export const GUIDE_FR: GuideSection[] = [
       { qa: [
         { q: 'Le bouton Fait est grisé', a: [
           'Son libellé dit pourquoi : « Non attribuée » (la tâche de quelqu’un d’autre), « En attente de validation » (un parent n’a pas encore validé ta dernière), « Fait par … » (quelqu’un l’a déjà faite aujourd’hui), « Fait aujourd’hui / Fait cette semaine » (la limite de répétition d’une tâche à tout moment), ou « 🤝 noms » (une équipe l’a prise aujourd’hui).',
+          '« En attente de … » : une tâche en Rotation dont c’est le tour de quelqu’un d’autre. Quand le bouton affiche un jour à la place de Fait, la tâche n’est pas à refaire avant ce jour-là.',
           'Si Fait affiche un message « pas encore due » : la tâche n’est pas encore à refaire. Un parent peut activer « Complétion anticipée » pour les routines quotidiennes.',
         ] },
         { q: 'La tâche d’un enfant affiche ▶ au lieu de Fait', a: [
@@ -499,7 +507,7 @@ export const GUIDE_FR: GuideSection[] = [
           'Certaines cartes n’apparaissent que quand elles ont du contenu (Tes habitudes, Tu as peut-être oublié ceux-ci, Planifiées, Complétées aujourd’hui), et certaines sont réservées aux parents.',
         ] },
         { q: 'Un parent n’apparaît pas sur le Tableau', a: [
-          'Un parent dont Participe aux tâches est désactivé n’apparaît sur le Tableau que pendant une période où il a fait une tâche. Pour qu’il y reste, activez l’option dans Paramètres → Membres de la famille. Chaque parent peut aussi la changer sur sa propre fiche.',
+          'Un parent dont Participe aux tâches est désactivé n’apparaît sur le Tableau que pendant une période où il a fait une tâche. Pour qu’il y reste, activez l’option dans Paramètres → Membres de la famille. Chaque parent peut aussi la changer sur sa propre fiche. Les cartes Classement et État des pièces de l’accueil suivent la même règle.',
         ] },
         { q: 'Une chose à la fois n’apparaît pas, ou une tâche n’y est pas', a: [
           'Pour les parents et les membres, elle est désactivée sauf si elle est réglée dans Paramètres → Membres de la famille. Les enfants l’ont (un bouton sur l’accueil) sauf si un parent l’a désactivée. Elle peut aussi être masquée dans Accueil → Personnaliser, ou désactivée dans Paramètres → Fonctionnalités.',
@@ -541,6 +549,11 @@ export const GUIDE_FR: GuideSection[] = [
           'Les types privés (résultats, résumés, rappels, encouragements) demandent le canal personnel de la personne.',
           'Les heures calmes et les heures d’école retiennent les messages jusqu’à leur fin.',
           'Le Journal des notifications montre chaque message et toute erreur.',
+        ] },
+        { q: 'Un rappel ou le message du matin n’est jamais arrivé', a: [
+          'Un message retenu par les heures calmes est abandonné s’il n’est plus vrai à leur fin : la tâche a été faite (ou attend la validation), sa journée est passée, ou l’équipe ou l’événement pièces doublées est terminé.',
+          'Pour une personne en vacances, et pour tout le monde pendant le Mode vacances, les messages sur les tâches ne sont pas envoyés du tout.',
+          'Les relances d’un rappel tardif peuvent arriver après minuit : 2 et 4 heures après l’heure du rappel.',
         ] },
         { q: 'Les notifications sur le téléphone ne s’activent pas', a: [
           '« Il faut une adresse sécurisée » : ouvre TidyQuest à son adresse https://, pas http:// ni un numéro comme 192.168…. Un serveur à la maison doit d’abord avoir HTTPS.',
@@ -624,6 +637,7 @@ export const GUIDE_FR: GuideSection[] = [
         ] },
         { q: 'Une série s’est brisée pendant notre absence', a: [
           'Utilise le Mode vacances (toute la maison, Paramètres → Général) ou les vacances par membre (Membres de la famille) avant de partir ; cela protège les séries et gèle la santé des tâches.',
+          'Quand des vacances se terminent (désactivées, ou à leur Date de retour), les tâches reprennent là où elles en étaient au départ : les jours d’absence ne comptent pas comme un oubli. Les séries continuent dès le jour du retour.',
         ] },
         { q: 'Un bouclier n’a pas sauvé la série', a: [
           'Chaque jour manqué demande son propre bouclier. Avec moins de boucliers que de jours manqués, aucun n’est utilisé : la série recommence et les boucliers sont gardés.',
@@ -641,13 +655,13 @@ export const GUIDE_FR: GuideSection[] = [
           'Sur iPhone ou iPad, c’est normal la première fois : elle garde sa propre connexion, séparée de celle de Safari. Connecte-toi une fois et elle reste connectée.',
         ] },
         { q: 'Après une mise à jour, l’app de l’écran d’accueil n’a pas changé', a: [
-          'Ferme-la complètement (balaie-la dans le sélecteur d’apps) et rouvre-la : elle charge la dernière version au démarrage.',
+          'Elle charge la nouvelle version toute seule la prochaine fois que tu l’ouvres ou que tu changes de page. Toujours pareil ? Ferme-la complètement (balaie-la dans le sélecteur d’apps) et rouvre-la.',
         ] },
         { q: 'Quelqu’un ne peut pas se connecter', a: [
-          'Trop de mots de passe erronés bloquent les connexions jusqu’à 15 minutes : 10 pour un compte, ou 20 depuis un appareil. Attends et réessaie ; un bon mot de passe remet à zéro le compteur du compte.',
-          'Un parent peut définir un nouveau mot de passe dans Paramètres → Membres de la famille.',
+          'Trop de mots de passe erronés bloquent les connexions jusqu’à 15 minutes : 10 pour un compte, ou 20 depuis un appareil. Attends et réessaie ; un bon mot de passe remet à zéro le compteur du compte. Changer ton propre mot de passe ou ton e-mail de connexion, ou supprimer la famille, permet 5 mots de passe erronés en 15 minutes.',
+          'Un parent peut définir un nouveau mot de passe dans Paramètres → Membres de la famille. Les mots de passe ont au moins 4 caractères ; sur tidyquest.org, celui d’un parent en a au moins 8.',
           'Aucun parent ne peut se connecter ? La personne qui gère le serveur peut réinitialiser le mot de passe du premier parent avec ADMIN_RESET_PASSWORD (README, « Admin Password Recovery »). « Mot de passe oublié ? » sur l’écran de connexion dit la même chose.',
-          'Après l’import d’une sauvegarde, les personnes qui avaient déjà un compte sur ce serveur gardent leur mot de passe. Les personnes nouvelles sur ce serveur ont besoin qu’un parent leur en définisse un dans Membres de la famille.',
+          'Après l’import d’une sauvegarde, les personnes qui avaient déjà un compte sur ce serveur gardent leur mot de passe. Les personnes nouvelles sur ce serveur ont besoin qu’un parent leur en définisse un dans Membres de la famille. Certains appareils peuvent être déconnectés après un import : il suffit de se reconnecter avec le même mot de passe.',
         ] },
         { q: 'Quelqu’un n’est pas sur l’écran de connexion, ou on lit que la connexion est désactivée', a: [
           'Un parent a désactivé Peut se connecter pour lui : sa fiche dans Paramètres → Membres de la famille indique 🔒 Sans connexion. Sur tidyquest.org, la connexion dit simplement que le nom ou le mot de passe est faux.',
@@ -692,10 +706,13 @@ export const GUIDE_FR: GuideSection[] = [
           'Un lien copié vers une photo ne s’ouvre nulle part ailleurs, exprès : les photos des enfants restent privées.',
           'Sur tidyquest.org, aucune photo ne s’affiche tant que la famille est en pause ou que son essai gratuit est terminé.',
         ] },
+        { q: 'Ça dit « Impossible de joindre TidyQuest »', a: [
+          'L’app n’a pas pu joindre le serveur à l’ouverture : pas de Wi-Fi ni de données, ou le serveur redémarre ou se met à jour. Tu restes connecté et les notifications de cet appareil restent activées. Elle réessaie toutes les quelques secondes ; Réessayer le fait tout de suite.',
+        ] },
         { q: 'J’ai été déconnecté de tous mes appareils', a: [
           'Un parent a changé ton mot de passe ou utilisé Déconnecter de tous les appareils, ou tu as changé ton mot de passe ou utilisé Se déconnecter partout ailleurs sur un autre appareil. Reconnecte-toi avec ton mot de passe actuel.',
           'Premier parent : la personne qui gère le serveur a peut-être réinitialisé ton mot de passe sur le serveur (ADMIN_RESET_PASSWORD). Demande-lui le nouveau.',
-          'Une connexion se termine aussi d’elle-même après 30 jours sur chaque appareil.',
+          'Une connexion ne se termine d’elle-même que sur un appareil qui n’a pas ouvert TidyQuest depuis 30 jours. Un appareil que tu utilises reste connecté.',
         ] },
         { q: 'Il est écrit « Ça n’a pas marché »', a: [
           'Le téléphone n’a pas pu joindre le serveur (pas de Wi-Fi ni de données), ou quelqu’un a changé la même chose au même moment. La page se recharge ; vérifie, puis réessaie.',

@@ -2,7 +2,7 @@ import { Router, Response } from 'express';
 import { parseHomeLayout } from '../utils/homeLayout';
 import bcrypt from 'bcryptjs';
 import db from '../database';
-import { AuthRequest, authMiddleware, clearFilesCookie, loginToken, revokeTokens, setFilesCookie } from '../middleware/auth';
+import { AuthRequest, authMiddleware, clearFilesCookie, loginToken, renewedToken, revokeTokens, setFilesCookie } from '../middleware/auth';
 import { canonicalZone } from '../utils/clock';
 import { isHosted, runInFamily } from '../hosted/context';
 import { openFamily } from '../hosted/families';
@@ -123,6 +123,7 @@ router.post('/login', (req: AuthRequest, res: Response) => {
     if (isHosted() && user.role !== 'admin' && !familyConsented(req.familyId!)) {
       return res.status(403).json({ error: 'A parent needs to confirm their email before you can sign in', code: 'awaiting-parent' });
     }
+    if (isHosted()) openFamily(req.familyId); // now it counts as activity
     sendLogin(res, user);
   };
   if (!isHosted()) return signIn(db.prepare('SELECT * FROM users WHERE username = ? COLLATE NOCASE').get(username));
@@ -130,7 +131,8 @@ router.post('/login', (req: AuthRequest, res: Response) => {
   // Hosted: the email or the family code finds the family, then the person is looked up in its database.
   // A wrong code answers like a wrong password, so codes can't be tried out on their own.
   const account = byEmail ? accountByEmail(cleanEmail(email) ?? '') : undefined;
-  const family = openFamily(byEmail ? account?.familyId : familyIdByCode(familyCode));
+  // Only a sign-in that works counts as the family using TidyQuest (BUG-25): anyone can type an email or a code
+  const family = openFamily(byEmail ? account?.familyId : familyIdByCode(familyCode), Date.now(), { activity: false });
   if (!family) return signIn(undefined);
   req.familyId = family.familyId;
   runInFamily(family, () => signIn(account
@@ -165,6 +167,9 @@ router.get('/me', authMiddleware, (req: AuthRequest, res: Response) => {
   user.homeLayout = parseHomeLayout(user.homeLayout);
   // The app asks on every start: people signed in before NEW-29 get the photos cookie, and it's renewed
   setFilesCookie(res, req.userId!);
+  // So does the login itself: a token over a day old comes back fresh, and the app saves it (BUG-47)
+  const fresh = renewedToken(req);
+  if (fresh) user.renewedToken = fresh;
   res.json(user);
 });
 

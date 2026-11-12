@@ -14,10 +14,11 @@ export function checkAndRecordNewAchievements(userId: number): string[] {
 }
 
 /**
- * Async: sends Telegram/ntfy notifications for newly unlocked achievements.
- * Calls checkAndRecordNewAchievements internally.
+ * Async: tells the person and the parents about newly earned badges. Pass the ids when
+ * checkAndRecordNewAchievements already ran for this person (the Done route does, for the pop-up): a second
+ * check finds nothing new, and nothing would be sent (BUG-40). Without ids it checks and records itself.
  */
-export async function notifyAchievementUnlocksForUser(userId: number): Promise<void> {
-  const newIds = checkAndRecordNewAchievements(userId);
+export async function notifyAchievementUnlocksForUser(userId: number, alreadyRecorded?: string[]): Promise<void> {
+  const newIds = alreadyRecorded ?? checkAndRecordNewAchievements(userId);
   for (const badge of badgeInfo(userId, newIds)) await notifyBadge(userId, badge);
 }

@@ -60,7 +60,7 @@ export const GUIDE_DE: GuideSection[] = [
       { tip: 'Samsung Internet: Tippe unten auf ☰, dann auf Seite hinzufügen zu → Startbildschirm.' },
       { h: 'Gut zu wissen' },
       { ul: [
-        'Updates kommen von selbst: Sie öffnet jedes Mal die neueste Version vom Server. Sieht sie nach einem Update alt aus, schließe sie ganz und öffne sie wieder.',
+        'Updates kommen von selbst: Nach einem Update des Servers lädt die App die neue Version, sobald du sie das nächste Mal öffnest oder die Seite wechselst. Sieht sie dann noch alt aus, schließe sie ganz und öffne sie wieder.',
         'Entfernen wie jede andere App: Symbol gedrückt halten. Die Daten der Familie bleiben auf dem Server.',
         'Für Benachrichtigungen auf diesem Handy öffne TidyQuest vom Home-Bildschirm, dann Profil → Meine Benachrichtigungen → Für dieses Gerät einschalten. Nachrichten können auch über ntfy, Telegram oder Home Assistant kommen (siehe „Benachrichtigungen“).',
       ] },
@@ -114,7 +114,7 @@ export const GUIDE_DE: GuideSection[] = [
         'Aufgabenansicht: Alle (die Person wählt selbst), Startet bei Meine oder Nur eigene (gesperrt).',
         'Kindermodus: größere Knöpfe, weniger Karten, Münzen und Ziel ganz vorn.',
         'Design und Feiertagsfarben folgen der Person auf jedes Gerät (sie kann sie im Profil ändern).',
-        'Urlaub pro Mitglied: schützt die Serie und friert die Gesundheit der Aufgaben ein, solange die Person weg ist.',
+        'Urlaub pro Mitglied: schützt die Serie und friert die Gesundheit der Aufgaben ein, solange die Person weg ist. Mit einem Rückkehrdatum endet er an dem Morgen von selbst.',
         'Münzen anpassen (Mitglied verwalten): Münzen mit einem Grund hinzufügen oder abziehen. Die Zahl ist eine Änderung, kein neues Guthaben: 10 fügt 10 hinzu, -10 zieht 10 ab. Funktioniert auch bei Eltern, dich selbst eingeschlossen. Details unter „Münzen, Belohnungen und Ziele“ → Münzen anpassen.',
         'Passwort: Ein Elternteil kann ein neues festlegen, wenn jemand seins vergisst. Die Person wird dann auf allen Geräten abgemeldet und meldet sich mit dem neuen wieder an.',
       ] },
@@ -143,7 +143,7 @@ export const GUIDE_DE: GuideSection[] = [
         'Eltern melden sich mit ihrer E-Mail und ihrem Passwort an. Alle anderen mit dem Familiencode, ihrem Benutzernamen und ihrem Passwort (Eltern können das auch).',
         'Einstellungen → 🔑 Familiencode zeigt den Code (z. B. sunny-otter-42), den Familienlink und einen QR-Code. Öffne den Link oder scanne den Code auf dem Handy oder Tablet eines Kindes: Das Gerät merkt sich die Familie, dann tippt es nur noch Benutzername und Passwort. Groß- und Kleinschreibung, Leerzeichen und Bindestriche im Code sind egal.',
         'Neuer Code gibt der Familie einen frischen Code. Der alte Code und Link funktionieren nicht mehr; wer angemeldet ist, bleibt angemeldet.',
-        'Einstellungen → ✉️ Anmelde-E-Mail: E-Mail ändern schickt einen Link an die neue Adresse, und die Änderung gilt, sobald du ihn öffnest. Ein zweites Elternteil kann mit E-Mail hinzufügen eine eigene eintragen.',
+        'Einstellungen → ✉️ Anmelde-E-Mail: E-Mail ändern schickt einen Link an die neue Adresse, und die Änderung gilt, sobald du ihn öffnest. Ein zweites Elternteil kann mit E-Mail hinzufügen eine eigene eintragen. Für die Anmeldung mit E-Mail braucht das Passwort eines Elternteils mindestens 8 Zeichen. Wird ein Elternteil zu Mitglied oder Kind, verliert es seine Anmelde-E-Mail und meldet sich dann mit dem Familiencode an.',
         'Bei der Anmeldung schicken wir einen Link, um deine Adresse zu bestätigen. Mit dem Öffnen willigt ein Elternteil auch für seine Kinder ein, was TidyQuest speichert (das verlangt das US-Kinderdatenschutzgesetz COPPA). Bis ein Elternteil bestätigt hat, können sich nur Eltern anmelden. Eine Familie, die die E-Mail eines Elternteils nicht innerhalb von 30 Tagen bestätigt, wird gelöscht; eine Woche vorher schicken wir eine Erinnerung.',
         'Passwort vergessen? auf dem Anmeldebildschirm schickt einem Elternteil einen Link, der einmal und eine Stunde lang funktioniert. Kinder und Teens bitten ein Elternteil, in Einstellungen → Familienmitglieder ein neues festzulegen.',
       ] },
@@ -208,7 +208,7 @@ export const GUIDE_DE: GuideSection[] = [
       { ul: [
         'Niemand zugewiesen: alle. Wer sie zuerst erledigt, bekommt die Münzen („wer zuerst kommt, mahlt zuerst“).',
         'Einigen Personen zugewiesen: nur diese können sie machen.',
-        'Geteilt: Jede zugewiesene Person macht ihren Teil und bekommt einen gleich großen Anteil.',
+        'Geteilt: Jede zugewiesene Person macht ihren Teil und bekommt einen gleich großen Anteil. Die Aufgabe ist wieder sauber, sobald alle ihren Teil gemacht haben, egal an welchen Tagen. Bis sie wieder fällig ist, kann jede Person ihren Teil nur einmal machen.',
         'Benutzerdefiniert: Jede zugewiesene Person bekommt einen festen Prozentsatz.',
         'Rotation: abwechselnd, nach jeder Erledigung oder pro Kalenderwoche.',
       ] },
@@ -294,10 +294,10 @@ export const GUIDE_DE: GuideSection[] = [
       { where: 'Einstellungen → Belohnungskatalog, Ziele pro Mitglied, Münzen pro Aufwand' },
       { h: 'Belohnungen' },
       { ul: [
-        'Jede Belohnung hat einen Preis. Kinder fragen sie an; ein Elternteil gibt sie frei oder lehnt sie ab.',
+        'Jede Belohnung hat einen Preis. Kinder fragen sie an; ein Elternteil gibt sie frei oder lehnt sie ab. Ablehnen öffnet ein Feld für eine optionale einzeilige Notiz (warum nicht, oder wann man wieder fragen kann). Das Kind bekommt sie mit seiner Benachrichtigung und sieht sie unter der Anfrage in Mein Einlöseverlauf; bleibt das Feld leer, wird ohne Notiz abgelehnt.',
         'Aus Versehen freigegeben? Unter Belohnungsanfragen (unter dem Katalog) steht neben jeder freigegebenen Belohnung Erstatten: Die Münzen gehen zurück (bei einem gemeinsamen Topf an alle, die eingezahlt haben), und sie wird als abgelehnt angezeigt.',
         'Regeln pro Belohnung: ein Limit (pro Tag, Woche, Monat oder insgesamt; pro Person oder für alle), ein Zeitfenster, Wechselnd (nur einige erscheinen pro Woche), wer sie sieht, ein anderer Preis pro Person und eine Kategorie.',
-        'Gemeinsam sparen: Jeder kann Münzen in einen Topf beisteuern; ist er voll, geht er an ein Elternteil. Das Feld zum Beisteuern beginnt bei 0, und jede Einzahlung erscheint unter Aktivität. Ein voller Topf lässt sich unter „Meine Anfragen“ nicht absagen („Gemeinsam: ein Elternteil entscheidet“): Ein Elternteil lehnt ihn ab, und alle bekommen ihre Münzen zurück.',
+        'Gemeinsam sparen: Jeder kann Münzen in einen Topf beisteuern; ist er voll, geht er an ein Elternteil. Das Feld zum Beisteuern beginnt bei 0, und jede Einzahlung erscheint unter Aktivität. Ein voller Topf lässt sich unter „Meine Anfragen“ nicht absagen („Gemeinsam: ein Elternteil entscheidet“): Ein Elternteil lehnt ihn ab, und alle bekommen ihre Münzen zurück. Senkt ein Elternteil den Preis unter das, was schon im Topf ist, gilt der Topf als voll, und die Münzen über dem neuen Preis gehen zurück, die neuesten Einzahlungen zuerst.',
       ] },
       { h: 'Für jemand anderen kaufen' },
       { p: 'Eltern: oben unter Belohnungen bei Kaufen für jemanden wählen. Der Shop zeigt dann die Münzen, Preise und Limits dieser Person, und was du kaufst, wird mit ihren Münzen bezahlt. Es gilt als übergeben, also muss niemand genehmigen. Aktivität und Auswertung zeigen es als ihres, von dir gekauft. Praktisch für jemanden, der sich nicht anmeldet (siehe „Personen und Rollen“). Gemeinsame Belohnungen (Sparen) bleiben wie bisher.' },
@@ -355,7 +355,7 @@ export const GUIDE_DE: GuideSection[] = [
       ] },
       { h: 'Serienschilde' },
       { ul: [
-        'Eine Serie zählt die Tage am Stück mit mindestens einer Aufgabe. Alle 7 Tage am Stück gibt es einen 🛡️ Schild; du kannst 2 behalten.',
+        'Eine Serie zählt die Tage am Stück mit mindestens einer Aufgabe. Alle 7 Tage am Stück gibt es einen 🛡️ Schild; du kannst 2 behalten. Eine Aufgabe, die auf die Bestätigung eines Elternteils wartet, zählt für den Tag, an dem sie erledigt wurde.',
         'Kauf einen Schild auf der Serienkarte der Startseite (standardmäßig 25 Münzen; Eltern legen den Preis in Einstellungen → Funktionen fest).',
         'Ein verpasster Tag verbraucht von selbst einen Schild, kurz nach Mitternacht, und die Serie läuft weiter (der verpasste Tag zählt nicht mit). Zwei verpasste Tage brauchen zwei Schilde; reichen sie nicht, wird keiner verbraucht und die Serie beginnt neu.',
         'Eine Aufgabe, die auf die Freigabe der Eltern wartet, zählt für ihren Tag.',
@@ -390,6 +390,12 @@ export const GUIDE_DE: GuideSection[] = [
         'Das Benachrichtigungsprotokoll zeigt, was gesendet, eingereiht oder fehlgeschlagen ist, und warum.',
       ] },
       { p: 'Auf tidyquest.org kommen Benachrichtigungen direkt aufs Handy (Web-Push) oder über ntfy.sh oder Telegram. Ein eigener ntfy-Server und Home Assistant funktionieren nur auf einem Server zu Hause.' },
+      { ul: [
+        'Eine Nachricht, die während der Ruhezeiten gewartet hat, geht nur raus, wenn sie noch stimmt. Sie entfällt, wenn die Aufgabe inzwischen erledigt wurde, ihr Tag vorbei ist, das Teamwork oder die Aktion mit doppelten Münzen beendet ist oder diese Art ausgeschaltet wurde.',
+        'Wer im Urlaub ist, bekommt keine Nachrichten zu Aufgaben (heute fällig, Erinnerungen, die Liste am Morgen, der Anstupser am Abend, Rettungsmission), und im Urlaubsmodus bekommt sie niemand. Bestätigungen, Belohnungswünsche und der Wochenrückblick kommen weiterhin an.',
+        'Eine Aufgabe, die auf die Bestätigung eines Elternteils wartet, zählt als erledigt: keine Erinnerungen mehr dazu.',
+        'Starter-Aufgaben heißen in der Sprache der Person, die die Nachricht liest (auf ihrem eigenen Kanal).',
+      ] },
       { h: 'Benachrichtigungen aufs Handy (Web-Push)' },
       { p: 'Jeder kann seine Benachrichtigungen direkt von TidyQuest auf das eigene Handy oder den eigenen Computer bekommen: ohne ntfy oder Telegram. Jeder schaltet es selbst ein, auf dem Gerät: Profil → Meine Benachrichtigungen → Für dieses Gerät einschalten. Das zählt als eigener Kanal: Die Nachrichten kommen in der eigenen Sprache und nicht mehr über den Familienkanal.' },
       { ul: [
@@ -438,12 +444,13 @@ export const GUIDE_DE: GuideSection[] = [
     blocks: [
       { ul: [
         'Einstellungen → Daten & Datenschutz → Exportieren: ein vollständiges JSON-Backup. Hebe vor großen Änderungen eins auf.',
-        'Importieren stellt ein Backup wieder her und ERSETZT alles. Wer auf diesem Server schon ein Konto hat (gleicher Benutzername), behält das aktuelle Passwort. Wer neu auf diesem Server ist, bekommt ein zufälliges; lege deren Passwörter danach unter Familienmitglieder fest.',
-        'Einstellungen → Tabellen: Lade Aufgaben oder Belohnungen herunter, bearbeite sie in einer beliebigen Tabellenkalkulation und lade sie wieder hoch. Du siehst vorher eine Vorschau, und nichts wird gelöscht.',
+        'Importieren stellt ein Backup wieder her und ERSETZT alles. Wer auf diesem Server schon ein Konto hat (gleicher Benutzername), behält das aktuelle Passwort. Wer neu auf diesem Server ist, bekommt ein zufälliges; lege deren Passwörter danach unter Familienmitglieder fest. Du musst im Backup als Admin stehen (gleicher Benutzername), sonst wird der Import abgelehnt. Manche Geräte werden danach abgemeldet; dort einfach mit demselben Passwort wieder anmelden.',
+        'Einstellungen → Tabellen: Lade Aufgaben oder Belohnungen herunter, bearbeite sie in einer beliebigen Tabellenkalkulation und lade sie wieder hoch. Du siehst vorher eine Vorschau, und nichts wird gelöscht. Einmalige Aufgaben behalten ihr Datum (Spalten one_time und do_by).',
         'Um eine Aufgabe zu löschen, öffne sie mit Bearbeiten; Aufgabe löschen steht unten im Formular. Sie landet 30 Tage lang unter Einstellungen → Zuletzt gelöscht und kann von dort wiederhergestellt werden. Belohnungen funktionieren genauso.',
         'Löschen nimmt nie Münzen weg und löscht nicht, was erledigt wurde: Frühere Erledigungen erscheinen weiter unter Aktivität, auf dem Board und in Zielen unter dem Namen der Aufgabe, auch nachdem sie aus Zuletzt gelöscht verschwunden ist.',
         'Eine gelöschte Belohnung behält ihren Verlauf genauso: Was schon gekauft wurde, bleibt unter ihrem Namen in der Auswertung. Eine noch offene Anfrage bleibt in Belohnungsanfragen (unter dem Katalog), sodass ein Elternteil sie noch freigeben oder ablehnen kann; beim Ablehnen gibt es die Münzen zurück.',
         'Das Löschen eines Raums (Räume → 🗑) löscht auch seine Aufgaben, und der Raum lässt sich nicht zurückholen. Ihr Verlauf und die Münzen bleiben.',
+        'Ein Familienmitglied zu löschen (Benutzer löschen, unter Einstellungen → Familienmitglieder) lässt sich nicht rückgängig machen. Seine gemeinsame Belohnung, die noch auf ein Elternteil wartete, wird zuerst abgelehnt, damit alle anderen ihre Einzahlungen zurückbekommen. Eine Belohnung, die nur dieses Mitglied sehen konnte, wird versteckt und nicht allen gezeigt: Tippe unter Einstellungen → Belohnungskatalog auf Zeigen, wenn jemand anderes sie bekommen soll.',
       ] },
       { p: 'Nachweisfotos gehören zu ihrer Aufgabe: Verlässt eine Aufgabe Zuletzt gelöscht (oder wird ihr Raum gelöscht), werden ihre Fotos mit gelöscht; wer sie erledigt hat und die Münzen bleiben. Das Avatar-Foto einer Person geht, wenn sie entfernt wird.' },
       { p: 'Jedes Foto wird vor dem Hochladen auf dem Handy oder Computer neu gezeichnet. Dabei fällt weg, wo und womit es aufgenommen wurde. Ein Foto, das der Browser nicht lesen kann (manche HEIC-Fotos), wird abgelehnt: Schick stattdessen ein JPEG oder einen Screenshot.' },
@@ -479,6 +486,7 @@ export const GUIDE_DE: GuideSection[] = [
       { qa: [
         { q: 'Der Erledigt-Knopf ist grau', a: [
           'Seine Beschriftung sagt, warum: „Nicht zugewiesen“ (die Aufgabe eines anderen), „Wartet auf Freigabe“ (ein Elternteil hat deine letzte noch nicht freigegeben), „Erledigt von …“ (jemand hat sie heute schon gemacht), „Heute erledigt / Diese Woche erledigt“ (das Limit einer jederzeit machbaren Aufgabe) oder „🤝 Namen“ (ein Team hat sie heute übernommen).',
+          '„Warten auf …“ ist eine Aufgabe mit Rotation, bei der jemand anderes an der Reihe ist. Zeigt der Knopf statt Erledigt einen Tag, ist die Aufgabe erst dann wieder fällig.',
           'Wenn Erledigt die Meldung „noch nicht fällig“ zeigt: Die Aufgabe ist noch nicht wieder fällig. Ein Elternteil kann „Frühe Erledigung“ für tägliche Routinen einschalten.',
         ] },
         { q: 'Bei der Aufgabe eines Kindes steht ▶ statt Erledigt', a: [
@@ -499,7 +507,7 @@ export const GUIDE_DE: GuideSection[] = [
           'Manche Karten erscheinen nur, wenn etwas darin steht (Deine Klassiker, Vielleicht vergessen, Geplant, Heute erledigt), und manche sind nur für Eltern.',
         ] },
         { q: 'Ein Elternteil fehlt auf dem Board', a: [
-          'Ein Elternteil, bei dem Nimmt an Aufgaben teil aus ist, erscheint nur in einem Zeitraum auf dem Board, in dem es eine Aufgabe erledigt hat. Damit es dort bleibt, schalte es unter Einstellungen → Familienmitglieder ein. Jedes Elternteil kann es auch auf seiner eigenen Karte umstellen.',
+          'Ein Elternteil, bei dem Nimmt an Aufgaben teil aus ist, erscheint nur in einem Zeitraum auf dem Board, in dem es eine Aufgabe erledigt hat. Damit es dort bleibt, schalte es unter Einstellungen → Familienmitglieder ein. Jedes Elternteil kann es auch auf seiner eigenen Karte umstellen. Die Karten Bestenliste und Münzstand auf der Startseite folgen derselben Regel.',
         ] },
         { q: 'Eins nach dem anderen fehlt, oder eine Aufgabe ist nicht dabei', a: [
           'Für Eltern und Mitglieder ist es aus, außer es ist unter Einstellungen → Familienmitglieder eingestellt. Kinder haben es (ein Knopf auf der Startseite), außer ein Elternteil hat es dort ausgeschaltet. Es kann auch unter Startseite → Anpassen ausgeblendet oder unter Einstellungen → Funktionen ausgeschaltet sein.',
@@ -541,6 +549,11 @@ export const GUIDE_DE: GuideSection[] = [
           'Private Arten (Ergebnisse, Zusammenfassungen, Hinweise, Anfeuern) brauchen den eigenen Kanal der Person.',
           'Ruhezeiten und Schulzeiten halten Nachrichten zurück, bis sie enden.',
           'Das Benachrichtigungsprotokoll zeigt jede Nachricht und jeden Fehler.',
+        ] },
+        { q: 'Eine Erinnerung oder die Nachricht am Morgen kam nie an', a: [
+          'Eine von den Ruhezeiten zurückgehaltene Nachricht entfällt, wenn sie an deren Ende nicht mehr stimmt: Die Aufgabe wurde erledigt (oder wartet auf Bestätigung), ihr Tag ist vorbei, oder das Teamwork oder die Aktion mit doppelten Münzen ist beendet.',
+          'Für jemanden im Urlaub, und für alle im Urlaubsmodus, werden Nachrichten zu Aufgaben gar nicht erst verschickt.',
+          'Die Folgenachrichten einer späten Erinnerung können nach Mitternacht kommen: 2 und 4 Stunden nach der Erinnerungszeit.',
         ] },
         { q: 'Benachrichtigungen aufs Handy lassen sich nicht einschalten', a: [
           '„Braucht eine sichere Adresse“: Öffne TidyQuest über seine https://-Adresse, nicht über http:// oder eine Zahl wie 192.168…. Ein Server zu Hause braucht zuerst HTTPS.',
@@ -624,6 +637,7 @@ export const GUIDE_DE: GuideSection[] = [
         ] },
         { q: 'Eine Serie ist gerissen, während wir weg waren', a: [
           'Nutze vor der Abreise den Urlaubsmodus (ganzes Haus, Einstellungen → Allgemein) oder Urlaub pro Mitglied (Familienmitglieder); er schützt Serien und friert die Gesundheit der Aufgaben ein.',
+          'Wenn ein Urlaub endet (ausgeschaltet oder am Rückkehrdatum), machen die Aufgaben dort weiter, wo sie zu Beginn standen: Die Tage unterwegs zählen nicht als vernachlässigt. Serien laufen ab dem Tag der Rückkehr weiter.',
         ] },
         { q: 'Ein Schild hat die Serie nicht gerettet', a: [
           'Jeder verpasste Tag braucht seinen eigenen Schild. Mit weniger Schilden als verpassten Tagen wird keiner verbraucht: die Serie beginnt neu und die Schilde bleiben.',
@@ -641,13 +655,13 @@ export const GUIDE_DE: GuideSection[] = [
           'Auf iPhone und iPad ist das beim ersten Mal normal: Sie hat ihre eigene Anmeldung, getrennt von Safari. Melde dich einmal an, dann bleibst du angemeldet.',
         ] },
         { q: 'Nach einem Update sieht die App auf dem Home-Bildschirm gleich aus', a: [
-          'Schließe sie ganz (im App-Umschalter wegwischen) und öffne sie wieder: Beim Start lädt sie die neueste Version.',
+          'Sie lädt die neue Version von selbst, sobald du sie das nächste Mal öffnest oder die Seite wechselst. Immer noch gleich? Schließe sie ganz (im App-Umschalter wegwischen) und öffne sie wieder.',
         ] },
         { q: 'Jemand kann sich nicht anmelden', a: [
-          'Zu viele falsche Passwörter sperren Anmeldungen für bis zu 15 Minuten: 10 bei einem Konto oder 20 von einem Gerät. Warte und versuche es erneut; ein richtiges Passwort setzt den Zähler des Kontos zurück.',
-          'Ein Elternteil kann in Einstellungen → Familienmitglieder ein neues Passwort festlegen.',
+          'Zu viele falsche Passwörter sperren Anmeldungen für bis zu 15 Minuten: 10 bei einem Konto oder 20 von einem Gerät. Warte und versuche es erneut; ein richtiges Passwort setzt den Zähler des Kontos zurück. Beim Ändern des eigenen Passworts oder der Anmelde-E-Mail und beim Löschen der Familie sind 5 falsche Passwörter in 15 Minuten erlaubt.',
+          'Ein Elternteil kann in Einstellungen → Familienmitglieder ein neues Passwort festlegen. Passwörter brauchen mindestens 4 Zeichen; auf tidyquest.org braucht das eines Elternteils 8.',
           'Kein Elternteil kann sich anmelden? Wer den Server betreibt, kann das Passwort des ersten Elternteils mit ADMIN_RESET_PASSWORD zurücksetzen (README, „Admin Password Recovery“). „Passwort vergessen?“ auf der Anmeldeseite sagt dasselbe.',
-          'Nach dem Import eines Backups behalten alle, die auf diesem Server schon ein Konto hatten, ihr Passwort. Wer neu auf diesem Server ist, braucht ein Passwort, das ein Elternteil unter Familienmitglieder festlegt.',
+          'Nach dem Import eines Backups behalten alle, die auf diesem Server schon ein Konto hatten, ihr Passwort. Wer neu auf diesem Server ist, braucht ein Passwort, das ein Elternteil unter Familienmitglieder festlegt. Manche Geräte werden nach einem Import abgemeldet; dort einfach mit demselben Passwort wieder anmelden.',
         ] },
         { q: 'Jemand fehlt auf dem Anmeldebildschirm, oder es heißt, die Anmeldung ist ausgeschaltet', a: [
           'Ein Elternteil hat Kann sich anmelden für die Person ausgeschaltet: Ihre Karte unter Einstellungen → Familienmitglieder zeigt 🔒 Ohne Anmeldung. Auf tidyquest.org sagt die Anmeldung nur, dass Name oder Passwort falsch sind.',
@@ -692,10 +706,13 @@ export const GUIDE_DE: GuideSection[] = [
           'Ein kopierter Link zu einem Foto öffnet sich nirgendwo sonst, mit Absicht: So bleiben die Fotos der Kinder privat.',
           'Auf tidyquest.org werden keine Fotos angezeigt, solange die Familie pausiert ist oder ihre kostenlose Testphase vorbei ist.',
         ] },
+        { q: 'Da steht „TidyQuest ist nicht erreichbar“', a: [
+          'Die App hat den Server beim Öffnen nicht erreicht: kein WLAN oder mobile Daten, oder der Server startet gerade neu oder wird aktualisiert. Du bleibst angemeldet, und die Benachrichtigungen dieses Geräts bleiben an. Sie versucht es alle paar Sekunden erneut; Nochmal versuchen macht es sofort.',
+        ] },
         { q: 'Ich wurde auf allen Geräten abgemeldet', a: [
           'Ein Elternteil hat dein Passwort geändert oder Auf allen Geräten abmelden benutzt, oder du hast dein Passwort geändert oder Überall sonst abmelden auf einem anderen Gerät benutzt. Melde dich mit deinem aktuellen Passwort wieder an.',
           'Erster Elternteil: Wer den Server betreibt, hat dein Passwort vielleicht dort zurückgesetzt (ADMIN_RESET_PASSWORD). Frag nach dem neuen.',
-          'Eine Anmeldung endet außerdem nach 30 Tagen auf jedem Gerät von selbst.',
+          'Eine Anmeldung endet nur auf einem Gerät von selbst, das TidyQuest 30 Tage lang nicht geöffnet hat. Ein Gerät, das du benutzt, bleibt angemeldet.',
         ] },
         { q: 'Es erscheint „Das hat nicht geklappt“', a: [
           'Das Handy konnte den Server nicht erreichen (kein WLAN oder keine Daten), oder jemand hat im selben Moment dasselbe geändert. Die Seite lädt neu; prüfe es und versuche es dann noch einmal.',

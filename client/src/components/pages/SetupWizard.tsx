@@ -2,6 +2,7 @@ import { useEffect, useState, type ReactNode } from 'react';
 import { api, type SetupAge, type SetupCatalog, type SetupChoreDef, type SetupRewardDef, type SetupRoomId } from '../../hooks/useApi';
 import { useTranslation } from '../../hooks/useTranslation';
 import { rewardTitleText, rewardDescText } from '../../utils/presetRewards';
+import { useHosted } from '../../utils/hosted';
 
 // The setup wizard (NEW-17): who's in the household, the rooms, a ticked starter list of chores per person, an
 // allowance and rewards. One save (POST /api/setup) makes it all. It opens by itself for a new family and can run
@@ -55,6 +56,8 @@ export function SetupWizard({ user, onSaved, onExit, onOpenGuide }: Props) {
   const [catalog, setCatalog] = useState<SetupCatalog | null>(null);
   const [loadFailed, setLoadFailed] = useState(false);
   const [step, setStep] = useState(0);
+  // Hosted grown-ups are parents who sign in by email: their passwords need 8 characters (BUG-24)
+  const hosted = useHosted();
   const [people, setPeople] = useState<Person[]>([]);
   const [rooms, setRooms] = useState<Set<SetupRoomId> | null>(null);
   const [choreTicks, setChoreTicks] = useState<Record<string, boolean>>({});
@@ -202,7 +205,8 @@ export function SetupWizard({ user, onSaved, onExit, onOpenGuide }: Props) {
         if (!u || /\s/.test(u)) return t('setup.errUsername').replace('{name}', p.displayName.trim());
         if (names.has(u)) return t('setup.errUsernameTwice').replace('{name}', u);
         names.add(u);
-        if (p.password.length < 4) return t('setup.errPassword').replace('{name}', p.displayName.trim());
+        const min = hosted && p.kind === 'adult' ? 8 : 4;
+        if (p.password.length < min) return t('setup.errPassword').replace('{name}', p.displayName.trim()).replace('{n}', String(min));
       }
     }
     return '';

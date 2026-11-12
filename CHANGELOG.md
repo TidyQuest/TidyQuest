@@ -9,8 +9,58 @@ What changed in each release, in plain language, newest first. Releases up to v0
 
 ## Unreleased
 
+### Added
+
+- **A note when you reject a reward request** (ENH-23). Reject, on the Rewards page and on Home, now opens a small
+  box for an optional one-line note, such as "Not on a school night, ask again on Friday". The kid gets it with their
+  "wasn't approved" notification and sees it under the request in My redemption history; parents see it in Settings →
+  Rewards Catalog → Reward requests. Leave the box empty to reject as before, or tap Cancel to change your mind.
+
+### Changed
+
+- **Chores pick up where they left off after a vacation** (BUG-45). When Vacation Mode ends, for the family or for
+  one person, the days away no longer count as neglect: each chore is as clean or as dirty as it was the day the
+  vacation began, instead of the whole house opening red. One person's vacation does this for the chores that are
+  only theirs.
+- **A vacation's Return date is the day you're back**: the vacation ends at the start of that day in the family's
+  time zone, and the earliest date you can pick is tomorrow. The family's Return date used to end it the evening
+  before in the Americas, and picking today ended it at once.
+- **You stay signed in on the devices you use** (BUG-47). A login used to end 30 days after you signed in, however
+  often you opened the app, so everyone had to sign in again about once a month. It's now renewed while you use the
+  app, and only ends on a device that hasn't opened TidyQuest for 30 days.
+- **An open app picks up a new version by itself** (BUG-48). After the server is updated, the app reloads the next
+  time you come back to it or change page (never while you're typing), instead of showing a blank page until you
+  closed it. Stopping or updating the server now lets what's in progress finish first.
+
 ### Fixed
 
+- **"Waiting for a parent" no longer looks like an error** (FIX-33). With Strict Mode on, a kid's Done showed its
+  "waiting for approval" message in the red banner the app uses for failures. It's now green with a ✅, and says
+  "Sent! Waiting for a parent to approve." instead of "Completion submitted. Waiting for admin approval." (reworded
+  in French, German, Spanish and Italian too).
+- **"Earned a badge" messages arrive after a normal Done** (BUG-40). The pop-up in the app showed, but the kid and
+  the parents only got the 🏆 message when a parent approved a chore. On a team-up, the person who tapped Done now
+  gets theirs too.
+- **A message that waited out quiet hours isn't sent when it's no longer true** (BUG-41). A 21:00 "Still not done"
+  for a chore finished at 21:30 used to arrive at 07:00 anyway. Held messages are now checked again before they go
+  out, and dropped when the chore got done, the day they were about is over ("due today", the morning list, the
+  evening nudge, "for tomorrow", team-up messages), the team-up was called off, the double coins event has ended,
+  the approval was already handled, or that kind was switched off meanwhile. A first reminder that's still waiting
+  when the second one is due is replaced by it, instead of both arriving together.
+- **Starter chores are named in the reader's language in notifications** (BUG-42). A French family saw "Faire la
+  vaisselle" in the app and "Wash Dishes" in the morning list, reminders, nudges, Rescue Mission, approval, cheer,
+  team-up and double coins messages. People with their own channel now get the chore's name in their language.
+- **Evening reminders finish after midnight** (BUG-43). With a reminder at 20:00 the parents' "Still not done" (due
+  at midnight) never came, and from 22:00 the second reminder didn't either.
+- **Each person can turn the Rescue Mission message off for themselves** (BUG-43): it was missing from the list in
+  Profile → My notifications and Settings → Who gets what.
+- **No chore messages on vacation** (BUG-49). Someone on vacation no longer gets "due today", reminders, the morning
+  list, the evening nudge or the Rescue Mission announcement, and the parents aren't told their chore is "still not
+  done"; during Vacation Mode nobody gets them. The Rescue Mission isn't picked during Vacation Mode, and isn't a
+  chore whose people are all away. Approvals, reward requests and the weekly recap still arrive.
+- **A chore waiting for approval counts as done in notifications** (BUG-49). With Strict Mode, the kid no longer
+  gets the second reminder and the evening nudge for it, and the parents no longer get "still not done" while the
+  approval sits in their list.
 - **Custom coins can be set when adding a chore to a room.** The room page's Add form has the same Custom coins box
   as Edit, so you no longer have to save the chore first and then edit it (FIX-29).
 - **Small fixes around the app** (FIX-31):
@@ -34,6 +84,81 @@ What changed in each release, in plain language, newest first. Releases up to v0
   were matched by the UTC date, so in the Americas two people finishing one in the late afternoon or evening could
   show as two entries, and one done just before midnight was merged with the next day's. They now follow the
   family's day, and so does who may see a shared chore's proof photo.
+- **Shared chores pay each person once, and turn clean when everyone has done their part** (BUG-26). Two kids
+  sharing a weekly chore who did it on different days left it overdue, and the first one could tap Done and get
+  their share again every day. Each person's share now counts until the chore is due again, whichever day they did
+  it, and someone who isn't on the chore doesn't count as one of its people.
+- **Rotating chores keep track of whose turn it is** (BUG-27). Editing one (even just its notes) no longer hands the
+  turn back to the first person, undoing a Done gives the turn back, and on a room page a parent can tap Done on a
+  kid's turn, as on Home.
+- **One chore can't be paid twice** (BUG-28). With Strict Mode, a chore that's waiting for a parent's approval can't
+  be done again by someone else, and "Done earlier…" refuses a day when the chore had already been done since.
+- **Taking back a waiting Done leaves the chore's due date alone** (BUG-46). With Strict Mode it could turn a chore
+  into "never done", or make it look not due.
+- **Streaks count the right days** (BUG-29):
+  - With Strict Mode, a chore counts on the day it was done, not the day a parent approves it. Approving five days
+    on Friday adds five days to the streak, not one.
+  - A vacation keeps the streak after it ends, and doesn't use up a shield.
+  - An Anytime quest no longer counts as "a chore was due", so a day with nothing scheduled can't break a streak.
+- **One person's vacation ends by itself on its Return date** (BUG-30), like the family's. The Return date box in
+  Settings → Family Members keeps the date you pick, and health never shows above 100% for chores done during a
+  vacation.
+- **Rescue Mission and Team-ups** (BUG-32): a new mission is picked when its chore is deleted, paused or finished
+  for good, switching Team-ups off frees a chore a team had claimed, and Home Assistant's "Reset task" opens
+  today's Rescue Mission again.
+- **Small chore and room fixes** (BUG-33, BUG-46):
+  - Every new chore on a room page starts dirty, not only the first one you add.
+  - Home's Scheduled card says "Tomorrow" for a chore due tomorrow morning, also late in the evening.
+  - Giving a room an owner leaves finished one-time chores and chores in the trash alone.
+  - The chores spreadsheet has `one_time` and `do_by` columns, so open to-dos no longer come back as weekly chores.
+  - A Do-by, Starts-on or Return date that doesn't exist (February 31) is refused instead of rolling into March.
+- **Importing a backup can no longer leave a phone signed in as someone else** (BUG-21). Logins are tied to each
+  person's place in the family, and a backup can put someone else in that place, so a kid's tablet could open a
+  parent's account after an import. Anyone whose place changed is now signed out once and signs in again with
+  their password. The parent who imports stays signed in, and the import is refused if the backup doesn't list
+  them as an Admin. Nobody gets the importing parent's password any more.
+- **A backup round trip keeps earned badges** (BUG-22), so their bonus coins aren't paid again and the badge
+  notifications don't all go out a second time. Backups now also keep today's Rescue Mission, which reminders were
+  sent and the notification log. The 8 starter rewards only go into a new family and no longer come back after
+  you remove them all or import a backup without any.
+- **Wrong passwords count when you change your password or sign-in email, or delete the family** (BUG-23). After 5
+  wrong ones, it says to wait 15 minutes.
+- **On tidyquest.org a parent's password always needs 8 characters**, also when adding a parent, in the setup
+  wizard and when changing it in Profile or Family Members; a parent who was made from a kid changes a short one
+  before adding a sign-in email (BUG-24). Everyone else needs 4, which adding a family member now checks too.
+- **tidyquest.org account clean-ups** (BUG-25): a parent changed to member or child lets their sign-in email go
+  (they still sign in with the family code), used and expired email links are deleted each day, and wrong
+  sign-ins or "Forgot password?" requests no longer count as the family using TidyQuest.
+- **A hiccup while the app opens no longer signs you out** (BUG-34). If the server was restarting or the Wi-Fi
+  dropped at that moment, the app signed the person out and turned off that device's notifications. It now says
+  "Can't reach TidyQuest", keeps you signed in, and tries again by itself every few seconds.
+- **Double taps do one thing** (BUG-35): Buy and Chip in on Rewards, Adjust coins in Settings, Done in One thing at
+  a time, adding chores and templates on a room page, Create on a double coins event, and Enter in "+ To-do" could
+  each go through twice. Adding chores from templates no longer gets stuck on "..." when one fails.
+- **Coins and reward requests keep up by themselves** (BUG-36). Your coin balance follows what others do (a parent's
+  approval, a gift) within a few seconds, also after buying something for the mascot; a parent's Rewards page shows
+  new requests without a reload; and Approve or Reject on a request someone else already decided says so and
+  updates the list.
+- **Home only offers Done where it works** (BUG-37). A shared chore with custom coins keeps its Done button for the
+  second person, a Rotating chore says "Waiting for (name)" during someone else's turn (and stays out of One thing
+  at a time), and Your usual shows when a chore is due again instead of a Done that fails. Refusals are in plain
+  words, not codes like "not_your_turn".
+- **Failures look like failures** (BUG-38). When "Who did this task?" can't record the chore, the box stays open and
+  says why, instead of closing or flashing green. A chore form whose save is refused says so and stays open, and
+  the Timer box stops at 240 minutes instead of Save silently doing nothing.
+- **Cheers from others show up on Home while it's open** (BUG-39), not only after a reload.
+- **Lowering a shared reward's price gives the extra back** (BUG-44). With 80 coins chipped in toward 100 and the
+  price lowered to 60, the request was made for all 80 and 20 was never returned. The request is now for the new
+  price and the coins over it go back, newest chip-ins first. The same when the new price comes from a spreadsheet.
+- **Deleting a family member no longer strands other people's coins** (BUG-44). If their shared reward was still
+  waiting for a parent, the others' chip-ins vanished with it; it is now turned down first, so everyone else gets
+  their coins back. A reward only that person could see is hidden instead of suddenly showing for everyone
+  (Settings → Rewards Catalog → Show brings it back).
+- **Home's Leaderboard and Coins Status cards leave out parents who don't do chores** (BUG-44), as the Board page
+  already did. A parent with "Participates in tasks" off shows in a period when they did a chore.
+- **A username that differs only in capitals is refused** (BUG-44). Adding `Wyatt` when `wyatt` exists made an
+  account that could never sign in, because signing in ignores capitals. Spaces typed around a new username or name
+  are dropped.
 
 ## v0.17.2 (2026-11-09)
 

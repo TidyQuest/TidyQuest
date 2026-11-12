@@ -49,13 +49,13 @@ describe('Who gets what, where', () => {
 
   it('keeps private messages off the family channel, and respects what each person turned off', async () => {
     const { admin, kid } = await family();
-    await notifyChoreApproved(kid.user.id, admin.user.id, 'Feed the dogs', 5);
+    await notifyChoreApproved(kid.user.id, admin.user.id, { name: 'Feed the dogs' }, 5);
     expect(sent).toEqual([]); // the kid has no channel of their own: nothing goes to everyone
     channel('kid-topic', kid.user.id);
-    await notifyChoreApproved(kid.user.id, admin.user.id, 'Feed the dogs', 5);
+    await notifyChoreApproved(kid.user.id, admin.user.id, { name: 'Feed the dogs' }, 5);
     expect(sent.map((d) => d.message)).toEqual(['✅ Admin approved “Feed the dogs”: +5 coins']);
     db.prepare('UPDATE users SET notifyPrefs = ? WHERE id = ?').run(JSON.stringify({ outcome: false }), kid.user.id);
-    await notifyChoreApproved(kid.user.id, admin.user.id, 'Feed the dogs', 5);
+    await notifyChoreApproved(kid.user.id, admin.user.id, { name: 'Feed the dogs' }, 5);
     expect(sent).toHaveLength(1);
   });
 
@@ -188,6 +188,43 @@ describe('Notification settings API', () => {
 });
 
 describe('Rejecting with a reason', () => {
+  it('a rejected reward request takes a note too: the kid gets it and sees it under the request (ENH-23)', async () => {
+    const { admin, kid } = await family();
+    channel('kid-topic', kid.user.id);
+    await agent.post(`/api/users/${kid.user.id}/adjust-coins`).set(auth(admin.token)).send({ amount: 100 }).expect(200);
+    const reward = (await agent.post('/api/rewards').set(auth(admin.token)).send({ title: 'Movie night', costCoins: 30 })).body.id as number;
+    const ask = async () => (await agent.post(`/api/rewards/${reward}/redeem`).set(auth(kid.token)).expect(200)).body.redemption.id as number;
+    const decide = (id: number, body: object) => agent.put(`/api/rewards/redemptions/${id}`).set(auth(admin.token)).send(body);
+    const toKid = () => sent.filter((d) => d.target === 'kid-topic').map((d) => d.message);
+    const mine = async (id: number) => ((await agent.get('/api/rewards').set(auth(kid.token))).body.mine as Array<{ id: number; status: string; rejectNote: string | null }>).find((m) => m.id === id);
+
+    let id = await ask();
+    expect((await decide(id, { status: 'rejected', note: 'x'.repeat(201) }).expect(400)).body.error).toBe('note_too_long');
+    expect((await mine(id))?.status).toBe('requested'); // refused whole: still waiting, coins still held
+    const res = await decide(id, { status: 'rejected', note: '  Not on a\nschool night ' }).expect(200);
+    expect(res.body.rejectNote).toBe('Not on a school night');
+    expect(toKid().at(-1)).toBe('🙅 Your request for “Movie night” wasn\'t approved. Your coins are back. Admin says: Not on a school night');
+    expect(await mine(id)).toMatchObject({ id, status: 'rejected', rejectNote: 'Not on a school night' });
+    const list = (await agent.get('/api/rewards/admin').set(auth(admin.token))).body.redemptions as Array<{ id: number; rejectNote: string | null }>;
+    expect(list.find((r) => r.id === id)?.rejectNote).toBe('Not on a school night');
+
+    // No note: as before
+    id = await ask();
+    await decide(id, { status: 'rejected' }).expect(200);
+    expect(toKid().at(-1)).toBe('🙅 Your request for “Movie night” wasn\'t approved. Your coins are back.');
+    expect(await mine(id)).toMatchObject({ id, rejectNote: null });
+
+    // A note only goes with a rejection
+    id = await ask();
+    await decide(id, { status: 'approved', note: 'Enjoy' }).expect(200);
+    expect(await mine(id)).toMatchObject({ id, status: 'approved', rejectNote: null });
+    expect(toKid().at(-1)).not.toMatch(/Enjoy/);
+
+    // It travels with a backup
+    const backup = (await agent.get('/api/export').set(auth(admin.token)).expect(200)).body;
+    expect(JSON.stringify(backup)).toContain('Not on a school night');
+  });
+
   it("tells the kid why, in one line; the reason is optional and can't be an essay", async () => {
     const { admin, kid, room } = await family();
     channel('kid-topic', kid.user.id);

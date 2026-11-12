@@ -84,7 +84,7 @@ export const GUIDE_EN: GuideSection[] = [
       { tip: 'Samsung Internet: tap ☰ at the bottom, then Add page to → Home screen.' },
       { h: 'Good to know' },
       { ul: [
-        'Updates arrive by themselves: it opens the newest version from the server every time. If it looks out of date after an update, close it fully and open it again.',
+        'Updates arrive by themselves: after the server is updated, the app loads the new version the next time you open it or change page. If it still looks out of date, close it fully and open it again.',
         'Remove it like any other app: press and hold the icon. The family’s data stays on the server.',
         'To get notifications on this phone, open TidyQuest from the home screen, then Profile → My notifications → Turn on for this device. Messages can also come through ntfy, Telegram or Home Assistant (see "Notifications").',
       ] },
@@ -138,7 +138,7 @@ export const GUIDE_EN: GuideSection[] = [
         'Task view: All (they choose), Starts on Mine, or Only theirs (locked).',
         'Kid mode: bigger buttons, fewer cards, coins and goal up front.',
         'Theme and holiday colors follow the person to every device (they can change them in Profile).',
-        'Vacation per member: protects their streak and freezes their chores’ health while away.',
+        'Vacation per member: protects their streak and freezes their chores’ health while away. With a Return date it ends by itself that morning.',
         'Adjust coins (Manage member): add or take away coins with a reason. The number is a change, not a new balance: 10 adds 10, -10 takes 10 away. Works for parents too, including yourself. Details in "Coins, rewards and goals" → Adjusting coins.',
         'Password: a parent can set a new one if someone forgets theirs. That signs the person out on every device, so they log in again with the new one.',
       ] },
@@ -167,7 +167,7 @@ export const GUIDE_EN: GuideSection[] = [
         'Parents sign in with their email and password. Everyone else signs in with the family code, their username and their password (parents can too).',
         'Settings → 🔑 Family code shows the code (like sunny-otter-42), the family link and a QR code. Open the link or scan the code on a kid’s phone or tablet: it remembers the family, so they only type their username and password. Capitals, spaces and dashes in the code don’t matter.',
         'New code gives the family a fresh code. The old code and link stop working; everyone who’s signed in stays signed in.',
-        'Settings → ✉️ Sign-in email: Change email sends a link to the new address, and the change happens when you open it. A second parent can Add email to sign in with their own.',
+        'Settings → ✉️ Sign-in email: Change email sends a link to the new address, and the change happens when you open it. A second parent can Add email to sign in with their own. A parent’s password needs at least 8 characters to sign in with an email. A parent changed to member or child loses their sign-in email and signs in with the family code instead.',
         'At sign-up we email a link to confirm your address. Opening it is also how a parent agrees, for their children, to what TidyQuest keeps (the US children’s privacy law, COPPA, asks for this). Until a parent has confirmed, only parents can sign in. A family that hasn’t confirmed a parent’s email within 30 days is deleted; we send a reminder a week before.',
         'Forgot password? on the login screen emails a parent a link that works once, for one hour. Kids and teens ask a parent to set a new one in Settings → Family Members.',
       ] },
@@ -232,7 +232,7 @@ export const GUIDE_EN: GuideSection[] = [
       { ul: [
         'Nobody assigned: anyone. The first person to finish it gets the coins ("first one wins").',
         'Assigned to some people: only they can do it.',
-        'Shared: each assignee does their part and gets an even share.',
+        'Shared: each assignee does their part and gets an even share. The chore turns clean once everyone has done their part, on whichever days. Until it’s due again, each person can do theirs once.',
         'Custom split: each assignee gets a set percentage.',
         'Rotating: turn by turn, per completion or per calendar week.',
       ] },
@@ -318,10 +318,10 @@ export const GUIDE_EN: GuideSection[] = [
       { where: 'Settings → Rewards Catalog, Goals by member, Coins per effort' },
       { h: 'Rewards' },
       { ul: [
-        'Each reward has a price. Kids request it; a parent approves or turns it down.',
+        'Each reward has a price. Kids request it; a parent approves or turns it down. Reject opens a box for an optional one-line note (why not, or when to ask again). The kid gets it with their notification and sees it under the request in My redemption history; left empty, it rejects without one.',
         'Approved one by mistake? Reward requests (under the catalog) has Refund next to each approved reward: the coins go back (a shared pot to everyone who chipped in) and it shows as rejected.',
         'Rules per reward: a limit (per day, week, month or ever; per person or for everyone), a date window, Rotating (only a few show each week), who can see it, a different price per person, and a category.',
-        'Shared saving: anyone can chip coins into a pot; when it’s full it goes to a parent. The chip-in box starts at 0, and each chip-in shows in Activity. A full pot can’t be cancelled from My requests ("Shared: a parent decides"): a parent turns it down and everyone gets their coins back.',
+        'Shared saving: anyone can chip coins into a pot; when it’s full it goes to a parent. The chip-in box starts at 0, and each chip-in shows in Activity. A full pot can’t be cancelled from My requests ("Shared: a parent decides"): a parent turns it down and everyone gets their coins back. If a parent lowers the price below what’s already in the pot, the pot counts as full and the coins over the new price go back, newest chip-ins first.',
       ] },
       { h: 'Buying for someone else' },
       { p: 'Parents: at the top of Rewards, pick someone under Buying for. The shop then shows their coins, their prices and their limits, and what you buy is paid from their coins. It counts as handed over, so nobody has to approve it. Activity and Insights show it as theirs, bought by you. Handy for someone who doesn’t log in (see "People and roles"). Shared rewards (chip-in) work as before.' },
@@ -379,7 +379,7 @@ export const GUIDE_EN: GuideSection[] = [
       ] },
       { h: 'Streak shields' },
       { ul: [
-        'A streak counts the days in a row with at least one chore. Every 7 days in a row earns a 🛡️ shield; you can hold 2.',
+        'A streak counts the days in a row with at least one chore. Every 7 days in a row earns a 🛡️ shield; you can hold 2. A chore that waits for a parent’s approval counts on the day it was done.',
         'Buy a shield on Home’s streak card (25 coins by default; parents set the price in Settings → Features).',
         'A missed day uses a shield by itself, just after midnight, and the streak carries on (the missed day doesn’t add to it). Two missed days need two shields; with too few, none are used and the streak starts again.',
         'A chore waiting for a parent’s approval counts for its day.',
@@ -414,6 +414,12 @@ export const GUIDE_EN: GuideSection[] = [
         'The Notification log shows what was sent, queued or failed, and why.',
       ] },
       { p: 'On tidyquest.org, notifications go straight to phones (web push), or through ntfy.sh or Telegram. Your own ntfy server and Home Assistant only work on a home server.' },
+      { ul: [
+        'A message that waited out quiet hours only goes out if it still holds. It’s dropped when the chore got done meanwhile, the day it was about is over, the team-up or double coins event has ended, or that kind was switched off.',
+        'Nobody on vacation gets chore messages (due today, reminders, the morning list, the evening nudge, Rescue Mission), and during Vacation Mode nobody does. Approvals, reward requests and the weekly recap still arrive.',
+        'A chore that’s waiting for a parent’s approval counts as done: no more reminders about it.',
+        'Starter chores are named in each reader’s own language (on their own channel).',
+      ] },
       { h: 'Phone notifications (web push)' },
       { p: 'Everyone can get their notifications on their own phone or computer, straight from TidyQuest: no ntfy or Telegram needed. Each person turns it on themselves, on that device: Profile → My notifications → Turn on for this device. It counts as their own channel, so their messages come in their own language and no longer go to the family channel.' },
       { ul: [
@@ -462,12 +468,13 @@ export const GUIDE_EN: GuideSection[] = [
     blocks: [
       { ul: [
         'Settings → Data & Privacy → Export: a full JSON backup. Keep one before big changes.',
-        'Import restores a backup and REPLACES everything. Everyone who already has an account on this server (same username) keeps their current password. People who are new to this server get a random one, so set their passwords in Family Members afterwards.',
-        'Settings → Spreadsheets: download chores or rewards, edit them in any spreadsheet app, and load them back. You see a preview first and nothing is deleted.',
+        'Import restores a backup and REPLACES everything. Everyone who already has an account on this server (same username) keeps their current password. People who are new to this server get a random one, so set their passwords in Family Members afterwards. The backup must list you as an Admin (same username), or the import is refused. Some devices may be signed out afterwards; they sign in again with the same password.',
+        'Settings → Spreadsheets: download chores or rewards, edit them in any spreadsheet app, and load them back. You see a preview first and nothing is deleted. One-time chores keep their date (columns one_time and do_by).',
         'To delete a chore, open it with Edit; Delete task is at the bottom of the form. It goes to Settings → Recently deleted for 30 days and can be restored from there. Rewards work the same way.',
         'Deleting never takes coins away or erases what was done: past completions keep showing in Activity, the Board and goals under the chore’s name, even after it leaves Recently deleted.',
         'A deleted reward keeps its history the same way: what was bought before stays in Insights under its name. A request still waiting stays in Reward requests (under the catalog), so a parent can still approve it or turn it down, which gives the coins back.',
         'Deleting a room (Rooms → 🗑) deletes its chores too, and the room can’t be brought back. Their history and coins stay.',
+        'Deleting a family member (Delete user, in Settings → Family Members) can’t be undone. A shared reward of theirs that was still waiting for a parent is turned down first, so everyone else gets their chip-ins back. A reward that only they could see is hidden, not shown to everyone: tap Show in Settings → Rewards Catalog if someone else should have it.',
       ] },
       { p: 'Proof photos go with their chore: when a chore leaves Recently deleted (or its room is deleted), its photos are deleted too, while who did it and the coins stay. A person’s avatar photo goes when they’re removed.' },
       { p: 'Every photo is redrawn on the phone or computer before it uploads, which leaves out where and with what it was taken. A photo the browser can’t read (some HEIC photos) is refused: send a JPEG or a screenshot instead.' },
@@ -503,6 +510,7 @@ export const GUIDE_EN: GuideSection[] = [
       { qa: [
         { q: 'The Done button is grey', a: [
           'Its label says why: "Not assigned" (someone else’s chore), "Waiting for approval" (a parent hasn’t approved your last one yet), "Done by …" (someone already did it today), "Done today / this week" (an anytime chore’s repeat limit), or "🤝 names" (a team has claimed it today).',
+          '"Waiting for …" is a Rotating chore on someone else’s turn. When the button shows a day instead of Done ("Tomorrow", "In 3 days"), the chore isn’t due again until then.',
           'If Done gives a "not yet due" message: the chore isn’t due again yet. A parent can turn on "Allow early completion" for daily routines.',
         ] },
         { q: 'A kid’s chore shows ▶ instead of Done', a: [
@@ -523,7 +531,7 @@ export const GUIDE_EN: GuideSection[] = [
           'Some cards only show when they have something in them (Your usual, Maybe you forgot, Scheduled, Completed today), and some are for parents only.',
         ] },
         { q: 'A parent is missing from the Board', a: [
-          'A parent with Participates in tasks off shows on the Board only in a period when they did a chore. To keep them on it, turn the switch on in Settings → Family Members. Each parent can switch it on their own card too.',
+          'A parent with Participates in tasks off shows on the Board only in a period when they did a chore. To keep them on it, turn the switch on in Settings → Family Members. Each parent can switch it on their own card too. Home’s Leaderboard and Coins Status cards follow the same rule.',
         ] },
         { q: 'One thing at a time is missing, or a chore isn’t in it', a: [
           'For parents and members it’s off unless it’s set in Settings → Family Members. Kids get it (a button on Home) unless a parent turned it off there. It can also be hidden in Home → Customise, or switched off in Settings → Features.',
@@ -565,6 +573,11 @@ export const GUIDE_EN: GuideSection[] = [
           'Private kinds (outcomes, summaries, nudges, cheers) need the person’s own channel.',
           'Quiet hours and school hours hold messages until they end.',
           'The Notification log shows each message and any error.',
+        ] },
+        { q: 'A reminder or morning message never came', a: [
+          'A message held by quiet hours is dropped if it no longer holds when they end: the chore was done (or is waiting for approval), its day is over, or the team-up or double coins event has ended.',
+          'For someone on vacation, and for everyone during Vacation Mode, chore messages aren’t sent at all.',
+          'The follow-ups of a late reminder can come after midnight: 2 and 4 hours after the reminder time.',
         ] },
         { q: 'Phone notifications won’t turn on', a: [
           '“Needs a secure address”: open TidyQuest at its https:// address, not http:// or a number like 192.168…. A home server needs HTTPS set up first.',
@@ -648,6 +661,7 @@ export const GUIDE_EN: GuideSection[] = [
         ] },
         { q: 'A streak broke while we were away', a: [
           'Use Vacation Mode (whole house, Settings → General) or vacation per member (Family Members) before leaving; it protects streaks and freezes chore health.',
+          'When a vacation ends (switched off, or on its Return date), chores pick up where they were when it began: the days away don’t count as neglect. Streaks carry on from the day you’re back.',
         ] },
         { q: 'A shield didn’t save the streak', a: [
           'Each missed day needs its own shield. With fewer shields than missed days, none are used: the streak starts again and the shields are kept.',
@@ -665,13 +679,13 @@ export const GUIDE_EN: GuideSection[] = [
           'On an iPhone or iPad that’s normal the first time: it keeps its own sign-in, apart from Safari’s. Sign in once and it stays signed in.',
         ] },
         { q: 'After an update the app on the home screen looks the same', a: [
-          'Close it fully (swipe it away in the app switcher) and open it again: it loads the newest version when it starts.',
+          'It loads the new version by itself the next time you open it or change page. Still the same? Close it fully (swipe it away in the app switcher) and open it again.',
         ] },
         { q: 'Someone can’t log in', a: [
-          'Too many wrong passwords block logins for up to 15 minutes: 10 for one account, or 20 from one device. Wait and try again; a correct password clears the account’s count.',
-          'A parent can set a new password in Settings → Family Members.',
+          'Too many wrong passwords block logins for up to 15 minutes: 10 for one account, or 20 from one device. Wait and try again; a correct password clears the account’s count. Changing your own password or sign-in email, or deleting the family, allows 5 wrong passwords in 15 minutes.',
+          'A parent can set a new password in Settings → Family Members. Passwords need at least 4 characters; on tidyquest.org a parent’s needs 8.',
           'No parent can log in? Whoever runs the server can reset the first parent’s password with ADMIN_RESET_PASSWORD (README, "Admin Password Recovery"). "Forgot password?" on the login screen says the same.',
-          'After importing a backup, people who already had an account on this server keep their passwords. People who are new to this server need a parent to set one in Family Members.',
+          'After importing a backup, people who already had an account on this server keep their passwords. People who are new to this server need a parent to set one in Family Members. Some devices may be signed out after an import; they sign in again with the same password.',
         ] },
         { q: 'Someone isn’t on the login screen, or it says logging in is turned off', a: [
           'A parent switched off Can log in for them: their card in Settings → Family Members says 🔒 No login. On tidyquest.org the login just says the name or password is wrong.',
@@ -716,10 +730,13 @@ export const GUIDE_EN: GuideSection[] = [
           'A copied link to a photo doesn’t open anywhere else, on purpose: it keeps kids’ photos private.',
           'On tidyquest.org, no photos show while the family is paused or its free trial has ended.',
         ] },
+        { q: 'It says "Can’t reach TidyQuest"', a: [
+          'The app couldn’t reach the server when it opened: no Wi-Fi or data, or the server is restarting or being updated. You stay signed in and this device’s notifications stay on. It tries again every few seconds; Try again does it right away.',
+        ] },
         { q: 'I was signed out on every device', a: [
           'A parent changed your password or used Log out of all devices, or you changed your password or used Log out everywhere else on another device. Log in again with your current password.',
           'First parent: whoever runs the server may have reset your password there (ADMIN_RESET_PASSWORD). Ask them for the new one.',
-          'A login also ends by itself after 30 days on each device.',
+          'A login ends by itself only on a device that hasn’t opened TidyQuest for 30 days. A device you use stays signed in.',
         ] },
         { q: 'It says "That didn’t work"', a: [
           'The phone couldn’t reach the server (no Wi-Fi or data), or someone changed the same thing at the same moment. The page reloads; check it, then try again.',

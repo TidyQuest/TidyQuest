@@ -124,13 +124,18 @@ export function useLegalLinks(): { termsUrl: string | null; privacyUrl: string |
 
 /** The server's error code (link-expired, email-taken…) as a message in the page's language. */
 export function hostedError(err: unknown, t: (key: string) => string, fallback: string): string {
-  const code = (err as { body?: { code?: string } })?.body?.code;
+  const body = (err as { body?: { code?: string; min?: number } })?.body;
+  const code = body?.code;
   const keys: Record<string, string> = {
     'link-expired': 'hosted.linkExpired',
     'email-taken': 'hosted.errEmailTaken',
     'bad-email': 'hosted.errBadEmail',
     'wrong-password': 'hosted.errWrongPassword',
-    'short-password': 'hosted.errShortPassword',
+    // With the server's minimum when it gives one: 8 for hosted parents, 4 for everyone else (BUG-24)
+    'short-password': body?.min ? 'auth.passwordMin' : 'hosted.errShortPassword',
+    'change-password-first': 'hosted.errChangePasswordFirst',
+    // Wrong passwords typed while signed in count (BUG-23)
+    'too-many-tries': 'auth.tooManyTries',
     captcha: 'hosted.captchaNeeded',
     'signups-closed': 'hosted.errSignupsClosed',
     'awaiting-parent': 'hosted.errAwaitingParent',
@@ -139,7 +144,7 @@ export function hostedError(err: unknown, t: (key: string) => string, fallback: 
     'wrong-name': 'hosted.errWrongName',
     'photo-type': 'photos.unreadable',
   };
-  return code && keys[code] ? t(keys[code]) : fallback;
+  return code && keys[code] ? t(keys[code]).replace('{n}', String(body?.min ?? '')) : fallback;
 }
 
 /** A limit the server answered with (people, file size, photo space) in the page's language; else the fallback. */

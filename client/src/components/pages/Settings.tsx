@@ -23,6 +23,7 @@ import { formatCoins } from '../../utils/format';
 import { BellIcon, DownloadIcon, UploadIcon, LockIcon, CoinIcon } from '../icons/UIIcons';
 import { AVATAR_PRESETS } from '../icons/AvatarPresets';
 import { useTranslation } from '../../hooks/useTranslation';
+import { useBusy } from '../../hooks/useBusy';
 import type { User } from '../../hooks/useAuth';
 import { api, type FocusModeSetting, type RewardRules } from '../../hooks/useApi';
 import { CosmeticsContext } from '../../utils/unlocks';
@@ -33,8 +34,8 @@ import { useWeekStart } from '../../utils/week';
 import { TimeZonePicker } from '../shared/TimeZonePicker';
 import { DeleteFamily, FamilyCodeCard, SignInEmailCard } from '../shared/HostedAccount';
 import { LegalLinks, WithLinks } from '../shared/LegalLinks';
-import { limitError, useHosted, useSourceUrl, type HostedAccount } from '../../utils/hosted';
-import { dateStr, endOfHomeDay } from '../../utils/clock';
+import { hostedError, limitError, useHosted, useSourceUrl, type HostedAccount } from '../../utils/hosted';
+import { dateStr, endOfHomeDay, startOfDay } from '../../utils/clock';
 import { rewardDescText, rewardTextToSave, rewardTitleText } from '../../utils/presetRewards';
 
 interface FamilyUser {
@@ -188,7 +189,7 @@ export function Settings({
   const [coinReason, setCoinReason] = useState<Record<number, string>>({});
   const [goalDraft, setGoalDraft] = useState<Record<number, { title: string; goalCoins: string; rewardCoins: string; endAt: string }>>({});
   const [rewardsAdmin, setRewardsAdmin] = useState<Array<{ id: number; title: string; description?: string | null; costCoins: number; isActive?: boolean; isPreset?: boolean; category?: string | null; sortOrder?: number } & Partial<RewardRules>>>([]);
-  const [rewardRequests, setRewardRequests] = useState<Array<{ id: number; title: string; displayName: string; costCoins: number; redeemedAt: string; status: string }>>([]);
+  const [rewardRequests, setRewardRequests] = useState<Array<{ id: number; title: string; displayName: string; costCoins: number; redeemedAt: string; status: string; rejectNote?: string | null }>>([]);
   const [rewardDraft, setRewardDraft] = useState({ title: '', description: '', costCoins: '30' });
   const [editingRewardId, setEditingRewardId] = useState<number | null>(null);
   const [editingRewardTitle, setEditingRewardTitle] = useState('');
@@ -210,7 +211,11 @@ export function Settings({
   const [memberGoalMsg, setMemberGoalMsg] = useState<Record<number, string>>({});
   const [coinAdjust, setCoinAdjust] = useState<Record<number, string>>({});
   const [coinAdjustMsg, setCoinAdjustMsg] = useState<Record<number, string>>({});
+  // One adjustment at a time: a double tap gave the coins twice (BUG-35)
+  const [adjustingCoins, runCoinAdjust] = useBusy();
   const [memberVacation, setMemberVacation] = useState<Record<number, boolean>>({});
+  // Return dates picked here (the family list isn't reloaded after each change)
+  const [memberReturn, setMemberReturn] = useState<Record<number, string | null>>({});
   const [memberParticipant, setMemberParticipant] = useState<Record<number, boolean>>({});
   const [memberView, setMemberView] = useState<Record<number, { taskView: 'all' | 'mine' | 'mineOnly'; kidMode: boolean; focusMode: FocusModeSetting }>>({});
   const [hidePrivateRooms, setHidePrivateRooms] = useState(true);
@@ -382,7 +387,7 @@ export function Settings({
       } : { displayName: newMemberName.trim(), role: 'child', canLogIn: false });
     } catch (err) {
       // A taken username, or hosted mode's limit on people
-      setAddMemberError(limitError(err, t, (err as Error)?.message || t('common.actionFailed')));
+      setAddMemberError(hostedError(err, t, limitError(err, t, (err as Error)?.message || t('common.actionFailed'))));
       return;
     }
     resetMemberForm();
@@ -413,7 +418,7 @@ export function Settings({
       setMemberPassword((prev) => ({ ...prev, [u.id]: '' }));
       setMemberPasswordMsg((prev) => ({ ...prev, [u.id]: t('settings.passwordResetSignedOut').replace('{name}', u.displayName) }));
     } catch (err: any) {
-      setMemberPasswordMsg((prev) => ({ ...prev, [u.id]: err?.message || t('settings.passwordUpdateFailed') }));
+      setMemberPasswordMsg((prev) => ({ ...prev, [u.id]: hostedError(err, t, err?.message || t('settings.passwordUpdateFailed')) }));
     }
   };
 
@@ -860,7 +865,7 @@ export function Settings({
                     type="date"
                     className="tq-input-compact"
                     value={vacationEndDate ? vacationEndDate.slice(0, 10) : ''}
-                    min={dateStr()}
+                    min={dateStr(startOfDay(new Date(), 1))}
                     onChange={async (e) => {
                       const val = e.target.value || null;
                       setVacationEndDate(val);
@@ -876,6 +881,7 @@ export function Settings({
                 <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--warm-text-secondary)', marginBottom: 2 }}>{t('settings.perUserVacation')}</div>
                 {family.filter((u) => u.role !== 'admin').map((u) => {
                   const isOn = !!(memberVacation[u.id] ?? u.isVacationMode);
+                  const returnDate = u.id in memberReturn ? memberReturn[u.id] : (u.vacationEndDate ?? null);
                   return (
                     <div key={u.id} style={{ padding: '8px 10px', borderRadius: 12, backgroundColor: 'var(--warm-bg-subtle)', border: '1px solid var(--warm-border)' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -890,6 +896,7 @@ export function Settings({
                           setMemberVacation((prev) => ({ ...prev, [u.id]: val }));
                           try {
                             await api.updateUserVacation(u.id, { isVacationMode: val });
+                            setMemberReturn((prev) => ({ ...prev, [u.id]: null })); // a new vacation starts without one
                           } catch {
                             setMemberVacation((prev) => ({ ...prev, [u.id]: !val }));
                           }
@@ -903,13 +910,18 @@ export function Settings({
                           <input
                             type="date"
                             className="tq-input-compact"
-                            value={u.vacationEndDate ? u.vacationEndDate.slice(0, 10) : ''}
-                            min={dateStr()}
+                            value={returnDate ? returnDate.slice(0, 10) : ''}
+                            min={dateStr(startOfDay(new Date(), 1))}
                             onChange={async (e) => {
                               const val = e.target.value || null;
+                              setMemberReturn((prev) => ({ ...prev, [u.id]: val }));
                               try {
-                                await api.updateUserVacation(u.id, { vacationEndDate: val });
-                              } catch { /* ignore */ }
+                                const saved = await api.updateUserVacation(u.id, { vacationEndDate: val });
+                                // Today or earlier: they're back, so the vacation is over
+                                if (saved && !saved.isVacationMode) setMemberVacation((prev) => ({ ...prev, [u.id]: false }));
+                              } catch {
+                                setMemberReturn((prev) => ({ ...prev, [u.id]: returnDate })); // not saved: show what is
+                              }
                             }}
                             style={{ fontSize: 11 }}
                           />
@@ -1371,7 +1383,10 @@ export function Settings({
               {rewardRequests.map((rr) => (
                 <div key={rr.id} className="rewards-requests-row" style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr 90px 110px 130px', gap: 8, alignItems: 'center', border: '1px solid var(--warm-border)', borderRadius: 10, padding: '8px 10px', backgroundColor: 'var(--warm-bg-subtle)' }}>
                   <div style={{ fontSize: 12, fontWeight: 800, color: 'var(--warm-text)' }}>{rr.displayName}</div>
-                  <div style={{ fontSize: 11, color: 'var(--warm-text-light)', fontWeight: 700 }}>{rewardTitle(rr)}</div>
+                  <div style={{ fontSize: 11, color: 'var(--warm-text-light)', fontWeight: 700, minWidth: 0, overflowWrap: 'anywhere' }}>
+                    {rewardTitle(rr)}
+                    {rr.status === 'rejected' && rr.rejectNote && <div style={{ color: 'var(--warm-text-muted)' }}>💬 {rr.rejectNote}</div>}
+                  </div>
                   <div style={{ fontSize: 11, fontWeight: 800, color: 'var(--warm-accent)', display: 'flex', alignItems: 'center', gap: 4, justifyContent: 'center' }}><CoinIcon /> {rr.costCoins}</div>
                   <div style={{ fontSize: 10, fontWeight: 800, color: rr.status === 'approved' ? '#15803D' : rr.status === 'rejected' ? '#B91C1C' : rr.status === 'cancelled' ? '#374151' : 'var(--warm-text-light)', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 4 }}>
                     {rewardStatusLabel(rr.status)}
@@ -1648,20 +1663,26 @@ export function Settings({
                       placeholder={t('coins.reasonPlaceholder')}
                       style={{ flex: '1 1 140px', minWidth: 0 }}
                     />
-                    <button className="tq-btn tq-btn-secondary tq-btn-sm" onClick={async () => {
+                    <button className="tq-btn tq-btn-secondary tq-btn-sm" disabled={adjustingCoins} onClick={() => void runCoinAdjust(async () => {
                       const amt = parseInt(coinAdjust[u.id] || '0');
                       if (!amt) return;
                       const reason = (coinReason[u.id] || '').trim() || undefined;
-                      if (onAdjustCoins) {
-                        await onAdjustCoins(u.id, amt, reason);
-                      } else {
-                        await api.adjustCoins(u.id, amt, reason);
+                      try {
+                        if (onAdjustCoins) {
+                          await onAdjustCoins(u.id, amt, reason);
+                        } else {
+                          await api.adjustCoins(u.id, amt, reason);
+                        }
+                      } catch {
+                        // The boxes keep what was typed, to try again
+                        setCoinAdjustMsg((prev) => ({ ...prev, [u.id]: t('common.actionFailed') }));
+                        return;
                       }
                       setCoinAdjust((prev) => ({ ...prev, [u.id]: '' }));
                       setCoinReason((prev) => ({ ...prev, [u.id]: '' }));
                       setCoinAdjustMsg((prev) => ({ ...prev, [u.id]: `${amt > 0 ? '+' : ''}${amt} ✓` }));
                       setTimeout(() => setCoinAdjustMsg((prev) => ({ ...prev, [u.id]: '' })), 2000);
-                    }}>{t('settings.adjustCoins')}</button>
+                    })}>{t('settings.adjustCoins')}</button>
                     {coinAdjustMsg[u.id] && <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--warm-accent)' }}>{coinAdjustMsg[u.id]}</span>}
                   </div>}
                 </div>

@@ -306,6 +306,13 @@ export type ScheduleInput = { error: string } | { values: Partial<Record<Schedul
 const blank = (v: unknown) => v === undefined || v === null || v === '';
 
 /** Validate the schedule fields of a task create/update body (only the keys that are present). */
+/** A 'YYYY-MM-DD' day that exists (JavaScript would roll Feb 31 over into March). */
+export function isRealDay(v: string): boolean {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(v)) return false;
+  const d = new Date(Date.UTC(Number(v.slice(0, 4)), Number(v.slice(5, 7)) - 1, Number(v.slice(8, 10))));
+  return !Number.isNaN(d.getTime()) && d.toISOString().slice(0, 10) === v;
+}
+
 export function readScheduleInput(body: any): ScheduleInput {
   const values: Partial<Record<ScheduleColumn, number | string | null>> = {};
   if (body && ('seasonStartMonth' in body || 'seasonEndMonth' in body)) {
@@ -340,7 +347,7 @@ export function readScheduleInput(body: any): ScheduleInput {
   if (body && 'oneTime' in body) values.oneTime = body.oneTime ? 1 : 0;
   if (body && 'doBy' in body) {
     const v = blank(body.doBy) ? null : String(body.doBy).trim();
-    if (v !== null && (!/^\d{4}-\d{2}-\d{2}$/.test(v) || Number.isNaN(new Date(`${v}T12:00:00`).getTime()))) return { error: 'invalid_do_by' };
+    if (v !== null && !isRealDay(v)) return { error: 'invalid_do_by' };
     values.doBy = v;
   }
   // Monthly: a day of the month (1–31), or the nth weekday (week 1–4 or -1 = last, weekday 0–6). Sent
@@ -361,7 +368,7 @@ export function readScheduleInput(body: any): ScheduleInput {
   // A repeating chore's start date ('YYYY-MM-DD', empty = none)
   if (body && 'startsOn' in body) {
     const v = blank(body.startsOn) ? null : String(body.startsOn).trim();
-    if (v !== null && (!ISO_DAY.test(v) || Number.isNaN(new Date(`${v}T12:00:00`).getTime()))) return { error: 'invalid_starts_on' };
+    if (v !== null && !isRealDay(v)) return { error: 'invalid_starts_on' };
     values.startsOn = v;
   }
   // Not scheduling, but saved the same way: the chore's countdown timer (empty or 0 = none)

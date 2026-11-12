@@ -3,6 +3,7 @@ import { isHosted } from '../hosted/context';
 import { at, minuteOfDay, wall } from './clock';
 import { getNotificationTypeSettings, getNtfySettings, getTelegramSettings, sendNtfyMessageDetailed, sendTelegramMessageDetailed, sendTimeout, type NotificationTypeSettings } from './notifications';
 import { activeDevices, pushOn, sendPush } from './push';
+import { stillTrue, type StillTrue } from './notifyChecks';
 
 /**
  * Notifications to people, not just the family channel.
@@ -12,7 +13,8 @@ import { activeDevices, pushOn, sendPush } from './push';
  * A message for someone goes to their own channels, in their language. People without any fall back
  * to the family channel (one message there, in the family's language), except for private kinds
  * (outcomes, summaries, nudges), which only go to personal channels. Each person can turn kinds off.
- * During quiet hours (and school hours, for kids) messages wait in a queue. Everything sent is logged.
+ * During quiet hours (and school hours, for kids) messages wait in a queue; one that's no longer wanted or
+ * true when its turn comes is dropped (`Lasting`). Everything sent is logged.
  */
 
 export type NotifyKind = keyof NotificationTypeSettings;
@@ -35,6 +37,12 @@ export interface Person {
 export type Audience = number[] | 'parents' | 'kids' | 'everyone';
 /** The text for one person (null person = the family channel); null = nothing to send */
 export type Builder = (lang: string, person: Person | null) => string | null;
+
+/**
+ * How long a message is worth sending if it has to wait out quiet hours: until `expiresAt` ("due today" is
+ * wrong tomorrow), and only while `onlyIf` still holds (the chore's still not done, the invite's still open).
+ */
+export interface Lasting { expiresAt?: Date; onlyIf?: StillTrue }
 
 export type Channel = 'ntfy' | 'telegram' | 'ha' | 'push';
 /** For push, target is the device's id in push_subscriptions and label its name ("iPhone · Safari") */
@@ -182,14 +190,26 @@ async function deliver(userId: number | null, kind: string, message: string, ded
   return any;
 }
 
-async function sendOrHold(person: Person | null, kind: NotifyKind, message: string, dedupeKey: string | null, now: Date): Promise<boolean> {
+async function sendOrHold(person: Person | null, kind: NotifyKind, message: string, dedupeKey: string | null, now: Date, lasting: Lasting): Promise<boolean> {
   const until = holdUntil(person, now);
   if (until) {
-    db.prepare('INSERT INTO notification_queue (userId, kind, message, notBefore, dedupeKey) VALUES (?, ?, ?, ?, ?)')
-      .run(person?.id ?? null, kind, message, until.toISOString(), dedupeKey);
+    db.prepare('INSERT INTO notification_queue (userId, kind, message, notBefore, dedupeKey, expiresAt, onlyIf) VALUES (?, ?, ?, ?, ?, ?, ?)')
+      .run(person?.id ?? null, kind, message, until.toISOString(), dedupeKey, lasting.expiresAt?.toISOString() ?? null, lasting.onlyIf ? JSON.stringify(lasting.onlyIf) : null);
     return true;
   }
   return deliver(person?.id ?? null, kind, message, dedupeKey, now);
+}
+
+/**
+ * A message that waited is still worth sending (BUG-41): its kind is still switched on, for the family and
+ * for the person, it hasn't run out, and what it says is still true.
+ */
+function stillWanted(q: { userId: number | null; kind: NotifyKind; expiresAt: string | null; onlyIf: string | null }, now: Date): boolean {
+  if (!notificationsOn(q.kind)) return false;
+  if (q.userId !== null && getPeople().find((p) => p.id === q.userId)?.prefs[q.kind] === false) return false;
+  if (q.expiresAt && new Date(q.expiresAt).getTime() <= now.getTime()) return false;
+  if (!q.onlyIf) return true;
+  try { return stillTrue(JSON.parse(q.onlyIf), now); } catch { return true; }
 }
 
 /** Send what waited out quiet hours (called by the periodic check). */
@@ -198,8 +218,13 @@ export async function flushNotificationQueue(now: Date = new Date()): Promise<vo
   for (const q of due) {
     // Claim it first so an overlapping check can't send it twice
     if (db.prepare('DELETE FROM notification_queue WHERE id = ?').run(q.id).changes === 0) continue;
-    await deliver(q.userId, q.kind, q.message, q.dedupeKey, now);
+    if (stillWanted(q, now)) await deliver(q.userId, q.kind, q.message, q.dedupeKey, now);
   }
+}
+
+/** Take a message out of the queue for everyone, e.g. a first reminder its follow-up replaces. */
+export function dropQueued(dedupeKey: string): void {
+  db.prepare('DELETE FROM notification_queue WHERE dedupeKey = ?').run(dedupeKey);
 }
 
 export function notificationsOn(kind: NotifyKind): boolean {
@@ -220,9 +245,10 @@ function resolve(audience: Audience, people: Person[]): Person[] {
 /**
  * Tell people something. Each recipient with their own channels gets their own message (in their
  * language); the rest share one family-channel message, unless the kind is private. With a
- * dedupeKey, anyone who already got it isn't sent it again.
+ * dedupeKey, anyone who already got it isn't sent it again. `expiresAt` and `onlyIf` say how long it's
+ * worth sending if it has to wait out quiet hours.
  */
-export async function notifyPeople(audience: Audience, kind: NotifyKind, build: Builder, options: { now?: Date; dedupeKey?: string } = {}): Promise<void> {
+export async function notifyPeople(audience: Audience, kind: NotifyKind, build: Builder, options: { now?: Date; dedupeKey?: string } & Lasting = {}): Promise<void> {
   if (!notificationsOn(kind)) return;
   const now = options.now ?? new Date();
   const dedupeKey = options.dedupeKey ?? null;
@@ -233,14 +259,14 @@ export async function notifyPeople(audience: Audience, kind: NotifyKind, build: 
     if (personalChannels(p).length > 0) {
       if (dedupeKey && alreadySent(dedupeKey, p.id, now)) continue;
       const text = build(p.language, p);
-      if (text) await sendOrHold(p, kind, text, dedupeKey, now);
+      if (text) await sendOrHold(p, kind, text, dedupeKey, now, options);
     } else if (!PRIVATE_KINDS.includes(kind)) {
       needFamily = true;
     }
   }
   if (needFamily && familyChannels().length > 0 && !(dedupeKey && alreadySent(dedupeKey, null, now))) {
     const text = build(familyLanguage(people), null);
-    if (text) await sendOrHold(null, kind, text, dedupeKey, now);
+    if (text) await sendOrHold(null, kind, text, dedupeKey, now, options);
   }
 }
 

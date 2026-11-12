@@ -382,7 +382,7 @@
       "alreadyDoneToday": "Tu as déjà fait cette tâche aujourd'hui !",
       "alreadyDoneByOther": "Cette tâche a déjà été faite par quelqu'un d'autre aujourd'hui !",
       "notAssigned": "Cette tâche ne t'est pas attribuée",
-      "pendingApproval": "Tâche envoyée. En attente d'approbation admin.",
+      "pendingApproval": "Envoyé ! En attente de la validation d'un parent.",
       "doneBy": "Fait par {name}",
       "childrenGroup": "Enfants",
       "tasksSubtitle": "Toutes les tâches de toutes les pièces",
@@ -392,7 +392,14 @@
       "takeBack": "Annuler",
       "takeBackHint": "Appuyé sur Fait par erreur ? Annule-le avant qu'un parent décide.",
       "importInvalid": "Ce n'est pas une sauvegarde TidyQuest : elle ne contient ni personnes ni pièces.",
-      "importFailed": "Échec de l'import : {error}"
+      "importFailed": "Échec de l'import : {error}",
+      "importNotIn": "Cette sauvegarde ne vous contient pas ({name}) en tant qu'Admin : l'importer vous bloquerait l'accès. Connectez-vous avec un Admin présent dans la sauvegarde et réessayez.",
+      "notYetDue": "Ce n'est pas encore à faire.",
+      "cantReachTitle": "Impossible de joindre TidyQuest",
+      "cantReachText": "Tu es toujours connecté. Nouvel essai toutes les quelques secondes…",
+      "notYourTurn": "Ce n'est pas ton tour pour celle-ci.",
+      "chorePaused": "Cette tâche est en pause.",
+      "claimedByTeam": "Une équipe a déjà réservé celle-ci."
     },
     "admin": {
       "whoDidThisTask": "Qui a fait cette tâche ?",
@@ -464,7 +471,10 @@
       "theirRequests": "Récompenses de {name}",
       "boughtBy": "acheté par {name}",
       "confirmTextFor": "Acheter \"{reward}\" pour {name} ? Cela coûte {coins} de ses pièces.",
-      "priceChanged": "Le prix vient de passer à {coins} pièces. Touche Confirmer pour payer ce prix, ou Annuler."
+      "priceChanged": "Le prix vient de passer à {coins} pièces. Touche Confirmer pour payer ce prix, ou Annuler.",
+      "alreadyDecided": "Cette demande a déjà été traitée. La liste est maintenant à jour.",
+      "rejectNotePlaceholder": "Pourquoi pas ? (facultatif)",
+      "rejectNoteLabel": "Un mot pour {name}"
     },
     "rewardsPreset": {
       "movie_night": {
@@ -759,7 +769,9 @@
       "forgotAskParent": "Demande à un parent d’en définir un nouveau dans Paramètres → Membres de la famille.",
       "forgotNoParent": "Aucun parent ne peut se connecter ? La personne qui gère le serveur peut réinitialiser le mot de passe du premier parent.",
       "forgotHowTo": "Comment le réinitialiser",
-      "noLogin": "Un parent a désactivé ta connexion. Demande-lui de la réactiver dans Paramètres → Membres de la famille."
+      "noLogin": "Un parent a désactivé ta connexion. Demande-lui de la réactiver dans Paramètres → Membres de la famille.",
+      "tooManyTries": "Trop de mots de passe erronés. Attendez 15 minutes et réessayez.",
+      "passwordMin": "Les mots de passe doivent avoir au moins {n} caractères."
     },
     "achievements": {
       "familyProgress": "Progression famille",
@@ -1247,7 +1259,8 @@
       "errBadCost": "Le prix doit être un nombre entier d'au moins 1 (reçu « {value} »)",
       "errAmbiguousReward": "{n} récompenses s'appellent « {value} » ; renomme-en une d'abord",
       "errNewRewardCost": "Une nouvelle récompense a besoin d'un prix",
-      "errNotSaved": "La ligne {line} n'a pas pu être enregistrée ({error}), donc rien n'a été modifié."
+      "errNotSaved": "La ligne {line} n'a pas pu être enregistrée ({error}), donc rien n'a été modifié.",
+      "errBadDate": "« {value} » n'est pas une date (utilisez AAAA-MM-JJ, par exemple 2027-03-01)"
     },
     "rewardOrder": {
       "up": "Monter",
@@ -1446,7 +1459,8 @@
       "shieldsSaved": "🛡️ {count} boucliers ont sauvé ta série de {n} jours !",
       "shieldGiven": "🛡️ {name} t'a donné un bouclier de série. Il protège ta série si tu manques un jour.",
       "recapLastWeek": "📊 La semaine dernière : {lines}",
-      "testFamily": "👋 Test TidyQuest envoyé par {name} à {time} : les notifications de la famille fonctionnent !"
+      "testFamily": "👋 Test TidyQuest envoyé par {name} à {time} : les notifications de la famille fonctionnent !",
+      "parentSays": "{parent} dit : {reason}"
     },
     "notifyAdmin": {
       "peopleTitle": "Qui reçoit quoi",
@@ -2167,7 +2181,8 @@
       "deleteFamilyAction": "Supprimer la famille pour de bon",
       "deleteFamilyDone": "{family} a été supprimée. Merci d'avoir utilisé TidyQuest.",
       "errWrongName": "Ce n'est pas le nom de la famille.",
-      "memberPrivacy": "Ce que TidyQuest garde sur chaque personne : {privacy}"
+      "memberPrivacy": "Ce que TidyQuest garde sur chaque personne : {privacy}",
+      "errChangePasswordFirst": "Pour vous connecter avec un e-mail, votre mot de passe doit avoir au moins {n} caractères. Changez-le d'abord dans Profil."
     },
     "limits": {
       "people": "Une famille peut compter jusqu'à {n} personnes.",
@@ -2295,7 +2310,7 @@
       "errAge": "Choisis une tranche d'âge pour {name}.",
       "errUsername": "{name} a besoin d'un nom d'utilisateur (sans espaces).",
       "errUsernameTwice": "Deux personnes ont le nom d'utilisateur {name}.",
-      "errPassword": "Le mot de passe de {name} doit avoir au moins 4 caractères.",
+      "errPassword": "Le mot de passe de {name} doit avoir au moins {n} caractères.",
       "errUsernameTaken": "Ce nom d'utilisateur est déjà pris. Reviens à l'étape Famille et choisis-en un autre.",
       "tipsTitle": "Et ensuite",
       "tourStart": "Montre-moi comment changer les choses",

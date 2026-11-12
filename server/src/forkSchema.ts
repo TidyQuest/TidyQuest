@@ -328,6 +328,16 @@ const NEW_COLUMNS: string[] = [
   `ALTER TABLE users ADD COLUMN canLogIn INTEGER NOT NULL DEFAULT 1`,
   // The parent who bought this reward for someone (ENH-16); NULL = the person bought it themselves
   `ALTER TABLE reward_redemptions ADD COLUMN boughtBy INTEGER`,
+  // Shared chores (BUG-26, utils/shares.ts): shares done before this moment no longer count (set by Reset to
+  // dirty and the health slider, so everyone can do theirs again).
+  `ALTER TABLE tasks ADD COLUMN sharesResetAt TEXT`,
+  // The last-done date the latest completion replaced, so undoing that completion puts it back (BUG-46)
+  `ALTER TABLE tasks ADD COLUMN prevLastCompletedAt TEXT`,
+  // A held message's end date and the one thing that must still be true when it goes out (BUG-41; utils/notifyChecks.ts)
+  `ALTER TABLE notification_queue ADD COLUMN expiresAt TEXT`,
+  `ALTER TABLE notification_queue ADD COLUMN onlyIf TEXT`,
+  // The optional one-line note a parent gave when rejecting this reward request (ENH-23)
+  `ALTER TABLE reward_redemptions ADD COLUMN rejectNote TEXT`,
 ];
 
 /** Fork tables included in backup export/import: key in the backup file -> table. */
@@ -347,6 +357,12 @@ export const BACKUP_TABLES: Array<{ key: string; table: string }> = [
   { key: 'mascotPurchases', table: 'mascot_purchases' },
   { key: 'streakShieldEvents', table: 'streak_shield_events' },
   { key: 'choreOverdueDays', table: 'chore_overdue_days' },
+  // Records of what already happened (BUG-22), so a restore doesn't pay badge bonuses or today's Rescue
+  // Mission again, or resend reminders and notifications
+  { key: 'earnedBadges', table: 'user_achievement_notifications' },
+  { key: 'rescueMissions', table: 'rescue_missions' },
+  { key: 'notificationLog', table: 'notification_log' },
+  { key: 'dueReminders', table: 'task_due_notifications' },
 ];
 
 export function applyForkSchema(instance: InstanceType<typeof Database>) {

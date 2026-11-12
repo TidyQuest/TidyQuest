@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useTranslation } from '../../hooks/useTranslation';
 import { useChoreTimer } from '../../hooks/useChoreTimer';
 import { taskCoins } from '../../utils/tasks';
@@ -69,7 +69,13 @@ export function Focus({ focus, userId, language, coinsByEffort, gamificationEnab
     setSkips(next);
     saveSkips(userId, next);
   };
+  // A double tap on Done would land on the next chore, which slides in under the same button (BUG-35):
+  // taps in the moment after a Done are ignored
+  const justDone = useRef(false);
   const done = async (id: number) => {
+    if (justDone.current) return;
+    justDone.current = true;
+    setTimeout(() => { justDone.current = false; }, 700);
     setDoneIds((prev) => [...prev, id]);
     const ok = await onComplete(id);
     if (!ok) setDoneIds((prev) => prev.filter((d) => d !== id));

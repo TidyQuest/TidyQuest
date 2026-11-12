@@ -17,7 +17,8 @@ export function calculateHealth(
   const lastDone = new Date(lastCompletedAt).getTime();
   const safeFrequencyDays = Math.max(1 / 24, Number(frequencyDays) || 7);
   const daysSinceCompletion = (now - lastDone) / (1000 * 60 * 60 * 24);
-  const health = Math.max(0, Math.round(100 - (daysSinceCompletion / safeFrequencyDays) * 100));
+  // Never over 100: a chore done during a vacation is measured against the day the vacation began
+  const health = Math.min(100, Math.max(0, Math.round(100 - (daysSinceCompletion / safeFrequencyDays) * 100)));
   return health;
 }
 

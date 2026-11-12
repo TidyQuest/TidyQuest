@@ -463,8 +463,11 @@ export function initDatabase() {
   db.prepare("INSERT OR IGNORE INTO app_settings (key, value) VALUES ('vacationEndDate', '')").run();
   db.prepare("INSERT OR IGNORE INTO app_settings (key, value) VALUES ('strictMode', '0')").run();
 
+  // The starter rewards go into a new database only: a family that removed them all, or imported a backup
+  // without any, doesn't get them back on the next start (BUG-22)
   const rewardCount = (db.prepare('SELECT COUNT(*) as count FROM rewards').get() as { count: number }).count;
-  if (rewardCount === 0) {
+  const isNew = !db.prepare('SELECT 1 FROM users LIMIT 1').get();
+  if (rewardCount === 0 && isNew) {
     const insertReward = db.prepare(
       'INSERT INTO rewards (title, description, costCoins, isPreset, isActive) VALUES (?, ?, ?, 1, 1)'
     );

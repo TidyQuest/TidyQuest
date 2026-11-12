@@ -60,7 +60,7 @@ export const GUIDE_IT: GuideSection[] = [
       { tip: 'Samsung Internet: tocca ☰ in basso, poi Aggiungi pagina a → Schermata Home.' },
       { h: 'Buono a sapersi' },
       { ul: [
-        'Gli aggiornamenti arrivano da soli: ogni volta apre la versione più recente dal server. Se dopo un aggiornamento sembra vecchia, chiudila del tutto e riaprila.',
+        'Gli aggiornamenti arrivano da soli: dopo un aggiornamento del server, l’app carica la nuova versione la prossima volta che la apri o cambi pagina. Se sembra ancora vecchia, chiudila del tutto e riaprila.',
         'Toglila come qualsiasi altra app: tieni premuta l’icona. I dati della famiglia restano sul server.',
         'Per ricevere le notifiche su questo telefono, apri TidyQuest dalla schermata Home, poi Profilo → Le mie notifiche → Attiva su questo dispositivo. I messaggi possono arrivare anche con ntfy, Telegram o Home Assistant (vedi "Notifiche").',
       ] },
@@ -114,7 +114,7 @@ export const GUIDE_IT: GuideSection[] = [
         'Vista compiti: Tutti (sceglie lui), Parte da I miei, o Solo i suoi (bloccata).',
         'Modalità bambino: pulsanti più grandi, meno schede, monete e obiettivo in primo piano.',
         'Tema e colori delle feste seguono la persona su ogni dispositivo (li può cambiare in Profilo).',
-        'Vacanza per membro: protegge la sua serie e congela la salute delle sue faccende mentre è via.',
+        'Vacanza per membro: protegge la sua serie e congela la salute delle sue faccende mentre è via. Con una Data di ritorno finisce da sola quella mattina.',
         'Regola monete (Gestisci membro): aggiungi o togli monete con un motivo. Il numero è una variazione, non un nuovo saldo: 10 aggiunge 10, -10 ne toglie 10. Vale anche per i genitori, te compreso. Dettagli in "Monete, ricompense e obiettivi" → Regolare le monete.',
         'Password: un genitore può impostarne una nuova se qualcuno dimentica la sua. La persona viene disconnessa da tutti i dispositivi e rientra con quella nuova.',
       ] },
@@ -143,7 +143,7 @@ export const GUIDE_IT: GuideSection[] = [
         'I genitori accedono con la loro email e la loro password. Tutti gli altri con il codice famiglia, il loro username e la loro password (anche i genitori possono farlo).',
         'Impostazioni → 🔑 Codice famiglia mostra il codice (tipo sunny-otter-42), il link della famiglia e un codice QR. Apri il link o scansiona il codice sul telefono o tablet di un bambino: il dispositivo ricorda la famiglia, così basta scrivere username e password. Maiuscole, spazi e trattini nel codice non contano.',
         'Nuovo codice dà alla famiglia un codice nuovo. Il vecchio codice e il vecchio link smettono di funzionare; nessuno viene disconnesso.',
-        'Impostazioni → ✉️ Email di accesso: Cambia email invia un link al nuovo indirizzo, e il cambio avviene quando lo apri. Un secondo genitore può usare Aggiungi email per accedere con la sua.',
+        'Impostazioni → ✉️ Email di accesso: Cambia email invia un link al nuovo indirizzo, e il cambio avviene quando lo apri. Un secondo genitore può usare Aggiungi email per accedere con la sua. Per accedere con un’email, la password di un genitore deve avere almeno 8 caratteri. Un genitore che diventa membro o bambino perde la sua email di accesso e accede con il codice famiglia.',
         'All’iscrizione inviamo un link per confermare il tuo indirizzo. Aprirlo è anche il modo in cui un genitore acconsente, per i figli, a ciò che TidyQuest conserva (lo chiede la legge statunitense sulla privacy dei minori, COPPA). Finché un genitore non conferma, possono accedere solo i genitori. Una famiglia che non conferma l’email di un genitore entro 30 giorni viene eliminata; mandiamo un promemoria una settimana prima.',
         'Password dimenticata? nella schermata di accesso invia a un genitore un link che funziona una volta, per un’ora. Bambini e ragazzi chiedono a un genitore di impostarne una nuova in Impostazioni → Membri della famiglia.',
       ] },
@@ -208,7 +208,7 @@ export const GUIDE_IT: GuideSection[] = [
       { ul: [
         'Nessuno assegnato: chiunque. Il primo che la finisce prende le monete ("chi prima arriva vince").',
         'Assegnata ad alcune persone: solo loro possono farla.',
-        'Condivisa: ogni assegnato fa la sua parte e riceve una quota uguale.',
+        'Condivisa: ogni assegnato fa la sua parte e riceve una quota uguale. La faccenda torna pulita quando tutti hanno fatto la propria parte, in qualunque giorno. Finché non è di nuovo da fare, ognuno può fare la sua una volta sola.',
         'Divisione personalizzata: ogni assegnato riceve una percentuale stabilita.',
         'A rotazione: a turno, per completamento o per settimana di calendario.',
       ] },
@@ -294,10 +294,10 @@ export const GUIDE_IT: GuideSection[] = [
       { where: 'Impostazioni → Catalogo ricompense, Obiettivi per membro, Monete per sforzo' },
       { h: 'Ricompense' },
       { ul: [
-        'Ogni ricompensa ha un prezzo. I bambini la chiedono; un genitore la approva o la rifiuta.',
+        'Ogni ricompensa ha un prezzo. I bambini la chiedono; un genitore la approva o la rifiuta. Rifiuta apre una casella per una nota facoltativa di una riga (perché no, o quando richiederla). Il bambino la riceve con la notifica e la vede sotto la richiesta in La mia cronologia riscatti; se resta vuota, si rifiuta senza nota.',
         'Approvata per sbaglio? Richieste ricompensa (sotto il catalogo) ha Rimborsa accanto a ogni ricompensa approvata: le monete tornano indietro (in un salvadanaio condiviso, a tutti quelli che hanno contribuito) e risulta rifiutata.',
         'Regole per ricompensa: un limite (al giorno, alla settimana, al mese o in totale; per persona o per tutti), un intervallo di date, A rotazione (ogni settimana ne compaiono solo alcune), chi può vederla, un prezzo diverso per persona e una categoria.',
-        'Risparmio condiviso: chiunque può versare monete in un salvadanaio; quando è pieno passa a un genitore. Il campo del contributo parte da 0 e ogni contributo compare in Attività. Un salvadanaio pieno non si può annullare dalle mie richieste ("Condiviso: decide un genitore"): un genitore lo rifiuta e tutti riavranno le loro monete.',
+        'Risparmio condiviso: chiunque può versare monete in un salvadanaio; quando è pieno passa a un genitore. Il campo del contributo parte da 0 e ogni contributo compare in Attività. Un salvadanaio pieno non si può annullare dalle mie richieste ("Condiviso: decide un genitore"): un genitore lo rifiuta e tutti riavranno le loro monete. Se un genitore abbassa il prezzo sotto quello che c’è già nel salvadanaio, il salvadanaio conta come pieno e le monete oltre il nuovo prezzo tornano indietro, a partire dagli ultimi contributi.',
       ] },
       { h: 'Comprare per qualcun altro' },
       { p: 'Genitori: in cima a Ricompense, scegliete qualcuno sotto Compra per. Il negozio mostra allora le sue monete, i suoi prezzi e i suoi limiti, e quello che comprate si paga con le sue monete. Conta come consegnato, quindi nessuno deve approvarlo. Attività e Statistiche lo mostrano come suo, comprato da voi. Comodo per chi non accede (vedi "Persone e ruoli"). Le ricompense condivise (salvadanaio) restano come prima.' },
@@ -355,7 +355,7 @@ export const GUIDE_IT: GuideSection[] = [
       ] },
       { h: 'Scudi della serie' },
       { ul: [
-        'Una serie conta i giorni di fila con almeno un’attività. Ogni 7 giorni di fila guadagni uno 🛡️ scudo; puoi tenerne 2.',
+        'Una serie conta i giorni di fila con almeno un’attività. Ogni 7 giorni di fila guadagni uno 🛡️ scudo; puoi tenerne 2. Una faccenda che aspetta l’approvazione di un genitore conta per il giorno in cui è stata fatta.',
         'Compra uno scudo sulla scheda della serie in Home (25 monete di base; i genitori scelgono il prezzo in Impostazioni → Funzioni).',
         'Un giorno saltato usa uno scudo da solo, subito dopo mezzanotte, e la serie continua (il giorno saltato non si somma). Due giorni saltati richiedono due scudi; se non bastano, non se ne usa nessuno e la serie ricomincia.',
         'Un’attività in attesa dell’approvazione di un genitore conta per il suo giorno.',
@@ -390,6 +390,12 @@ export const GUIDE_IT: GuideSection[] = [
         'Il Registro notifiche mostra cosa è stato inviato, messo in coda o fallito, e perché.',
       ] },
       { p: 'Su tidyquest.org le notifiche arrivano direttamente sul telefono (web push), oppure passano da ntfy.sh o Telegram. Un tuo server ntfy e Home Assistant funzionano solo su un server di casa.' },
+      { ul: [
+        'Un messaggio che ha aspettato durante le ore di silenzio parte solo se è ancora vero. Viene scartato se la faccenda è stata fatta nel frattempo, se il suo giorno è passato, se la squadra o l’evento monete doppie è finito, o se quel tipo è stato disattivato.',
+        'Chi è in vacanza non riceve messaggi sulle faccende (da fare oggi, promemoria, la lista del mattino, la spintarella della sera, Missione di salvataggio), e durante la Modalità vacanza non li riceve nessuno. Le approvazioni, le richieste di premi e il resoconto settimanale arrivano comunque.',
+        'Una faccenda in attesa dell’approvazione di un genitore conta come fatta: niente più promemoria.',
+        'Le faccende iniziali hanno il nome nella lingua di chi legge il messaggio (sul suo canale personale).',
+      ] },
       { h: 'Notifiche sul telefono (web push)' },
       { p: 'Ognuno può ricevere le sue notifiche sul proprio telefono o computer, direttamente da TidyQuest: senza bisogno di ntfy o Telegram. Ogni persona le attiva da sé, sul dispositivo: Profilo → Le mie notifiche → Attiva su questo dispositivo. Conta come il suo canale personale: i messaggi arrivano nella sua lingua e non passano più dal canale della famiglia.' },
       { ul: [
@@ -438,12 +444,13 @@ export const GUIDE_IT: GuideSection[] = [
     blocks: [
       { ul: [
         'Impostazioni → Dati e privacy → Esporta: un backup JSON completo. Tienine uno prima dei grandi cambiamenti.',
-        'Importa ripristina un backup e SOSTITUISCE tutto. Chi ha già un account su questo server (stesso nome utente) mantiene la password attuale. Chi è nuovo su questo server ne riceve una casuale, quindi imposta le loro password in Membri della famiglia dopo.',
-        'Impostazioni → Fogli di calcolo: scarica faccende o ricompense, modificale in qualsiasi app di fogli di calcolo e ricaricale. Prima vedi un’anteprima e non viene eliminato nulla.',
+        'Importa ripristina un backup e SOSTITUISCE tutto. Chi ha già un account su questo server (stesso nome utente) mantiene la password attuale. Chi è nuovo su questo server ne riceve una casuale, quindi imposta le loro password in Membri della famiglia dopo. Devi essere nel backup come Admin (stesso nome utente), altrimenti l’importazione viene rifiutata. Alcuni dispositivi potrebbero uscire dall’account dopo; basta accedere di nuovo con la stessa password.',
+        'Impostazioni → Fogli di calcolo: scarica faccende o ricompense, modificale in qualsiasi app di fogli di calcolo e ricaricale. Prima vedi un’anteprima e non viene eliminato nulla. Le faccende da fare una volta sola mantengono la loro data (colonne one_time e do_by).',
         'Per eliminare una faccenda, aprila con Modifica; Elimina attività è in fondo al modulo. Va in Impostazioni → Eliminati di recente per 30 giorni e da lì si può ripristinare. Le ricompense funzionano allo stesso modo.',
         'Eliminare non toglie mai monete né cancella quanto fatto: i completamenti passati continuano a comparire in Attività, nella Classifica e negli obiettivi con il nome della faccenda, anche dopo che esce da Eliminati di recente.',
         'Una ricompensa eliminata conserva la sua cronologia allo stesso modo: ciò che è stato comprato resta in Statistiche con il suo nome. Una richiesta ancora in attesa resta in Richieste ricompensa (sotto il catalogo), così un genitore può ancora approvarla o rifiutarla; rifiutandola le monete tornano indietro.',
         'Eliminare una stanza (Stanze → 🗑) elimina anche le sue faccende, e la stanza non si può riportare indietro. La loro cronologia e le monete restano.',
+        'Eliminare un membro della famiglia (Elimina utente, in Impostazioni → Membri della famiglia) è irreversibile. La sua ricompensa condivisa ancora in attesa di un genitore viene prima rifiutata, così gli altri riavranno i loro contributi. Una ricompensa che solo quella persona poteva vedere viene nascosta invece di essere mostrata a tutti: tocca Mostra in Impostazioni → Catalogo ricompense se deve averla qualcun altro.',
       ] },
       { p: 'Le foto di prova seguono la loro faccenda: quando una faccenda esce da Eliminati di recente (o la sua stanza viene eliminata), anche le sue foto vengono eliminate, ma chi l’ha fatta e le monete restano. La foto avatar di una persona se ne va quando la persona viene rimossa.' },
       { p: 'Ogni foto viene ridisegnata sul telefono o sul computer prima del caricamento, così non dice più dove e con cosa è stata scattata. Una foto che il browser non sa leggere (alcune foto HEIC) viene rifiutata: manda un JPEG o uno screenshot.' },
@@ -479,6 +486,7 @@ export const GUIDE_IT: GuideSection[] = [
       { qa: [
         { q: 'Il pulsante Fatto è grigio', a: [
           'La sua etichetta dice perché: "Non assegnata" (la faccenda è di qualcun altro), "In attesa di approvazione" (un genitore non ha ancora approvato la tua ultima), "Fatto da …" (qualcuno l’ha già fatta oggi), "Fatto oggi / questa settimana" (il limite di ripetizioni di una faccenda libera) o "🤝 nomi" (una squadra l’ha presa oggi).',
+          '"In attesa di …" è una faccenda a Rotazione nel turno di qualcun altro. Quando il pulsante mostra un giorno al posto di Fatto, la faccenda non è da rifare fino ad allora.',
           'Se Fatto dà un messaggio "non ancora in scadenza": la faccenda non scade ancora. Un genitore può attivare "Completamento anticipato" per le routine quotidiane.',
         ] },
         { q: 'La faccenda di un bambino mostra ▶ invece di Fatto', a: [
@@ -499,7 +507,7 @@ export const GUIDE_IT: GuideSection[] = [
           'Alcune schede compaiono solo quando contengono qualcosa (I tuoi soliti, Forse hai dimenticato queste, Programmate, Completate oggi), e alcune sono solo per i genitori.',
         ] },
         { q: 'Un genitore non compare nella Classifica', a: [
-          'Un genitore con Partecipa alle attività disattivato compare nella Classifica solo in un periodo in cui ha svolto un’attività. Per tenerlo sempre, attiva l’opzione in Impostazioni → Membri della famiglia. Ogni genitore può cambiarla anche sulla propria scheda.',
+          'Un genitore con Partecipa alle attività disattivato compare nella Classifica solo in un periodo in cui ha svolto un’attività. Per tenerlo sempre, attiva l’opzione in Impostazioni → Membri della famiglia. Ogni genitore può cambiarla anche sulla propria scheda. Le schede Classifica e Stato monete della Home seguono la stessa regola.',
         ] },
         { q: 'Una cosa alla volta non c’è, o manca una faccenda', a: [
           'Per genitori e membri è disattivata a meno che non sia scelta in Impostazioni → Membri della famiglia. I bambini ce l’hanno (un pulsante nella Home) a meno che un genitore non l’abbia disattivata lì. Può anche essere nascosta in Home → Personalizza, o disattivata in Impostazioni → Funzioni.',
@@ -541,6 +549,11 @@ export const GUIDE_IT: GuideSection[] = [
           'I tipi privati (esiti, riepiloghi, promemoria, tifo) hanno bisogno del canale personale della persona.',
           'Le ore di silenzio e l’orario scolastico trattengono i messaggi fino alla fine.',
           'Il Registro notifiche mostra ogni messaggio ed eventuali errori.',
+        ] },
+        { q: 'Un promemoria o il messaggio del mattino non è mai arrivato', a: [
+          'Un messaggio trattenuto dalle ore di silenzio viene scartato se alla loro fine non è più vero: la faccenda è stata fatta (o è in attesa di approvazione), il suo giorno è passato, o la squadra o l’evento monete doppie è finito.',
+          'Per chi è in vacanza, e per tutti durante la Modalità vacanza, i messaggi sulle faccende non vengono inviati.',
+          'I solleciti di un promemoria serale possono arrivare dopo mezzanotte: 2 e 4 ore dopo l’ora del promemoria.',
         ] },
         { q: 'Le notifiche sul telefono non si attivano', a: [
           '"Serve un indirizzo sicuro": apri TidyQuest al suo indirizzo https://, non http:// o un numero come 192.168…. Un server di casa deve prima avere HTTPS.',
@@ -624,6 +637,7 @@ export const GUIDE_IT: GuideSection[] = [
         ] },
         { q: 'Una serie si è spezzata mentre eravamo via', a: [
           'Usa la Modalità vacanza (tutta la casa, Impostazioni → Generale) o la vacanza per membro (Membri della famiglia) prima di partire; protegge le serie e congela la salute delle faccende.',
+          'Quando una vacanza finisce (disattivata, o alla sua Data di ritorno), le faccende riprendono da dov’erano all’inizio: i giorni di assenza non contano come trascuratezza. Le serie continuano dal giorno del rientro.',
         ] },
         { q: 'Uno scudo non ha salvato la serie', a: [
           'Ogni giorno saltato richiede il suo scudo. Con meno scudi che giorni saltati, non se ne usa nessuno: la serie ricomincia e gli scudi restano.',
@@ -641,13 +655,13 @@ export const GUIDE_IT: GuideSection[] = [
           'Su iPhone o iPad è normale la prima volta: ha un accesso tutto suo, separato da quello di Safari. Accedi una volta e resti connesso.',
         ] },
         { q: 'Dopo un aggiornamento l’app sulla schermata Home sembra uguale', a: [
-          'Chiudila del tutto (scorrila via nel selettore delle app) e riaprila: all’avvio carica la versione più recente.',
+          'Carica la nuova versione da sola la prossima volta che la apri o cambi pagina. Ancora uguale? Chiudila del tutto (scorrila via nel selettore delle app) e riaprila.',
         ] },
         { q: 'Qualcuno non riesce ad accedere', a: [
-          'Troppe password sbagliate bloccano gli accessi fino a 15 minuti: 10 per un account, o 20 da un dispositivo. Aspetta e riprova; una password corretta azzera il conteggio dell’account.',
-          'Un genitore può impostare una nuova password in Impostazioni → Membri della famiglia.',
+          'Troppe password sbagliate bloccano gli accessi fino a 15 minuti: 10 per un account, o 20 da un dispositivo. Aspetta e riprova; una password corretta azzera il conteggio dell’account. Per cambiare la tua password o l’email di accesso, o per eliminare la famiglia, sono ammesse 5 password sbagliate in 15 minuti.',
+          'Un genitore può impostare una nuova password in Impostazioni → Membri della famiglia. Le password devono avere almeno 4 caratteri; su tidyquest.org quella di un genitore ne richiede 8.',
           'Nessun genitore riesce ad accedere? Chi gestisce il server può reimpostare la password del primo genitore con ADMIN_RESET_PASSWORD (README, "Admin Password Recovery"). "Password dimenticata?" nella schermata di accesso dice lo stesso.',
-          'Dopo aver importato un backup, chi aveva già un account su questo server mantiene la sua password. Chi è nuovo su questo server ha bisogno che un genitore gliene imposti una in Membri della famiglia.',
+          'Dopo aver importato un backup, chi aveva già un account su questo server mantiene la sua password. Chi è nuovo su questo server ha bisogno che un genitore gliene imposti una in Membri della famiglia. Alcuni dispositivi potrebbero uscire dall’account dopo un’importazione; basta accedere di nuovo con la stessa password.',
         ] },
         { q: 'Qualcuno non è nella schermata di accesso, oppure dice che l’accesso è disattivato', a: [
           'Un genitore ha disattivato Può accedere per lui: la sua scheda in Impostazioni → Membri della famiglia dice 🔒 Senza accesso. Su tidyquest.org l’accesso dice solo che nome o password sono sbagliati.',
@@ -692,10 +706,13 @@ export const GUIDE_IT: GuideSection[] = [
           'Un link copiato a una foto non si apre da nessun’altra parte, apposta: così le foto dei bambini restano private.',
           'Su tidyquest.org nessuna foto si vede mentre la famiglia è in pausa o la sua prova gratuita è finita.',
         ] },
+        { q: 'Dice "Impossibile raggiungere TidyQuest"', a: [
+          'L’app non è riuscita a raggiungere il server all’apertura: niente Wi-Fi o dati, oppure il server si sta riavviando o aggiornando. Resti connesso e le notifiche di questo dispositivo restano attive. Riprova da sola ogni pochi secondi; Riprova lo fa subito.',
+        ] },
         { q: 'Sono stato disconnesso da tutti i dispositivi', a: [
           'Un genitore ha cambiato la tua password o ha usato Esci da tutti i dispositivi, oppure hai cambiato la tua password o usato Esci da tutti gli altri dispositivi su un altro dispositivo. Accedi di nuovo con la tua password attuale.',
           'Primo genitore: chi gestisce il server potrebbe aver reimpostato la tua password lì (ADMIN_RESET_PASSWORD). Chiedigli quella nuova.',
-          'Un accesso termina anche da solo dopo 30 giorni su ogni dispositivo.',
+          'Un accesso termina da solo soltanto su un dispositivo che non apre TidyQuest da 30 giorni. Un dispositivo che usi resta connesso.',
         ] },
         { q: 'Dice "Non ha funzionato"', a: [
           'Il telefono non è riuscito a raggiungere il server (niente Wi-Fi o dati), oppure qualcuno ha cambiato la stessa cosa nello stesso momento. La pagina si ricarica; controlla, poi riprova.',

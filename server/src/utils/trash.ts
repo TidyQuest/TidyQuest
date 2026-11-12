@@ -110,9 +110,14 @@ function rebuildReward(snapshot: any, deletedAt: string | null): number {
   for (const r of snapshot.redemptions || []) {
     if (userExists(r.userId)) redemptionIds.set(r.id, insertSnapshotRow('reward_redemptions', { ...r, rewardId }));
   }
+  let viewers = 0;
   for (const v of snapshot.visibility || []) {
-    if (userExists(v.userId)) insertSnapshotRow('reward_visibility', { ...v, rewardId });
+    if (!userExists(v.userId)) continue;
+    insertSnapshotRow('reward_visibility', { ...v, rewardId });
+    viewers++;
   }
+  // Everyone it was for is gone: it comes back hidden, not shown to the whole family (BUG-44)
+  if ((snapshot.visibility || []).length > 0 && viewers === 0) db.prepare('UPDATE rewards SET isActive = 0 WHERE id = ?').run(rewardId);
   for (const pr of snapshot.prices || []) {
     if (userExists(pr.userId)) insertSnapshotRow('reward_prices', { ...pr, rewardId });
   }

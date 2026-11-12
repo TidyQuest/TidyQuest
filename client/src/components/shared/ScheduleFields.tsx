@@ -198,7 +198,11 @@ export function TimerPicker({ value, onChange, t }: {
       <label style={labelStyle} htmlFor="tq-timer-minutes">⏱️ {t('timer.setting')}</label>
       <input id="tq-timer-minutes" type="number" inputMode="numeric" min={1} max={240} step={1} className="tq-input-compact"
         style={{ width: 72 }} value={value.timerMinutes} placeholder={t('timer.off')}
-        onChange={(e) => onChange({ ...value, timerMinutes: e.target.value.replace(/[^0-9]/g, '').slice(0, 3) })} />
+        onChange={(e) => {
+          // 240 minutes at most: a bigger number made Save do nothing (BUG-38)
+          const digits = e.target.value.replace(/[^0-9]/g, '').slice(0, 3);
+          onChange({ ...value, timerMinutes: digits && Number(digits) > 240 ? '240' : digits });
+        }} />
       <span style={labelStyle}>{t('timer.minutes')}</span>
       {value.timerMinutes && (
         <button type="button" className="tq-btn tq-btn-sm" aria-label={t('timer.off')} onClick={() => onChange({ ...value, timerMinutes: '' })}>×</button>

@@ -60,7 +60,7 @@ export const GUIDE_ES: GuideSection[] = [
       { tip: 'Samsung Internet: toca ☰ abajo y luego Añadir página a → Pantalla de inicio.' },
       { h: 'Conviene saber' },
       { ul: [
-        'Las actualizaciones llegan solas: siempre abre la versión más nueva del servidor. Si tras una actualización parece antigua, ciérrala del todo y ábrela de nuevo.',
+        'Las actualizaciones llegan solas: tras actualizar el servidor, la app carga la versión nueva la próxima vez que la abres o cambias de página. Si aún parece antigua, ciérrala del todo y ábrela de nuevo.',
         'Quítala como cualquier otra app: mantén pulsado el icono. Los datos de la familia se quedan en el servidor.',
         'Para recibir notificaciones en este móvil, abre TidyQuest desde la pantalla de inicio y ve a Perfil → Mis notificaciones → Activar en este dispositivo. Los mensajes también pueden llegar por ntfy, Telegram o Home Assistant (mira "Notificaciones").',
       ] },
@@ -114,7 +114,7 @@ export const GUIDE_ES: GuideSection[] = [
         'Vista de tareas: Todos (elige cada uno), Empieza en Mías o Solo las suyas (bloqueada).',
         'Modo niño: botones más grandes, menos tarjetas, monedas y objetivo a la vista.',
         'El tema y los colores de fiesta acompañan a la persona en todos sus dispositivos (puede cambiarlos en Perfil).',
-        'Vacaciones por miembro: protege su racha y congela la salud de sus tareas mientras está fuera.',
+        'Vacaciones por miembro: protege su racha y congela la salud de sus tareas mientras está fuera. Con una Fecha de regreso terminan solas esa mañana.',
         'Ajustar monedas (Gestionar miembro): suma o resta monedas con un motivo. El número es un cambio, no un saldo nuevo: 10 suma 10, -10 resta 10. Sirve también para padres, incluido tú. Detalles en "Monedas, recompensas y objetivos" → Ajustar monedas.',
         'Contraseña: un padre o una madre puede poner una nueva si alguien olvida la suya. Eso cierra la sesión de esa persona en todos sus dispositivos, y vuelve a entrar con la nueva.',
       ] },
@@ -143,7 +143,7 @@ export const GUIDE_ES: GuideSection[] = [
         'Los padres inician sesión con su correo y su contraseña. Los demás, con el código de familia, su usuario y su contraseña (los padres también pueden).',
         'Ajustes → 🔑 Código de familia muestra el código (como sunny-otter-42), el enlace de la familia y un código QR. Abre el enlace o escanea el código en el móvil o la tableta de un niño: el dispositivo recuerda la familia y solo tiene que escribir su usuario y contraseña. Las mayúsculas, los espacios y los guiones del código dan igual.',
         'Código nuevo da a la familia un código distinto. El código y el enlace antiguos dejan de funcionar; nadie pierde la sesión.',
-        'Ajustes → ✉️ Correo de inicio de sesión: Cambiar correo envía un enlace a la dirección nueva, y el cambio se hace al abrirlo. Otro padre o madre puede usar Añadir correo para iniciar sesión con el suyo.',
+        'Ajustes → ✉️ Correo de inicio de sesión: Cambiar correo envía un enlace a la dirección nueva, y el cambio se hace al abrirlo. Otro padre o madre puede usar Añadir correo para iniciar sesión con el suyo. Para entrar con un correo, la contraseña de un padre o una madre necesita al menos 8 caracteres. Si un padre o una madre pasa a ser miembro o niño, pierde su correo de inicio de sesión y entra con el código de familia.',
         'Al registrarte enviamos un enlace para confirmar tu dirección. Abrirlo es también como un padre o una madre acepta, por sus hijos, lo que TidyQuest guarda (lo pide la ley de privacidad infantil de EE. UU., COPPA). Hasta que un padre o una madre lo confirme, solo pueden iniciar sesión los padres. Una familia que no confirma el correo de un padre o una madre en 30 días se elimina; enviamos un recordatorio una semana antes.',
         '¿Olvidaste la contraseña? en la pantalla de inicio de sesión envía a un padre o una madre un enlace que funciona una vez, durante una hora. Los niños y adolescentes piden a sus padres que pongan una nueva en Ajustes → Miembros de la familia.',
       ] },
@@ -208,7 +208,7 @@ export const GUIDE_ES: GuideSection[] = [
       { ul: [
         'Sin asignar: cualquiera. La primera persona que la termina se lleva las monedas ("el primero gana").',
         'Asignada a algunas personas: solo ellas pueden hacerla.',
-        'Compartida: cada asignado hace su parte y recibe una parte igual.',
+        'Compartida: cada asignado hace su parte y recibe una parte igual. La tarea vuelve a estar limpia cuando todos han hecho su parte, sea el día que sea. Hasta que toque de nuevo, cada persona solo puede hacer la suya una vez.',
         'Reparto personalizado: cada asignado recibe un porcentaje fijo.',
         'Rotación: por turnos, por cada vez que se completa o por semana natural.',
       ] },
@@ -294,10 +294,10 @@ export const GUIDE_ES: GuideSection[] = [
       { where: 'Ajustes → Catálogo de recompensas, Objetivos por miembro, Monedas por esfuerzo' },
       { h: 'Recompensas' },
       { ul: [
-        'Cada recompensa tiene un precio. Los niños la piden; un padre o una madre la aprueba o la rechaza.',
+        'Cada recompensa tiene un precio. Los niños la piden; un padre o una madre la aprueba o la rechaza. Rechazar abre una casilla para una nota opcional de una línea (por qué no, o cuándo volver a pedirla). El niño la recibe con su notificación y la ve bajo la solicitud en Mi historial de canjes; si queda vacía, se rechaza sin nota.',
         '¿Aprobaste una por error? Solicitudes de recompensas (debajo del catálogo) tiene Reembolsar junto a cada recompensa aprobada: las monedas vuelven (en un bote compartido, a todos los que aportaron) y se muestra como rechazada.',
         'Reglas por recompensa: un límite (por día, semana, mes o total; por persona o para todos), una ventana de fechas, Rotativa (solo se muestran unas pocas cada semana), quién puede verla, un precio distinto por persona y una categoría.',
-        'Ahorro compartido: cualquiera puede aportar monedas a un bote; cuando está lleno pasa a un padre o una madre. La casilla de aportar empieza en 0 y cada aportación aparece en Actividad. Un bote lleno no se puede cancelar desde Mi historial de canjes ("Compartida: decide un padre o una madre"): un padre o una madre lo rechaza y todos recuperan sus monedas.',
+        'Ahorro compartido: cualquiera puede aportar monedas a un bote; cuando está lleno pasa a un padre o una madre. La casilla de aportar empieza en 0 y cada aportación aparece en Actividad. Un bote lleno no se puede cancelar desde Mi historial de canjes ("Compartida: decide un padre o una madre"): un padre o una madre lo rechaza y todos recuperan sus monedas. Si un padre o una madre baja el precio por debajo de lo que ya hay en el bote, el bote cuenta como lleno y las monedas que sobran se devuelven, empezando por las últimas aportaciones.',
       ] },
       { h: 'Comprar para otra persona' },
       { p: 'Padres: arriba en Recompensas, elige a alguien en Comprar para. La tienda muestra entonces sus monedas, sus precios y sus límites, y lo que compras se paga con sus monedas. Cuenta como entregado, así que nadie tiene que aprobarlo. Actividad y Estadísticas lo muestran como suyo, comprado por ti. Útil para alguien que no inicia sesión (ver "Personas y roles"). Las recompensas compartidas (bote) siguen como antes.' },
@@ -355,7 +355,7 @@ export const GUIDE_ES: GuideSection[] = [
       ] },
       { h: 'Escudos de racha' },
       { ul: [
-        'Una racha cuenta los días seguidos con al menos una tarea. Cada 7 días seguidos ganas un 🛡️ escudo; puedes guardar 2.',
+        'Una racha cuenta los días seguidos con al menos una tarea. Cada 7 días seguidos ganas un 🛡️ escudo; puedes guardar 2. Una tarea que espera la aprobación de un padre o una madre cuenta para el día en que se hizo.',
         'Compra un escudo en la tarjeta de racha de Inicio (25 monedas por defecto; los padres fijan el precio en Ajustes → Funciones).',
         'Un día perdido usa un escudo solo, justo después de medianoche, y la racha sigue (el día perdido no suma). Dos días perdidos necesitan dos escudos; si faltan, no se usa ninguno y la racha vuelve a empezar.',
         'Una tarea que espera la aprobación de un padre cuenta para su día.',
@@ -390,6 +390,12 @@ export const GUIDE_ES: GuideSection[] = [
         'El Registro de notificaciones muestra lo que se envió, quedó en cola o falló, y por qué.',
       ] },
       { p: 'En tidyquest.org, las notificaciones llegan directamente al móvil (web push), o van por ntfy.sh o Telegram. Tu propio servidor ntfy y Home Assistant solo funcionan en un servidor en casa.' },
+      { ul: [
+        'Un mensaje que esperó durante las horas de silencio solo sale si sigue siendo cierto. Se descarta si la tarea ya se hizo, si su día ya pasó, si el equipo o el evento de monedas dobles terminó, o si ese tipo se desactivó.',
+        'Quien está de vacaciones no recibe mensajes sobre tareas (para hoy, recordatorios, la lista de la mañana, el aviso de la tarde, Misión de rescate), y durante el Modo vacaciones no los recibe nadie. Las aprobaciones, las peticiones de recompensa y el resumen semanal siguen llegando.',
+        'Una tarea que espera la aprobación de un padre o una madre cuenta como hecha: no hay más recordatorios sobre ella.',
+        'Las tareas iniciales llevan su nombre en el idioma de quien lee el mensaje (en su propio canal).',
+      ] },
       { h: 'Notificaciones en el móvil (web push)' },
       { p: 'Cada uno puede recibir sus notificaciones en su propio móvil u ordenador, directamente desde TidyQuest: sin necesidad de ntfy ni Telegram. Cada persona las activa ella misma, en el dispositivo: Perfil → Mis notificaciones → Activar en este dispositivo. Cuenta como su propio canal: sus mensajes llegan en su idioma y ya no van al canal de la familia.' },
       { ul: [
@@ -438,12 +444,13 @@ export const GUIDE_ES: GuideSection[] = [
     blocks: [
       { ul: [
         'Ajustes → Datos y privacidad → Exportar: una copia de seguridad JSON completa. Guarda una antes de hacer cambios grandes.',
-        'Importar restaura una copia de seguridad y REEMPLAZA todo. Quien ya tiene una cuenta en este servidor (mismo nombre de usuario) conserva su contraseña actual. Quien es nuevo en este servidor recibe una aleatoria, así que después pon sus contraseñas en Miembros de la familia.',
-        'Ajustes → Hojas de cálculo: descarga tareas o recompensas, edítalas en cualquier aplicación de hojas de cálculo y vuelve a cargarlas. Primero ves una vista previa y no se elimina nada.',
+        'Importar restaura una copia de seguridad y REEMPLAZA todo. Quien ya tiene una cuenta en este servidor (mismo nombre de usuario) conserva su contraseña actual. Quien es nuevo en este servidor recibe una aleatoria, así que después pon sus contraseñas en Miembros de la familia. Tienes que estar en la copia como Admin (mismo nombre de usuario), o la importación se rechaza. Algunos dispositivos pueden cerrar sesión después; basta con volver a entrar con la misma contraseña.',
+        'Ajustes → Hojas de cálculo: descarga tareas o recompensas, edítalas en cualquier aplicación de hojas de cálculo y vuelve a cargarlas. Primero ves una vista previa y no se elimina nada. Las tareas de una sola vez conservan su fecha (columnas one_time y do_by).',
         'Para eliminar una tarea, ábrela con Editar; Eliminar tarea está al final del formulario. Va a Ajustes → Eliminados recientemente durante 30 días y se puede restaurar desde ahí. Las recompensas funcionan igual.',
         'Eliminar nunca quita monedas ni borra lo que se hizo: las veces que se completó siguen apareciendo en Actividad, el Tablero y los objetivos con el nombre de la tarea, incluso cuando ya no está en Eliminados recientemente.',
         'Una recompensa eliminada conserva su historial igual: lo que se compró sigue en Estadísticas con su nombre. Una solicitud que aún espera sigue en Solicitudes de recompensas (bajo el catálogo), así que un padre o una madre todavía puede aprobarla o rechazarla, y al rechazarla se devuelven las monedas.',
         'Eliminar una habitación (Habitaciones → 🗑) elimina también sus tareas, y la habitación no se puede recuperar. Su historial y sus monedas se quedan.',
+        'Eliminar a un miembro de la familia (Eliminar usuario, en Ajustes → Miembros de la familia) no se puede deshacer. Su recompensa compartida que aún esperaba a un padre o una madre se rechaza primero, para que los demás recuperen sus aportaciones. Una recompensa que solo esa persona podía ver se oculta en lugar de mostrarse a todos: toca Mostrar en Ajustes → Catálogo de recompensas si debe tenerla otra persona.',
       ] },
       { p: 'Las fotos de prueba van con su tarea: cuando una tarea sale de Eliminados recientemente (o se elimina su habitación), sus fotos se eliminan también, pero quién la hizo y las monedas se quedan. La foto de avatar de una persona se va cuando se la quita.' },
       { p: 'Cada foto se vuelve a dibujar en el móvil o el ordenador antes de subirse, lo que deja fuera dónde y con qué se hizo. Una foto que el navegador no puede leer (algunas fotos HEIC) se rechaza: envía un JPEG o una captura de pantalla.' },
@@ -479,6 +486,7 @@ export const GUIDE_ES: GuideSection[] = [
       { qa: [
         { q: 'El botón Hecho está gris', a: [
           'Su etiqueta dice por qué: "No asignada" (la tarea de otra persona), "Esperando aprobación" (un padre o una madre aún no ha aprobado tu última), "Hecho por …" (alguien ya la hizo hoy), "Hecho hoy / esta semana" (el límite de repeticiones de una tarea a demanda) o "🤝 nombres" (un equipo la ha reclamado hoy).',
+          '"Esperando a …" es una tarea en Rotación en el turno de otra persona. Cuando el botón muestra un día en vez de Hecho, la tarea no vuelve a tocar hasta entonces.',
           'Si Hecho da un mensaje de "todavía no toca": la tarea aún no toca de nuevo. Un padre o una madre puede activar "Completar antes" para rutinas diarias.',
         ] },
         { q: 'La tarea de un niño muestra ▶ en vez de Hecho', a: [
@@ -499,7 +507,7 @@ export const GUIDE_ES: GuideSection[] = [
           'Algunas tarjetas solo aparecen cuando tienen algo (Lo de siempre, Quizá olvidaste estas, Programadas, Completadas hoy), y algunas son solo para padres.',
         ] },
         { q: 'Un padre o una madre no aparece en el Tablero', a: [
-          'Con Participa en tareas desactivado, un padre o una madre solo aparece en el Tablero en un periodo en que hizo una tarea. Para que siga ahí, actívalo en Ajustes → Miembros de la familia. Cada uno puede cambiarlo también en su propia tarjeta.',
+          'Con Participa en tareas desactivado, un padre o una madre solo aparece en el Tablero en un periodo en que hizo una tarea. Para que siga ahí, actívalo en Ajustes → Miembros de la familia. Cada uno puede cambiarlo también en su propia tarjeta. Las tarjetas Clasificación y Estado de monedas del inicio siguen la misma regla.',
         ] },
         { q: 'No aparece Una cosa cada vez, o falta una tarea', a: [
           'Para padres y miembros está desactivada salvo que se elija en Ajustes → Miembros de la familia. Los niños la tienen (un botón en el inicio) salvo que un padre la desactive ahí. También puede estar oculta en Inicio → Personalizar, o desactivada en Ajustes → Funciones.',
@@ -541,6 +549,11 @@ export const GUIDE_ES: GuideSection[] = [
           'Los tipos privados (resultados, resúmenes, avisos, ánimos) necesitan el canal propio de la persona.',
           'Las horas de silencio y el horario escolar retienen los mensajes hasta que terminan.',
           'El Registro de notificaciones muestra cada mensaje y cualquier error.',
+        ] },
+        { q: 'Un recordatorio o el mensaje de la mañana nunca llegó', a: [
+          'Un mensaje retenido por las horas de silencio se descarta si ya no es cierto cuando terminan: la tarea se hizo (o espera aprobación), su día ya pasó, o el equipo o el evento de monedas dobles terminó.',
+          'Para quien está de vacaciones, y para todos durante el Modo vacaciones, los mensajes sobre tareas no se envían.',
+          'Los avisos siguientes de un recordatorio tardío pueden llegar después de medianoche: 2 y 4 horas después de la hora del recordatorio.',
         ] },
         { q: 'Las notificaciones en el móvil no se activan', a: [
           '"Necesita una dirección segura": abre TidyQuest en su dirección https://, no http:// ni un número como 192.168…. Un servidor en casa necesita HTTPS primero.',
@@ -624,6 +637,7 @@ export const GUIDE_ES: GuideSection[] = [
         ] },
         { q: 'Una racha se rompió mientras estábamos fuera', a: [
           'Usa el Modo vacaciones (toda la casa, Ajustes → General) o las vacaciones por miembro (Miembros de la familia) antes de irte; protege las rachas y congela la salud de las tareas.',
+          'Cuando terminan unas vacaciones (al desactivarlas o en su Fecha de regreso), las tareas siguen donde estaban al empezar: los días fuera no cuentan como descuido. Las rachas continúan desde el día de la vuelta.',
         ] },
         { q: 'Un escudo no salvó la racha', a: [
           'Cada día perdido necesita su propio escudo. Con menos escudos que días perdidos, no se usa ninguno: la racha vuelve a empezar y los escudos se guardan.',
@@ -641,13 +655,13 @@ export const GUIDE_ES: GuideSection[] = [
           'En iPhone o iPad es normal la primera vez: guarda su propia sesión, aparte de la de Safari. Inicia sesión una vez y se queda así.',
         ] },
         { q: 'Tras una actualización, la app de la pantalla de inicio se ve igual', a: [
-          'Ciérrala del todo (deslízala fuera en el selector de apps) y ábrela otra vez: al arrancar carga la versión más nueva.',
+          'Carga la versión nueva sola la próxima vez que la abres o cambias de página. ¿Sigue igual? Ciérrala del todo (deslízala fuera en el selector de apps) y ábrela otra vez.',
         ] },
         { q: 'Alguien no puede iniciar sesión', a: [
-          'Demasiadas contraseñas incorrectas bloquean los inicios de sesión hasta 15 minutos: 10 en una cuenta o 20 desde un dispositivo. Espera e inténtalo de nuevo; una contraseña correcta borra el recuento de la cuenta.',
-          'Un padre o una madre puede poner una contraseña nueva en Ajustes → Miembros de la familia.',
+          'Demasiadas contraseñas incorrectas bloquean los inicios de sesión hasta 15 minutos: 10 en una cuenta o 20 desde un dispositivo. Espera e inténtalo de nuevo; una contraseña correcta borra el recuento de la cuenta. Al cambiar tu propia contraseña o tu correo de inicio de sesión, o al eliminar la familia, se permiten 5 contraseñas incorrectas en 15 minutos.',
+          'Un padre o una madre puede poner una contraseña nueva en Ajustes → Miembros de la familia. Las contraseñas necesitan al menos 4 caracteres; en tidyquest.org, la de un padre o una madre necesita 8.',
           '¿Ningún padre ni madre puede iniciar sesión? Quien gestiona el servidor puede restablecer la contraseña del primer padre o madre con ADMIN_RESET_PASSWORD (README, "Admin Password Recovery"). "¿Olvidaste la contraseña?" en la pantalla de inicio de sesión dice lo mismo.',
-          'Tras importar una copia de seguridad, quien ya tenía una cuenta en este servidor conserva su contraseña. Quien es nuevo en este servidor necesita que un padre o una madre le ponga una en Miembros de la familia.',
+          'Tras importar una copia de seguridad, quien ya tenía una cuenta en este servidor conserva su contraseña. Quien es nuevo en este servidor necesita que un padre o una madre le ponga una en Miembros de la familia. Algunos dispositivos pueden cerrar sesión tras una importación; basta con volver a entrar con la misma contraseña.',
         ] },
         { q: 'Alguien no está en la pantalla de inicio de sesión, o dice que el inicio de sesión está desactivado', a: [
           'Un padre o una madre desactivó Puede iniciar sesión para esa persona: su tarjeta en Ajustes → Miembros de la familia dice 🔒 Sin sesión. En tidyquest.org, el inicio de sesión solo dice que el nombre o la contraseña no son correctos.',
@@ -692,10 +706,13 @@ export const GUIDE_ES: GuideSection[] = [
           'Un enlace copiado a una foto no se abre en ningún otro sitio, a propósito: así las fotos de los niños siguen siendo privadas.',
           'En tidyquest.org no se ve ninguna foto mientras la familia está en pausa o su prueba gratuita ha terminado.',
         ] },
+        { q: 'Dice "No se puede conectar con TidyQuest"', a: [
+          'La app no pudo conectar con el servidor al abrirse: sin Wi-Fi ni datos, o el servidor se está reiniciando o actualizando. Sigues con la sesión iniciada y las notificaciones de este dispositivo siguen activadas. Lo vuelve a intentar cada pocos segundos; Reintentar lo hace al momento.',
+        ] },
         { q: 'Se cerró mi sesión en todos los dispositivos', a: [
           'Un padre o una madre cambió tu contraseña o usó Cerrar sesión en todos los dispositivos, o tú cambiaste tu contraseña o usaste Cerrar sesión en los demás dispositivos en otro dispositivo. Vuelve a iniciar sesión con tu contraseña actual.',
           'Primer padre o madre: quien gestiona el servidor puede haber restablecido tu contraseña allí (ADMIN_RESET_PASSWORD). Pídele la nueva.',
-          'Además, una sesión termina sola a los 30 días en cada dispositivo.',
+          'Una sesión solo termina sola en un dispositivo que lleva 30 días sin abrir TidyQuest. Un dispositivo que usas sigue con la sesión iniciada.',
         ] },
         { q: 'Dice "No funcionó"', a: [
           'El móvil no pudo llegar al servidor (sin Wi-Fi ni datos), o alguien cambió lo mismo en el mismo momento. La página se recarga; revísala y vuelve a intentarlo.',

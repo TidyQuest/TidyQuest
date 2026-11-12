@@ -16,7 +16,10 @@ const pill = (on: boolean) => ({
  */
 export function CheerBar({ completionId, cheers, canCheer, language, mascotName }: { completionId: number; cheers: CheerSummary; canCheer: boolean; language?: string; mascotName?: string | null }) {
   const { t } = useTranslation(language);
-  const [state, setState] = useState(cheers);
+  // Drawn from what Home last loaded, so other people's cheers show up while the page stays open (BUG-39).
+  // My own tap shows straight away, until a reload brings something newer than what was on screen then.
+  const [mine, setMine] = useState<{ over: string; cheers: CheerSummary } | null>(null);
+  const state = mine && mine.over === JSON.stringify(cheers) ? mine.cheers : cheers;
   const [open, setOpen] = useState(false);
   const [busy, setBusy] = useState(false);
   if (!canCheer && state.counts.length === 0 && !mascotName) return null;
@@ -24,7 +27,11 @@ export function CheerBar({ completionId, cheers, canCheer, language, mascotName 
   const send = async (emoji: string) => {
     if (!canCheer || busy) return;
     setBusy(true);
-    try { setState((await api.cheer(completionId, emoji)).cheers); setOpen(false); } catch { /* keep what's shown */ } finally { setBusy(false); }
+    try {
+      const over = JSON.stringify(cheers);
+      setMine({ over, cheers: (await api.cheer(completionId, emoji)).cheers });
+      setOpen(false);
+    } catch { /* keep what's shown */ } finally { setBusy(false); }
   };
   return (
     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, alignItems: 'center', marginTop: 6 }}>

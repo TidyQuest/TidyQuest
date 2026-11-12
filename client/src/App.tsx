@@ -1,6 +1,8 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { BrowserRouter, Routes, Route, useNavigate, useLocation, useNavigationType, Navigate, useParams, useSearchParams } from 'react-router-dom';
 import { useAuth } from './hooks/useAuth';
+import { taskErrorText } from './utils/taskError';
+import { useAppUpdate } from './utils/appUpdate';
 import { api, NEW_TOKEN_EVENT } from './hooks/useApi';
 import { Sidebar } from './components/layout/Sidebar';
 import { PageHeader } from './components/layout/PageHeader';
@@ -48,7 +50,7 @@ import { SeasonGreeting, SeasonParticles, SeasonStrip } from './components/share
 takeFamilyLink();
 
 function AppContent() {
-  const { user, loading, login, signIn, register, logout, refreshUser } = useAuth();
+  const { user, loading, startFailed, retryStart, login, signIn, register, logout, refreshUser } = useAuth();
   const hosted = useHosted();
   // Hosted mode: the family code, this person's sign-in email, and whether the family is locked
   const [hostedAccount, setHostedAccount] = useState<HostedAccount | null>(null);
@@ -106,7 +108,8 @@ function AppContent() {
   const roomsRefreshInFlight = useRef<Promise<void> | null>(null);
   const [gamificationEnabled, setGamificationEnabled] = useState(true);
   const [confetti, setConfetti] = useState(false);
-  const [taskErrorMsg, setTaskErrorMsg] = useState<string | null>(null);
+  // The short banner after a Done: red when it failed, green (ok) when it only waits for a parent (FIX-33)
+  const [taskMsg, setTaskMsg] = useState<{ text: string; ok?: boolean } | null>(null);
   const [photoProblem, setPhotoProblem] = useState<PhotoProblem | null>(null);
   const [unlockedAchievements, setUnlockedAchievements] = useState<string[]>([]);
   // Names for the pop-up from the completion itself (parent-made and secret badges aren't in the page data yet)
@@ -121,6 +124,7 @@ function AppContent() {
   });
   const navigate = useNavigate();
   const location = useLocation();
+  useAppUpdate(location.pathname);
 
   const refreshRooms = useCallback(async () => {
     if (roomsRefreshInFlight.current) return roomsRefreshInFlight.current;
@@ -204,6 +208,9 @@ function AppContent() {
     }
     if (path === '/rewards') {
       loadRewards();
+      // The balance to spend, and the requests waiting for a parent
+      void refreshUser();
+      loadDashboard();
     }
   }, [location.pathname]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -216,7 +223,11 @@ function AppContent() {
     const isRewardsPath = location.pathname === '/rewards';
     const tick = () => {
       if (document.visibilityState !== 'visible') return;
-      if (isDashboardPath) loadDashboard();
+      // The coin balance in the header and on Rewards: a parent may just have approved a chore, given a bonus
+      // or refunded a reward (BUG-36)
+      void refreshUser();
+      // Rewards shows the parents' request list, which comes with the dashboard
+      if (isDashboardPath || isRewardsPath) loadDashboard();
       if (isRoomsPath) refreshRooms();
       if (isRewardsPath) loadRewards();
     };
@@ -226,7 +237,7 @@ function AppContent() {
       clearInterval(interval);
       document.removeEventListener('visibilitychange', tick);
     };
-  }, [user, location.pathname, loadDashboard, refreshRooms, loadRewards]);
+  }, [user, location.pathname, loadDashboard, refreshRooms, loadRewards, refreshUser]);
 
   // Each page opens at the top. A room opened for one task (?task=) scrolls to that task
   // itself, a link with a #section (the guide) scrolls to that section, and Rooms reached by going
@@ -315,8 +326,8 @@ function AppContent() {
       }
       if (result.pendingApproval) {
         setConfetti(false);
-        setTaskErrorMsg(t('app.pendingApproval'));
-        setTimeout(() => setTaskErrorMsg(null), 3500);
+        setTaskMsg({ text: t('app.pendingApproval'), ok: true });
+        setTimeout(() => setTaskMsg(null), 3500);
         // Home and the room page both show "waiting for approval" once they reload
         await Promise.all([refreshRooms(), loadDashboard()]);
         return true;
@@ -332,21 +343,8 @@ function AppContent() {
       return true;
     } catch (err) {
       setConfetti(false);
-      const msg = err instanceof Error ? err.message : '';
-      if (msg === 'already_done_today') {
-        setTaskErrorMsg(t('app.alreadyDoneToday'));
-      } else if (msg === 'already_done_by_other') {
-        setTaskErrorMsg(t('app.alreadyDoneByOther'));
-      } else if (msg === 'already_done') {
-        setTaskErrorMsg(t('app.alreadyDone'));
-      } else if (msg === 'repeat_limit_reached') {
-        setTaskErrorMsg(t('repeat.limitReached'));
-      } else if (msg === 'not_assigned') {
-        setTaskErrorMsg(t('app.notAssigned'));
-      } else {
-        setTaskErrorMsg(msg || t('common.error'));
-      }
-      setTimeout(() => setTaskErrorMsg(null), 3500);
+      setTaskMsg({ text: taskErrorText(err, t) });
+      setTimeout(() => setTaskMsg(null), 3500);
       return false;
     }
   };
@@ -377,8 +375,14 @@ function AppContent() {
           return;
         }
         await api.importData(data);
-        await loadDashboard();
+        // Start again with the imported family (you may have another id in it)
+        window.location.reload();
       } catch (err) {
+        const body = (err as { body?: { code?: string; username?: string } })?.body;
+        if (body?.code === 'not-in-backup') {
+          alert(t('app.importNotIn').replace('{name}', body.username ?? ''));
+          return;
+        }
         alert(t('app.importFailed').replace('{error}', limitError(err, t, err instanceof Error ? err.message : t('common.error'))));
       }
     };
@@ -389,6 +393,23 @@ function AppContent() {
     return (
       <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'var(--warm-bg)' }}>
         <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--warm-text-light)' }}>{t('common.loading')}...</div>
+      </div>
+    );
+  }
+
+  // Signed in, but the server didn't answer when the app opened (BUG-34): say so and keep trying
+  if (startFailed && !user) {
+    return (
+      <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 14, padding: 24, textAlign: 'center', backgroundColor: 'var(--warm-bg)' }}>
+        <div style={{ fontSize: 44 }} aria-hidden>📡</div>
+        <h2 style={{ fontSize: 20, fontWeight: 800, color: 'var(--warm-text)', margin: 0 }}>{t('app.cantReachTitle')}</h2>
+        <p style={{ color: 'var(--warm-text-light)', fontWeight: 600, maxWidth: 340, margin: 0 }}>{t('app.cantReachText')}</p>
+        <button onClick={() => void retryStart()} style={{ padding: '10px 24px', borderRadius: 10, border: 'none', background: 'var(--warm-accent)', color: '#fff', fontWeight: 700, fontSize: 15, cursor: 'pointer', fontFamily: 'inherit' }}>
+          {t('proof.tryAgain')}
+        </button>
+        <button onClick={logout} style={{ background: 'none', border: 'none', color: 'var(--warm-text-light)', fontWeight: 600, fontSize: 13, textDecoration: 'underline', cursor: 'pointer', fontFamily: 'inherit' }}>
+          {t('profile.logout')}
+        </button>
       </div>
     );
   }
@@ -484,16 +505,16 @@ function AppContent() {
         />
       )}
 
-      {/* Task error toast */}
-      {taskErrorMsg && (
-        <div style={{
+      {/* After a Done: what went wrong (red), or that it now waits for a parent (green) */}
+      {taskMsg && (
+        <div role={taskMsg.ok ? 'status' : 'alert'} style={{
           position: 'fixed', top: 20, left: '50%', transform: 'translateX(-50%)',
-          zIndex: 9999, background: '#EF4444', color: '#fff',
+          zIndex: 9999, background: taskMsg.ok ? '#15803D' : '#EF4444', color: '#fff',
           padding: '12px 24px', borderRadius: 12, fontWeight: 700, fontSize: 15,
           boxShadow: '0 4px 16px rgba(0,0,0,0.18)', pointerEvents: 'none',
           width: 'max-content', maxWidth: 'calc(100vw - 32px)', boxSizing: 'border-box', textAlign: 'center',
         }}>
-          {taskErrorMsg}
+          {taskMsg.ok && '✅ '}{taskMsg.text}
         </div>
       )}
 
@@ -570,8 +591,8 @@ function AppContent() {
                   onNavigateToRooms={() => navigate('/rooms')}
                   onNavigateToTasks={(criticalOnly) => navigate(`/tasks?person=all${criticalOnly ? '&status=critical' : ''}`)}
                   onOpenFocus={() => navigate('/focus')}
-                  onRewardRequestAction={async (id, status) => {
-                    await api.updateRedemptionStatus(id, status);
+                  onRewardRequestAction={async (id, status, note) => {
+                    await api.updateRedemptionStatus(id, status, note);
                     await Promise.all([loadDashboard(), loadRewards()]);
                   }}
                 />
@@ -793,9 +814,13 @@ function AppContent() {
                 people={user.role === 'admin' ? familySettings.filter((u) => u.id !== user.id) : undefined}
                 onBoughtFor={() => void loadDashboard()}
                 pendingRequests={dashboardData?.pendingRewardRequests}
-                onRewardRequestAction={async (id, status) => {
-                  await api.updateRedemptionStatus(id, status);
-                  await Promise.all([loadDashboard(), loadRewards()]);
+                onRewardRequestAction={async (id, status, note) => {
+                  try {
+                    await api.updateRedemptionStatus(id, status, note);
+                  } finally {
+                    // Also when it failed: the other parent may have decided it already, so the list is out of date
+                    await Promise.all([loadDashboard(), loadRewards()]);
+                  }
                 }}
                 onRedeem={async (rewardId: number, costCoins: number) => {
                   try {

@@ -382,7 +382,7 @@
       "alreadyDoneToday": "You already completed this task today!",
       "alreadyDoneByOther": "Someone else already completed this task today!",
       "notAssigned": "This task is not assigned to you",
-      "pendingApproval": "Completion submitted. Waiting for admin approval.",
+      "pendingApproval": "Sent! Waiting for a parent to approve.",
       "doneBy": "Done by {name}",
       "childrenGroup": "Children",
       "tasksSubtitle": "Every task in every room",
@@ -392,7 +392,14 @@
       "takeBack": "Take back",
       "takeBackHint": "Tapped Done by mistake? Take it back before a parent decides.",
       "importInvalid": "This isn't a TidyQuest backup: it has no people or rooms.",
-      "importFailed": "Import failed: {error}"
+      "importFailed": "Import failed: {error}",
+      "importNotIn": "This backup doesn't list you ({name}) as an Admin, so importing it would lock you out. Sign in as an Admin who is in the backup and try again.",
+      "notYetDue": "This isn't due yet.",
+      "cantReachTitle": "Can't reach TidyQuest",
+      "cantReachText": "You're still signed in. Trying again every few seconds…",
+      "notYourTurn": "It's not your turn for this one.",
+      "chorePaused": "This chore is paused.",
+      "claimedByTeam": "A team-up has already claimed this one."
     },
     "admin": {
       "whoDidThisTask": "Who completed this task?",
@@ -464,7 +471,10 @@
       "theirRequests": "{name}'s rewards",
       "boughtBy": "bought by {name}",
       "confirmTextFor": "Buy \"{reward}\" for {name}? It costs {coins} of their coins.",
-      "priceChanged": "The price just changed to {coins} coins. Tap Confirm to pay that, or Cancel."
+      "priceChanged": "The price just changed to {coins} coins. Tap Confirm to pay that, or Cancel.",
+      "alreadyDecided": "That request was already decided. The list is up to date now.",
+      "rejectNotePlaceholder": "Why not? (optional)",
+      "rejectNoteLabel": "A note for {name}"
     },
     "rewardsPreset": {
       "movie_night": {
@@ -759,7 +769,9 @@
       "forgotAskParent": "Ask a parent to set a new one in Settings → Family Members.",
       "forgotNoParent": "No parent can log in? Whoever runs the server can reset the first parent’s password.",
       "forgotHowTo": "How to reset it",
-      "noLogin": "A parent turned off logging in for you. Ask them to turn it back on in Settings → Family Members."
+      "noLogin": "A parent turned off logging in for you. Ask them to turn it back on in Settings → Family Members.",
+      "tooManyTries": "Too many wrong passwords. Wait 15 minutes and try again.",
+      "passwordMin": "Passwords need at least {n} characters."
     },
     "achievements": {
       "familyProgress": "Family Progress",
@@ -1247,7 +1259,8 @@
       "errBadCost": "Cost must be a whole number of at least 1 (got \"{value}\")",
       "errAmbiguousReward": "{n} rewards are called \"{value}\"; rename one first",
       "errNewRewardCost": "A new reward needs a cost",
-      "errNotSaved": "Line {line} couldn't be saved ({error}), so nothing was changed."
+      "errNotSaved": "Line {line} couldn't be saved ({error}), so nothing was changed.",
+      "errBadDate": "\"{value}\" is not a date (use YYYY-MM-DD, like 2027-03-01)"
     },
     "rewardOrder": {
       "up": "Move up",
@@ -1446,7 +1459,8 @@
       "shieldsSaved": "🛡️ {count} shields saved your {n}-day streak!",
       "shieldGiven": "🛡️ {name} gave you a streak shield. It saves your streak if you miss a day.",
       "recapLastWeek": "📊 Last week: {lines}",
-      "testFamily": "👋 Test from TidyQuest, sent by {name} at {time}: family notifications work!"
+      "testFamily": "👋 Test from TidyQuest, sent by {name} at {time}: family notifications work!",
+      "parentSays": "{parent} says: {reason}"
     },
     "notifyAdmin": {
       "peopleTitle": "Who gets what",
@@ -2167,7 +2181,8 @@
       "deleteFamilyAction": "Delete the family for good",
       "deleteFamilyDone": "{family} was deleted. Thanks for using TidyQuest.",
       "errWrongName": "That isn't the family's name.",
-      "memberPrivacy": "What TidyQuest keeps about each person: {privacy}"
+      "memberPrivacy": "What TidyQuest keeps about each person: {privacy}",
+      "errChangePasswordFirst": "To sign in with an email, your password needs at least {n} characters. Change it in Profile first."
     },
     "limits": {
       "people": "A family can have up to {n} people.",
@@ -2295,7 +2310,7 @@
       "errAge": "Pick an age group for {name}.",
       "errUsername": "{name} needs a username (no spaces).",
       "errUsernameTwice": "Two people have the username {name}.",
-      "errPassword": "{name}'s password needs at least 4 characters.",
+      "errPassword": "{name}'s password needs at least {n} characters.",
       "errUsernameTaken": "That username is already taken. Go back to the Family step and pick another one.",
       "tipsTitle": "Next steps",
       "tourStart": "Show me how to change things",

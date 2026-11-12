@@ -197,18 +197,31 @@ export function potFor(rewardId: number, target: number) {
 
 /**
  * When a shared reward's pot holds its price, turn it into a redemption request (for the last
- * person who chipped in) for a parent to approve. Call inside a transaction. Returns the new
- * redemption id, or null when the pot isn't full.
+ * person who chipped in) for a parent to approve. A pot that holds more than the price, after a
+ * parent lowered it, first gives the extra back, newest chip-ins first (BUG-44). Call inside a
+ * transaction. Returns the new redemption id, or null when the pot isn't full.
  */
 export function completePotIfFull(rewardId: number): number | null {
   const reward = db.prepare('SELECT costCoins, isShared FROM rewards WHERE id = ?').get(rewardId) as { costCoins: number; isShared: number } | undefined;
   if (!reward?.isShared) return null;
-  const open = db.prepare('SELECT userId, amount FROM reward_contributions WHERE rewardId = ? AND redemptionId IS NULL ORDER BY id ASC').all(rewardId) as { userId: number; amount: number }[];
+  const open = db.prepare('SELECT id, userId, amount FROM reward_contributions WHERE rewardId = ? AND redemptionId IS NULL ORDER BY id ASC').all(rewardId) as { id: number; userId: number; amount: number }[];
   const saved = open.reduce((s, c) => s + c.amount, 0);
   if (open.length === 0 || saved < reward.costCoins) return null;
+  for (let extra = saved - reward.costCoins; extra > 0;) {
+    const last = open[open.length - 1];
+    const back = Math.min(extra, last.amount);
+    db.prepare('UPDATE users SET coins = coins + ? WHERE id = ?').run(back, last.userId);
+    if (back === last.amount) {
+      db.prepare('DELETE FROM reward_contributions WHERE id = ?').run(last.id);
+      open.pop();
+    } else {
+      db.prepare('UPDATE reward_contributions SET amount = amount - ? WHERE id = ?').run(back, last.id);
+    }
+    extra -= back;
+  }
   const redemptionId = Number(db.prepare(
     "INSERT INTO reward_redemptions (rewardId, userId, costCoins, status) VALUES (?, ?, ?, 'requested')"
-  ).run(rewardId, open[open.length - 1].userId, saved).lastInsertRowid);
+  ).run(rewardId, open[open.length - 1].userId, reward.costCoins).lastInsertRowid);
   db.prepare('UPDATE reward_contributions SET redemptionId = ? WHERE rewardId = ? AND redemptionId IS NULL').run(redemptionId, rewardId);
   return redemptionId;
 }
@@ -222,6 +235,24 @@ export function refundContributions(redemptionId: number): boolean {
   const rows = db.prepare('SELECT userId, SUM(amount) AS amount FROM reward_contributions WHERE redemptionId = ? GROUP BY userId').all(redemptionId) as { userId: number; amount: number }[];
   for (const r of rows) db.prepare('UPDATE users SET coins = coins + ? WHERE id = ?').run(r.amount, r.userId);
   return rows.length > 0;
+}
+
+/**
+ * Before a family member is deleted (BUG-44; their redemptions and visibility rows go with them). Call inside
+ * the same transaction as the delete.
+ * - Their waiting shared requests are turned down first, so everyone else gets their chip-ins back.
+ * - Rewards that only they could see are hidden: with nobody left on the list they would show for everyone.
+ */
+export function releaseRewardsOf(userId: number) {
+  const waiting = db.prepare("SELECT id FROM reward_redemptions WHERE userId = ? AND status = 'requested'").all(userId) as { id: number }[];
+  for (const r of waiting) {
+    if (refundContributions(r.id)) db.prepare('DELETE FROM reward_contributions WHERE redemptionId = ?').run(r.id);
+  }
+  db.prepare(`
+    UPDATE rewards SET isActive = 0
+    WHERE id IN (SELECT rewardId FROM reward_visibility WHERE userId = ?)
+      AND NOT EXISTS (SELECT 1 FROM reward_visibility v WHERE v.rewardId = rewards.id AND v.userId != ?)
+  `).run(userId, userId);
 }
 
 /** Refund and clear a shared reward's open pot (the reward is deleted or no longer shared). */

@@ -4,7 +4,7 @@ import { AuthRequest, authMiddleware } from '../middleware/auth';
 import { ensureAdmin } from '../utils/adminHelpers';
 import { startOfLocalWeek } from '../utils/periods';
 import { at, wall } from '../utils/clock';
-import { BOARD_MODES, BOARD_PERIODS, buildBoard, familyGoal, type BoardMode, type BoardPeriod } from '../utils/board';
+import { BOARD_MODES, BOARD_PERIODS, buildBoard, familyGoal, participants, type BoardMode, type BoardPeriod } from '../utils/board';
 
 const router = Router();
 router.use(authMiddleware);
@@ -34,20 +34,12 @@ router.get('/', (req: AuthRequest, res: Response) => {
     startDate = firstOfYear.toISOString();
   }
 
-  const users = db.prepare(
-    'SELECT id, username, displayName, avatarColor, avatarType, avatarPreset, avatarPhotoUrl, coins, currentStreak FROM users'
-  ).all() as any[];
-
-  const leaderboard = users.map((user) => {
-    const result = db.prepare(
-      "SELECT COALESCE(SUM(coinsEarned), 0) as points FROM task_completions WHERE userId = ? AND status = 'approved' AND completedAt >= ?"
-    ).get(user.id, startDate) as any;
-
-    return {
-      ...user,
-      points: result.points,
-    };
-  });
+  // The same people as the Board page (#152): kids, members and parents who do chores, plus any other
+  // parent who did one in the period. Nobody else's coins are sent (BUG-44).
+  const points = new Map((db.prepare(
+    "SELECT userId, COALESCE(SUM(coinsEarned), 0) AS points FROM task_completions WHERE status = 'approved' AND completedAt >= ? GROUP BY userId"
+  ).all(startDate) as Array<{ userId: number; points: number }>).map((r) => [r.userId, r.points]));
+  const leaderboard = participants(new Set(points.keys())).map((user) => ({ ...user, points: points.get(user.id) ?? 0 }));
 
   leaderboard.sort((a, b) => b.points - a.points);
   res.json(leaderboard);

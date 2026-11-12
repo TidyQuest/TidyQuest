@@ -174,7 +174,7 @@ describe('setup wizard (NEW-17)', () => {
   it('works for a household without kids', async () => {
     const admin = await createAdmin(agent);
     const res = await agent.post('/api/setup').set(auth(admin.token)).send({
-      people: [{ ref: 'me', kind: 'adult' }, { ref: 'sam', kind: 'adult', displayName: 'Sam', username: 'sam', password: 'sam1' }],
+      people: [{ ref: 'me', kind: 'adult' }, { ref: 'sam', kind: 'adult', displayName: 'Sam', username: 'sam', password: 'sampass1' }],
       rooms: [{ key: 'kitchen', starter: 'kitchen', name: 'Kitchen' }, { key: 'bathroom', starter: 'bathroom', name: 'Bathroom' }],
       chores: [
         { id: 'kitchen.clean_counters', room: 'kitchen', people: ['me', 'sam'] }, // 35 a week, shared: 17.5 each
@@ -227,7 +227,7 @@ describe('setup wizard (NEW-17)', () => {
       people: [
         { ref: 'me', kind: 'adult' },
         { ref: 'kid', kind: 'kid', displayName: 'Sam', ageGroup: '6-8', logsIn: false }, // would get "sam"
-        { ref: 'sam', kind: 'adult', displayName: 'Sam', username: 'sam', password: 'sam1' },
+        { ref: 'sam', kind: 'adult', displayName: 'Sam', username: 'sam', password: 'sampass1' },
       ],
       rooms: [], chores: [], rewards: [],
     });

@@ -23,7 +23,8 @@ export function TodoQuickAdd({ people, language, roomId, onAdded, onCancel }: {
   const [error, setError] = useState('');
 
   const add = async () => {
-    if (!name.trim()) return;
+    // Enter doesn't go through the button, so check here too (BUG-35: Enter twice added it twice)
+    if (!name.trim() || busy) return;
     setBusy(true); setError('');
     try {
       await api.createTodo({ name: name.trim(), assignedUserIds: who, doBy: doBy || null, customCoins: coins.trim() ? Math.max(1, Math.round(Number(coins))) : null, ...(roomId ? { roomId } : {}) });
