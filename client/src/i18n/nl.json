@@ -2489,6 +2489,32 @@
       "guideSum": "Hoe alles samenhangt",
       "troubleSum": "Als er iets niet klopt",
       "setupSum": "De installatie nog eens doorlopen"
+    },
+    "roomPage": {
+      "needsLove": "{room} heeft wat aandacht nodig",
+      "couldTidy": "{room} kan wel een opruimbeurt gebruiken",
+      "looksGood": "{room} ziet er goed uit",
+      "overdue": "{n} te laat",
+      "leftToday": "{n} nog te doen vandaag",
+      "fine": "{n} voorlopig in orde",
+      "coinsWaiting": "{n} munten liggen hier klaar",
+      "chores": "{n} taken",
+      "menu": "Kameropties",
+      "show": "Tonen",
+      "all": "Alle",
+      "mine": "Mijn",
+      "overdueChip": "Te laat",
+      "paused": "Gepauzeerd",
+      "byWhen": "Wanneer het moet",
+      "secOverdue": "Te laat",
+      "secToday": "Vandaag",
+      "secWeek": "Deze week",
+      "secNeeded": "Wanneer nodig",
+      "secLater": "Later",
+      "secPaused": "Gepauzeerd",
+      "urgentFirst": "Dringendste eerst",
+      "showLater": "Toon {n} meer · later",
+      "noneHere": "Geen taken hier."
     }
   }
 }

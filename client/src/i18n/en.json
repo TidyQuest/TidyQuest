@@ -2489,6 +2489,32 @@
       "guideSum": "How it all connects",
       "troubleSum": "When something looks wrong",
       "setupSum": "Walk through the set-up again"
+    },
+    "roomPage": {
+      "needsLove": "{room} needs some love",
+      "couldTidy": "{room} could use a tidy",
+      "looksGood": "{room} looks good",
+      "overdue": "{n} overdue",
+      "leftToday": "{n} left today",
+      "fine": "{n} fine for now",
+      "coinsWaiting": "{n} coins waiting here",
+      "chores": "{n} chores",
+      "menu": "Room options",
+      "show": "Show",
+      "all": "All",
+      "mine": "Mine",
+      "overdueChip": "Overdue",
+      "paused": "Paused",
+      "byWhen": "When it's due",
+      "secOverdue": "Overdue",
+      "secToday": "Today",
+      "secWeek": "This week",
+      "secNeeded": "When needed",
+      "secLater": "Later",
+      "secPaused": "Paused",
+      "urgentFirst": "Most urgent first",
+      "showLater": "Show {n} more · later",
+      "noneHere": "No chores here."
     }
   }
 }

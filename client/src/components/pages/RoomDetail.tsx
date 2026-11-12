@@ -3,10 +3,9 @@ import { useHeaderAdd } from '../layout/headerAdd';
 import { createPortal } from 'react-dom';
 import { RingGauge } from '../shared/RingGauge';
 import { EffortDots } from '../shared/EffortDots';
-import { getRoomIcon } from '../icons/RoomIcons';
 import { TaskIcon } from '../icons/TaskIcons';
 import { IconPicker } from '../shared/IconPicker';
-import { BackIcon, PlusIcon } from '../icons/UIIcons';
+import { PlusIcon } from '../icons/UIIcons';
 import { getRoomHealth } from '../../utils/health';
 import { formatNextDue, isTaskForUser, taskNextDue } from '../../utils/tasks';
 import { taskErrorText } from '../../utils/taskError';
@@ -30,7 +29,7 @@ import { choreDue, choreWho, daysToFreq } from '../../utils/choreText';
 import { claimedLabel } from '../../utils/teamups';
 import type { TeamUpInfo } from '../../hooks/useApi';
 import { DuplicateRoom } from '../shared/DuplicateRoom';
-import { dateStr } from '../../utils/clock';
+import { dateStr, startOfDay } from '../../utils/clock';
 
 const tomorrowIso = () => todayIso(new Date(Date.now() + 86400000));
 
@@ -54,7 +53,9 @@ function healthColor(value: number): string {
   return 'var(--health-red)';
 }
 
-type SortKey = 'name' | 'health' | 'effort' | 'frequency' | 'coins' | 'assigned' | 'dueDate';
+type RoomFilter = 'all' | 'mine' | 'overdue' | 'paused';
+type Bucket = 'overdue' | 'today' | 'week' | 'needed' | 'later' | 'paused';
+type SortKey = 'when' | 'name' | 'health' | 'effort' | 'frequency' | 'coins' | 'assigned' | 'dueDate';
 
 interface CompletedTodayBy {
   completionId: number;
@@ -121,7 +122,6 @@ interface RoomDetailProps {
   onCompleteTask: (taskId: number, proof?: Proof) => void;
   /** Strict Mode is on: kids can attach a note or photo when finishing */
   strictMode?: boolean;
-  onBack: () => void;
   onRefresh?: () => void;
   /** Go to another room (after duplicating this one) */
   onOpenRoom?: (roomId: number) => void;
@@ -181,7 +181,7 @@ function EffortPicker({ effort, onChange }: { effort: number; onChange: (e: numb
   );
 }
 
-export function RoomDetail({ room, language, isAdmin, currentUserId, currentUserRole, users, coinsByEffort, onCompleteTask, onBack, onRefresh, onOpenRoom, allowOneTime = true, allowPhotos = true, allowPins = true, onAchievementsUnlocked, focusTaskId, onlyMine, strictMode }: RoomDetailProps) {
+export function RoomDetail({ room, language, isAdmin, currentUserId, currentUserRole, users, coinsByEffort, onCompleteTask, onRefresh, onOpenRoom, allowOneTime = true, allowPhotos = true, allowPins = true, onAchievementsUnlocked, focusTaskId, onlyMine, strictMode }: RoomDetailProps) {
   const { taskName: translateTask, roomDisplayName, t } = useTranslation(language);
   const [animatedTask, setAnimatedTask] = useState<number | null>(null);
   const timer = useChoreTimer();
@@ -210,8 +210,12 @@ export function RoomDetail({ room, language, isAdmin, currentUserId, currentUser
   const [newRepeatPeriod, setNewRepeatPeriod] = useState<'day' | 'week'>('week');
   const [editSchedule, setEditSchedule] = useState<ScheduleValue>(EMPTY_SCHEDULE);
   const [newSchedule, setNewSchedule] = useState<ScheduleValue>(EMPTY_SCHEDULE);
-  const [sortKey, setSortKey] = useState<SortKey>('health');
+  // ENH-28: "When it's due" shows the room in sections (Overdue, Today, This week…); any other sort is one list
+  const [sortKey, setSortKey] = useState<SortKey>('when');
   const [sortAsc, setSortAsc] = useState(true);
+  const [filter, setFilter] = useState<RoomFilter>('all');
+  const [showLater, setShowLater] = useState(false);
+  const [roomMenu, setRoomMenu] = useState(false);
   const focusedOnce = useRef<number | null>(null);
   // The chore whose row is open (ENH-25); one opened from search, Home or the task list starts open
   const [openTask, setOpenTask] = useState<number | null>(focusTaskId ?? null);
@@ -262,7 +266,6 @@ export function RoomDetail({ room, language, isAdmin, currentUserId, currentUser
   };
 
   const health = room.health ?? getRoomHealth(room.tasks);
-  const RoomIcon = getRoomIcon(room.roomType);
 
   // Same rule the server uses when paying out: a custom amount wins over the effort default
   const taskCoins = (task: Task) =>
@@ -277,7 +280,8 @@ export function RoomDetail({ room, language, isAdmin, currentUserId, currentUser
       case 'frequency': cmp = a.frequencyDays - b.frequencyDays; break;
       case 'coins': cmp = taskCoins(a) - taskCoins(b); break;
       case 'assigned': cmp = (a.assignedUsers?.length ?? 0) - (b.assignedUsers?.length ?? 0); break;
-      case 'dueDate': cmp = taskNextDue(a).getTime() - taskNextDue(b).getTime(); break;
+      case 'when':
+      case 'dueDate': cmp = taskNextDue(a).getTime() - taskNextDue(b).getTime() || a.id - b.id; break;
     }
     return !!a.pausedAt !== !!b.pausedAt ? (a.pausedAt ? 1 : -1) : sortAsc ? cmp : -cmp; // paused chores last
   });
@@ -653,6 +657,59 @@ export function RoomDetail({ room, language, isAdmin, currentUserId, currentUser
     room.todoOverdue ? t('todos.overdueCount').replace('{n}', String(room.todoOverdue)) : '',
   ].filter(Boolean).join(' · ');
 
+  /* ── The room in sections (ENH-28): Overdue, Today, This week, When needed, Later, Paused ── */
+  const endToday = startOfDay(new Date(), 1).getTime();
+  const endWeek = startOfDay(new Date(), 7).getTime();
+  const lastWeekDay = dateStr(startOfDay(new Date(), 6));
+  const bucketOf = (task: Task): Bucket => {
+    if (task.pausedAt) return 'paused';
+    if (task.onDemand) return 'needed';
+    if (task.outOfSeason) return 'later';
+    // Done today stays under Today with a green tick
+    if (task.completedTodayBy || getDoneButtonState(task).done) return 'today';
+    if (choreDue(task, t, language).late) return 'overdue';
+    if (task.oneTime) {
+      if (!task.doBy) return 'needed';
+      return task.doBy <= dateStr() ? 'today' : task.doBy <= lastWeekDay ? 'week' : 'later';
+    }
+    const due = taskNextDue(task).getTime();
+    return due < endToday ? 'today' : due < endWeek ? 'week' : 'later';
+  };
+  const buckets = new Map(sortedTasks.map((task) => [task.id, bucketOf(task)]));
+  const inBucket = (b: Bucket) => sortedTasks.filter((task) => buckets.get(task.id) === b);
+  const overdueTasks = inBucket('overdue');
+  const pausedTasks = inBucket('paused');
+  const todayLeft = inBucket('today').filter((task) => !task.completedTodayBy && !getDoneButtonState(task).done);
+  const fineCount = sortedTasks.length - overdueTasks.length - todayLeft.length - pausedTasks.length;
+  const coinsWaiting = [...overdueTasks, ...todayLeft].reduce((sum, task) => sum + taskCoins(task), 0);
+  const mineCount = currentUserId === undefined ? 0 : sortedTasks.filter((task) => isTaskForUser(task, currentUserId, currentUserRole)).length;
+  // A filter whose chip went away (the last paused chore resumed) falls back to All
+  const activeFilter: RoomFilter = filter === 'paused' && pausedTasks.length === 0 ? 'all' : filter === 'mine' && onlyMine ? 'all' : filter;
+  const shown = sortedTasks.filter((task) => activeFilter === 'all'
+    || (activeFilter === 'mine' ? currentUserId !== undefined && isTaskForUser(task, currentUserId, currentUserRole)
+      : buckets.get(task.id) === activeFilter));
+  const headline = health < 40 ? 'roomPage.needsLove' : health < 70 ? 'roomPage.couldTidy' : 'roomPage.looksGood';
+  const summary = [
+    overdueTasks.length > 0 && t('roomPage.overdue').replace('{n}', String(overdueTasks.length)),
+    todayLeft.length > 0 && t('roomPage.leftToday').replace('{n}', String(todayLeft.length)),
+    fineCount > 0 && t('roomPage.fine').replace('{n}', String(fineCount)),
+  ].filter(Boolean).join(' · ');
+  const roomChip = (id: RoomFilter, label: string, n: number) => (
+    <button key={id} type="button" className={`today-chip${activeFilter === id ? ' on' : ''}`} aria-pressed={activeFilter === id}
+      onClick={() => setFilter(id)}>{label} · <em>{n}</em></button>
+  );
+  const roomSection = (key: Bucket, title: string, rows: Task[], opts: { late?: boolean; note?: string } = {}) => rows.length > 0 && (
+    <section className="today-section" key={key}>
+      <div className={`today-sec${opts.late ? ' late' : ''}`}>
+        <h3>{opts.late && <span className="today-dot" aria-hidden="true" />}{title} · {rows.length}</h3>
+        {opts.note && <span className="room-sec-note">{opts.note}</span>}
+      </div>
+      <div className="tq-card today-list chore-list">{rows.map(choreRow)}</div>
+    </section>
+  );
+  const shownIn = (b: Bucket) => shown.filter((task) => buckets.get(task.id) === b);
+  const laterRows = shownIn('later');
+
   // The edit pop-up for one chore (a bottom sheet on phones), shared by the table and the to-do checklist
   const taskEditor = (task: Task) => editingTask === task.id && createPortal(
               <div className="tq-modal-overlay task-edit-overlay" onClick={() => setEditingTask(null)}>
@@ -930,41 +987,42 @@ export function RoomDetail({ room, language, isAdmin, currentUserId, currentUser
   return (
     <>
     <div className="page-enter">
-      {/* Header */}
-      <div className="tq-card room-detail-hero" style={{
-        padding: 28, marginBottom: 20, display: 'flex', alignItems: 'center', gap: 28,
-        background: `linear-gradient(135deg, ${room.color}88, ${room.color}33)`,
-        borderColor: `${room.accentColor}44`,
-      }}>
+      {/* A short header (ENH-28): the room's health, what's due and the coins waiting; the name and ← are in the top bar */}
+      <div className="tq-card room-hero" style={{ background: `linear-gradient(135deg, ${room.color}88, ${room.color}33)`, borderColor: `${room.accentColor}44` }}>
         {room.isTodoRoom ? (
-          <div aria-hidden="true" style={{ width: 110, height: 110, borderRadius: '50%', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', backgroundColor: 'var(--warm-card)', border: `3px solid ${room.todoOverdue ? 'var(--health-red)' : 'var(--warm-accent)'}` }}>
-            <span style={{ fontSize: 30 }}>📝</span>
-            <span style={{ fontSize: 22, fontWeight: 900, color: 'var(--warm-text)' }}>{room.todoCount ?? 0}</span>
+          <div className="room-hero-todo" aria-hidden="true" style={{ borderColor: room.todoOverdue ? 'var(--health-red)' : 'var(--warm-accent)' }}>
+            <span>📝</span><b>{room.todoCount ?? 0}</b>
           </div>
-        ) : <RingGauge value={health} size={110} strokeWidth={10} />}
-        <div style={{ flex: 1 }}>
-          <div style={{ marginBottom: 6 }}><RoomIcon /></div>
-          <h2 style={{ fontSize: 24, fontWeight: 900, color: 'var(--warm-text)', margin: '0 0 4px' }}>{roomDisplayName(room.name, room.roomType)}</h2>
+        ) : <RingGauge value={health} size={64} strokeWidth={7} />}
+        <div className="room-hero-text">
           {room.isTodoRoom ? (
             <>
-              <div style={{ fontSize: 13, color: room.todoOverdue ? 'var(--health-red)' : 'var(--warm-text-muted)', fontWeight: 700 }}>{todoLine}</div>
-              <div style={{ fontSize: 12, color: 'var(--warm-text-light)', fontWeight: 600, marginTop: 2 }}>{t('todos.noHealth')}</div>
+              <div className="room-hero-h" style={{ color: room.todoOverdue ? 'var(--health-red)' : undefined }}>{todoLine}</div>
+              <div className="room-hero-s">{t('todos.noHealth')}</div>
             </>
           ) : (
-            <div style={{ fontSize: 13, color: 'var(--warm-text-muted)', fontWeight: 600 }}>{room.tasks.length} {t('rooms.tasksTracked')}</div>
+            <>
+              <div className="room-hero-h">{t(headline).replace('{room}', roomDisplayName(room.name, room.roomType))}</div>
+              {summary && <div className="room-hero-s">{summary}</div>}
+              <div className="room-hero-s">
+                {coinsWaiting > 0 && <><span className="room-hero-coins">🪙 {t('roomPage.coinsWaiting').replace('{n}', String(coinsWaiting))}</span> · </>}
+                <span className="room-hero-n">{t('roomPage.chores').replace('{n}', String(sortedTasks.length))}</span>
+              </div>
+            </>
           )}
         </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 8, alignSelf: 'stretch', justifyContent: 'center' }}>
-          <button onClick={onBack} className="tq-btn tq-btn-secondary tq-btn-md">
-            <BackIcon /> {t('rooms.backToRooms')}
+        {isAdmin && (
+          <button type="button" className="room-hero-more" onClick={() => setRoomMenu((v) => !v)} aria-expanded={roomMenu}
+            aria-label={t('roomPage.menu')} title={t('roomPage.menu')}>
+            <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true" fill="currentColor"><circle cx="4" cy="10" r="2" /><circle cx="10" cy="10" r="2" /><circle cx="16" cy="10" r="2" /></svg>
           </button>
-          {isAdmin && (
-            <button onClick={() => setShowDuplicate((v) => !v)} className="tq-btn tq-btn-secondary tq-btn-sm">
-              {t('duplicateRoom.button')}
-            </button>
-          )}
-        </div>
+        )}
       </div>
+      {isAdmin && roomMenu && (
+        <div className="chore-menu room-menu">
+          <button type="button" onClick={() => { setRoomMenu(false); setShowDuplicate(true); }}>{t('duplicateRoom.button')}</button>
+        </div>
+      )}
 
       {isAdmin && showDuplicate && (
         <DuplicateRoom room={room} displayName={roomDisplayName(room.name, room.roomType)} users={users || []} language={language}
@@ -972,27 +1030,55 @@ export function RoomDetail({ room, language, isAdmin, currentUserId, currentUser
           onDone={(id) => { setShowDuplicate(false); onRefresh?.(); onOpenRoom?.(id); }} />
       )}
 
-      {/* Task Table */}
-      <div className="tq-card tq-card-padded">
-        {!room.isTodoRoom && sortedTasks.length > 1 && (
-          <div className="chore-sort">
-            <label htmlFor="room-sort">{t('chore.sortBy')}</label>
-            <select id="room-sort" className="tq-input-compact" value={sortKey} onChange={(e) => { setSortKey(e.target.value as SortKey); setSortAsc(true); }}>
-              <option value="health">{t('rooms.health')}</option>
-              <option value="dueDate">{t('roomDetail.nextDue')}</option>
-              <option value="name">{t('roomDetail.name')}</option>
-              <option value="frequency">{t('roomDetail.frequency')}</option>
-              <option value="effort">{t('roomDetail.effort')}</option>
-              <option value="coins">{t('roomDetail.coins')}</option>
-              <option value="assigned">{t('roomDetail.assigned')}</option>
-            </select>
-            <ChoreAct onClick={() => setSortAsc(!sortAsc)} title={t('chore.reverse')} aria-label={t('chore.reverse')}>{sortAsc ? '↑' : '↓'}</ChoreAct>
+      <div className="room-body">
+        {/* Filter chips and the sort (ENH-28); the To-dos room keeps one list, earliest do-by date first */}
+        {!room.isTodoRoom && sortedTasks.length > 0 && (
+          <div className="room-tools">
+            <div className="today-chips" role="group" aria-label={t('roomPage.show')}>
+              {roomChip('all', t('roomPage.all'), sortedTasks.length)}
+              {!onlyMine && currentUserId !== undefined && roomChip('mine', t('roomPage.mine'), mineCount)}
+              {overdueTasks.length > 0 && roomChip('overdue', t('roomPage.overdueChip'), overdueTasks.length)}
+              {pausedTasks.length > 0 && roomChip('paused', t('roomPage.paused'), pausedTasks.length)}
+              {/* The sort is the last chip: rarely needed, so it may sit past the edge on a phone */}
+              {sortedTasks.length > 1 && (
+                <select id="room-sort" aria-label={t('chore.sortBy')} title={t('chore.sortBy')} className="today-chip room-sort" value={sortKey}
+                  onChange={(e) => { setSortKey(e.target.value as SortKey); setSortAsc(true); }}>
+                  <option value="when">{t('roomPage.byWhen')}</option>
+                  <option value="health">{t('rooms.health')}</option>
+                  <option value="dueDate">{t('roomDetail.nextDue')}</option>
+                  <option value="name">{t('roomDetail.name')}</option>
+                  <option value="frequency">{t('roomDetail.frequency')}</option>
+                  <option value="effort">{t('roomDetail.effort')}</option>
+                  <option value="coins">{t('roomDetail.coins')}</option>
+                  <option value="assigned">{t('roomDetail.assigned')}</option>
+                </select>
+              )}
+              {sortedTasks.length > 1 && sortKey !== 'when' && (
+                <button type="button" className="today-chip" onClick={() => setSortAsc(!sortAsc)} title={t('chore.reverse')} aria-label={t('chore.reverse')}>{sortAsc ? '↑' : '↓'}</button>
+              )}
+            </div>
           </div>
         )}
-        {/* One compact row per chore (ENH-25); the To-dos room lists its to-dos the same way, earliest do-by date first */}
-        <div className="chore-list">
-          {(room.isTodoRoom ? todoOrder : sortedTasks).map(choreRow)}
-        </div>
+        {room.isTodoRoom ? (
+          <div className="tq-card today-list chore-list">{todoOrder.map(choreRow)}</div>
+        ) : sortKey !== 'when' ? (
+          shown.length > 0 && <div className="tq-card today-list chore-list">{shown.map(choreRow)}</div>
+        ) : (
+          <>
+            {roomSection('overdue', t('roomPage.secOverdue'), shownIn('overdue'), { late: true, note: shownIn('overdue').length > 1 ? t('roomPage.urgentFirst') : undefined })}
+            {roomSection('today', t('roomPage.secToday'), shownIn('today'))}
+            {roomSection('week', t('roomPage.secWeek'), shownIn('week'))}
+            {roomSection('needed', t('roomPage.secNeeded'), shownIn('needed'))}
+            {/* Later is folded away until asked for, unless it's all there is */}
+            {laterRows.length > 0 && (showLater || shown.length === laterRows.length || (openTask != null && buckets.get(openTask) === 'later')
+              ? roomSection('later', t('roomPage.secLater'), laterRows)
+              : <button type="button" className="today-more room-later" onClick={() => setShowLater(true)}>{t('roomPage.showLater').replace('{n}', String(laterRows.length))}</button>)}
+            {roomSection('paused', t('roomPage.secPaused'), shownIn('paused'))}
+          </>
+        )}
+        {!room.isTodoRoom && sortedTasks.length > 0 && shown.length === 0 && (
+          <div className="tq-empty-state" style={{ padding: '24px 8px' }}>{t('roomPage.noneHere')}</div>
+        )}
         {room.isTodoRoom && todoOrder.length === 0 && (
           <div className="tq-empty-state" style={{ padding: '24px 8px' }}>{t('todos.empty')}</div>
         )}

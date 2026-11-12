@@ -2489,6 +2489,32 @@
       "guideSum": "Cómo encaja todo",
       "troubleSum": "Cuando algo no parece ir bien",
       "setupSum": "Repetir la configuración paso a paso"
+    },
+    "roomPage": {
+      "needsLove": "{room} necesita un poco de cariño",
+      "couldTidy": "{room} necesita un repaso",
+      "looksGood": "{room} está bien",
+      "overdue": "{n} atrasadas",
+      "leftToday": "{n} pendientes hoy",
+      "fine": "{n} bien por ahora",
+      "coinsWaiting": "{n} monedas esperando aquí",
+      "chores": "{n} tareas",
+      "menu": "Opciones de la habitación",
+      "show": "Mostrar",
+      "all": "Todas",
+      "mine": "Mías",
+      "overdueChip": "Atrasadas",
+      "paused": "En pausa",
+      "byWhen": "Por vencimiento",
+      "secOverdue": "Atrasadas",
+      "secToday": "Hoy",
+      "secWeek": "Esta semana",
+      "secNeeded": "Cuando haga falta",
+      "secLater": "Más adelante",
+      "secPaused": "En pausa",
+      "urgentFirst": "Las más urgentes primero",
+      "showLater": "Mostrar {n} más · más adelante",
+      "noneHere": "No hay tareas aquí."
     }
   }
 }

@@ -26,17 +26,25 @@ interface PageHeaderProps {
   homeDate?: string;
   /** This page adds things: on a phone the bar's one button is + with this name (it fires useHeaderAdd), not search */
   addLabel?: string;
+  /** A page inside another (a room): a ← before the title goes back, named by backLabel (ENH-28) */
+  onBack?: () => void;
+  backLabel?: string;
 }
 
 // On a phone the header is one line (ENH-24; the rules are in index.css): the title or greeting, coins, streak and
 // one button. The subtitle, the search button's word and the points chip are for wider screens.
 
-export function PageHeader({ title, subtitle, user, onCoinsClick, onStreakClick, onPointsClick, userPoints, pointsPeriodLabel, gamificationEnabled = true, shieldsOn = false, homeDate, addLabel }: PageHeaderProps) {
+export function PageHeader({ title, subtitle, user, onCoinsClick, onStreakClick, onPointsClick, userPoints, pointsPeriodLabel, gamificationEnabled = true, shieldsOn = false, homeDate, addLabel, onBack, backLabel }: PageHeaderProps) {
   const openSearch = useContext(SearchContext);
   const { t } = useTranslation(user.language);
   return (
     <div className={`page-header${homeDate ? ' page-header-home' : ''}`} style={{ display: 'flex', flexWrap: 'wrap', gap: '12px 16px', alignItems: 'center', justifyContent: 'space-between', marginBottom: 28 }}>
       <div className="page-header-title">
+        {onBack && (
+          <button type="button" onClick={onBack} className="ph-back" aria-label={backLabel} title={backLabel}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6" /></svg>
+          </button>
+        )}
         {homeDate && (
           <Link to="/profile" className="ph-phone" aria-label={t('nav.profile')} style={{ flexShrink: 0, textDecoration: 'none' }}>
             <UserAvatar userId={user.id} name={user.displayName} color={user.avatarColor} size={36}

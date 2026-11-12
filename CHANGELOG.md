@@ -11,6 +11,12 @@ What changed in each release, in plain language, newest first. Releases up to v0
 
 ### Changed
 
+- **A room page you can take in at a glance** (ENH-28, first half). The big room banner is now a short summary: the
+  room's health ring, "3 overdue · 2 left today · 9 fine for now" and the coins waiting there. Under it, chips filter
+  the chores (All, Mine, Overdue, Paused), and the chores sit under Overdue, Today, This week, When needed and Paused;
+  the ones due after this week are folded under "Show … more". The sort is the last chip ("When it's due" keeps the
+  sections; any other order shows one list). The ← back button moved into the top bar next to the room's name, and
+  Duplicate room is under ⋯ in the summary. On a phone the first chore now starts about 280px down instead of 610px.
 - **Settings is a short index** (ENH-27). Instead of one very long page (about fifteen phone screens), Settings is a
   list of its sections in five groups (Household, Chores & coins, Game extras, Data, Help), each with a one-line
   summary such as "Notifications: Off" or "1 waiting for your OK". On a phone each section opens on its own page with

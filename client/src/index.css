@@ -1256,17 +1256,6 @@ html[data-theme='lava'] option {
     display: block !important;
   }
 
-  .room-detail-hero {
-    flex-direction: column !important;
-    align-items: flex-start !important;
-    gap: 14px !important;
-    padding: 18px !important;
-  }
-
-  .room-detail-hero .tq-btn {
-    width: 100%;
-  }
-
   .task-add-form {
     flex-direction: column !important;
     align-items: stretch !important;
@@ -1947,3 +1936,34 @@ button.today-chip { cursor: pointer; }
 /* Kid mode: a bigger headline and Done! */
 .kid-mode .today-summary-text h2 { font-size: 21px; }
 .kid-mode .today-done { min-height: 54px; font-size: 19px; }
+
+/* ── Room page (ENH-28): a short header, filter chips and the chores in sections ── */
+.page-header-title:has(.ph-back) { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.ph-back {
+  flex: none; width: 40px; height: 40px; display: grid; place-items: center; padding: 0; cursor: pointer;
+  border: 1px solid var(--warm-border); border-radius: 10px; background: var(--warm-card); color: var(--warm-text);
+}
+.ph-back:focus-visible, .room-hero-more:focus-visible { outline: 2px solid var(--warm-accent); outline-offset: 2px; }
+.room-hero { position: relative; display: flex; align-items: center; gap: 14px; padding: 14px 16px; margin-bottom: 14px; min-width: 0; }
+.room-hero:has(.room-hero-more) .room-hero-h { padding-right: 36px; }
+.room-hero-text { flex: 1; min-width: 0; }
+.room-hero-h { font-size: 17px; font-weight: 900; color: var(--warm-text); line-height: 1.25; }
+.room-hero-s { font-size: 13px; font-weight: 600; color: var(--warm-text-muted); margin-top: 3px; }
+.room-hero-coins { font-weight: 800; color: var(--warm-text); }
+.room-hero-todo {
+  width: 64px; height: 64px; flex: none; border-radius: 50%; border: 3px solid; background: var(--warm-card);
+  display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1.1;
+}
+.room-hero-todo span { font-size: 18px; }
+.room-hero-todo b { font-size: 16px; font-weight: 900; color: var(--warm-text); }
+.room-hero-more {
+  position: absolute; top: 10px; right: 10px; width: 36px; height: 36px; display: grid; place-items: center; padding: 0; cursor: pointer;
+  border: 1px solid var(--warm-border); border-radius: 10px; background: var(--warm-card); color: var(--warm-text);
+}
+.room-menu { margin: -6px 0 14px auto; }
+.room-body { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.room-tools { min-width: 0; }
+select.today-chip.room-sort { cursor: pointer; appearance: auto; padding-right: 6px; max-width: none; width: auto; }
+.room-hero-coins, .room-hero-n { white-space: nowrap; }
+.room-sec-note { font-size: 12px; font-weight: 700; color: var(--warm-text-light); }
+.room-later { border: 1px dashed var(--warm-border); border-radius: 12px; }

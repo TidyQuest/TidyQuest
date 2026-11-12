@@ -2489,6 +2489,32 @@
       "guideSum": "Comment tout s'articule",
       "troubleSum": "Quand quelque chose semble anormal",
       "setupSum": "Refaire la configuration pas à pas"
+    },
+    "roomPage": {
+      "needsLove": "{room} a besoin d'attention",
+      "couldTidy": "{room} mérite un petit rangement",
+      "looksGood": "{room} est en bon état",
+      "overdue": "{n} en retard",
+      "leftToday": "{n} restantes aujourd'hui",
+      "fine": "{n} tranquilles pour l'instant",
+      "coinsWaiting": "{n} pièces à gagner ici",
+      "chores": "{n} tâches",
+      "menu": "Options de la pièce",
+      "show": "Afficher",
+      "all": "Toutes",
+      "mine": "Les miennes",
+      "overdueChip": "En retard",
+      "paused": "En pause",
+      "byWhen": "Échéance",
+      "secOverdue": "En retard",
+      "secToday": "Aujourd'hui",
+      "secWeek": "Cette semaine",
+      "secNeeded": "Au besoin",
+      "secLater": "Plus tard",
+      "secPaused": "En pause",
+      "urgentFirst": "Les plus urgentes d'abord",
+      "showLater": "Afficher {n} de plus · plus tard",
+      "noneHere": "Aucune tâche ici."
     }
   }
 }

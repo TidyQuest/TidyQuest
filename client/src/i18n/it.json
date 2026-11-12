@@ -2489,6 +2489,32 @@
       "guideSum": "Come si collega tutto",
       "troubleSum": "Quando qualcosa non va",
       "setupSum": "Rifai la configurazione passo passo"
+    },
+    "roomPage": {
+      "needsLove": "{room} ha bisogno di attenzione",
+      "couldTidy": "{room} avrebbe bisogno di una sistemata",
+      "looksGood": "{room} è in ordine",
+      "overdue": "{n} in ritardo",
+      "leftToday": "{n} rimaste oggi",
+      "fine": "{n} a posto per ora",
+      "coinsWaiting": "{n} monete in attesa qui",
+      "chores": "{n} faccende",
+      "menu": "Opzioni stanza",
+      "show": "Mostra",
+      "all": "Tutte",
+      "mine": "Mie",
+      "overdueChip": "In ritardo",
+      "paused": "In pausa",
+      "byWhen": "Per scadenza",
+      "secOverdue": "In ritardo",
+      "secToday": "Oggi",
+      "secWeek": "Questa settimana",
+      "secNeeded": "Al bisogno",
+      "secLater": "Più avanti",
+      "secPaused": "In pausa",
+      "urgentFirst": "Le più urgenti prima",
+      "showLater": "Mostra altre {n} · più avanti",
+      "noneHere": "Nessuna faccenda qui."
     }
   }
 }

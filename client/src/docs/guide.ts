@@ -253,7 +253,7 @@ export const GUIDE_EN: GuideSection[] = [
       { ul: [
         'Every chore is one row, the same on Today and in its room: its icon, its name, a line saying where, when or who (red when it’s late), its coins and a square ✓ button. That ✓ is Done: tap it when the chore is finished.',
         'Tap the row itself to open it: the notes, how often it’s due, the effort, whose turn it is and when it was last done, plus the less-used buttons (Edit, Pin, 📅 Done earlier…, 🤝 Team up, 📎 and ⋯). Tap it again to close it. On Today, Go to room opens the chore in its room; the Tasks page lists every chore, and a tap opens it in its room.',
-        'In a room, Sort by puts the chores in order (by health, due date, name…); the arrow button next to it reverses the order.',
+        'A room opens with a short summary (its health, how many chores are overdue or left today, and the coins waiting), then its chores under Overdue, Today, This week, When needed and Paused; “Show … more · later” opens the ones due after this week. The chips All, Mine, Overdue and Paused narrow the list. The last chip, When it’s due, is the sort: pick another order (health, name, coins…) to see one list, and the arrow next to it reverses it. ← goes back to the rooms; parents find Duplicate room under ⋯ in the summary.',
         'The 📎 button in the opened chore adds a note or photo as proof.',
         'After a parent approves, the note and photo stay with the chore in Activity (tap the photo to see it full size). Parents see everyone’s; everyone else sees only their own. A photo’s link doesn’t open for anyone else, or after logging out. Undoing or rejecting the chore deletes its photo.',
         'Parents and members can mark a chore done for someone else ("who did it?").',
