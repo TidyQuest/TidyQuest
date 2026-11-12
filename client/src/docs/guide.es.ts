@@ -217,7 +217,7 @@ export const GUIDE_ES: GuideSection[] = [
       { h: 'Temporizador' },
       { ul: [
         'Temporizador (minutos), en el editor de la tarea, le da una cuenta atrás a una tarea, por ejemplo 10 minutos para ordenar una habitación. Déjalo vacío para no tener temporizador. El nombre de la tarea no importa.',
-        'La tarea muestra entonces ▶ 10 min junto a Hecho. Púlsalo para ver una cuenta atrás grande con Pausa y +5 min. Pulsa ⌄ para ocultarla: una pequeña barra queda arriba en cada página, y el temporizador sigue después de recargar.',
+        'La tarea tiene entonces un botón ▶ 10 min: toca la tarea para abrirla y está con los demás botones (para un niño que primero debe usar el temporizador, ocupa el lugar del ✓). Púlsalo para ver una cuenta atrás grande con Pausa y +5 min. Pulsa ⌄ para ocultarla: una pequeña barra queda arriba en cada página, y el temporizador sigue después de recargar.',
         'Al llegar a cero suena y vibra, y luego pregunta «¡Se acabó el tiempo! ¿Hecho?». Hecho termina la tarea como siempre (con el Modo estricto sigue esperando a un padre). «Necesito más tiempo» añade 5 minutos.',
         'Los niños inician primero el temporizador: en una tarea con temporizador, su botón Hecho vuelve cuando se acaba el tiempo. Los padres y los miembros pueden pulsar Hecho cuando quieran.',
         'La página Tareas muestra todas las tareas con temporizador: elige «⏱️ Con temporizador» en su filtro.',
@@ -226,7 +226,10 @@ export const GUIDE_ES: GuideSection[] = [
       { p: 'Los pasos (uno por línea) dicen qué incluye una tarea, como «Pies en el suelo», «Luz encendida», «Vestirse». Se muestran como casillas en Una cosa cada vez. Las casillas son solo una ayuda: Hecho es lo que termina la tarea.' },
       { h: 'Terminar una tarea' },
       { ul: [
-        'Pulsa Hecho en Inicio, en la habitación o en la página Tareas. El botón 📎 añade una nota o una foto como prueba.',
+        'Cada tarea es una fila, igual en Inicio y en su habitación: su icono, su nombre, una línea que dice dónde, cuándo o para quién (en rojo si va atrasada), sus monedas y un botón cuadrado ✓. Ese ✓ es Hecho: púlsalo cuando la tarea esté terminada.',
+        'Toca la propia fila para abrirla: las notas, cada cuánto toca, el esfuerzo, a quién le toca y cuándo se hizo por última vez, además de los botones menos usados (Editar, Fijar, 📅 Hecho antes…, 🤝 Hacer equipo, 📎 y ⋯). Tócala otra vez para cerrarla. En Inicio, Ir a la sala abre la tarea en su habitación; la página Tareas muestra todas las tareas, y un toque abre la tarea en su habitación.',
+        'En una habitación, Ordenar por ordena las tareas (por estado, vencimiento, nombre…); el botón de flecha de al lado invierte el orden.',
+        'El botón 📎 de la tarea abierta añade una nota o una foto como prueba.',
         'Cuando un padre o una madre la aprueba, la nota y la foto se quedan con la tarea en Actividad (pulsa la foto para verla en grande). Los padres ven las de todos; los demás, solo las suyas. El enlace de una foto no se abre para nadie más, ni después de cerrar sesión. Deshacer o rechazar la tarea borra su foto.',
         'Los padres y miembros pueden marcar una tarea como hecha por otra persona ("¿quién la hizo?").',
         'Un error se puede deshacer desde Actividad (padres), o con ↩️ Deshacer junto al "Hecho por" de la tarea en su habitación (padres; pregunta antes, porque las monedas se devuelven). Una tarea En equipo se deshace para todo el equipo y se retiran las monedas de todos. Un niño puede deshacer su propio Hecho mientras espera aprobación.',
@@ -234,16 +237,16 @@ export const GUIDE_ES: GuideSection[] = [
       { p: 'Ajustes → Funciones → Fotos de prueba desactiva las fotos; el botón 📎 entonces solo añade una nota. En tidyquest.org las fotos empiezan desactivadas, y un padre o una madre las activa.' },
       { h: 'Apuntarlo tarde' },
       { ul: [
-        '¿Se te olvidó tocar Hecho? Toca 📅 (Hecho antes…) junto a la tarea en su habitación, elige el día (hasta 7 días atrás) y toca Apuntar. Los padres y los miembros pueden elegir quién lo hizo.',
+        '¿Se te olvidó tocar Hecho? Abre la tarea en su habitación (tócala), toca 📅 Hecho antes…, elige el día (hasta 7 días atrás) y toca Apuntar. Los padres y los miembros pueden elegir quién lo hizo.',
         'Cuenta para ese día: para las rachas, el objetivo semanal, el Tablero y el Calendario. Si llena el día que rompió una racha, la racha vuelve. Un objetivo cuya semana ya terminó paga igualmente su bono cuando las monedas lo alcanzan.',
         'Da las monedas de siempre de la tarea, sin monedas dobles ni Misión de rescate. Todos menos los padres esperan la aprobación de un padre, aunque el Modo estricto esté apagado. Actividad y la lista de aprobaciones la marcan 🕘 Apuntado tarde.',
         'No se puede poner en un día en que la tarea ya estaba hecha (con El primero gana, por cualquiera), antes de que se añadiera la tarea o de su fecha de inicio, ni en un día en que todavía no tocaba.',
       ] },
       { h: 'Pausar una tarea' },
       { ul: [
-        '¿No hace falta durante un tiempo (la piscina en invierno, un niño de campamento)? Los padres tocan ⋯ (Más opciones) en la tarea dentro de su sala y luego ⏸️ Pausar. O abren Editar, marcan ⏸️ En pausa y eligen un día en Vuelve el (opcional) para que se reactive sola.',
+        '¿No hace falta durante un tiempo (la piscina en invierno, un niño de campamento)? Los padres abren la tarea en su sala (tocándola), tocan ⋯ (Más opciones) y luego ⏸️ Pausar. O abren Editar, marcan ⏸️ En pausa y eligen un día en Vuelve el (opcional) para que se reactive sola.',
         'Una tarea en pausa sale de Inicio, la página de Tareas, el Calendario, los recordatorios, la Misión de rescate, los equipos y la salud de la casa. Los padres la siguen viendo en gris en su sala, marcada ⏸️ En pausa; los niños no la ven.',
-        'Toca ⋯ → ▶️ Reactivar (o desmarca ⏸️ En pausa). Vuelve como recién hecha, así que no está atrasada. Su historial, sus monedas y a quién está asignada no cambian.',
+        'Abre la tarea y toca ⋯ → ▶️ Reactivar (o desmarca ⏸️ En pausa). Vuelve como recién hecha, así que no está atrasada. Su historial, sus monedas y a quién está asignada no cambian.',
       ] },
       { h: 'Lista de pendientes' },
       { ul: [
@@ -350,11 +353,11 @@ export const GUIDE_ES: GuideSection[] = [
       { where: 'Ajustes → Funciones (cada una se puede desactivar para la familia)' },
       { ul: [
         'Misión de rescate: cada día la tarea más olvidada paga extra (2× por defecto) a la primera persona que la hace.',
-        'Lo de siempre / Quizá olvidaste estas: Inicio muestra las tareas que más haces (y las que fijas) y las tareas atrasadas por un intervalo entero. 💤 oculta una de Quizá olvidaste estas durante 3 días, solo para ti; "Pospuesta · Deshacer" la devuelve al instante.',
+        'Lo de siempre / Quizá olvidaste estas: Inicio muestra las tareas que más haces (y las que fijas: abre una tarea y toca ☆ Fijar) y las tareas atrasadas por un intervalo entero. Abre una de ellas: 💤 Posponer 3 días la oculta de Quizá olvidaste estas, solo para ti; "Pospuesta · Deshacer" la devuelve al instante.',
         'Pendientes: tareas únicas y la tarjeta de Pendientes.',
         'Premios del Tablero y estantería de trofeos. Niveles y Próxima insignia.',
         'Ánimos: 👏 🎉 💪 ⭐ en la tarea terminada de otra persona ("Completadas hoy" de Inicio y Actividad). El mismo emoji otra vez lo retira. La persona recibe una notificación privada.',
-        'En equipo: 🤝 en una tarea de 6 o más monedas invita a una persona o a cualquiera. En cuanto alguien se une, la tarea es del equipo ese día. Cualquiera de los dos pulsa Hecho; las monedas se reparten a partes iguales más un bonus de equipo (10, 20 o 30%). Un padre o una madre con un niño es ayudante y el niño se queda con todas las monedas. Nunca en la habitación de alguien, ni en tareas de una sola persona o de rotación. ¿No te apetece? "No, gracias" rechaza una invitación: una invitación solo para ti termina y quien la hizo se entera, así que puede pedírselo a otra persona; una invitación para cualquiera simplemente desaparece para ti. Quien lo empezó puede "Cancelar el equipo" (termina para todos); cualquier otro puede Salir.',
+        'En equipo: abre una tarea de 6 o más monedas; 🤝 Hacer equipo invita a una persona o a cualquiera. En cuanto alguien se une, la tarea es del equipo ese día. Cualquiera de los dos pulsa Hecho; las monedas se reparten a partes iguales más un bonus de equipo (10, 20 o 30%). Un padre o una madre con un niño es ayudante y el niño se queda con todas las monedas. Nunca en la habitación de alguien, ni en tareas de una sola persona o de rotación. ¿No te apetece? "No, gracias" rechaza una invitación: una invitación solo para ti termina y quien la hizo se entera, así que puede pedírselo a otra persona; una invitación para cualquiera simplemente desaparece para ti. Quien lo empezó puede "Cancelar el equipo" (termina para todos); cualquier otro puede Salir.',
         'Mascota de la casa: una de 8 criaturas, que se elige y se nombra aquí. Crece con las monedas de la familia ganadas mientras es la mascota activa (eclosiona a las 500, luego a las 2.000, 5.000 y 10.000), su ánimo sigue la salud de la casa y reacciona a los cumpleaños, al objetivo familiar y a la Misión de rescate.',
         'Cambiar de mascota: elegir una criatura que no has tenido empieza como un huevo nuevo. Cada criatura conserva su propio crecimiento, nombre y atuendo, así que al volver a la anterior vuelve tal como estaba. La barriguita y la hora de dormir son compartidas.',
         'Jugar con la mascota: púlsala para ver una reacción. Su barriguita 🍪 se llena un 5% con cada tarea (En equipo cuenta una vez) y se vacía en 2 días. Solo celebra con una 🍪 y un salto las tareas más grandes (esfuerzo de 3★ o más); las pequeñas la llenan sin hacer ruido; cuando está baja, solo dice que tiene hambre. "¿Qué hago?" sugiere una tarea que puedes hacer ahora mismo. Añade un ánimo 🐾 a las tareas terminadas de 3★ o más. Duerme durante la hora de dormir de la familia (se fija bajo la mascota en Funciones, de 9 pm a 7 am por defecto).',
@@ -498,7 +501,7 @@ export const GUIDE_ES: GuideSection[] = [
           'Los puntos ya no están en la línea de arriba en el móvil: los encuentras en el Tablero.',
         ] },
         { q: 'El botón Hecho está gris', a: [
-          'Su etiqueta dice por qué: "No asignada" (la tarea de otra persona), "Esperando aprobación" (un padre o una madre aún no ha aprobado tu última), "Hecho por …" (alguien ya la hizo hoy), "Hecho hoy / esta semana" (el límite de repeticiones de una tarea a demanda) o "🤝 nombres" (un equipo la ha reclamado hoy).',
+          'La línea bajo el nombre de la tarea dice por qué: "No asignada" (la tarea de otra persona), "Esperando aprobación" (un padre o una madre aún no ha aprobado tu última), "Hecho por …" (alguien ya la hizo hoy), "Hecho hoy / esta semana" (el límite de repeticiones de una tarea a demanda) o "🤝 nombres" (un equipo la ha reclamado hoy).',
           '"Esperando a …" es una tarea en Rotación en el turno de otra persona. Cuando el botón muestra un día en vez de Hecho, la tarea no vuelve a tocar hasta entonces.',
           'Si Hecho da un mensaje de "todavía no toca": la tarea aún no toca de nuevo. Un padre o una madre puede activar "Completar antes" para rutinas diarias.',
         ] },
@@ -513,7 +516,7 @@ export const GUIDE_ES: GuideSection[] = [
           'Si un padre o una madre la rechazó, la tarea vuelve a estar abierta; en En equipo vuelve al equipo.',
         ] },
         { q: 'Ayer se me olvidó tocar Hecho', a: [
-          'Toca 📅 junto a la tarea en su habitación y elige el día. Cuenta para ese día (racha incluida) en cuanto un padre la aprueba. Mira Tareas → Apuntarlo tarde.',
+          'Abre la tarea en su habitación (tócala), toca 📅 Hecho antes… y elige el día. Cuenta para ese día (racha incluida) en cuanto un padre la aprueba. Mira Tareas → Apuntarlo tarde.',
         ] },
         { q: 'Falta una tarjeta en el inicio', a: [
           'Puede estar oculta: abre Personalizar (el botón al final del inicio) y pulsa su 🚫 para mostrarla otra vez, o usa Volver al orden por defecto.',
@@ -543,7 +546,7 @@ export const GUIDE_ES: GuideSection[] = [
           'Ya pasó su fecha "Hacer antes del". Toca Editar en él dentro de la habitación Pendientes para elegir una fecha posterior o quitarla: un pendiente sin fecha nunca está atrasado.',
         ] },
         { q: 'Una tarea o recompensa desapareció', a: [
-          'Puede estar en pausa: los padres la ven en gris en su sala, marcada ⏸️ En pausa. Toca ⋯ → ▶️ Reactivar.',
+          'Puede estar en pausa: los padres la ven en gris en su sala, marcada ⏸️ En pausa. Ábrela y toca ⋯ → ▶️ Reactivar.',
           'Una recompensa oculta aparece como Oculta en Ajustes → Catálogo de recompensas: toca Mostrar.',
           '¿Borrada por error? Ajustes → Eliminados recientemente la recupera durante 30 días.',
         ] },
@@ -612,7 +615,7 @@ export const GUIDE_ES: GuideSection[] = [
           'Los padres y miembros siempre pueden hacerla por quien le toque.',
         ] },
         { q: 'No hay botón 🤝 Hacer equipo', a: [
-          'En equipo necesita una tarea de 6 o más monedas que no esté en la habitación de alguien, que no esté asignada a una sola persona y que no sea de rotación.',
+          'El botón está dentro de la tarea: toca la tarea para abrirla. En equipo necesita una tarea de 6 o más monedas que no esté en la habitación de alguien, que no esté asignada a una sola persona y que no sea de rotación.',
           'Solo un equipo por tarea y día; mira la tarjeta En equipo en Inicio.',
           'Ajustes → Funciones → En equipo debe estar activado.',
         ] },

@@ -2415,6 +2415,16 @@
       "limitCount": "The limit must be a whole number from 1 to {n}.",
       "notFound": "That's gone (maybe it was just deleted). Reload the page.",
       "adminOnly": "Only parents can do that."
+    },
+    "chore": {
+      "turn": "{name}'s turn",
+      "lastDone": "Last done: {when}",
+      "anyone": "Anyone",
+      "pin": "Pin",
+      "pinned": "Pinned",
+      "goToRoom": "Go to room",
+      "sortBy": "Sort by",
+      "reverse": "Reverse the order"
     }
   }
 }

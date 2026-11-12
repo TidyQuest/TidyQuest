@@ -217,7 +217,7 @@ export const GUIDE_FR: GuideSection[] = [
       { h: 'Minuteur' },
       { ul: [
         'Minuteur (minutes), dans l’éditeur de tâche, donne un compte à rebours à une tâche, par exemple 10 minutes pour ranger une pièce. Laissez vide pour aucun minuteur. Le nom de la tâche ne compte pas.',
-        'La tâche affiche alors ▶ 10 min à côté de Fait. Appuyez dessus pour un grand compte à rebours avec Pause et +5 min. Appuyez sur ⌄ pour le masquer : une petite barre reste en haut de chaque page, et le minuteur continue après un rechargement.',
+        'La tâche a alors un bouton ▶ 10 min : touchez la tâche pour l’ouvrir, il est avec les autres boutons (pour un enfant qui doit d’abord lancer le minuteur, il remplace le ✓). Appuyez dessus pour un grand compte à rebours avec Pause et +5 min. Appuyez sur ⌄ pour le masquer : une petite barre reste en haut de chaque page, et le minuteur continue après un rechargement.',
         'À zéro, il sonne et vibre, puis demande « C’est l’heure ! Fini ? ». Fait termine la tâche comme d’habitude (en Mode strict, elle attend toujours un parent). « Encore un peu » ajoute 5 minutes.',
         'Les enfants lancent d’abord le minuteur : sur une tâche avec minuteur, leur bouton Fait revient quand le temps est écoulé. Les parents et les membres peuvent appuyer sur Fait à tout moment.',
         'La page Tâches liste toutes les tâches avec minuteur : choisissez « ⏱️ Avec minuteur » dans son filtre.',
@@ -226,7 +226,10 @@ export const GUIDE_FR: GuideSection[] = [
       { p: 'Les étapes (une par ligne) disent ce que comprend une tâche, comme « Pieds par terre », « Lumière allumée », « S’habiller ». Elles s’affichent en cases à cocher dans Une chose à la fois. Les cases sont juste une aide : c’est Fait qui termine la tâche.' },
       { h: 'Terminer une tâche' },
       { ul: [
-        'Appuie sur Fait sur Accueil, dans la pièce, ou sur la page Tâches. Le bouton 📎 ajoute une note ou une photo comme preuve.',
+        'Chaque tâche est une ligne, la même sur Accueil et dans sa pièce : son icône, son nom, une ligne qui dit où, quand ou pour qui (en rouge si elle est en retard), ses pièces et un bouton carré ✓. Ce ✓, c’est Fait : appuie dessus quand la tâche est finie.',
+        'Touche la ligne elle-même pour l’ouvrir : les notes, la fréquence, l’effort, à qui c’est le tour et quand elle a été faite pour la dernière fois, plus les boutons moins utilisés (Modifier, Épingler, 📅 Fait plus tôt…, 🤝 Faire équipe, 📎 et ⋯). Touche-la encore pour la refermer. Sur Accueil, Voir la pièce ouvre la tâche dans sa pièce ; la page Tâches liste toutes les tâches, et un appui ouvre la tâche dans sa pièce.',
+        'Dans une pièce, Trier par range les tâches (par état, échéance, nom…) ; le bouton flèche à côté inverse l’ordre.',
+        'Le bouton 📎 dans la tâche ouverte ajoute une note ou une photo comme preuve.',
         'Après l’approbation d’un parent, la note et la photo restent avec la tâche dans Activité (appuie sur la photo pour la voir en grand). Les parents voient celles de tout le monde ; les autres, seulement les leurs. Le lien d’une photo ne s’ouvre pour personne d’autre, ni après la déconnexion. Annuler ou refuser la tâche supprime sa photo.',
         'Les parents et les membres peuvent marquer une tâche comme faite pour quelqu’un d’autre (« qui l’a faite ? »).',
         'Une erreur peut être annulée depuis Activité (parents), ou avec ↩️ Annuler à côté du « Fait par » de la tâche dans sa pièce (parents ; l’appli demande d’abord, car les pièces sont reprises). Une tâche en équipe est annulée pour toute l’équipe, et les pièces de chacun sont reprises. Un enfant peut annuler son propre Fait tant qu’il attend la validation.',
@@ -234,16 +237,16 @@ export const GUIDE_FR: GuideSection[] = [
       { p: 'Paramètres → Fonctionnalités → Photos de preuve désactive les photos ; le bouton 📎 n’ajoute alors qu’une note. Sur tidyquest.org, les photos sont désactivées au départ et un parent les active.' },
       { h: 'Noter en retard' },
       { ul: [
-        'Oublié d’appuyer sur Fait ? Appuyez sur 📅 (Fait plus tôt…) à côté de la tâche dans sa pièce, choisissez le jour (jusqu’à 7 jours en arrière) puis Noter. Les parents et les membres peuvent choisir qui l’a fait.',
+        'Oublié d’appuyer sur Fait ? Ouvrez la tâche dans sa pièce (touchez-la), appuyez sur 📅 Fait plus tôt…, choisissez le jour (jusqu’à 7 jours en arrière) puis Noter. Les parents et les membres peuvent choisir qui l’a fait.',
         'Elle compte pour ce jour-là : pour les séries, l’objectif de la semaine, le Tableau et le Calendrier. Si elle remplit le jour qui a cassé une série, la série revient. Un objectif dont la semaine est finie verse quand même son bonus quand les pièces l’atteignent.',
         'Elle rapporte les pièces habituelles de la tâche, sans pièces doublées ni Mission sauvetage. Tout le monde sauf les parents attend l’accord d’un parent, même sans le Mode strict. Activité et la liste à approuver la marquent 🕘 Noté en retard.',
         'Impossible de la noter un jour où la tâche était déjà faite (en Premier arrivé, premier servi, par n’importe qui), avant que la tâche soit ajoutée ou avant sa date de début, ou un jour où elle n’était pas encore à faire.',
       ] },
       { h: 'Mettre une tâche en pause' },
       { ul: [
-        'Pas utile pendant un temps (la piscine en hiver, un enfant en colonie) ? Les parents touchent ⋯ (Plus d’options) sur la tâche dans sa pièce, puis ⏸️ Mettre en pause. Ou ouvrent Modifier, cochent ⏸️ En pause et choisissent un jour sous Reprend le (facultatif) pour qu’elle se réactive toute seule.',
+        'Pas utile pendant un temps (la piscine en hiver, un enfant en colonie) ? Les parents ouvrent la tâche dans sa pièce (en la touchant), touchent ⋯ (Plus d’options), puis ⏸️ Mettre en pause. Ou ouvrent Modifier, cochent ⏸️ En pause et choisissent un jour sous Reprend le (facultatif) pour qu’elle se réactive toute seule.',
         'Une tâche en pause quitte l’accueil, la page Tâches, le calendrier, les rappels, la mission de sauvetage, les équipes et la santé de la maison. Les parents la voient encore grisée dans sa pièce, marquée ⏸️ En pause ; les enfants ne la voient pas du tout.',
-        'Touche ⋯ → ▶️ Réactiver (ou décoche ⏸️ En pause). Elle revient comme si elle venait d’être faite, donc pas en retard. Son historique, ses pièces et les personnes assignées ne changent pas.',
+        'Ouvre la tâche et touche ⋯ → ▶️ Réactiver (ou décoche ⏸️ En pause). Elle revient comme si elle venait d’être faite, donc pas en retard. Son historique, ses pièces et les personnes assignées ne changent pas.',
       ] },
       { h: 'Liste à faire' },
       { ul: [
@@ -350,11 +353,11 @@ export const GUIDE_FR: GuideSection[] = [
       { where: 'Paramètres → Fonctionnalités (chacune peut être désactivée pour la famille)' },
       { ul: [
         'Mission sauvetage : chaque jour, la tâche la plus oubliée rapporte plus (2× par défaut) à la première personne qui la fait.',
-        'Tes habitudes / Tu as peut-être oublié ceux-ci : Accueil montre les tâches que tu fais le plus (et celles que tu épingles), et les tâches en retard d’un intervalle entier. 💤 en cache une de « Tu as peut-être oublié ceux-ci » pendant 3 jours, rien que pour toi ; « mis en pause · Annuler » la ramène aussitôt.',
+        'Tes habitudes / Tu as peut-être oublié ceux-ci : Accueil montre les tâches que tu fais le plus (et celles que tu épingles : ouvre une tâche et touche ☆ Épingler), et les tâches en retard d’un intervalle entier. Ouvres-en une : 💤 Reporter de 3 jours la cache de « Tu as peut-être oublié ceux-ci », rien que pour toi ; « mis en pause · Annuler » la ramène aussitôt.',
         'À faire : les tâches uniques et la carte À faire.',
         'Récompenses du Tableau et étagère à trophées. Niveaux et Prochain badge.',
         'Encouragements : 👏 🎉 💪 ⭐ sur la tâche terminée de quelqu’un d’autre (« Complétées aujourd’hui » sur Accueil et Activité). Le même emoji une seconde fois l’annule. La personne reçoit une notification privée.',
-        'En équipe : 🤝 sur une tâche qui vaut 6 pièces ou plus invite une personne ou n’importe qui. Dès que quelqu’un se joint, la tâche est celle de l’équipe pour la journée. L’un ou l’autre appuie sur Fait ; les pièces sont partagées à parts égales plus un bonus d’équipe (10, 20 ou 30 %). Un parent avec un enfant est un assistant et l’enfant garde toutes les pièces. Jamais pour la pièce de quelqu’un, ni pour les tâches d’une seule personne ou en rotation. Pas envie ? « Non merci » refuse une invitation : une invitation rien que pour toi se termine et la personne qui l’a lancée est prévenue, pour qu’elle puisse demander à quelqu’un d’autre ; une invitation ouverte à tous disparaît simplement pour toi. La personne qui l’a lancée peut « Annuler l’équipe » (elle se termine pour tout le monde) ; les autres peuvent Quitter.',
+        'En équipe : ouvre une tâche qui vaut 6 pièces ou plus ; 🤝 Faire équipe invite une personne ou n’importe qui. Dès que quelqu’un se joint, la tâche est celle de l’équipe pour la journée. L’un ou l’autre appuie sur Fait ; les pièces sont partagées à parts égales plus un bonus d’équipe (10, 20 ou 30 %). Un parent avec un enfant est un assistant et l’enfant garde toutes les pièces. Jamais pour la pièce de quelqu’un, ni pour les tâches d’une seule personne ou en rotation. Pas envie ? « Non merci » refuse une invitation : une invitation rien que pour toi se termine et la personne qui l’a lancée est prévenue, pour qu’elle puisse demander à quelqu’un d’autre ; une invitation ouverte à tous disparaît simplement pour toi. La personne qui l’a lancée peut « Annuler l’équipe » (elle se termine pour tout le monde) ; les autres peuvent Quitter.',
         'Mascotte de la maison : l’une de 8 créatures, choisie et nommée ici. Elle grandit avec les pièces de la famille gagnées tant qu’elle est la mascotte active (elle éclôt à 500, puis 2 000, 5 000 et 10 000), son humeur suit la santé de la maison, et elle réagit aux anniversaires, à l’objectif familial et à la Mission sauvetage.',
         'Changer de mascotte : choisir une créature que tu n’as jamais eue la fait démarrer comme un nouvel œuf. Chaque créature garde sa propre croissance, son nom et sa tenue, donc revenir à elle la retrouve exactement comme elle était. Le ventre et l’heure du coucher sont partagés.',
         'Jouer avec la mascotte : appuie dessus pour une réaction. Son ventre 🍪 se remplit de 5 % à chaque tâche (une tâche en équipe compte une fois) et se vide en 2 jours. Elle ne fait la fête avec un 🍪 et un saut que pour les tâches plus grosses (effort de 3★ ou plus) ; les petites le remplissent sans bruit ; quand il est bas, elle dit juste qu’elle a faim. « Que faire ? » suggère une tâche que tu peux faire tout de suite. Elle ajoute un 🐾 d’encouragement aux tâches terminées de 3★ ou plus. Elle dort pendant l’heure du coucher de la famille (réglée sous la mascotte dans Fonctionnalités, de 21 h à 7 h par défaut).',
@@ -498,7 +501,7 @@ export const GUIDE_FR: GuideSection[] = [
           'Les points ne sont plus dans la ligne du haut sur téléphone : tu les trouves sur le Tableau.',
         ] },
         { q: 'Le bouton Fait est grisé', a: [
-          'Son libellé dit pourquoi : « Non attribuée » (la tâche de quelqu’un d’autre), « En attente de validation » (un parent n’a pas encore validé ta dernière), « Fait par … » (quelqu’un l’a déjà faite aujourd’hui), « Fait aujourd’hui / Fait cette semaine » (la limite de répétition d’une tâche à tout moment), ou « 🤝 noms » (une équipe l’a prise aujourd’hui).',
+          'La ligne sous le nom de la tâche dit pourquoi : « Non attribuée » (la tâche de quelqu’un d’autre), « En attente de validation » (un parent n’a pas encore validé ta dernière), « Fait par … » (quelqu’un l’a déjà faite aujourd’hui), « Fait aujourd’hui / Fait cette semaine » (la limite de répétition d’une tâche à tout moment), ou « 🤝 noms » (une équipe l’a prise aujourd’hui).',
           '« En attente de … » : une tâche en Rotation dont c’est le tour de quelqu’un d’autre. Quand le bouton affiche un jour à la place de Fait, la tâche n’est pas à refaire avant ce jour-là.',
           'Si Fait affiche un message « pas encore due » : la tâche n’est pas encore à refaire. Un parent peut activer « Complétion anticipée » pour les routines quotidiennes.',
         ] },
@@ -513,7 +516,7 @@ export const GUIDE_FR: GuideSection[] = [
           'Si un parent l’a refusée, la tâche est de nouveau ouverte ; pour une tâche en équipe, elle retourne à l’équipe.',
         ] },
         { q: 'J’ai oublié d’appuyer sur Fait hier', a: [
-          'Appuyez sur 📅 à côté de la tâche dans sa pièce et choisissez le jour. Elle compte pour ce jour-là (série comprise) dès qu’un parent l’approuve. Voir Tâches → Noter en retard.',
+          'Ouvrez la tâche dans sa pièce (touchez-la), appuyez sur 📅 Fait plus tôt… et choisissez le jour. Elle compte pour ce jour-là (série comprise) dès qu’un parent l’approuve. Voir Tâches → Noter en retard.',
         ] },
         { q: 'Une carte a disparu de l’accueil', a: [
           'Elle est peut-être masquée : ouvrez Personnaliser (le bouton en bas de l’accueil) et appuyez sur son 🚫 pour l’afficher à nouveau, ou utilisez Revenir à l’ordre par défaut.',
@@ -543,7 +546,7 @@ export const GUIDE_FR: GuideSection[] = [
           'Sa date « À faire avant » est passée. Touche Modifier dessus dans la pièce À faire pour choisir une date plus tard ou l’effacer : sans date, une tâche à faire n’est jamais en retard.',
         ] },
         { q: 'Une tâche ou une récompense a disparu', a: [
-          'Elle est peut-être en pause : les parents la voient grisée dans sa pièce, marquée ⏸️ En pause. Touche ⋯ → ▶️ Réactiver.',
+          'Elle est peut-être en pause : les parents la voient grisée dans sa pièce, marquée ⏸️ En pause. Ouvre-la et touche ⋯ → ▶️ Réactiver.',
           'Une récompense masquée apparaît comme Masquée dans Paramètres → Catalogue des récompenses : touche Afficher.',
           'Supprimée par erreur ? Paramètres → Supprimés récemment la restaure pendant 30 jours.',
         ] },
@@ -612,7 +615,7 @@ export const GUIDE_FR: GuideSection[] = [
           'Les parents et les membres peuvent toujours la faire pour celui dont c’est le tour.',
         ] },
         { q: 'Il n’y a pas de bouton 🤝 Faire équipe', a: [
-          'Les équipes demandent une tâche qui vaut 6 pièces ou plus, qui n’est pas dans la pièce de quelqu’un, qui n’est pas attribuée à une seule personne, et qui n’est pas en rotation.',
+          'Le bouton est dans la tâche : touche la tâche pour l’ouvrir. Les équipes demandent une tâche qui vaut 6 pièces ou plus, qui n’est pas dans la pièce de quelqu’un, qui n’est pas attribuée à une seule personne, et qui n’est pas en rotation.',
           'Une seule équipe par tâche et par jour ; regarde la carte En équipe sur Accueil.',
           'Paramètres → Fonctionnalités → En équipe doit être activé.',
         ] },

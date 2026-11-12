@@ -2415,6 +2415,16 @@
       "limitCount": "Il limite deve essere un numero intero da 1 a {n}.",
       "notFound": "Non esiste più (forse è appena stato eliminato). Ricarica la pagina.",
       "adminOnly": "Solo i genitori possono farlo."
+    },
+    "chore": {
+      "turn": "Turno di {name}",
+      "lastDone": "Ultima volta: {when}",
+      "anyone": "Chiunque",
+      "pin": "Fissa",
+      "pinned": "Fissata",
+      "goToRoom": "Vai alla stanza",
+      "sortBy": "Ordina per",
+      "reverse": "Inverti l'ordine"
     }
   }
 }

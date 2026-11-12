@@ -1208,15 +1208,6 @@ html[data-theme='lava'] option {
     display: block !important;
   }
 
-  /* Rooms task table: scrollable */
-  .room-table-scroll {
-    overflow-x: auto;
-  }
-
-  .room-table-scroll > div {
-    min-width: 580px;
-  }
-
   .room-detail-hero {
     flex-direction: column !important;
     align-items: flex-start !important;
@@ -1226,69 +1217,6 @@ html[data-theme='lava'] option {
 
   .room-detail-hero .tq-btn {
     width: 100%;
-  }
-
-  .room-detail-scroll > div {
-    min-width: 0 !important;
-  }
-
-  .room-table-header {
-    display: none !important;
-  }
-
-  .room-task-row {
-    grid-template-columns: 1fr !important;
-    gap: 8px !important;
-    padding: 12px 8px !important;
-  }
-
-  .room-task-main,
-  .room-task-health,
-  .room-task-frequency,
-  .room-task-effort,
-  .room-task-coins,
-  .room-task-due,
-  .room-task-assigned,
-  .room-task-actions {
-    min-width: 0 !important;
-  }
-
-  /* Small tools on the left, Done on its own side with room between them */
-  .room-task-actions {
-    justify-content: space-between !important;
-    flex-wrap: wrap;
-    gap: 8px 16px !important;
-  }
-
-  /* The tools sit on the left here, so the ⋯ menu opens rightward from their left edge and stays on the card */
-  .room-task-tools {
-    position: relative;
-  }
-
-  .room-task-more {
-    position: static !important;
-  }
-
-  .room-task-menu {
-    left: 0;
-    right: auto !important;
-  }
-
-  .room-task-tools > button,
-  .room-task-more-btn,
-  .room-task-done > button,
-  .room-task-done .tq-btn {
-    min-width: 44px;
-    min-height: 44px;
-  }
-
-  .room-task-done {
-    flex: 1 1 160px;
-    justify-content: flex-end;
-  }
-
-  .room-task-done > button:last-child {
-    flex: 1 1 auto;
   }
 
   .task-add-form {
@@ -1645,23 +1573,6 @@ html[data-theme='lava'] option {
   }
 }
 
-/* Kid mode: bigger, easier targets on the task lists */
-.kid-mode [data-task-id] {
-  padding: 16px !important;
-}
-.kid-mode [data-task-id] .tq-btn {
-  font-size: 15px !important;
-  padding: 12px 18px !important;
-  border-radius: 14px !important;
-}
-.kid-mode [data-task-id] > div:nth-child(2) > div:first-child {
-  font-size: 16px !important;
-}
-/* Same inset as the padded chores, so the room table's header lines up with them */
-.kid-mode .room-table-header {
-  margin: 0 16px;
-}
-
 /* Achievement pop-up: centred on phones, top-right on wider screens */
 @media (min-width: 769px) {
   .achievement-toast {
@@ -1724,56 +1635,6 @@ html[data-theme='lava'] input[type='date'], html[data-season-dark] input[type='d
   color-scheme: dark;
 }
 
-/* A paused chore (ENH-1): greyed in its room; its buttons (Edit, ⋯ to switch it back on) stay clear */
-.room-task-paused > :not(.room-task-actions) {
-  opacity: 0.5;
-}
-
-/* Room task table on a computer narrower than its columns' minimums (TASK_COLUMNS in RoomDetail.tsx, BUG-11): each
-   chore wraps instead, name on top, then health through assigned with the buttons at the right. The header stays as
-   a row of sort links. Phones keep their own layout above. */
-.room-table-scroll {
-  container: room-table / inline-size;
-}
-
-@media (min-width: 769px) {
-  /* Extra buttons (📎, 📅, timer, team-up) wrap above Done instead of spilling out of the column */
-  .room-task-done {
-    flex-wrap: wrap;
-    justify-content: flex-end;
-  }
-
-  @container room-table (max-width: 953px) {
-    .room-table-header {
-      display: flex !important;
-      flex-wrap: wrap;
-      gap: 6px 20px !important;
-    }
-
-    .room-table-header > :last-child {
-      display: none;
-    }
-
-    .room-task-row {
-      display: flex !important;
-      flex-wrap: wrap;
-      gap: 10px 20px !important;
-    }
-
-    .room-task-main {
-      flex: 1 1 100%;
-    }
-
-    .room-task-health {
-      flex: 0 1 150px;
-    }
-
-    .room-task-actions {
-      margin-left: auto;
-    }
-  }
-}
-
 /* Setup wizard (NEW-17): one column, fits 390px phones */
 .setup-page { display: grid; gap: 12px; max-width: 720px; }
 .setup-card { display: grid; gap: 10px; }
@@ -1823,3 +1684,93 @@ html[data-theme='lava'] input[type='date'], html[data-season-dark] input[type='d
 @media (max-width: 480px) {
   .setup-login { grid-template-columns: 1fr; }
 }
+
+/* One chore row for Home, Tasks and room pages (ENH-25, shared/ChoreRow.tsx): icon, name, "room · when", coins and a
+   square tick; tapping the row opens its details and the less-used buttons underneath. */
+.chore-list { display: flex; flex-direction: column; min-width: 0; }
+/* contain: a long one-line "room · when" must not widen the card it's in (it's cut with … instead) */
+.chore-row { min-width: 0; border-radius: 12px; contain: inline-size; }
+.chore-row + .chore-row { border-top: 1px solid var(--warm-border-subtle); border-top-left-radius: 0; border-top-right-radius: 0; }
+.chore-row-top { display: flex; align-items: center; gap: 10px; min-height: 64px; padding: 6px 6px; }
+.chore-row-main {
+  flex: 1; min-width: 0; display: flex; align-items: center; gap: 12px; padding: 4px 0; margin: 0;
+  background: none; border: 0; text-align: left; font: inherit; color: inherit; cursor: pointer; border-radius: 10px;
+}
+.chore-row-main:focus-visible, .chore-tick:focus-visible, .chore-act:focus-visible { outline: 2px solid var(--warm-accent); outline-offset: 2px; }
+.chore-tile {
+  width: 42px; height: 42px; border-radius: 12px; flex: none; display: grid; place-items: center;
+  background: var(--warm-bg-subtle); border: 1px solid var(--warm-border);
+}
+.chore-text { flex: 1; min-width: 0; display: block; }
+.chore-name {
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; overflow-wrap: anywhere;
+  font-size: 15px; font-weight: 800; line-height: 1.25; color: var(--warm-text);
+}
+/* Two lines at most while closed, so "26 days overdue" after a long room name isn't cut off on a narrow phone */
+.chore-sub {
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; overflow-wrap: anywhere;
+  margin-top: 1px; font-size: 12.5px; font-weight: 600; line-height: 1.3; color: var(--warm-text-muted);
+}
+.chore-row.open .chore-sub, .chore-sub.wrap, .chore-row.open .chore-name { display: block; overflow: visible; }
+.chore-late { color: var(--health-red); font-weight: 800; }
+.chore-coins { flex: none; display: flex; flex-direction: column; align-items: flex-end; gap: 2px; font-size: 13.5px; font-weight: 800; color: var(--warm-text); }
+.chore-coins-amount { display: inline-flex; align-items: center; gap: 4px; }
+.chore-coins svg { width: 17px; height: 17px; }
+.chore-coins-boost { font-size: 10px; font-weight: 900; color: #fff; background: var(--warm-accent); border-radius: 6px; padding: 1px 5px; white-space: nowrap; }
+.chore-tick {
+  width: 40px; height: 40px; flex: none; padding: 0; display: grid; place-items: center; cursor: pointer;
+  border-radius: 10px; border: 2px solid var(--warm-accent); background: var(--warm-card); color: var(--warm-accent);
+  transition: background-color 0.15s ease, transform 0.1s ease;
+}
+.chore-tick.ready:hover { background: var(--warm-accent-light); }
+.chore-tick.ready:active { transform: scale(0.94); }
+.chore-tick.done { background: var(--health-green); border-color: var(--health-green); color: #fff; cursor: default; }
+.chore-tick.off { border-color: var(--warm-border); color: var(--warm-text-light); opacity: 0.55; cursor: default; }
+.chore-row.done .chore-name { text-decoration: line-through; color: var(--warm-text-muted); font-weight: 700; }
+.chore-row.open { background: var(--warm-bg-warm); }
+.chore-row.highlight { background: var(--warm-accent-light); box-shadow: inset 0 0 0 1.5px var(--warm-accent); }
+.chore-row.flash { background: var(--health-green-bg); }
+.chore-row.selected { background: var(--warm-accent-light); }
+.chore-row.paused .chore-row-main { opacity: 0.55; }
+.chore-detail { padding: 2px 6px 12px; min-width: 0; }
+.chore-notes { margin: 0 0 10px; font-size: 13.5px; font-weight: 600; line-height: 1.4; color: var(--warm-text-secondary); white-space: pre-wrap; overflow-wrap: anywhere; }
+.chore-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+.chore-tag {
+  min-height: 26px; padding: 2px 9px; border-radius: 8px; display: inline-flex; align-items: center; gap: 5px;
+  background: var(--warm-bg-subtle); border: 1px solid var(--warm-border-subtle);
+  font-size: 12.5px; font-weight: 700; color: var(--warm-text); overflow-wrap: anywhere;
+}
+.chore-acts { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.chore-act, .chore-acts .tq-btn {
+  min-height: 36px; padding: 0 11px; display: inline-flex; align-items: center; gap: 5px; cursor: pointer;
+  border-radius: 10px; border: 1px solid var(--warm-border); background: var(--warm-card); box-shadow: none;
+  font-family: inherit; font-size: 13px; font-weight: 800; color: var(--warm-text); white-space: nowrap;
+}
+.chore-act:hover { background: var(--warm-bg-subtle); }
+.chore-act.on, .chore-act.tq-btn-primary { background: var(--warm-accent); border-color: var(--warm-accent); color: #fff; }
+.chore-act:disabled { opacity: 0.55; cursor: default; }
+.chore-menu { margin-top: 8px; border: 1px solid var(--warm-border); border-radius: 10px; background: var(--warm-card); overflow: hidden; max-width: 320px; }
+.chore-menu button {
+  display: flex; justify-content: space-between; align-items: center; gap: 8px; width: 100%; min-height: 40px; padding: 8px 12px;
+  background: none; border: 0; text-align: left; cursor: pointer; font-family: inherit; font-size: 13px; font-weight: 700; color: var(--warm-text);
+}
+.chore-menu button + button, .chore-menu-rooms { border-top: 1px solid var(--warm-border-subtle); }
+.chore-menu-rooms { background: var(--warm-bg-subtle); }
+.chore-menu-rooms button { padding-left: 22px; font-weight: 600; }
+.chore-select-box {
+  width: 22px; height: 22px; flex: none; display: grid; place-items: center; border-radius: 6px;
+  border: 2px solid var(--warm-border); color: #fff; font-size: 13px; font-weight: 900;
+}
+.chore-select-box.on { border-color: var(--warm-accent); background: var(--warm-accent); }
+.chore-sort { display: flex; align-items: center; justify-content: flex-end; gap: 6px; margin-bottom: 6px; }
+.chore-sort label { font-size: 12px; font-weight: 800; color: var(--warm-text-light); }
+.chore-sort select { width: auto; max-width: 100%; }
+@media (pointer: coarse) {
+  .chore-tick { width: 44px; height: 44px; }
+  .chore-act, .chore-acts .tq-btn { min-height: 40px; }
+}
+/* Kid mode: bigger names and a bigger tick */
+.kid-mode .chore-row-top { min-height: 68px; }
+.kid-mode .chore-name { font-size: 16px; }
+.kid-mode .chore-sub { font-size: 13px; }
+.kid-mode .chore-tick { width: 46px; height: 46px; }

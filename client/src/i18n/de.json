@@ -2415,6 +2415,16 @@
       "limitCount": "Das Limit muss eine ganze Zahl von 1 bis {n} sein.",
       "notFound": "Das gibt es nicht mehr (vielleicht wurde es gerade gelöscht). Lade die Seite neu.",
       "adminOnly": "Das können nur Eltern."
+    },
+    "chore": {
+      "turn": "{name} ist dran",
+      "lastDone": "Zuletzt erledigt: {when}",
+      "anyone": "Alle",
+      "pin": "Anheften",
+      "pinned": "Angeheftet",
+      "goToRoom": "Zum Raum",
+      "sortBy": "Sortieren nach",
+      "reverse": "Reihenfolge umkehren"
     }
   }
 }

@@ -1,21 +1,20 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { Fragment, useCallback, useEffect, useRef, useState } from 'react';
 import { useHeaderAdd } from '../layout/headerAdd';
 import { createPortal } from 'react-dom';
-import { HealthBar } from '../shared/HealthBar';
 import { RingGauge } from '../shared/RingGauge';
 import { EffortDots } from '../shared/EffortDots';
 import { getRoomIcon } from '../icons/RoomIcons';
 import { TaskIcon } from '../icons/TaskIcons';
 import { IconPicker } from '../shared/IconPicker';
-import { CheckIcon, BackIcon, PlusIcon, CoinIcon } from '../icons/UIIcons';
-import { getRoomHealth, notDueYet } from '../../utils/health';
+import { BackIcon, PlusIcon } from '../icons/UIIcons';
+import { getRoomHealth } from '../../utils/health';
 import { formatNextDue, isTaskForUser, taskNextDue } from '../../utils/tasks';
 import { taskErrorText } from '../../utils/taskError';
 import { useBusy } from '../../hooks/useBusy';
 import { TimerStartButton } from '../shared/ChoreTimer';
 import { useChoreTimer } from '../../hooks/useChoreTimer';
 import { DueOnPicker, ReminderPicker, RotationPeriodPicker, SeasonPicker, StartsOnPicker, StepsField, TimerPicker } from '../shared/ScheduleFields';
-import { EMPTY_SCHEDULE, monthlyLabel, schedulePayload, scheduleFromTask, seasonLabel, startsLater, todayIso, weekdaysLabel, type ScheduledTaskFields, type ScheduleValue } from '../../utils/schedule';
+import { EMPTY_SCHEDULE, schedulePayload, scheduleFromTask, startsLater, todayIso, type ScheduledTaskFields, type ScheduleValue } from '../../utils/schedule';
 import { api } from '../../hooks/useApi';
 import { TakeBackButton } from '../shared/TakeBackButton';
 import { TodoQuickAdd } from '../shared/TodoQuickAdd';
@@ -25,19 +24,15 @@ import { AdminCompleteModal } from '../shared/AdminCompleteModal';
 import { ProofModal, type Proof } from '../shared/ProofModal';
 import { LateLogModal } from '../shared/LateLogModal';
 import { UndoToast, type UndoState } from '../shared/UndoToast';
-import { TeamUpButton, TeamUpDialog } from '../shared/TeamUp';
+import { TeamUpDialog } from '../shared/TeamUp';
+import { ChoreAct, ChoreCoins, ChoreFacts, ChoreLate, ChoreRow } from '../shared/ChoreRow';
+import { choreDue, choreWho, daysToFreq } from '../../utils/choreText';
 import { claimedLabel } from '../../utils/teamups';
 import type { TeamUpInfo } from '../../hooks/useApi';
 import { DuplicateRoom } from '../shared/DuplicateRoom';
-import { useWeekStart } from '../../utils/week';
 import { dateStr } from '../../utils/clock';
 
 const tomorrowIso = () => todayIso(new Date(Date.now() + 86400000));
-
-// Task table columns: each shrinks to a fixed minimum, so every row lines up (the buttons' 190px fits German's
-// "☆ Bearbeiten ⋯"). When the card is narrower than the minimums add up to (954px with gaps), computers switch to the
-// wrapped layout in index.css (BUG-11).
-const TASK_COLUMNS = 'minmax(240px, 3fr) minmax(80px, 1.4fr) minmax(70px, 1fr) 80px minmax(44px, 0.6fr) minmax(70px, 1fr) minmax(80px, 1.4fr) minmax(190px, 2fr)';
 
 const FREQ_UNITS = [
   { label: 'hours', toDays: 1 / 24 },
@@ -47,24 +42,11 @@ const FREQ_UNITS = [
   { label: 'years', toDays: 365 },
 ];
 
-function daysToFreq(days: number): { value: number; unit: string } {
-  if (days >= 365 && days % 365 === 0) return { value: days / 365, unit: 'years' };
-  if (days >= 30 && days % 30 === 0) return { value: days / 30, unit: 'months' };
-  if (days >= 7 && days % 7 === 0) return { value: days / 7, unit: 'weeks' };
-  if (days >= 1) return { value: days, unit: 'days' };
-  return { value: Math.round(days * 24), unit: 'hours' };
-}
-
 function freqToDays(value: number, unit: string): number {
   const u = FREQ_UNITS.find(f => f.label === unit);
   return value * (u?.toDays || 1);
 }
 
-function formatFreq(days: number, t: (key: string) => string): string {
-  const { value, unit } = daysToFreq(days);
-  const short = t(`unitsShort.${unit}`);
-  return `${value}${short}`;
-}
 
 function healthColor(value: number): string {
   if (value >= 70) return 'var(--health-green)';
@@ -200,10 +182,9 @@ function EffortPicker({ effort, onChange }: { effort: number; onChange: (e: numb
 }
 
 export function RoomDetail({ room, language, isAdmin, currentUserId, currentUserRole, users, coinsByEffort, onCompleteTask, onBack, onRefresh, onOpenRoom, allowOneTime = true, allowPhotos = true, allowPins = true, onAchievementsUnlocked, focusTaskId, onlyMine, strictMode }: RoomDetailProps) {
-  const { taskName: translateTask, roomDisplayName, timeAgo, t } = useTranslation(language);
+  const { taskName: translateTask, roomDisplayName, t } = useTranslation(language);
   const [animatedTask, setAnimatedTask] = useState<number | null>(null);
   const timer = useChoreTimer();
-  const weekStart = useWeekStart();
   const [editingTask, setEditingTask] = useState<number | null>(null);
   const [editForm, setEditForm] = useState({ name: '', originalName: '', notes: '', freqValue: 7, freqUnit: 'days', effort: 1, health: 100, healthChanged: false, iconKey: 'sparkle', onDemand: false, showInDashboard: false, assignmentType: 'none' as 'none' | 'users', assignmentUserIds: [] as number[], assignmentMode: 'first' as 'first' | 'shared' | 'custom' | 'rotating', assignmentPercentages: {} as Record<number, number>, customCoins: '' as string | number, allowEarlyCompletion: false, repeatLimit: '', repeatPeriod: 'week' as 'day' | 'week', paused: false, pausedUntil: '' });
   const [taskMenuOpen, setTaskMenuOpen] = useState<number | null>(null);
@@ -232,6 +213,13 @@ export function RoomDetail({ room, language, isAdmin, currentUserId, currentUser
   const [sortKey, setSortKey] = useState<SortKey>('health');
   const [sortAsc, setSortAsc] = useState(true);
   const focusedOnce = useRef<number | null>(null);
+  // The chore whose row is open (ENH-25); one opened from search, Home or the task list starts open
+  const [openTask, setOpenTask] = useState<number | null>(focusTaskId ?? null);
+  const [seenFocus, setSeenFocus] = useState(focusTaskId);
+  if (focusTaskId !== seenFocus) {
+    setSeenFocus(focusTaskId);
+    if (focusTaskId) setOpenTask(focusTaskId);
+  }
   const [proofTask, setProofTask] = useState<Task | null>(null);
   /** "Done earlier…" (ENH-7) */
   const [lateTask, setLateTask] = useState<Task | null>(null);
@@ -293,16 +281,6 @@ export function RoomDetail({ room, language, isAdmin, currentUserId, currentUser
     }
     return !!a.pausedAt !== !!b.pausedAt ? (a.pausedAt ? 1 : -1) : sortAsc ? cmp : -cmp; // paused chores last
   });
-
-  const handleSort = (key: SortKey) => {
-    if (sortKey === key) { setSortAsc(!sortAsc); }
-    else { setSortKey(key); setSortAsc(true); }
-  };
-
-  const sortIndicator = (key: SortKey) => {
-    if (sortKey !== key) return '';
-    return sortAsc ? ' \u25B2' : ' \u25BC';
-  };
 
   const handleComplete = (task: Task) => {
     const isAdminOrMember = currentUserRole === 'admin' || currentUserRole === 'member';
@@ -395,7 +373,7 @@ export function RoomDetail({ room, language, isAdmin, currentUserId, currentUser
   });
 
   // Determine if Done button should be disabled for a task
-  function getDoneButtonState(task: Task): { disabled: boolean; label: string } {
+  function getDoneButtonState(task: Task): { disabled: boolean; label: string; done?: boolean } {
     const claimed = claimedLabel(task.teamUp);
     if (claimed) return { disabled: true, label: claimed };
     if (currentUserRole !== 'admin' && currentUserRole !== 'member') {
@@ -451,18 +429,18 @@ export function RoomDetail({ room, language, isAdmin, currentUserId, currentUser
       // In shared/custom mode: disabled only if current user has already completed their part
       const myCompletion = task.sharedCompletions?.find(c => c.userId === currentUserId);
       if (myCompletion) {
-        return { disabled: true, label: t('app.doneBy').replace('{name}', t('common.you') || 'You') };
+        return { disabled: true, done: true, label: t('app.doneBy').replace('{name}', t('common.you') || 'You') };
       }
       // Also disabled if all users have completed (task fully done)
       if (task.sharedCompletions && task.assignedUsers && task.sharedCompletions.length >= task.assignedUsers.length) {
-        return { disabled: true, label: t('roomDetail.done') };
+        return { disabled: true, done: true, label: t('roomDetail.done') };
       }
       return { disabled: false, label: t('roomDetail.done') };
     }
 
     // First mode (default): if anyone completed today, blocked
     if (task.completedTodayBy) {
-      return { disabled: true, label: t('app.doneBy').replace('{name}', task.completedTodayBy.displayName) };
+      return { disabled: true, done: true, label: t('app.doneBy').replace('{name}', task.completedTodayBy.displayName) };
     }
     return { disabled: false, label: t('roomDetail.done') };
   }
@@ -578,80 +556,98 @@ export function RoomDetail({ room, language, isAdmin, currentUserId, currentUser
     onRefresh?.();
   });
 
-  const colStyle = (key: SortKey): React.CSSProperties => ({
-    cursor: 'pointer', userSelect: 'none',
-    color: sortKey === key ? 'var(--warm-accent)' : 'var(--warm-text-light)',
-  });
-
-  const shortDate = (day: string) => new Date(`${day}T12:00:00`).toLocaleDateString(localeFor(language), { weekday: 'short', month: 'short', day: 'numeric' });
-  const repeatLabel = (task: Task) => monthlyLabel(task, t, language)
-    || (task.scheduleWeekdays ? weekdaysLabel(task.scheduleWeekdays, language, weekStart) : `${t('roomDetail.every')} ${formatFreq(task.frequencyDays, t)}`);
-
-  // The To-dos room (ENH-18): a checklist instead of the chore table. Earliest do-by date first, then
-  // the oldest added; ticking one finishes it, with its coins.
+  // The To-dos room (ENH-18): earliest do-by date first, then the oldest added; ticking one finishes it, with its coins.
   const todoOrder = [...sortedTasks].sort((a, b) => (!!a.pausedAt !== !!b.pausedAt ? (a.pausedAt ? 1 : -1) : 0)
     || String(a.doBy || '9999').localeCompare(String(b.doBy || '9999'))
     || String(a.createdAt ?? '').localeCompare(String(b.createdAt ?? '')) || a.id - b.id);
-  const todoChecklist = () => (
-    <div className="todo-checklist" style={{ display: 'flex', flexDirection: 'column' }}>
-      {todoOrder.map((task) => {
-        const name = translateTask(task.name, task.translationKey);
-        const btn = getDoneButtonState(task);
-        const ticked = animatedTask === task.id;
-        const off = btn.disabled || !!task.pausedAt;
-        const overdue = !!task.oneTime && task.health <= 0 && !task.pausedAt;
-        const who = (task.assignedUsers ?? []).map((u) => u.displayName).join(' + ');
-        const details = [
-          overdue ? `⚠️ ${t('todos.overdue')}` : '',
-          task.doBy ? t('todos.byDate').replace('{date}', shortDate(task.doBy)) : '',
-          !task.oneTime ? `🔁 ${repeatLabel(task)}` : '',
-          who ? `${t('todos.forWho')} ${who}` : '',
-          task.pausedAt ? pausedLabel(task) : '',
-          btn.disabled && btn.label !== t('roomDetail.done') ? btn.label : '',
-        ].filter(Boolean).join(' · ');
-        return (
-          <div key={task.id} data-task-id={task.id}>
-            {taskEditor(task)}
-            <div className="todo-row" style={{
-              display: 'flex', alignItems: 'center', gap: 12, padding: '12px 6px', borderRadius: 12,
-              borderBottom: '1px solid var(--warm-border-subtle)', transition: 'background-color 0.3s ease',
-              backgroundColor: ticked ? 'var(--health-green-bg)' : 'transparent',
-            }}>
-              <button type="button" role="checkbox" aria-checked={ticked} aria-label={`${t('roomDetail.done')}: ${name}`}
-                title={off ? btn.label : t('roomDetail.done')} disabled={off} onClick={() => !off && handleComplete(task)}
-                style={{
-                  width: 30, height: 30, borderRadius: 9, flexShrink: 0, padding: 0,
-                  display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                  border: `2px solid ${overdue ? 'var(--health-red)' : 'var(--warm-accent)'}`,
-                  backgroundColor: ticked ? 'var(--warm-accent)' : 'var(--warm-bg-input)', color: '#fff',
-                  cursor: off ? 'default' : 'pointer', opacity: off && !ticked ? 0.45 : 1,
-                }}>
-                {ticked && <CheckIcon />}
-              </button>
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontSize: 15, fontWeight: 800, color: 'var(--warm-text)', overflowWrap: 'anywhere', textDecoration: ticked ? 'line-through' : 'none' }}>{name}</div>
-                {task.notes && <div style={{ fontSize: 12, color: 'var(--warm-text-muted)', fontWeight: 600, marginTop: 2, overflowWrap: 'anywhere' }}>{task.notes}</div>}
-                {details && <div style={{ fontSize: 12, fontWeight: 700, marginTop: 2, color: overdue ? 'var(--health-red)' : 'var(--warm-text-muted)' }}>{details}</div>}
-              </div>
-              <span style={{ fontSize: 12, fontWeight: 800, color: 'var(--warm-accent)', display: 'inline-flex', alignItems: 'center', gap: 3, flexShrink: 0 }}>
-                <CoinIcon />{taskCoins(task)}
-              </span>
-              <TakeBackButton completionId={task.myPendingId} onDone={() => onRefresh?.()} language={language} />
-              {isAdmin && (
-                <button onClick={() => startEdit(task)} className="tq-btn-sm"
-                  style={{ background: 'none', border: '1.5px solid var(--warm-border)', borderRadius: 10, fontWeight: 700, color: 'var(--warm-text-muted)', cursor: 'pointer', fontFamily: 'Nunito', flexShrink: 0 }}>
-                  {t('common.edit')}
-                </button>
-              )}
-            </div>
+
+  const roomOwner = room.assignedUserId ? (users || []).find((u) => u.id === room.assignedUserId)?.displayName ?? '' : '';
+  const undoDone = async (task: Task) => {
+    const by = task.completedTodayBy!;
+    const ask = t('roomDetail.undoDoneConfirm').replace('{task}', translateTask(task.name, task.translationKey))
+      .replace('{name}', by.displayName).replace('{coins}', String(by.coinsEarned ?? 0));
+    if (!window.confirm(ask)) return;
+    await attempt(async () => {
+      await api.cancelCompletion(by.completionId);
+      onRefresh?.();
+    });
+  };
+  const closeTaskMenu = () => { setTaskMenuOpen(null); setMoveMenuTaskId(null); };
+
+  /** One chore (ENH-25): the compact row, and under it, when it's tapped open, its notes, details and buttons */
+  const choreRow = (task: Task) => {
+    const name = translateTask(task.name, task.translationKey);
+    const btn = getDoneButtonState(task);
+    const paused = !!task.pausedAt;
+    const flashing = animatedTask === task.id;
+    const due = choreDue(task, t, language);
+    // Why it can't be ticked right now ("Waiting for Cecil", "Done by Dad") takes the place of when it's due
+    const status = paused ? pausedLabel(task) : btn.disabled && btn.label !== t('roomDetail.done') ? btn.label : null;
+    const when = status ?? (due.late ? <ChoreLate>{due.text}</ChoreLate> : due.text);
+    // Kids start the timer first; Done comes when it ends (NEW-1)
+    const waitForTimer = !paused && !btn.disabled && !!timer?.mustWait(task);
+    const open = openTask === task.id;
+    const timerTask = { ...task, name };
+    const proofLabel = t(allowPhotos ? 'proof.addProof' : 'proof.addNote');
+    return (
+      <Fragment key={task.id}>
+        {/* Edit opens in a pop-up (a bottom sheet on phones) so the list doesn't jump around */}
+        {taskEditor(task)}
+        <ChoreRow taskId={task.id} iconKey={task.iconKey} name={name}
+          sub={[when, choreWho(task) || roomOwner || t('chore.anyone')]}
+          coins={<ChoreCoins coins={taskCoins(task)} />}
+          className={`${paused ? 'paused' : ''}${flashing ? ' flash' : ''}`}
+          tick={paused ? null : { state: flashing || btn.done ? 'done' : btn.disabled ? 'off' : 'ready', label: btn.label, onTick: () => handleComplete(task) }}
+          trailing={waitForTimer ? <TimerStartButton task={timerTask} language={language} primary className="chore-act" /> : undefined}
+          open={open} onToggle={() => { setOpenTask(open ? null : task.id); closeTaskMenu(); }}>
+          {task.notes && <p className="chore-notes">{task.notes}</p>}
+          <ChoreFacts task={task} language={language} showHealth={!room.isTodoRoom} />
+          <div className="chore-acts">
+            {isAdmin && <ChoreAct onClick={() => startEdit(task)}>✏️ {t('common.edit')}</ChoreAct>}
+            {allowPins && (
+              <ChoreAct on={!!task.pinned} aria-pressed={!!task.pinned} title={task.pinned ? t('home.unpin') : t('home.pin')} onClick={() => togglePin(task)}>
+                {task.pinned ? '★' : '☆'} {t(task.pinned ? 'chore.pinned' : 'chore.pin')}
+              </ChoreAct>
+            )}
+            {!paused && btn.label !== t('app.notAssigned') && !claimedLabel(task.teamUp) && (
+              <ChoreAct onClick={() => setLateTask(task)}>📅 {t('late.button')}</ChoreAct>
+            )}
+            {!paused && !btn.disabled && !waitForTimer && <TimerStartButton task={timerTask} language={language} className="chore-act" />}
+            {!paused && task.teamUp?.canStart && <ChoreAct onClick={() => setTeamPick(task)}>🤝 {t('teamups.teamUp')}</ChoreAct>}
+            {!paused && canAddProof && !btn.disabled && !waitForTimer && <ChoreAct onClick={() => setProofTask(task)}>📎 {proofLabel}</ChoreAct>}
+            {!paused && <TakeBackButton completionId={task.myPendingId} onDone={() => onRefresh?.()} language={language} />}
+            {isAdmin && task.completedTodayBy?.completionId && (
+              <ChoreAct onClick={() => void undoDone(task)} title={t('roomDetail.undoDoneTitle')}>↩️ {t('roomDetail.undoDone')}</ChoreAct>
+            )}
+            {isAdmin && (
+              <ChoreAct title={t('roomDetail.moreOptions')} aria-label={t('roomDetail.moreOptions')} aria-expanded={taskMenuOpen === task.id}
+                onClick={() => { if (taskMenuOpen === task.id) closeTaskMenu(); else { setMoveMenuTaskId(null); void handleTaskMenuOpen(task.id); } }}>
+                <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true" fill="currentColor"><circle cx="4" cy="10" r="2" /><circle cx="10" cy="10" r="2" /><circle cx="16" cy="10" r="2" /></svg>
+              </ChoreAct>
+            )}
           </div>
-        );
-      })}
-      {todoOrder.length === 0 && (
-        <div className="tq-empty-state" style={{ padding: '24px 8px' }}>{t('todos.empty')}</div>
-      )}
-    </div>
-  );
+          {/* ⋯ opens underneath, so it can't hang off the side of a phone */}
+          {isAdmin && taskMenuOpen === task.id && (
+            <div className="chore-menu">
+              <button type="button" onClick={() => handleDuplicateTask(task.id)}>{t('roomDetail.duplicateTask')}</button>
+              <button type="button" aria-expanded={moveMenuTaskId === task.id} onClick={() => setMoveMenuTaskId(moveMenuTaskId === task.id ? null : task.id)}>
+                <span>{t('roomDetail.moveToRoom')}</span>
+                <span aria-hidden="true" style={{ fontSize: 10, opacity: 0.6 }}>{moveMenuTaskId === task.id ? '▲' : '▼'}</span>
+              </button>
+              {moveMenuTaskId === task.id && (
+                <div className="chore-menu-rooms">
+                  {allRooms.filter((r) => r.id !== room.id).map((r) => (
+                    <button type="button" key={r.id} onClick={() => handleMoveTask(task.id, r.id)}>{roomDisplayName(r.name, r.roomType)}</button>
+                  ))}
+                </div>
+              )}
+              <button type="button" onClick={() => togglePause(task)}>{task.pausedAt ? t('pause.resume') : t('pause.pause')}</button>
+            </div>
+          )}
+        </ChoreRow>
+      </Fragment>
+    );
+  };
   const todoLine = [
     t('todos.countLine').replace('{n}', String(room.todoCount ?? 0)),
     room.todoOverdue ? t('todos.overdueCount').replace('{n}', String(room.todoOverdue)) : '',
@@ -978,245 +974,28 @@ export function RoomDetail({ room, language, isAdmin, currentUserId, currentUser
 
       {/* Task Table */}
       <div className="tq-card tq-card-padded">
-        {room.isTodoRoom ? todoChecklist() : (
-        <div className="room-table-scroll room-detail-scroll">
-        {/* Column Headers (sortable) */}
-        <div className="room-table-header" style={{
-          display: 'grid', gridTemplateColumns: TASK_COLUMNS,
-          gap: 12, padding: '0 8px 14px', borderBottom: '1.5px solid var(--warm-border)',
-          fontSize: 11, fontWeight: 800, textTransform: 'uppercase', letterSpacing: 1,
-        }}>
-          <div style={colStyle('name')} onClick={() => handleSort('name')}>{t('history.task')}{sortIndicator('name')}</div>
-          <div style={colStyle('health')} onClick={() => handleSort('health')}>{t('rooms.health')}{sortIndicator('health')}</div>
-          <div style={colStyle('frequency')} onClick={() => handleSort('frequency')}>{t('roomDetail.frequency')}{sortIndicator('frequency')}</div>
-          <div style={colStyle('effort')} onClick={() => handleSort('effort')}>{t('roomDetail.effort')}{sortIndicator('effort')}</div>
-          <div style={colStyle('coins')} onClick={() => handleSort('coins')}>{t('roomDetail.coins')}{sortIndicator('coins')}</div>
-          <div style={colStyle('dueDate')} onClick={() => handleSort('dueDate')}>{t('roomDetail.nextDue')}{sortIndicator('dueDate')}</div>
-          <div style={colStyle('assigned')} onClick={() => handleSort('assigned')}>{t('roomDetail.assigned')}{sortIndicator('assigned')}</div>
-          <div style={{ textAlign: 'right', color: 'var(--warm-text-light)' }}>{t('roomDetail.actions')}</div>
-        </div>
-
-        {sortedTasks.map((task) => (
-          <div key={task.id} data-task-id={task.id}>
-            {/* Edit opens in a pop-up (a bottom sheet on phones) so the list doesn't jump around */}
-            {taskEditor(task)}
-              <div className={`room-task-row${task.pausedAt ? ' room-task-paused' : ''}`} style={{
-                display: 'grid', gridTemplateColumns: TASK_COLUMNS,
-                gap: 12, padding: '16px 8px', alignItems: 'center',
-                borderBottom: '1px solid var(--warm-border-subtle)',
-                backgroundColor: animatedTask === task.id ? 'var(--health-green-bg)' : task.pausedAt ? 'var(--warm-bg-subtle)' : 'transparent',
-                transition: 'all 0.3s ease', borderRadius: 12,
-              }}>
-                <div className="room-task-main" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                  <span style={{
-                    width: 34, height: 34, borderRadius: 11,
-                    display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                    backgroundColor: 'var(--warm-bg-subtle)', border: '1px solid var(--warm-border)',
-                    flexShrink: 0,
-                    marginLeft: -8,
-                    alignSelf: 'center',
-                  }}>
-                    <TaskIcon iconKey={task.iconKey} size={24} />
-                  </span>
-                  <div style={{ minWidth: 0 }}>
-                    <div style={{ fontSize: 14, fontWeight: 800, color: 'var(--warm-text)' }}>
-                      {translateTask(task.name, task.translationKey)}
-                    </div>
-                    {task.notes && (
-                      <div style={{ fontSize: 11, color: 'var(--warm-text-muted)', fontWeight: 600, marginTop: 2 }}>
-                        {task.notes}
-                      </div>
-                    )}
-                    <div style={{ fontSize: 11, color: 'var(--warm-text-light)', fontWeight: 600 }}>
-                      {timeAgo(task.lastCompletedAt)}{startsLater(task) ? ` · 📅 ${t('schedule.startsLabel').replace('{date}', new Date(`${task.startsOn}T12:00:00`).toLocaleDateString(localeFor(language), { weekday: 'short', month: 'short', day: 'numeric' }))}` : ''}{task.outOfSeason && task.seasonStartMonth && task.seasonEndMonth ? ` · ${t('schedule.offSeason')} (${seasonLabel(task.seasonStartMonth, task.seasonEndMonth, language)})` : task.isSeasonal ? ` · ${t('roomDetail.seasonal')}` : ''}{task.onDemand ? ` · ${t('roomDetail.onDemand')}` : ''}{task.onDemand && task.repeatLimit ? ` · ${task.myRepeatCount ?? 0}/${task.repeatLimit} ${t(task.repeatPeriod === 'day' ? 'repeat.today' : 'repeat.thisWeek')}` : ''}
-                    </div>
-                  </div>
-                </div>
-                <div className="room-task-health"><HealthBar value={animatedTask === task.id ? 100 : task.health} height={8} animate={animatedTask === task.id} notDueYet={notDueYet(task)} /></div>
-                <div className="room-task-frequency" style={{ fontSize: 13, color: 'var(--warm-text-secondary)', fontWeight: 600 }}>
-                  {task.onDemand
-                    ? <span style={{ color: 'var(--warm-accent)', fontWeight: 700 }}>{t('roomDetail.onDemand')}</span>
-                    : task.oneTime
-                      ? <span style={{ color: 'var(--warm-accent)', fontWeight: 700 }}>{t('schedule.once')}</span>
-                    : monthlyLabel(task, t, language)
-                      ? <>{monthlyLabel(task, t, language)}</>
-                    : task.scheduleWeekdays
-                      ? <>{weekdaysLabel(task.scheduleWeekdays, language, weekStart)}</>
-                      : <>{t('roomDetail.every')} {formatFreq(task.frequencyDays, t)}</>
-                  }
-                </div>
-                <div className="room-task-effort"><EffortDots effort={task.effort} /></div>
-                <div className="room-task-coins" style={{ fontSize: 12, fontWeight: 800, color: 'var(--warm-accent)', display: 'flex', alignItems: 'center', gap: 3 }}>
-                  <CoinIcon />{taskCoins(task)}
-                </div>
-                {task.pausedAt
-                  ? <div className="room-task-due" style={{ fontSize: 12, fontWeight: 800, color: 'var(--warm-text-secondary)' }}>{pausedLabel(task)}</div>
-                  : task.onDemand
-                  ? <div className="room-task-due" style={{ fontSize: 12, fontWeight: 700, color: 'var(--warm-text-light)' }}>—</div>
-                  : task.outOfSeason
-                  ? <div className="room-task-due" style={{ fontSize: 12, fontWeight: 700, color: 'var(--warm-text-light)' }}>{t('schedule.offSeason')}</div>
-                  : task.oneTime
-                  ? <div className="room-task-due" style={{ fontSize: 12, fontWeight: 700, color: task.health <= 0 ? 'var(--health-red)' : 'var(--warm-text-light)' }}>
-                      {task.health <= 0 ? t('todos.overdue') : task.doBy ? t('todos.byDate').replace('{date}', new Date(`${task.doBy}T12:00:00`).toLocaleDateString(localeFor(language), { month: 'short', day: 'numeric' })) : '—'}
-                    </div>
-                  : (() => { const { text, color } = formatNextDue(task.lastCompletedAt, task.frequencyDays, t, language, task.health, task.nextDueAt); return (
-                      <div className="room-task-due" style={{ fontSize: 12, fontWeight: 700, color }}>{text}</div>
-                    ); })()
-                }
-                <div className="room-task-assigned" style={{ fontSize: 12, color: 'var(--warm-text-secondary)', fontWeight: 600 }}>
-                  {task.assignedUsers && task.assignedUsers.length > 0
-                    ? <span>
-                        {task.assignmentMode === 'custom'
-                          ? task.assignedUsers.map(u => `${u.displayName} (${u.coinPercentage ?? 0}%)`).join(' + ')
-                          : task.assignedUsers.map(u => u.displayName).join(' + ')
-                        }
-                        {(task.assignmentMode === 'shared' || task.assignmentMode === 'custom') && task.assignedUsers && task.assignedUsers.length >= 2 && (
-                          <div style={{ fontSize: 10, color: 'var(--warm-text-light)', fontWeight: 600, marginTop: 2 }}>
-                            {task.assignmentMode === 'shared' ? t('rooms.modeShared') : t('rooms.modeCustom')} · {task.sharedCompletions?.length || 0}/{task.assignedUsers.length} {t('rooms.done')}
-                          </div>
-                        )}
-                        {task.assignmentMode === 'rotating' && task.rotationCurrentUserId !== undefined && (
-                          <div style={{ fontSize: 10, color: 'var(--warm-accent)', fontWeight: 700, marginTop: 2 }}>
-                            🔄 {task.assignedUsers.find(u => u.id === task.rotationCurrentUserId)?.displayName || '?'}{task.rotationPeriod === 'week' ? ` · ${t('repeat.thisWeek')}` : ''}
-                          </div>
-                        )}
-                      </span>
-                    : room.assignedUserId
-                      ? (() => {
-                          const roomOwner = (users || []).find(u => u.id === room.assignedUserId);
-                          return roomOwner
-                            ? <span style={{ color: 'var(--warm-text-light)', fontStyle: 'italic' }}>{roomOwner.displayName}</span>
-                            : <span style={{ color: 'var(--warm-text-light)', opacity: 0.5 }}>—</span>;
-                        })()
-                      : <span style={{ color: 'var(--warm-text-light)', opacity: 0.5 }}>—</span>
-                  }
-                </div>
-                <div className="room-task-actions" style={{ display: 'flex', flexWrap: 'wrap', gap: '8px 12px', justifyContent: 'flex-end', alignItems: 'center', position: 'relative' }}>
-                  <div className="room-task-tools" style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
-                  {allowPins && <button onClick={() => togglePin(task)} className="tq-btn-sm" aria-pressed={!!task.pinned}
-                    title={task.pinned ? t('home.unpin') : t('home.pin')} aria-label={task.pinned ? t('home.unpin') : t('home.pin')}
-                    style={{ background: 'none', border: '1.5px solid var(--warm-border)', borderRadius: 10, cursor: 'pointer', fontSize: 14, color: task.pinned ? 'var(--warm-accent)' : 'var(--warm-text-light)' }}>
-                    {task.pinned ? '★' : '☆'}
-                  </button>}
-                  {isAdmin && (
-                    <>
-                      <button onClick={() => startEdit(task)}
-                        className="tq-btn-sm"
-                        style={{
-                          background: 'none', border: '1.5px solid var(--warm-border)', borderRadius: 10,
-                          fontWeight: 700, color: 'var(--warm-text-muted)',
-                          cursor: 'pointer', fontFamily: 'Nunito',
-                        }}>{t('common.edit')}</button>
-                      <div className="room-task-more" style={{ position: 'relative' }}>
-                        <button
-                          onClick={(e) => { e.stopPropagation(); if (taskMenuOpen === task.id) { setTaskMenuOpen(null); setMoveMenuTaskId(null); } else { handleTaskMenuOpen(task.id); setMoveMenuTaskId(null); } }}
-                          className="tq-btn-sm room-task-more-btn"
-                          style={{ background: 'none', border: '1.5px solid var(--warm-border)', borderRadius: 10, color: 'var(--warm-text-muted)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                          title={t('roomDetail.moreOptions')} aria-label={t('roomDetail.moreOptions')}
-                          aria-haspopup="menu" aria-expanded={taskMenuOpen === task.id}
-                        >
-                          <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true" fill="currentColor"><circle cx="4" cy="10" r="2" /><circle cx="10" cy="10" r="2" /><circle cx="16" cy="10" r="2" /></svg>
-                        </button>
-                        {taskMenuOpen === task.id && (
-                          <div className="room-task-menu"
-                            style={{ position: 'absolute', right: 0, top: '100%', zIndex: 100, background: 'var(--warm-card)', border: '1.5px solid var(--warm-border)', borderRadius: 12, boxShadow: '0 4px 16px rgba(0,0,0,0.14)', minWidth: 180, overflow: 'hidden' }}
-                          >
-                            <button
-                              onClick={() => handleDuplicateTask(task.id)}
-                              style={{ width: '100%', textAlign: 'left', padding: '10px 14px', fontSize: 12, fontWeight: 700, color: 'var(--warm-text)', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'Nunito' }}
-                            >{t('roomDetail.duplicateTask')}</button>
-                            <button
-                              onClick={() => setMoveMenuTaskId(moveMenuTaskId === task.id ? null : task.id)}
-                              style={{ width: '100%', textAlign: 'left', padding: '10px 14px', fontSize: 12, fontWeight: 700, color: 'var(--warm-text)', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'Nunito', borderTop: '1px solid var(--warm-border-subtle)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
-                            >
-                              <span>{t('roomDetail.moveToRoom')}</span>
-                              <span style={{ fontSize: 10, opacity: 0.6 }}>{moveMenuTaskId === task.id ? '▲' : '▼'}</span>
-                            </button>
-                            {moveMenuTaskId === task.id && (
-                              <div style={{ borderTop: '1px solid var(--warm-border-subtle)', background: 'var(--warm-bg-subtle)' }}>
-                                {allRooms.filter(r => r.id !== room.id).map(r => (
-                                  <button key={r.id}
-                                    onClick={() => handleMoveTask(task.id, r.id)}
-                                    style={{ width: '100%', textAlign: 'left', padding: '8px 18px', fontSize: 12, fontWeight: 600, color: 'var(--warm-text)', background: 'none', border: 'none', borderBottom: '1px solid var(--warm-border-subtle)', cursor: 'pointer', fontFamily: 'Nunito' }}
-                                  >{roomDisplayName(r.name, r.roomType)}</button>
-                                ))}
-                              </div>
-                            )}
-                            <button
-                              onClick={() => togglePause(task)}
-                              style={{ width: '100%', textAlign: 'left', padding: '10px 14px', fontSize: 12, fontWeight: 700, color: 'var(--warm-text)', background: 'none', border: 'none', borderTop: '1px solid var(--warm-border-subtle)', cursor: 'pointer', fontFamily: 'Nunito' }}
-                            >{task.pausedAt ? t('pause.resume') : t('pause.pause')}</button>
-                            <button
-                              onClick={() => { setTaskMenuOpen(null); setMoveMenuTaskId(null); }}
-                              style={{ width: '100%', textAlign: 'center', padding: '8px 14px', fontSize: 11, fontWeight: 600, color: 'var(--warm-text-muted)', background: 'none', border: 'none', borderTop: '1px solid var(--warm-border-subtle)', cursor: 'pointer', fontFamily: 'Nunito' }}
-                            >{t('common.cancel')}</button>
-                          </div>
-                        )}
-                      </div>
-                    </>
-                  )}
-                  {isAdmin && task.completedTodayBy?.completionId && (
-                    <button
-                      onClick={async () => {
-                        const by = task.completedTodayBy!;
-                        const ask = t('roomDetail.undoDoneConfirm').replace('{task}', translateTask(task.name, task.translationKey))
-                          .replace('{name}', by.displayName).replace('{coins}', String(by.coinsEarned ?? 0));
-                        if (!window.confirm(ask)) return;
-                        await attempt(async () => {
-                          await api.cancelCompletion(by.completionId);
-                          onRefresh?.();
-                        });
-                      }}
-                      title={t('roomDetail.undoDoneTitle')}
-                      className="tq-btn-sm"
-                      style={{
-                        background: 'none', border: '1.5px solid var(--warm-border)', borderRadius: 10,
-                        fontWeight: 700, color: 'var(--warm-text-muted)', cursor: 'pointer', fontFamily: 'Nunito', whiteSpace: 'nowrap',
-                      }}
-                    >↩️ {t('roomDetail.undoDone')}</button>
-                  )}
-                  </div>
-                  {!task.pausedAt && <div className="room-task-done" style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
-                  {(() => {
-                    const btn = getDoneButtonState(task);
-                    // Kids start the timer first; Done comes when it ends (NEW-1)
-                    const waitForTimer = !!timer?.mustWait(task);
-                    return (
-                      <>
-                      <TeamUpButton info={task.teamUp} onClick={() => setTeamPick(task)} language={language} />
-                      <TakeBackButton completionId={task.myPendingId} onDone={() => onRefresh?.()} language={language} />
-                      {canAddProof && !btn.disabled && !waitForTimer && (
-                        <button onClick={() => setProofTask(task)} className="tq-btn tq-btn-secondary tq-btn-sm" title={t(allowPhotos ? 'proof.addProof' : 'proof.addNote')} aria-label={t(allowPhotos ? 'proof.addProof' : 'proof.addNote')}>📎</button>
-                      )}
-                      {btn.label !== t('app.notAssigned') && !claimedLabel(task.teamUp) && (
-                        <button onClick={() => setLateTask(task)} className="tq-btn tq-btn-secondary tq-btn-sm" title={t('late.button')} aria-label={t('late.button')}>📅</button>
-                      )}
-                      {!btn.disabled && <TimerStartButton task={{ ...task, name: translateTask(task.name, task.translationKey) }} language={language} primary={waitForTimer} />}
-                      {!(waitForTimer && !btn.disabled) && <button
-                        onClick={() => !btn.disabled && handleComplete(task)}
-                        disabled={btn.disabled}
-                        className={btn.disabled ? 'tq-btn tq-btn-sm' : 'tq-btn tq-btn-primary tq-btn-sm'}
-                        style={{
-                          ...(btn.disabled ? {
-                            opacity: 0.55, cursor: 'default',
-                            backgroundColor: 'var(--warm-bg-subtle)',
-                            border: '1.5px solid var(--warm-border)',
-                            color: 'var(--warm-text-muted)',
-                          } : {}),
-                        }}
-                      >
-                        {btn.disabled ? btn.label : <><CheckIcon /> {btn.label}</>}
-                      </button>}
-                      </>
-                    );
-                  })()}
-                  </div>}
-                </div>
-              </div>
-
+        {!room.isTodoRoom && sortedTasks.length > 1 && (
+          <div className="chore-sort">
+            <label htmlFor="room-sort">{t('chore.sortBy')}</label>
+            <select id="room-sort" className="tq-input-compact" value={sortKey} onChange={(e) => { setSortKey(e.target.value as SortKey); setSortAsc(true); }}>
+              <option value="health">{t('rooms.health')}</option>
+              <option value="dueDate">{t('roomDetail.nextDue')}</option>
+              <option value="name">{t('roomDetail.name')}</option>
+              <option value="frequency">{t('roomDetail.frequency')}</option>
+              <option value="effort">{t('roomDetail.effort')}</option>
+              <option value="coins">{t('roomDetail.coins')}</option>
+              <option value="assigned">{t('roomDetail.assigned')}</option>
+            </select>
+            <ChoreAct onClick={() => setSortAsc(!sortAsc)} title={t('chore.reverse')} aria-label={t('chore.reverse')}>{sortAsc ? '↑' : '↓'}</ChoreAct>
           </div>
-        ))}
-        </div>)}{/* end room-table-scroll */}
+        )}
+        {/* One compact row per chore (ENH-25); the To-dos room lists its to-dos the same way, earliest do-by date first */}
+        <div className="chore-list">
+          {(room.isTodoRoom ? todoOrder : sortedTasks).map(choreRow)}
+        </div>
+        {room.isTodoRoom && todoOrder.length === 0 && (
+          <div className="tq-empty-state" style={{ padding: '24px 8px' }}>{t('todos.empty')}</div>
+        )}
 
         {/* Add Task */}
         <div ref={addAnchor} style={{ scrollMarginTop: 12 }} />

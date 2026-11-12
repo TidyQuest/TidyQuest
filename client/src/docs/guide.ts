@@ -241,7 +241,7 @@ export const GUIDE_EN: GuideSection[] = [
       { h: 'Timer' },
       { ul: [
         'Timer (minutes) in the chore editor gives a chore a countdown, for example 10 minutes to tidy a room. Leave it empty for no timer. The chore’s name doesn’t matter.',
-        'The chore then shows ▶ 10 min next to Done. Tap it for a big countdown with Pause and +5 min. Tap ⌄ to hide it: a small timer bar stays at the top of every page, and the timer keeps going after a reload.',
+        'The chore then has a ▶ 10 min button: tap the chore to open it and it’s with the other buttons (for a kid who has to run the timer first, it sits in place of ✓). Tap it for a big countdown with Pause and +5 min. Tap ⌄ to hide it: a small timer bar stays at the top of every page, and the timer keeps going after a reload.',
         'At zero it chimes and vibrates, then asks “Time’s up! Done?”. Done finishes the chore as usual (with Strict Mode it still waits for a parent). “Need more time” adds 5 minutes.',
         'Kids start the timer first: on a timer chore, their Done button comes back when the time is up. Parents and members can tap Done any time.',
         'The Tasks page lists every chore with a timer: pick “⏱️ Has a timer” in its filter.',
@@ -250,7 +250,10 @@ export const GUIDE_EN: GuideSection[] = [
       { p: 'Steps (one per line) list what a chore involves, like “Feet on the floor”, “Lights on”, “Put on the clothes”. They show as tick boxes in One thing at a time. The ticks are only a help: Done still finishes the chore.' },
       { h: 'Finishing a chore' },
       { ul: [
-        'Tap Done on Home, in the room, or on the Tasks page. The 📎 button adds a note or photo as proof.',
+        'Every chore is one row, the same on Home and in its room: its icon, its name, a line saying where, when or who (red when it’s late), its coins and a square ✓ button. That ✓ is Done: tap it when the chore is finished.',
+        'Tap the row itself to open it: the notes, how often it’s due, the effort, whose turn it is and when it was last done, plus the less-used buttons (Edit, Pin, 📅 Done earlier…, 🤝 Team up, 📎 and ⋯). Tap it again to close it. On Home, Go to room opens the chore in its room; the Tasks page lists every chore, and a tap opens it in its room.',
+        'In a room, Sort by puts the chores in order (by health, due date, name…); the arrow button next to it reverses the order.',
+        'The 📎 button in the opened chore adds a note or photo as proof.',
         'After a parent approves, the note and photo stay with the chore in Activity (tap the photo to see it full size). Parents see everyone’s; everyone else sees only their own. A photo’s link doesn’t open for anyone else, or after logging out. Undoing or rejecting the chore deletes its photo.',
         'Parents and members can mark a chore done for someone else ("who did it?").',
         'A mistake can be undone from Activity (parents), or with ↩️ Undo next to the chore’s "Done by" in its room (parents; it asks first, because the coins come back off). A team-up is undone for the whole team, and everyone’s coins for it are taken back. A kid can take back their own Done while it waits for approval.',
@@ -258,16 +261,16 @@ export const GUIDE_EN: GuideSection[] = [
       { p: 'Settings → Features → Proof photos switches photos off; the 📎 button then adds a note only. On tidyquest.org photos start off, and a parent turns them on.' },
       { h: 'Logging it late' },
       { ul: [
-        'Forgot to tap Done? Tap 📅 (Done earlier…) next to the chore in its room, pick the day (up to 7 days back) and tap Log it. Parents and members can pick who did it.',
+        'Forgot to tap Done? Open the chore in its room (tap it), tap 📅 Done earlier…, pick the day (up to 7 days back) and tap Log it. Parents and members can pick who did it.',
         'It counts on that day: for streaks, the weekly goal, the Board and the Calendar. If it fills the day that broke a streak, the streak comes back. A goal whose week has ended still pays its bonus once the coins reach it.',
         'It pays the chore’s usual coins, without double coins or the Rescue Mission. Everyone but parents waits for a parent’s approval, even with Strict Mode off. Activity and the approval list mark it 🕘 Logged late.',
         'It can’t go on a day the chore was already done (with First come, first served, by anyone), before the chore was added or its start date, or on a day it wasn’t due yet.',
       ] },
       { h: 'Pausing a chore' },
       { ul: [
-        'Not needed for a while (the pool in winter, a kid away at camp)? Parents tap ⋯ (More options) on the chore in its room, then ⏸️ Pause. Or open Edit, tick ⏸️ Paused and pick a day under Back on (optional) so it switches back on by itself.',
+        'Not needed for a while (the pool in winter, a kid away at camp)? Parents open the chore in its room (tap it), tap ⋯ (More options), then ⏸️ Pause. Or open Edit, tick ⏸️ Paused and pick a day under Back on (optional) so it switches back on by itself.',
         'A paused chore leaves Home, the Tasks page, the Calendar, reminders, the Rescue Mission, team-ups and house health. Parents still see it greyed in its room, marked ⏸️ Paused; kids don’t see it at all.',
-        'Tap ⋯ → ▶️ Switch back on (or untick ⏸️ Paused). It comes back as if just done, so it isn’t overdue. Its history, coins and who it’s assigned to stay the same.',
+        'Open the chore and tap ⋯ → ▶️ Switch back on (or untick ⏸️ Paused). It comes back as if just done, so it isn’t overdue. Its history, coins and who it’s assigned to stay the same.',
       ] },
       { h: 'To-do list' },
       { ul: [
@@ -374,11 +377,11 @@ export const GUIDE_EN: GuideSection[] = [
       { where: 'Settings → Features (each one can be switched off for the family)' },
       { ul: [
         'Rescue Mission: each day the most-forgotten chore pays extra (2× by default) to the first person who does it.',
-        'Your usual / Maybe you forgot: Home shows the chores you do most (and ones you pin), and chores overdue by a whole interval. 💤 hides one from Maybe you forgot for 3 days, just for you; "Snoozed · Undo" brings it straight back.',
+        'Your usual / Maybe you forgot: Home shows the chores you do most (and ones you pin: open a chore and tap ☆ Pin), and chores overdue by a whole interval. Open a chore there and 💤 Snooze for 3 days hides it from Maybe you forgot, just for you; "Snoozed · Undo" brings it straight back.',
         'To-dos: one-time chores and the To-do card.',
         'Board awards and trophy shelf. Levels and Next badge.',
         'Cheers: 👏 🎉 💪 ⭐ on anyone else’s finished chore (Home’s "Completed today" and Activity). The same emoji again takes it back. The person gets a private notification.',
-        'Team-ups: 🤝 on a chore worth 6 or more coins invites one person or anyone. Once someone joins, the chore is the team’s for the day. Either one taps Done; coins split evenly plus a team bonus (10, 20 or 30%). A parent with a kid is a helper and the kid keeps all the coins. Never on someone’s own room, one-person or rotating chores. Not up for it? "No thanks" turns an invite down: an invite just for you ends and the person who asked hears about it, so they can ask someone else; an invite for anyone just disappears for you. The person who started it can "Call off team-up" (it ends for everyone); anyone else can Leave.',
+        'Team-ups: open a chore worth 6 or more coins and 🤝 Team up invites one person or anyone. Once someone joins, the chore is the team’s for the day. Either one taps Done; coins split evenly plus a team bonus (10, 20 or 30%). A parent with a kid is a helper and the kid keeps all the coins. Never on someone’s own room, one-person or rotating chores. Not up for it? "No thanks" turns an invite down: an invite just for you ends and the person who asked hears about it, so they can ask someone else; an invite for anyone just disappears for you. The person who started it can "Call off team-up" (it ends for everyone); anyone else can Leave.',
         'House mascot: one of 8 creatures, picked and named here. It grows with the family coins earned while it’s the active mascot (hatches at 500, then 2,000, 5,000 and 10,000), its mood follows house health, and it reacts to birthdays, the family goal and the Rescue Mission.',
         'Swapping mascots: picking a creature you haven’t had starts it as a new egg. Each creature keeps its own growth, name and outfit, so switching back brings it back exactly as it was. The tummy and bedtime are shared.',
         'Playing with the mascot: tap it for a reaction. Its 🍪 tummy fills 5% with every chore (a team-up counts once) and empties over 2 days. It cheers with a 🍪 and a hop only for bigger chores (3★ effort or more); smaller ones fill it quietly; when it’s low it just says it’s hungry. "What should I do?" suggests a chore you can do right now. It adds a 🐾 cheer to finished chores of 3★ or more. It sleeps during the family bedtime (set under the mascot in Features, 9 pm to 7 am by default).',
@@ -522,7 +525,7 @@ export const GUIDE_EN: GuideSection[] = [
           'The points chip isn’t in the phone’s top line any more: your points are on the Board.',
         ] },
         { q: 'The Done button is grey', a: [
-          'Its label says why: "Not assigned" (someone else’s chore), "Waiting for approval" (a parent hasn’t approved your last one yet), "Done by …" (someone already did it today), "Done today / this week" (an anytime chore’s repeat limit), or "🤝 names" (a team has claimed it today).',
+          'The line under the chore’s name says why: "Not assigned" (someone else’s chore), "Waiting for approval" (a parent hasn’t approved your last one yet), "Done by …" (someone already did it today), "Done today / this week" (an anytime chore’s repeat limit), or "🤝 names" (a team has claimed it today).',
           '"Waiting for …" is a Rotating chore on someone else’s turn. When the button shows a day instead of Done ("Tomorrow", "In 3 days"), the chore isn’t due again until then.',
           'If Done gives a "not yet due" message: the chore isn’t due again yet. A parent can turn on "Allow early completion" for daily routines.',
         ] },
@@ -537,7 +540,7 @@ export const GUIDE_EN: GuideSection[] = [
           'If a parent turned it down, the chore is open again; under team-ups it goes back to the team.',
         ] },
         { q: 'I forgot to tap Done yesterday', a: [
-          'Tap 📅 next to the chore in its room and pick the day. It counts on that day (streak included) once a parent approves it. See Chores → Logging it late.',
+          'Open the chore in its room (tap it), tap 📅 Done earlier… and pick the day. It counts on that day (streak included) once a parent approves it. See Chores → Logging it late.',
         ] },
         { q: 'A card is missing from Home', a: [
           'It may be hidden: open Customise (the button at the bottom of Home) and tap its 🚫 to show it again, or use Reset to default.',
@@ -567,7 +570,7 @@ export const GUIDE_EN: GuideSection[] = [
           'Its "Do by" date has passed. Tap Edit on it in the To-dos room to pick a later date or clear it: a to-do without a date is never overdue.',
         ] },
         { q: 'A chore or reward disappeared', a: [
-          'It may be paused: parents see it greyed in its room, marked ⏸️ Paused. Tap ⋯ → ▶️ Switch back on.',
+          'It may be paused: parents see it greyed in its room, marked ⏸️ Paused. Open it and tap ⋯ → ▶️ Switch back on.',
           'A hidden reward shows as Hidden in Settings → Rewards Catalog: tap Show.',
           'Deleted by mistake? Settings → Recently deleted brings it back for 30 days.',
         ] },
@@ -636,7 +639,7 @@ export const GUIDE_EN: GuideSection[] = [
           'Parents and members can always do it for whoever’s turn it is.',
         ] },
         { q: 'There’s no 🤝 Team up button', a: [
-          'Team-ups need a chore worth 6 or more coins that isn’t in someone’s own room, isn’t assigned to just one person, and isn’t rotating.',
+          'The button is inside the chore: tap the chore to open it. Team-ups need a chore worth 6 or more coins that isn’t in someone’s own room, isn’t assigned to just one person, and isn’t rotating.',
           'Only one team-up per chore per day; check the Team-ups card on Home.',
           'Settings → Features → Team-ups must be on.',
         ] },

@@ -217,7 +217,7 @@ export const GUIDE_NL: GuideSection[] = [
       { h: 'Timer' },
       { ul: [
         'Timer (minuten) in de klusjes-editor geeft een klusje een aftelklok, bijvoorbeeld 10 minuten om een kamer op te ruimen. Laat het leeg voor geen timer. De naam van het klusje maakt niet uit.',
-        'Het klusje toont dan ▶ 10 min naast Klaar!. Tik erop voor een grote aftelklok met Pauze en +5 min. Tik op ⌄ om hem te verbergen: een kleine timerbalk blijft bovenaan elke pagina, en de timer loopt door na herladen.',
+        'Het klusje heeft dan een knop ▶ 10 min: tik op het klusje om het te openen, daar staat hij bij de andere knoppen (bij een kind dat eerst de timer moet laten lopen, staat hij op de plek van ✓). Tik erop voor een grote aftelklok met Pauze en +5 min. Tik op ⌄ om hem te verbergen: een kleine timerbalk blijft bovenaan elke pagina, en de timer loopt door na herladen.',
         'Bij nul klinkt een belletje en trilt de telefoon, en dan vraagt hij ‘De tijd is om! Klaar?’. Klaar! rondt het klusje af zoals altijd (met Oudercontrole wacht het nog op een ouder). ‘Meer tijd nodig’ geeft er 5 minuten bij.',
         'Kinderen starten eerst de timer: bij een klusje met timer komt hun Klaar!-knop terug als de tijd om is. Ouders en leden kunnen altijd op Klaar! tikken.',
         'De pagina Klusjes toont alle klusjes met een timer: kies ‘⏱️ Met timer’ in het filter.',
@@ -226,7 +226,10 @@ export const GUIDE_NL: GuideSection[] = [
       { p: 'Stappen (één per regel) zeggen wat een klusje inhoudt, zoals ‘Voeten op de grond’, ‘Licht aan’, ‘Aankleden’. Ze verschijnen als vinkjes in Eén ding tegelijk. De vinkjes zijn alleen een hulp: Klaar! rondt het klusje af.' },
       { h: 'Een klusje afronden' },
       { ul: [
-        'Tik op Klaar! op Home, in de kamer of op de pagina Klusjes. Met de 📎-knop voeg je een notitie of foto toe als bewijs.',
+        'Elk klusje is één rij, op Home net als in zijn kamer: het icoon, de naam, een regel met waar, wanneer of voor wie (rood als het te laat is), de munten en een vierkante ✓-knop. Die ✓ is Klaar!: tik erop als het klusje af is.',
+        'Tik op de rij zelf om hem te openen: de notities, hoe vaak het moet, de moeite, wie aan de beurt is en wanneer het voor het laatst gedaan is, plus de minder gebruikte knoppen (Aanpassen, Vastzetten, 📅 Eerder gedaan…, 🤝 Samen doen, 📎 en ⋯). Tik nog een keer om hem te sluiten. Op Home opent Naar de kamer het klusje in zijn kamer; de pagina Klusjes toont alle klusjes, en een tik opent het klusje in zijn kamer.',
+        'In een kamer zet Sorteren op de klusjes op volgorde (op staat, vervaldatum, naam…); de pijlknop ernaast keert de volgorde om.',
+        'De 📎-knop in het geopende klusje voegt een notitie of foto toe als bewijs.',
         'Als een ouder het goedkeurt, blijven de notitie en foto bij het klusje in Activiteit (tik op de foto om hem groot te zien). Ouders zien die van iedereen, de anderen alleen hun eigen. De link naar een foto opent voor niemand anders, ook niet na het uitloggen. Ongedaan maken of afwijzen van het klusje verwijdert de foto.',
         'Ouders en leden kunnen een klusje voor iemand anders op klaar zetten ("wie heeft het gedaan?").',
         'Een vergissing kun je ongedaan maken via Activiteit (ouders), of met ↩️ Ongedaan naast "Gedaan door" van het klusje in de kamer (ouders; er wordt eerst gevraagd, omdat de munten er weer af gaan). Een Samen doen wordt voor het hele team ongedaan gemaakt en ieders munten daarvoor worden teruggenomen. Een kind kan zijn eigen Klaar terugnemen zolang het op goedkeuring wacht.',
@@ -234,16 +237,16 @@ export const GUIDE_NL: GuideSection[] = [
       { p: 'Instellingen → Functies → Bewijsfoto’s zet foto’s uit; de 📎-knop voegt dan alleen een notitie toe. Op tidyquest.org staan foto’s eerst uit, en een ouder zet ze aan.' },
       { h: 'Te laat invullen' },
       { ul: [
-        'Vergeten op Klaar! te tikken? Tik naast het klusje in de kamer op 📅 (Eerder gedaan…), kies de dag (tot 7 dagen terug) en tik op Invullen. Ouders en leden kunnen kiezen wie het deed.',
+        'Vergeten op Klaar! te tikken? Open het klusje in zijn kamer (tik erop), tik op 📅 Eerder gedaan…, kies de dag (tot 7 dagen terug) en tik op Invullen. Ouders en leden kunnen kiezen wie het deed.',
         'Het telt voor die dag: voor reeksen, het weekdoel, het Scorebord en de Kalender. Vult het de dag waarop een reeks brak, dan komt de reeks terug. Een doel waarvan de week voorbij is, betaalt zijn bonus toch zodra de munten het halen.',
         'Het levert de gewone munten van het klusje op, zonder dubbele munten of Reddingsmissie. Iedereen behalve ouders wacht op goedkeuring van een ouder, ook als Oudercontrole uit staat. Activiteit en de goedkeuringslijst markeren het met 🕘 Te laat ingevuld.',
         'Het kan niet op een dag waarop het klusje al gedaan was (bij Wie het eerst komt, wie het eerst maalt, door wie dan ook), vóór het klusje werd toegevoegd of vóór de startdatum, of op een dag waarop het nog niet hoefde.',
       ] },
       { h: 'Een klusje pauzeren' },
       { ul: [
-        'Even niet nodig (het zwembad in de winter, een kind op kamp)? Ouders tikken op ⋯ (Meer opties) bij het klusje in zijn kamer en dan op ⏸️ Pauzeren. Of ze openen Aanpassen, vinken ⏸️ Gepauzeerd aan en kiezen een dag bij Weer aan op (optioneel), zodat het vanzelf weer aan gaat.',
+        'Even niet nodig (het zwembad in de winter, een kind op kamp)? Ouders openen het klusje in zijn kamer (erop tikken), tikken op ⋯ (Meer opties) en dan op ⏸️ Pauzeren. Of ze openen Aanpassen, vinken ⏸️ Gepauzeerd aan en kiezen een dag bij Weer aan op (optioneel), zodat het vanzelf weer aan gaat.',
         'Een gepauzeerd klusje verdwijnt van Home, de Taken-pagina, de kalender, herinneringen, de reddingsmissie, team-ups en de gezondheid van het huis. Ouders zien het nog grijs in zijn kamer, met ⏸️ Gepauzeerd; kinderen zien het helemaal niet.',
-        'Tik op ⋯ → ▶️ Weer aanzetten (of vink ⏸️ Gepauzeerd uit). Het komt terug alsof het net gedaan is, dus niet te laat. De geschiedenis, munten en wie het doet blijven hetzelfde.',
+        'Open het klusje en tik op ⋯ → ▶️ Weer aanzetten (of vink ⏸️ Gepauzeerd uit). Het komt terug alsof het net gedaan is, dus niet te laat. De geschiedenis, munten en wie het doet blijven hetzelfde.',
       ] },
       { h: 'To-dolijst' },
       { ul: [
@@ -350,11 +353,11 @@ export const GUIDE_NL: GuideSection[] = [
       { where: 'Instellingen → Functies (elke functie kan voor het gezin uitgezet worden)' },
       { ul: [
         'Reddingsmissie: elke dag levert het meest vergeten klusje extra op (standaard 2×) voor wie het als eerste doet.',
-        'Je vaste klusjes / Misschien vergeten: Home toont de klusjes die je het vaakst doet (en die je vastzet) en klusjes die een heel interval te laat zijn. Met 💤 verberg je een klusje 3 dagen uit Misschien vergeten, alleen voor jou; "Uitgesteld · Ongedaan maken" haalt het meteen terug.',
+        'Je vaste klusjes / Misschien vergeten: Home toont de klusjes die je het vaakst doet (en die je vastzet: open een klusje en tik op ☆ Vastzetten) en klusjes die een heel interval te laat zijn. Open daar een klusje: 💤 3 dagen uitstellen haalt het uit Misschien vergeten, alleen voor jou; "Uitgesteld · Ongedaan maken" haalt het meteen terug.',
         'To-do’s: eenmalige klusjes en de To-do-kaart.',
         'Prijzen en prijzenkast op het Scorebord. Levels en Volgende badge.',
         'Aanmoedigen: 👏 🎉 💪 ⭐ bij het afgeronde klusje van iemand anders (Vandaag gedaan op Home en Activiteit). Nog een keer dezelfde emoji neemt het terug. De persoon krijgt een privémelding.',
-        'Samen doen: 🤝 bij een klusje van 6 of meer munten nodigt één persoon of iedereen uit. Zodra iemand meedoet is het klusje die dag van het team. Een van beide tikt op Klaar!; de munten worden gelijk verdeeld plus een teambonus (10, 20 of 30%). Een ouder met een kind is een helper en het kind houdt alle munten. Nooit bij iemands eigen kamer, klusjes voor één persoon of klusjes die om de beurt gaan. Geen zin? Met "Nee, bedankt" wijs je een uitnodiging af: een uitnodiging alleen voor jou vervalt en wie hem stuurde hoort dat, zodat diegene iemand anders kan vragen; een uitnodiging voor iedereen verdwijnt alleen voor jou. Wie het gestart heeft kan "Samen doen afblazen" (het stopt voor iedereen); anderen kunnen Stoppen.',
+        'Samen doen: open een klusje van 6 of meer munten; 🤝 Samen doen nodigt één persoon of iedereen uit. Zodra iemand meedoet is het klusje die dag van het team. Een van beide tikt op Klaar!; de munten worden gelijk verdeeld plus een teambonus (10, 20 of 30%). Een ouder met een kind is een helper en het kind houdt alle munten. Nooit bij iemands eigen kamer, klusjes voor één persoon of klusjes die om de beurt gaan. Geen zin? Met "Nee, bedankt" wijs je een uitnodiging af: een uitnodiging alleen voor jou vervalt en wie hem stuurde hoort dat, zodat diegene iemand anders kan vragen; een uitnodiging voor iedereen verdwijnt alleen voor jou. Wie het gestart heeft kan "Samen doen afblazen" (het stopt voor iedereen); anderen kunnen Stoppen.',
         'Huismascotte: een van de 8 wezentjes, hier gekozen en een naam gegeven. Het groeit mee met de gezinsmunten die verdiend worden zolang het de actieve mascotte is (komt uit bij 500, daarna 2.000, 5.000 en 10.000), de stemming volgt de huisgezondheid en het reageert op verjaardagen, het gezinsdoel en de Reddingsmissie.',
         'Van mascotte wisselen: kies je een wezentje dat je nog niet had, dan begint het als nieuw ei. Elk wezentje houdt zijn eigen groei, naam en outfit, dus terugwisselen brengt het precies terug zoals het was. Het buikje en de bedtijd worden gedeeld.',
         'Spelen met de mascotte: tik erop voor een reactie. Het 🍪-buikje vult zich 5% bij elk klusje (Samen doen telt één keer) en loopt in 2 dagen leeg. Alleen bij grotere klusjes (moeite 3★ of meer) juicht de mascotte met een 🍪 en een sprongetje; kleinere vullen het buikje stilletjes; als het laag is zegt de mascotte gewoon dat hij honger heeft. "Wat zal ik doen?" stelt een klusje voor dat je nu kunt doen. Bij afgeronde klusjes van 3★ of meer komt een 🐾-aanmoediging. Tijdens de bedtijd van het gezin slaapt de mascotte (in te stellen onder de mascotte bij Functies, standaard 21.00 tot 7.00 uur).',
@@ -498,7 +501,7 @@ export const GUIDE_NL: GuideSection[] = [
           'Je punten staan op een telefoon niet meer in de bovenste regel: je vindt ze op het Scorebord.',
         ] },
         { q: 'De knop Klaar! is grijs', a: [
-          'Het label zegt waarom: "Niet toegewezen" (klusje van iemand anders), "Wacht op goedkeuring" (een ouder heeft je vorige nog niet goedgekeurd), "Gedaan door …" (iemand heeft het vandaag al gedaan), "Vandaag gedaan / Deze week gedaan" (de herhaallimiet van een klusje voor op elk moment) of "🤝 namen" (een team heeft het vandaag opgeëist).',
+          'De regel onder de naam van het klusje zegt waarom: "Niet toegewezen" (klusje van iemand anders), "Wacht op goedkeuring" (een ouder heeft je vorige nog niet goedgekeurd), "Gedaan door …" (iemand heeft het vandaag al gedaan), "Vandaag gedaan / Deze week gedaan" (de herhaallimiet van een klusje voor op elk moment) of "🤝 namen" (een team heeft het vandaag opgeëist).',
           '"Wachten op …" is een klusje Om de beurt waarbij iemand anders aan de beurt is. Staat er op de knop een dag in plaats van "Klaar!", dan hoeft het klusje pas dan weer.',
           'Als Klaar! een melding "nog niet aan de beurt" geeft: het klusje is nog niet weer aan de beurt. Een ouder kan "Vroegtijdig afronden toestaan" aanzetten voor dagelijkse routines.',
         ] },
@@ -513,7 +516,7 @@ export const GUIDE_NL: GuideSection[] = [
           'Als een ouder het heeft afgewezen, staat het klusje weer open; bij Samen doen gaat het terug naar het team.',
         ] },
         { q: 'Ik ben gisteren vergeten op Klaar! te tikken', a: [
-          'Tik naast het klusje in de kamer op 📅 en kies de dag. Het telt voor die dag (reeks inbegrepen) zodra een ouder het goedkeurt. Zie Klusjes → Te laat invullen.',
+          'Open het klusje in zijn kamer (tik erop), tik op 📅 Eerder gedaan… en kies de dag. Het telt voor die dag (reeks inbegrepen) zodra een ouder het goedkeurt. Zie Klusjes → Te laat invullen.',
         ] },
         { q: 'Er ontbreekt een kaart op Home', a: [
           'Hij is misschien verborgen: open Aanpassen (de knop onderaan Home) en tik op zijn 🚫 om hem weer te tonen, of gebruik Standaardvolgorde terugzetten.',
@@ -543,7 +546,7 @@ export const GUIDE_NL: GuideSection[] = [
           'De "Doen voor"-datum is voorbij. Tik in de kamer To-do\'s op Aanpassen bij die to-do om een latere datum te kiezen of de datum te wissen: een to-do zonder datum is nooit te laat.',
         ] },
         { q: 'Een klusje of beloning is verdwenen', a: [
-          'Misschien is het gepauzeerd: ouders zien het grijs in zijn kamer, met ⏸️ Gepauzeerd. Tik op ⋯ → ▶️ Weer aanzetten.',
+          'Misschien is het gepauzeerd: ouders zien het grijs in zijn kamer, met ⏸️ Gepauzeerd. Open het en tik op ⋯ → ▶️ Weer aanzetten.',
           'Een verborgen beloning staat als Verborgen in Instellingen → Beloningen Winkel: tik op Tonen.',
           'Per ongeluk verwijderd? Instellingen → Onlangs verwijderd haalt het 30 dagen lang terug.',
         ] },
@@ -612,7 +615,7 @@ export const GUIDE_NL: GuideSection[] = [
           'Ouders en leden kunnen het altijd doen voor wie aan de beurt is.',
         ] },
         { q: 'Er is geen knop 🤝 Samen doen', a: [
-          'Samen doen vraagt een klusje van 6 of meer munten dat niet in iemands eigen kamer zit, niet aan slechts één persoon is toegewezen en niet om de beurt gaat.',
+          'De knop zit in het klusje: tik op het klusje om het te openen. Samen doen vraagt een klusje van 6 of meer munten dat niet in iemands eigen kamer zit, niet aan slechts één persoon is toegewezen en niet om de beurt gaat.',
           'Maar één Samen doen per klusje per dag; kijk op de kaart Samen doen op Home.',
           'Instellingen → Functies → Samen doen moet aan staan.',
         ] },

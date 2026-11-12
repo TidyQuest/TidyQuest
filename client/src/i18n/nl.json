@@ -2415,6 +2415,16 @@
       "limitCount": "De limiet moet een heel getal van 1 tot {n} zijn.",
       "notFound": "Dit bestaat niet meer (misschien is het net verwijderd). Laad de pagina opnieuw.",
       "adminOnly": "Alleen ouders kunnen dat doen."
+    },
+    "chore": {
+      "turn": "{name} is aan de beurt",
+      "lastDone": "Laatst gedaan: {when}",
+      "anyone": "Iedereen",
+      "pin": "Vastzetten",
+      "pinned": "Vastgezet",
+      "goToRoom": "Naar de kamer",
+      "sortBy": "Sorteren op",
+      "reverse": "Volgorde omdraaien"
     }
   }
 }

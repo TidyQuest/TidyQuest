@@ -23,6 +23,20 @@ What changed in each release, in plain language, newest first. Releases up to v0
   under the page name are hidden on phones; your points are still on the Board.
 - **The seasonal garland is a thin strip across the top on phones**, so it no longer pushes the page down.
 - Undo, "waiting for approval" and other pop-up notes now sit just above the bottom bar instead of under it.
+- **Chores are short rows, the same everywhere** (ENH-25, the second step of the new look). On Home, on the Tasks
+  page and in a room, a chore is now one row: its icon, its name (up to two lines), a line saying where, when or
+  who (red when it's late), its coins, and a square ✓ button, which is Done. Rooms fit several times as many chores
+  on a screen as the old tall cards did.
+- **Tap a chore to open it.** The opened row shows the notes, how often it's due, the effort, whose turn it is, when
+  it was last done and its health, with the less-used buttons underneath: Edit, Pin, Done earlier…, the timer, Team
+  up, add a note or photo, Take back, Undo and ⋯ (Duplicate, Move to room, Pause). Everything a chore could do before
+  is still there. Tap the row again to close it.
+- **On Home, tapping a chore opens it there** instead of jumping to its room; Go to room in the opened row does
+  that. Snooze for 3 days (Maybe you forgot) and Pin (Your usual) moved into the opened row too.
+- **When ✓ is grey, the line under the chore's name says why** (Waiting for approval, Done by …, Not assigned…).
+  A kid's chore with a timer shows ▶ in place of ✓ until the time is up.
+- **Rooms have a Sort by list** (health, due date, name, how often, effort, coins, who) with a button that reverses
+  the order. It replaces the column headings, and rooms look the same on computers as on phones.
 
 ### Fixed
 

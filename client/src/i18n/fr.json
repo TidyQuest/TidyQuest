@@ -2415,6 +2415,16 @@
       "limitCount": "La limite doit être un nombre entier de 1 à {n}.",
       "notFound": "Cet élément n'existe plus (il vient peut-être d'être supprimé). Recharge la page.",
       "adminOnly": "Seuls les parents peuvent faire ça."
+    },
+    "chore": {
+      "turn": "Au tour de {name}",
+      "lastDone": "Dernière fois : {when}",
+      "anyone": "Tout le monde",
+      "pin": "Épingler",
+      "pinned": "Épinglé",
+      "goToRoom": "Voir la pièce",
+      "sortBy": "Trier par",
+      "reverse": "Inverser l'ordre"
     }
   }
 }

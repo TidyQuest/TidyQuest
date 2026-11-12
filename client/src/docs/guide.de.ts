@@ -217,7 +217,7 @@ export const GUIDE_DE: GuideSection[] = [
       { h: 'Timer' },
       { ul: [
         'Timer (Minuten) im Aufgaben-Editor gibt einer Aufgabe einen Countdown, zum Beispiel 10 Minuten zum Aufräumen eines Raums. Leer lassen für keinen Timer. Der Name der Aufgabe spielt keine Rolle.',
-        'Die Aufgabe zeigt dann ▶ 10 Min. neben Erledigt. Tippe darauf für einen großen Countdown mit Pause und +5 Min. Tippe auf ⌄, um ihn auszublenden: Eine kleine Timer-Leiste bleibt oben auf jeder Seite, und der Timer läuft auch nach dem Neuladen weiter.',
+        'Die Aufgabe hat dann einen Knopf ▶ 10 Min.: Tippe auf die Aufgabe, um sie zu öffnen, dort steht er bei den anderen Knöpfen (bei einem Kind, das erst den Timer laufen lassen muss, steht er anstelle von ✓). Tippe darauf für einen großen Countdown mit Pause und +5 Min. Tippe auf ⌄, um ihn auszublenden: Eine kleine Timer-Leiste bleibt oben auf jeder Seite, und der Timer läuft auch nach dem Neuladen weiter.',
         'Bei null klingelt und vibriert er und fragt dann „Zeit um! Fertig?“. Erledigt schließt die Aufgabe wie gewohnt ab (im Strengen Modus wartet sie trotzdem auf ein Elternteil). „Brauche mehr Zeit“ gibt 5 Minuten dazu.',
         'Kinder starten zuerst den Timer: Bei einer Timer-Aufgabe kommt ihr Erledigt-Knopf zurück, wenn die Zeit um ist. Eltern und Mitglieder können jederzeit auf Erledigt tippen.',
         'Die Seite Aufgaben zeigt alle Aufgaben mit Timer: Wähle „⏱️ Mit Timer“ im Filter.',
@@ -226,7 +226,10 @@ export const GUIDE_DE: GuideSection[] = [
       { p: 'Schritte (einer pro Zeile) zeigen, was zu einer Aufgabe gehört, etwa „Füße auf den Boden“, „Licht an“, „Anziehen“. Sie erscheinen als Häkchen in Eins nach dem anderen. Die Häkchen sind nur eine Hilfe: Erledigt schließt die Aufgabe ab.' },
       { h: 'Eine Aufgabe abschließen' },
       { ul: [
-        'Tippe auf Erledigt auf der Startseite, im Raum oder auf der Seite Aufgaben. Mit dem 📎-Knopf fügst du eine Notiz oder ein Foto als Beweis hinzu.',
+        'Jede Aufgabe ist eine Zeile, auf der Startseite genauso wie in ihrem Raum: Symbol, Name, eine Zeile mit Raum, Fälligkeit oder Zuständigen (rot, wenn sie überfällig ist), Münzen und ein quadratischer ✓-Knopf. Dieses ✓ ist Erledigt: Tippe darauf, wenn die Aufgabe fertig ist.',
+        'Tippe auf die Zeile selbst, um sie zu öffnen: Notizen, wie oft sie fällig ist, Aufwand, wer dran ist und wann sie zuletzt erledigt wurde, dazu die selteneren Knöpfe (Bearbeiten, Anheften, 📅 Früher erledigt…, 🤝 Zusammen machen, 📎 und ⋯). Noch ein Tipp schließt sie wieder. Auf der Startseite öffnet Zum Raum die Aufgabe in ihrem Raum; die Seite Aufgaben listet alle Aufgaben auf, und ein Tipp öffnet die Aufgabe in ihrem Raum.',
+        'Im Raum ordnet Sortieren nach die Aufgaben (nach Zustand, Fälligkeit, Name …); der Pfeil-Knopf daneben kehrt die Reihenfolge um.',
+        'Der 📎-Knopf in der geöffneten Aufgabe fügt eine Notiz oder ein Foto als Beweis hinzu.',
         'Nach der Freigabe durch ein Elternteil bleiben Notiz und Foto bei der Aufgabe unter Aktivität (tippe auf das Foto, um es groß zu sehen). Eltern sehen die von allen, alle anderen nur ihre eigenen. Der Link zu einem Foto öffnet sich für niemanden sonst, auch nicht nach dem Abmelden. Wird die Aufgabe rückgängig gemacht oder abgelehnt, wird ihr Foto gelöscht.',
         'Eltern und Mitglieder können eine Aufgabe für jemand anderen als erledigt markieren („Wer hat es gemacht?“).',
         'Ein Fehler lässt sich unter Aktivität rückgängig machen (Eltern) oder mit ↩️ Rückgängig neben „Erledigt von“ der Aufgabe in ihrem Raum (Eltern; es fragt vorher nach, weil die Münzen wieder abgezogen werden). Ein Teamwork wird für das ganze Team rückgängig gemacht, und die Münzen aller dafür werden zurückgenommen. Ein Kind kann sein eigenes Erledigt zurücknehmen, solange es auf Freigabe wartet.',
@@ -234,16 +237,16 @@ export const GUIDE_DE: GuideSection[] = [
       { p: 'Einstellungen → Funktionen → Beweisfotos schaltet Fotos aus; der 📎-Knopf fügt dann nur eine Notiz hinzu. Auf tidyquest.org sind Fotos am Anfang aus, und ein Elternteil schaltet sie ein.' },
       { h: 'Nachtragen' },
       { ul: [
-        'Vergessen, auf Erledigt zu tippen? Tippe im Raum neben der Aufgabe auf 📅 (Früher erledigt…), wähle den Tag (bis zu 7 Tage zurück) und tippe auf Eintragen. Eltern und Mitglieder können wählen, wer es gemacht hat.',
+        'Vergessen, auf Erledigt zu tippen? Öffne die Aufgabe in ihrem Raum (tippe sie an), tippe auf 📅 Früher erledigt…, wähle den Tag (bis zu 7 Tage zurück) und tippe auf Eintragen. Eltern und Mitglieder können wählen, wer es gemacht hat.',
         'Sie zählt für diesen Tag: für Serien, das Wochenziel, das Board und den Kalender. Füllt sie den Tag, an dem eine Serie gerissen ist, kommt die Serie zurück. Ein Ziel, dessen Woche vorbei ist, zahlt seinen Bonus trotzdem, sobald die Münzen reichen.',
         'Sie bringt die üblichen Münzen der Aufgabe, ohne doppelte Münzen oder Rettungsmission. Alle außer Eltern warten auf die Freigabe eines Elternteils, auch ohne Strenger Modus. Aktivität und die Freigabeliste markieren sie mit 🕘 Nachgetragen.',
         'Nicht möglich an einem Tag, an dem die Aufgabe schon erledigt war (bei Erster gewinnt von irgendwem), vor dem Anlegen der Aufgabe oder ihrem Startdatum, oder an einem Tag, an dem sie noch nicht fällig war.',
       ] },
       { h: 'Eine Aufgabe pausieren' },
       { ul: [
-        'Eine Weile nicht nötig (der Pool im Winter, ein Kind im Ferienlager)? Eltern tippen in ihrem Raum bei der Aufgabe auf ⋯ (Weitere Optionen), dann auf ⏸️ Pausieren. Oder sie öffnen Bearbeiten, haken ⏸️ Pausiert an und wählen unter Wieder an (optional) einen Tag, an dem sie sich von selbst wieder einschaltet.',
+        'Eine Weile nicht nötig (der Pool im Winter, ein Kind im Ferienlager)? Eltern öffnen die Aufgabe in ihrem Raum (antippen), tippen auf ⋯ (Weitere Optionen), dann auf ⏸️ Pausieren. Oder sie öffnen Bearbeiten, haken ⏸️ Pausiert an und wählen unter Wieder an (optional) einen Tag, an dem sie sich von selbst wieder einschaltet.',
         'Eine pausierte Aufgabe verschwindet von der Startseite, der Aufgaben-Seite, dem Kalender, den Erinnerungen, der Rettungsmission, den Team-ups und der Hausgesundheit. Eltern sehen sie weiter ausgegraut in ihrem Raum, markiert mit ⏸️ Pausiert; Kinder sehen sie gar nicht.',
-        'Tippe auf ⋯ → ▶️ Wieder einschalten (oder entferne den Haken bei ⏸️ Pausiert). Sie kommt zurück, als wäre sie gerade erledigt, also nicht überfällig. Verlauf, Münzen und Zuständige bleiben gleich.',
+        'Öffne die Aufgabe und tippe auf ⋯ → ▶️ Wieder einschalten (oder entferne den Haken bei ⏸️ Pausiert). Sie kommt zurück, als wäre sie gerade erledigt, also nicht überfällig. Verlauf, Münzen und Zuständige bleiben gleich.',
       ] },
       { h: 'To-do-Liste' },
       { ul: [
@@ -350,11 +353,11 @@ export const GUIDE_DE: GuideSection[] = [
       { where: 'Einstellungen → Funktionen (jede kann für die Familie ausgeschaltet werden)' },
       { ul: [
         'Rettungsmission: Jeden Tag zahlt die am häufigsten vergessene Aufgabe extra (standardmäßig 2×) an die Person, die sie zuerst macht.',
-        'Deine Klassiker / Vielleicht vergessen: Die Startseite zeigt die Aufgaben, die du am häufigsten machst (und die, die du anheftest), und Aufgaben, die um ein ganzes Intervall überfällig sind. 💤 blendet eine Aufgabe 3 Tage lang aus „Vielleicht vergessen“ aus, nur für dich; „Pausiert · Rückgängig“ holt sie sofort zurück.',
+        'Deine Klassiker / Vielleicht vergessen: Die Startseite zeigt die Aufgaben, die du am häufigsten machst (und die, die du anheftest: Aufgabe öffnen und auf ☆ Anheften tippen), und Aufgaben, die um ein ganzes Intervall überfällig sind. Öffne dort eine Aufgabe: 💤 3 Tage ausblenden nimmt sie aus „Vielleicht vergessen“ heraus, nur für dich; „Pausiert · Rückgängig“ holt sie sofort zurück.',
         'To-dos: einmalige Aufgaben und die To-do-Karte.',
         'Auszeichnungen und Trophäenregal auf dem Board. Level und Nächstes Abzeichen.',
         'Anfeuern: 👏 🎉 💪 ⭐ bei der erledigten Aufgabe einer anderen Person (auf der Startseite unter „Heute erledigt“ und unter Aktivität). Dasselbe Emoji noch einmal nimmt es zurück. Die Person bekommt eine private Benachrichtigung.',
-        'Teamwork: 🤝 bei einer Aufgabe, die 6 oder mehr Münzen wert ist, lädt eine Person oder jeden ein. Sobald jemand mitmacht, gehört die Aufgabe für den Tag dem Team. Eine der beiden Personen tippt auf Erledigt; die Münzen werden gleichmäßig plus ein Teambonus (10, 20 oder 30 %) aufgeteilt. Ein Elternteil mit einem Kind ist Helfer, und das Kind behält alle Münzen. Nie bei dem eigenen Raum einer Person, bei Aufgaben für eine Person oder bei Aufgaben mit Rotation. Keine Lust? „Nein danke“ lehnt eine Einladung ab: Eine Einladung nur für dich endet, und die Person, die gefragt hat, erfährt davon und kann jemand anderen fragen; eine Einladung für alle verschwindet nur für dich. Wer es gestartet hat, kann „Teamwork absagen“ (es endet für alle); alle anderen können Aussteigen.',
+        'Teamwork: Öffne eine Aufgabe, die 6 oder mehr Münzen wert ist; 🤝 Zusammen machen lädt eine Person oder jeden ein. Sobald jemand mitmacht, gehört die Aufgabe für den Tag dem Team. Eine der beiden Personen tippt auf Erledigt; die Münzen werden gleichmäßig plus ein Teambonus (10, 20 oder 30 %) aufgeteilt. Ein Elternteil mit einem Kind ist Helfer, und das Kind behält alle Münzen. Nie bei dem eigenen Raum einer Person, bei Aufgaben für eine Person oder bei Aufgaben mit Rotation. Keine Lust? „Nein danke“ lehnt eine Einladung ab: Eine Einladung nur für dich endet, und die Person, die gefragt hat, erfährt davon und kann jemand anderen fragen; eine Einladung für alle verschwindet nur für dich. Wer es gestartet hat, kann „Teamwork absagen“ (es endet für alle); alle anderen können Aussteigen.',
         'Haus-Maskottchen: eines von 8 Wesen, hier ausgewählt und benannt. Es wächst mit den verdienten Familienmünzen, solange es das aktive Maskottchen ist (schlüpft bei 500, dann bei 2.000, 5.000 und 10.000), seine Stimmung folgt der Hausgesundheit, und es reagiert auf Geburtstage, das Familienziel und die Rettungsmission.',
         'Maskottchen wechseln: Wählst du ein Wesen, das du noch nicht hattest, beginnt es als neues Ei. Jedes Wesen behält sein eigenes Wachstum, seinen Namen und sein Outfit, sodass ein Zurückwechseln es genau so zurückbringt, wie es war. Bauch und Schlafenszeit sind gemeinsam.',
         'Mit dem Maskottchen spielen: Tippe darauf für eine Reaktion. Sein 🍪-Bauch füllt sich mit jeder Aufgabe um 5 % (ein Teamwork zählt einmal) und leert sich über 2 Tage. Mit einem 🍪 und einem Hüpfer jubelt es nur bei größeren Aufgaben (Aufwand ab 3★); kleinere füllen ihn still; ist er niedrig, sagt es einfach, dass es Hunger hat. „Was soll ich tun?“ schlägt eine Aufgabe vor, die du jetzt gleich machen kannst. Es fügt erledigten Aufgaben ab 3★ ein 🐾-Anfeuern hinzu. Es schläft während der Schlafenszeit der Familie (unter dem Maskottchen in Funktionen einstellbar, standardmäßig 21 bis 7 Uhr).',
@@ -498,7 +501,7 @@ export const GUIDE_DE: GuideSection[] = [
           'Die Punkte stehen auf dem Handy nicht mehr in der oberen Zeile: du findest sie auf dem Board.',
         ] },
         { q: 'Der Erledigt-Knopf ist grau', a: [
-          'Seine Beschriftung sagt, warum: „Nicht zugewiesen“ (die Aufgabe eines anderen), „Wartet auf Freigabe“ (ein Elternteil hat deine letzte noch nicht freigegeben), „Erledigt von …“ (jemand hat sie heute schon gemacht), „Heute erledigt / Diese Woche erledigt“ (das Limit einer jederzeit machbaren Aufgabe) oder „🤝 Namen“ (ein Team hat sie heute übernommen).',
+          'Die Zeile unter dem Namen der Aufgabe sagt, warum: „Nicht zugewiesen“ (die Aufgabe eines anderen), „Wartet auf Freigabe“ (ein Elternteil hat deine letzte noch nicht freigegeben), „Erledigt von …“ (jemand hat sie heute schon gemacht), „Heute erledigt / Diese Woche erledigt“ (das Limit einer jederzeit machbaren Aufgabe) oder „🤝 Namen“ (ein Team hat sie heute übernommen).',
           '„Warten auf …“ ist eine Aufgabe mit Rotation, bei der jemand anderes an der Reihe ist. Zeigt der Knopf statt Erledigt einen Tag, ist die Aufgabe erst dann wieder fällig.',
           'Wenn Erledigt die Meldung „noch nicht fällig“ zeigt: Die Aufgabe ist noch nicht wieder fällig. Ein Elternteil kann „Frühe Erledigung“ für tägliche Routinen einschalten.',
         ] },
@@ -513,7 +516,7 @@ export const GUIDE_DE: GuideSection[] = [
           'Wenn ein Elternteil es abgelehnt hat, ist die Aufgabe wieder offen; bei Teamwork geht sie zurück an das Team.',
         ] },
         { q: 'Ich habe gestern vergessen, auf Erledigt zu tippen', a: [
-          'Tippe im Raum neben der Aufgabe auf 📅 und wähle den Tag. Sie zählt für diesen Tag (auch für die Serie), sobald ein Elternteil sie freigibt. Siehe Aufgaben → Nachtragen.',
+          'Öffne die Aufgabe in ihrem Raum (tippe sie an), tippe auf 📅 Früher erledigt… und wähle den Tag. Sie zählt für diesen Tag (auch für die Serie), sobald ein Elternteil sie freigibt. Siehe Aufgaben → Nachtragen.',
         ] },
         { q: 'Eine Karte fehlt auf der Startseite', a: [
           'Sie ist vielleicht ausgeblendet: Öffne Anpassen (der Knopf unten auf der Startseite) und tippe auf ihr 🚫, um sie wieder zu zeigen, oder nutze Auf Standard zurücksetzen.',
@@ -543,7 +546,7 @@ export const GUIDE_DE: GuideSection[] = [
           'Sein Datum bei „Erledigen bis“ ist vorbei. Tippe im Raum Erledigen bei ihm auf Bearbeiten, um ein späteres Datum zu wählen oder es zu löschen: Ein To-do ohne Datum ist nie überfällig.',
         ] },
         { q: 'Eine Aufgabe oder Belohnung ist verschwunden', a: [
-          'Sie ist vielleicht pausiert: Eltern sehen sie ausgegraut in ihrem Raum, markiert mit ⏸️ Pausiert. Tippe auf ⋯ → ▶️ Wieder einschalten.',
+          'Sie ist vielleicht pausiert: Eltern sehen sie ausgegraut in ihrem Raum, markiert mit ⏸️ Pausiert. Öffne sie und tippe auf ⋯ → ▶️ Wieder einschalten.',
           'Eine versteckte Belohnung steht als Versteckt in Einstellungen → Belohnungskatalog: Tippe auf Zeigen.',
           'Aus Versehen gelöscht? Einstellungen → Zuletzt gelöscht holt sie 30 Tage lang zurück.',
         ] },
@@ -612,7 +615,7 @@ export const GUIDE_DE: GuideSection[] = [
           'Eltern und Mitglieder können sie immer für die Person machen, die gerade dran ist.',
         ] },
         { q: 'Es gibt keinen Knopf 🤝 Zusammen machen', a: [
-          'Teamwork braucht eine Aufgabe, die 6 oder mehr Münzen wert ist, nicht im eigenen Raum einer Person liegt, nicht nur einer Person zugewiesen ist und keine Rotation hat.',
+          'Der Knopf steckt in der Aufgabe: Tippe auf die Aufgabe, um sie zu öffnen. Teamwork braucht eine Aufgabe, die 6 oder mehr Münzen wert ist, nicht im eigenen Raum einer Person liegt, nicht nur einer Person zugewiesen ist und keine Rotation hat.',
           'Nur ein Teamwork pro Aufgabe und Tag; schau in die Teamwork-Karte auf der Startseite.',
           'Einstellungen → Funktionen → Teamwork muss eingeschaltet sein.',
         ] },

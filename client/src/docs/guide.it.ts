@@ -217,7 +217,7 @@ export const GUIDE_IT: GuideSection[] = [
       { h: 'Timer' },
       { ul: [
         'Timer (minuti), nell’editor della faccenda, dà un conto alla rovescia a una faccenda, per esempio 10 minuti per riordinare una stanza. Lascialo vuoto per nessun timer. Il nome della faccenda non conta.',
-        'La faccenda mostra allora ▶ 10 min accanto a Fatto. Toccalo per un grande conto alla rovescia con Pausa e +5 min. Tocca ⌄ per nasconderlo: una piccola barra resta in cima a ogni pagina, e il timer continua anche dopo aver ricaricato.',
+        'La faccenda ha allora un pulsante ▶ 10 min: tocca la faccenda per aprirla ed è con gli altri pulsanti (per un bambino che deve prima usare il timer, prende il posto del ✓). Toccalo per un grande conto alla rovescia con Pausa e +5 min. Tocca ⌄ per nasconderlo: una piccola barra resta in cima a ogni pagina, e il timer continua anche dopo aver ricaricato.',
         'A zero suona e vibra, poi chiede «Tempo scaduto! Fatto?». Fatto completa la faccenda come al solito (con la Modalità rigorosa aspetta comunque un genitore). «Mi serve più tempo» aggiunge 5 minuti.',
         'I bambini avviano prima il timer: su una faccenda con timer, il loro pulsante Fatto torna quando il tempo è scaduto. Genitori e membri possono toccare Fatto in qualsiasi momento.',
         'La pagina Compiti elenca tutte le faccende con timer: scegli «⏱️ Con timer» nel suo filtro.',
@@ -226,7 +226,10 @@ export const GUIDE_IT: GuideSection[] = [
       { p: 'I passaggi (uno per riga) dicono cosa comprende una faccenda, come «Piedi a terra», «Luce accesa», «Vestirsi». Appaiono come caselle in Una cosa alla volta. Le caselle sono solo un aiuto: è Fatto che completa la faccenda.' },
       { h: 'Finire una faccenda' },
       { ul: [
-        'Tocca Fatto nella Home, nella stanza o nella pagina Compiti. Il pulsante 📎 aggiunge una nota o una foto come prova.',
+        'Ogni faccenda è una riga, uguale nella Home e nella sua stanza: icona, nome, una riga che dice dove, quando o per chi (in rosso se è in ritardo), le monete e un pulsante quadrato ✓. Quel ✓ è Fatto: toccalo quando la faccenda è finita.',
+        'Tocca la riga stessa per aprirla: le note, ogni quanto va fatta, l’impegno, a chi tocca e quando è stata fatta l’ultima volta, più i pulsanti meno usati (Modifica, Fissa, 📅 Fatto prima…, 🤝 Fai squadra, 📎 e ⋯). Toccala di nuovo per chiuderla. Nella Home, Vai alla stanza apre la faccenda nella sua stanza; la pagina Compiti elenca tutte le faccende, e un tocco apre la faccenda nella sua stanza.',
+        'In una stanza, Ordina per mette in ordine le faccende (per stato, scadenza, nome…); il pulsante con la freccia accanto inverte l’ordine.',
+        'Il pulsante 📎 nella faccenda aperta aggiunge una nota o una foto come prova.',
         'Dopo l’approvazione di un genitore, la nota e la foto restano con la faccenda in Attività (tocca la foto per vederla in grande). I genitori vedono quelle di tutti; gli altri solo le proprie. Il link di una foto non si apre per nessun altro, né dopo essere usciti. Annullare o rifiutare la faccenda cancella la sua foto.',
         'Genitori e membri possono segnare una faccenda come fatta per qualcun altro ("chi l’ha fatta?").',
         'Un errore si può annullare da Attività (genitori), oppure con ↩️ Annulla accanto a "Fatto da" della faccenda nella sua stanza (genitori; chiede conferma, perché le monete vengono tolte). Una squadra viene annullata per tutta la squadra e le monete di tutti per quella faccenda vengono riprese. Un bambino può ritirare il proprio Fatto finché aspetta l’approvazione.',
@@ -234,16 +237,16 @@ export const GUIDE_IT: GuideSection[] = [
       { p: 'Impostazioni → Funzioni → Foto di prova spegne le foto; il pulsante 📎 aggiunge allora solo una nota. Su tidyquest.org le foto partono spente, e un genitore le attiva.' },
       { h: 'Segnarla in ritardo' },
       { ul: [
-        'Hai dimenticato di toccare Fatto? Tocca 📅 (Fatto prima…) accanto alla faccenda nella sua stanza, scegli il giorno (fino a 7 giorni fa) e tocca Segna. Genitori e membri possono scegliere chi l’ha fatta.',
+        'Hai dimenticato di toccare Fatto? Apri la faccenda nella sua stanza (toccala), tocca 📅 Fatto prima…, scegli il giorno (fino a 7 giorni fa) e tocca Segna. Genitori e membri possono scegliere chi l’ha fatta.',
         'Conta per quel giorno: per le serie, l’obiettivo settimanale, la Classifica e il Calendario. Se riempie il giorno che ha interrotto una serie, la serie torna. Un obiettivo la cui settimana è finita paga comunque il suo bonus quando le monete lo raggiungono.',
         'Dà le solite monete della faccenda, senza monete doppie né Missione di salvataggio. Tutti tranne i genitori aspettano l’approvazione di un genitore, anche con la Modalità rigorosa spenta. Attività e l’elenco da approvare la segnano 🕘 Segnato in ritardo.',
         'Non si può mettere in un giorno in cui la faccenda era già fatta (con Primo arrivato, da chiunque), prima che la faccenda fosse aggiunta o della sua data di inizio, o in un giorno in cui non era ancora da fare.',
       ] },
       { h: 'Mettere in pausa una faccenda' },
       { ul: [
-        'Non serve per un po’ (la piscina d’inverno, un figlio al campo estivo)? I genitori toccano ⋯ (Altre opzioni) sulla faccenda nella sua stanza, poi ⏸️ Metti in pausa. Oppure aprono Modifica, spuntano ⏸️ In pausa e scelgono un giorno in Torna il (facoltativo), così si riattiva da sola.',
+        'Non serve per un po’ (la piscina d’inverno, un figlio al campo estivo)? I genitori aprono la faccenda nella sua stanza (toccandola), toccano ⋯ (Altre opzioni), poi ⏸️ Metti in pausa. Oppure aprono Modifica, spuntano ⏸️ In pausa e scelgono un giorno in Torna il (facoltativo), così si riattiva da sola.',
         'Una faccenda in pausa sparisce dalla Home, dalla pagina Compiti, dal Calendario, dai promemoria, dalla Missione di salvataggio, dalle squadre e dalla salute della casa. I genitori la vedono ancora in grigio nella sua stanza, con ⏸️ In pausa; i figli non la vedono affatto.',
-        'Tocca ⋯ → ▶️ Riattiva (o togli la spunta a ⏸️ In pausa). Torna come appena fatta, quindi non è in ritardo. Cronologia, monete e assegnatari restano uguali.',
+        'Apri la faccenda e tocca ⋯ → ▶️ Riattiva (o togli la spunta a ⏸️ In pausa). Torna come appena fatta, quindi non è in ritardo. Cronologia, monete e assegnatari restano uguali.',
       ] },
       { h: 'Lista delle cose da fare' },
       { ul: [
@@ -350,11 +353,11 @@ export const GUIDE_IT: GuideSection[] = [
       { where: 'Impostazioni → Funzioni (ognuna si può disattivare per la famiglia)' },
       { ul: [
         'Missione di salvataggio: ogni giorno la faccenda più dimenticata vale di più (2× di base) per la prima persona che la fa.',
-        'I tuoi soliti / Forse hai dimenticato queste: la Home mostra le faccende che fai di più (e quelle che fissi) e le faccende in ritardo di un intero intervallo. 💤 nasconde una faccenda da Forse hai dimenticato queste per 3 giorni, solo per te; "Annulla" nel messaggio di rinvio la riporta subito.',
+        'I tuoi soliti / Forse hai dimenticato queste: la Home mostra le faccende che fai di più (e quelle che fissi: apri una faccenda e tocca ☆ Fissa) e le faccende in ritardo di un intero intervallo. Aprine una: 💤 Posticipa di 3 giorni la nasconde da Forse hai dimenticato queste, solo per te; "Annulla" nel messaggio di rinvio la riporta subito.',
         'Da fare: faccende una tantum e la scheda Da fare.',
         'Premi della Classifica e bacheca dei trofei. Livelli e Prossimo distintivo.',
         'Tifo: 👏 🎉 💪 ⭐ sulla faccenda finita di qualcun altro ("Completate oggi" della Home e Attività). Lo stesso emoji di nuovo lo toglie. La persona riceve una notifica privata.',
-        'Squadre: 🤝 su una faccenda da 6 o più monete invita una persona o chiunque. Quando qualcuno si unisce, la faccenda è della squadra per quel giorno. Uno dei due tocca Fatto; le monete si dividono in parti uguali più un bonus di squadra (10, 20 o 30%). Un genitore con un bambino è un aiutante e il bambino tiene tutte le monete. Mai su una stanza personale, né su faccende per una sola persona o a rotazione. Non ti va? "No, grazie" rifiuta un invito: un invito solo per te finisce e chi l’ha fatto lo viene a sapere, così può chiedere a un altro; un invito per chiunque sparisce solo per te. Chi l’ha avviata può usare "Annulla la squadra" (finisce per tutti); chiunque altro può Uscire.',
+        'Squadre: apri una faccenda da 6 o più monete; 🤝 Fai squadra invita una persona o chiunque. Quando qualcuno si unisce, la faccenda è della squadra per quel giorno. Uno dei due tocca Fatto; le monete si dividono in parti uguali più un bonus di squadra (10, 20 o 30%). Un genitore con un bambino è un aiutante e il bambino tiene tutte le monete. Mai su una stanza personale, né su faccende per una sola persona o a rotazione. Non ti va? "No, grazie" rifiuta un invito: un invito solo per te finisce e chi l’ha fatto lo viene a sapere, così può chiedere a un altro; un invito per chiunque sparisce solo per te. Chi l’ha avviata può usare "Annulla la squadra" (finisce per tutti); chiunque altro può Uscire.',
         'Mascotte di casa: una di 8 creature, scelta e battezzata qui. Cresce con le monete di famiglia guadagnate mentre è la mascotte attiva (si schiude a 500, poi 2.000, 5.000 e 10.000), il suo umore segue la salute della casa e reagisce a compleanni, obiettivo di famiglia e Missione di salvataggio.',
         'Cambiare mascotte: scegliere una creatura che non hai mai avuto la fa partire come un uovo nuovo. Ogni creatura mantiene la sua crescita, il suo nome e il suo vestito, quindi tornare indietro la riporta esattamente com’era. La pancia e l’ora della nanna sono condivise.',
         'Giocare con la mascotte: toccala per una reazione. La sua pancia 🍪 si riempie del 5% a ogni faccenda (una squadra conta una volta) e si svuota in 2 giorni. Festeggia con un 🍪 e un saltello solo le faccende più grandi (sforzo da 3★ in su); quelle piccole la riempiono in silenzio; quando è vuota dice solo che ha fame. "Cosa faccio?" suggerisce una faccenda che puoi fare subito. Aggiunge un 🐾 di tifo alle faccende finite da 3★ in su. Dorme durante la nanna della famiglia (si imposta sotto la mascotte in Funzioni, dalle 21 alle 7 di base).',
@@ -498,7 +501,7 @@ export const GUIDE_IT: GuideSection[] = [
           'I punti non sono più nella riga in alto sul telefono: li trovi nella Classifica.',
         ] },
         { q: 'Il pulsante Fatto è grigio', a: [
-          'La sua etichetta dice perché: "Non assegnata" (la faccenda è di qualcun altro), "In attesa di approvazione" (un genitore non ha ancora approvato la tua ultima), "Fatto da …" (qualcuno l’ha già fatta oggi), "Fatto oggi / questa settimana" (il limite di ripetizioni di una faccenda libera) o "🤝 nomi" (una squadra l’ha presa oggi).',
+          'La riga sotto il nome della faccenda dice perché: "Non assegnata" (la faccenda è di qualcun altro), "In attesa di approvazione" (un genitore non ha ancora approvato la tua ultima), "Fatto da …" (qualcuno l’ha già fatta oggi), "Fatto oggi / questa settimana" (il limite di ripetizioni di una faccenda libera) o "🤝 nomi" (una squadra l’ha presa oggi).',
           '"In attesa di …" è una faccenda a Rotazione nel turno di qualcun altro. Quando il pulsante mostra un giorno al posto di Fatto, la faccenda non è da rifare fino ad allora.',
           'Se Fatto dà un messaggio "non ancora in scadenza": la faccenda non scade ancora. Un genitore può attivare "Completamento anticipato" per le routine quotidiane.',
         ] },
@@ -513,7 +516,7 @@ export const GUIDE_IT: GuideSection[] = [
           'Se un genitore l’ha rifiutata, la faccenda è di nuovo aperta; nelle squadre torna alla squadra.',
         ] },
         { q: 'Ieri ho dimenticato di toccare Fatto', a: [
-          'Tocca 📅 accanto alla faccenda nella sua stanza e scegli il giorno. Conta per quel giorno (serie compresa) appena un genitore la approva. Vedi Faccende → Segnarla in ritardo.',
+          'Apri la faccenda nella sua stanza (toccala), tocca 📅 Fatto prima… e scegli il giorno. Conta per quel giorno (serie compresa) appena un genitore la approva. Vedi Faccende → Segnarla in ritardo.',
         ] },
         { q: 'Manca una scheda nella Home', a: [
           'Forse è nascosta: apri Personalizza (il pulsante in fondo alla Home) e tocca il suo 🚫 per mostrarla di nuovo, oppure usa Ripristina l’ordine predefinito.',
@@ -543,7 +546,7 @@ export const GUIDE_IT: GuideSection[] = [
           'La sua data "Da fare entro" è passata. Tocca Modifica su di essa nella stanza Da fare per scegliere una data più avanti o toglierla: una cosa da fare senza data non è mai in ritardo.',
         ] },
         { q: 'Una faccenda o una ricompensa è sparita', a: [
-          'Forse è in pausa: i genitori la vedono in grigio nella sua stanza, con ⏸️ In pausa. Tocca ⋯ → ▶️ Riattiva.',
+          'Forse è in pausa: i genitori la vedono in grigio nella sua stanza, con ⏸️ In pausa. Aprila e tocca ⋯ → ▶️ Riattiva.',
           'Una ricompensa nascosta appare come Nascosto in Impostazioni → Catalogo ricompense: tocca Mostra.',
           'Eliminata per errore? Impostazioni → Eliminati di recente la recupera per 30 giorni.',
         ] },
@@ -612,7 +615,7 @@ export const GUIDE_IT: GuideSection[] = [
           'Genitori e membri possono sempre farla per chi ha il turno.',
         ] },
         { q: 'Manca il pulsante 🤝 Fai squadra', a: [
-          'Le squadre richiedono una faccenda da 6 o più monete che non sia nella stanza personale di qualcuno, non sia assegnata a una sola persona e non sia a rotazione.',
+          'Il pulsante è dentro la faccenda: tocca la faccenda per aprirla. Le squadre richiedono una faccenda da 6 o più monete che non sia nella stanza personale di qualcuno, non sia assegnata a una sola persona e non sia a rotazione.',
           'Solo una squadra per faccenda al giorno; guarda la scheda In squadra nella Home.',
           'Impostazioni → Funzioni → In squadra deve essere attivo.',
         ] },
