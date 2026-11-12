@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { createTestApp, createAdmin, createUser } from './setup';
 import type supertest from 'supertest';
 import type Database from 'better-sqlite3';
+import { dateStr } from '../utils/clock';
 
 // The Today page (ENH-26): /api/dashboard sorts every chore into Overdue, Today, Any time or Later.
 
@@ -15,7 +16,8 @@ beforeEach(() => {
 const auth = (token: string) => ({ Authorization: `Bearer ${token}` });
 const DAY = 86400000;
 const ago = (days: number) => new Date(Date.now() - days * DAY).toISOString();
-const day = (plus: number) => new Date(Date.now() + plus * DAY).toLocaleDateString('en-CA');
+// A do-by date on the family's clock (CI also runs with the family in another time zone)
+const day = (plus: number) => dateStr(Date.now() + plus * DAY);
 
 async function family() {
   const admin = await createAdmin(agent);
@@ -102,7 +104,7 @@ describe('Today page lists', () => {
     const fixed = await mk('Take out trash', { frequencyDays: 1 });
     // Both come due one minute from now (so later today, unless the test runs in the last minute of the day)
     const soon = new Date(Date.now() - DAY + 60000);
-    if (soon.toLocaleDateString('en-CA') !== new Date(Date.now() + 60000).toLocaleDateString('en-CA')) {
+    if (dateStr(Date.now() + 60000) === dateStr()) {
       last(early, soon.toISOString()); last(fixed, soon.toISOString());
       const t = await today(kid.token);
       expect(names(t.today)).toEqual(['Evening reset']);
