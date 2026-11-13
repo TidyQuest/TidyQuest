@@ -273,7 +273,7 @@ export const GUIDE_EN: GuideSection[] = [
         'The 📎 button in the opened chore adds a note or photo as proof.',
         'After a parent approves, the note and photo stay with the chore in Activity (tap the photo to see it full size). Parents see everyone’s; everyone else sees only their own. A photo’s link doesn’t open for anyone else, or after logging out. Undoing or rejecting the chore deletes its photo.',
         'Parents and members can mark a chore done for someone else ("who did it?").',
-        'A mistake can be undone from Activity (parents), or with ↩️ Undo next to the chore’s "Done by" in its room (parents; it asks first, because the coins come back off). A team-up is undone for the whole team, and everyone’s coins for it are taken back. A kid can take back their own Done while it waits for approval.',
+        'A mistake can be undone from Activity (parents), or with ↩️ Undo next to the chore’s "Done by" in its room (parents; it asks first, because the coins come back off). A team-up is undone for the whole team, and everyone’s coins for it are taken back. The streak goes back to what it was before that Done, unless another chore still counts for that day. A kid can take back their own Done while it waits for approval.',
       ] },
       { p: 'Settings → Features → Proof photos switches photos off; the 📎 button then adds a note only. On tidyquest.org photos start off, and a parent turns them on.' },
       { h: 'Logging it late' },

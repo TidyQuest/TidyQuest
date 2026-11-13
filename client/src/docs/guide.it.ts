@@ -249,7 +249,7 @@ export const GUIDE_IT: GuideSection[] = [
         'Il pulsante 📎 nella faccenda aperta aggiunge una nota o una foto come prova.',
         'Dopo l’approvazione di un genitore, la nota e la foto restano con la faccenda in Attività (tocca la foto per vederla in grande). I genitori vedono quelle di tutti; gli altri solo le proprie. Il link di una foto non si apre per nessun altro, né dopo essere usciti. Annullare o rifiutare la faccenda cancella la sua foto.',
         'Genitori e membri possono segnare una faccenda come fatta per qualcun altro ("chi l’ha fatta?").',
-        'Un errore si può annullare da Attività (genitori), oppure con ↩️ Annulla accanto a "Fatto da" della faccenda nella sua stanza (genitori; chiede conferma, perché le monete vengono tolte). Una squadra viene annullata per tutta la squadra e le monete di tutti per quella faccenda vengono riprese. Un bambino può ritirare il proprio Fatto finché aspetta l’approvazione.',
+        'Un errore si può annullare da Attività (genitori), oppure con ↩️ Annulla accanto a "Fatto da" della faccenda nella sua stanza (genitori; chiede conferma, perché le monete vengono tolte). Una squadra viene annullata per tutta la squadra e le monete di tutti per quella faccenda vengono riprese. La serie torna com’era prima di quel Fatto, a meno che un’altra faccenda conti ancora per quel giorno. Un bambino può ritirare il proprio Fatto finché aspetta l’approvazione.',
       ] },
       { p: 'Impostazioni → Funzioni → Foto di prova spegne le foto; il pulsante 📎 aggiunge allora solo una nota. Su tidyquest.org le foto partono spente, e un genitore le attiva.' },
       { h: 'Segnarla in ritardo' },

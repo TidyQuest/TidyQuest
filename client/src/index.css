@@ -1067,6 +1067,19 @@ html[data-theme='lava'] option {
 .tabbar { display: none; }
 .ph-phone { display: none !important; }
 .history-mobile-meta { display: none; }
+/* Activity: the card layout (room and time under the name) on phones and up to 1024px, where the
+   table's fixed columns beside the side menu left the name column almost no room (BUG-56) */
+@media (max-width: 1024px) {
+  .history-table-scroll { overflow-x: unset; }
+  .history-header { display: none !important; }
+  .history-row {
+    grid-template-columns: 38px minmax(0, 1fr) 70px !important;
+    min-width: 0 !important;
+  }
+  .history-col-room,
+  .history-col-when { display: none !important; }
+  .history-mobile-meta { display: block !important; }
+}
 .desktop-only { display: block; }
 
 /* Tablet breakpoint (max-width: 1024px) */
@@ -1259,29 +1272,6 @@ html[data-theme='lava'] option {
 
   .auth-card {
     padding: 24px !important;
-  }
-
-  /* Activity: responsive card layout on mobile */
-  .history-table-scroll {
-    overflow-x: unset;
-  }
-
-  .history-header {
-    display: none !important;
-  }
-
-  .history-row {
-    grid-template-columns: 38px minmax(0, 1fr) 70px !important;
-    min-width: 0 !important;
-  }
-
-  .history-col-room,
-  .history-col-when {
-    display: none !important;
-  }
-
-  .history-mobile-meta {
-    display: block !important;
   }
 
   .task-add-form {

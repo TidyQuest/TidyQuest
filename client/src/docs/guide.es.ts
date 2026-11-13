@@ -249,7 +249,7 @@ export const GUIDE_ES: GuideSection[] = [
         'El botón 📎 de la tarea abierta añade una nota o una foto como prueba.',
         'Cuando un padre o una madre la aprueba, la nota y la foto se quedan con la tarea en Actividad (pulsa la foto para verla en grande). Los padres ven las de todos; los demás, solo las suyas. El enlace de una foto no se abre para nadie más, ni después de cerrar sesión. Deshacer o rechazar la tarea borra su foto.',
         'Los padres y miembros pueden marcar una tarea como hecha por otra persona ("¿quién la hizo?").',
-        'Un error se puede deshacer desde Actividad (padres), o con ↩️ Deshacer junto al "Hecho por" de la tarea en su habitación (padres; pregunta antes, porque las monedas se devuelven). Una tarea En equipo se deshace para todo el equipo y se retiran las monedas de todos. Un niño puede deshacer su propio Hecho mientras espera aprobación.',
+        'Un error se puede deshacer desde Actividad (padres), o con ↩️ Deshacer junto al "Hecho por" de la tarea en su habitación (padres; pregunta antes, porque las monedas se devuelven). Una tarea En equipo se deshace para todo el equipo y se retiran las monedas de todos. La racha vuelve a ser la de antes de ese Hecho, salvo que otra tarea siga contando para ese día. Un niño puede deshacer su propio Hecho mientras espera aprobación.',
       ] },
       { p: 'Ajustes → Funciones → Fotos de prueba desactiva las fotos; el botón 📎 entonces solo añade una nota. En tidyquest.org las fotos empiezan desactivadas, y un padre o una madre las activa.' },
       { h: 'Apuntarlo tarde' },

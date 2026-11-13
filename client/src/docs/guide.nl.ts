@@ -249,7 +249,7 @@ export const GUIDE_NL: GuideSection[] = [
         'De 📎-knop in het geopende klusje voegt een notitie of foto toe als bewijs.',
         'Als een ouder het goedkeurt, blijven de notitie en foto bij het klusje in Activiteit (tik op de foto om hem groot te zien). Ouders zien die van iedereen, de anderen alleen hun eigen. De link naar een foto opent voor niemand anders, ook niet na het uitloggen. Ongedaan maken of afwijzen van het klusje verwijdert de foto.',
         'Ouders en leden kunnen een klusje voor iemand anders op klaar zetten ("wie heeft het gedaan?").',
-        'Een vergissing kun je ongedaan maken via Activiteit (ouders), of met ↩️ Ongedaan naast "Gedaan door" van het klusje in de kamer (ouders; er wordt eerst gevraagd, omdat de munten er weer af gaan). Een Samen doen wordt voor het hele team ongedaan gemaakt en ieders munten daarvoor worden teruggenomen. Een kind kan zijn eigen Klaar terugnemen zolang het op goedkeuring wacht.',
+        'Een vergissing kun je ongedaan maken via Activiteit (ouders), of met ↩️ Ongedaan naast "Gedaan door" van het klusje in de kamer (ouders; er wordt eerst gevraagd, omdat de munten er weer af gaan). Een Samen doen wordt voor het hele team ongedaan gemaakt en ieders munten daarvoor worden teruggenomen. De streak gaat terug naar wat hij was vóór dat Klaar, tenzij een ander klusje nog voor die dag telt. Een kind kan zijn eigen Klaar terugnemen zolang het op goedkeuring wacht.',
       ] },
       { p: 'Instellingen → Functies → Bewijsfoto’s zet foto’s uit; de 📎-knop voegt dan alleen een notitie toe. Op tidyquest.org staan foto’s eerst uit, en een ouder zet ze aan.' },
       { h: 'Te laat invullen' },

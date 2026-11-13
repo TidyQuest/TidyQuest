@@ -349,6 +349,9 @@ const NEW_COLUMNS: string[] = [
   `ALTER TABLE reward_redemptions ADD COLUMN rejectNote TEXT`,
   // The "turn on notifications" card on Today (ENH-31, utils/notifyCard.ts): JSON {done, snoozes, until}
   `ALTER TABLE users ADD COLUMN notifyCard TEXT`,
+  // BUG-50: the person's streak just before and after this Done moved it (JSON {before, after}), so
+  // taking the Done back can put the streak back (utils/streaks.ts restoreStreak)
+  `ALTER TABLE task_completions ADD COLUMN streakBefore TEXT`,
 ];
 
 /** Fork tables included in backup export/import: key in the backup file -> table. */

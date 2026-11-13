@@ -249,7 +249,7 @@ export const GUIDE_FR: GuideSection[] = [
         'Le bouton 📎 dans la tâche ouverte ajoute une note ou une photo comme preuve.',
         'Après l’approbation d’un parent, la note et la photo restent avec la tâche dans Activité (appuie sur la photo pour la voir en grand). Les parents voient celles de tout le monde ; les autres, seulement les leurs. Le lien d’une photo ne s’ouvre pour personne d’autre, ni après la déconnexion. Annuler ou refuser la tâche supprime sa photo.',
         'Les parents et les membres peuvent marquer une tâche comme faite pour quelqu’un d’autre (« qui l’a faite ? »).',
-        'Une erreur peut être annulée depuis Activité (parents), ou avec ↩️ Annuler à côté du « Fait par » de la tâche dans sa pièce (parents ; l’appli demande d’abord, car les pièces sont reprises). Une tâche en équipe est annulée pour toute l’équipe, et les pièces de chacun sont reprises. Un enfant peut annuler son propre Fait tant qu’il attend la validation.',
+        'Une erreur peut être annulée depuis Activité (parents), ou avec ↩️ Annuler à côté du « Fait par » de la tâche dans sa pièce (parents ; l’appli demande d’abord, car les pièces sont reprises). Une tâche en équipe est annulée pour toute l’équipe, et les pièces de chacun sont reprises. La série revient à ce qu’elle était avant ce Fait, sauf si une autre tâche compte encore pour ce jour-là. Un enfant peut annuler son propre Fait tant qu’il attend la validation.',
       ] },
       { p: 'Paramètres → Fonctionnalités → Photos de preuve désactive les photos ; le bouton 📎 n’ajoute alors qu’une note. Sur tidyquest.org, les photos sont désactivées au départ et un parent les active.' },
       { h: 'Noter en retard' },

@@ -24,7 +24,7 @@ import { trashTask } from '../utils/trash';
 import { taskName, tr } from '../utils/i18n';
 import { isFeatureOn } from '../utils/features';
 import { pauseTask, readPausedUntil, resumeTask } from '../utils/pause';
-import { earnShieldAt, lateStreak, nextStreak, noteBrokenStreak, settleStreak } from '../utils/streaks';
+import { earnShieldAt, keepStreakBefore, lateStreak, nextStreak, noteBrokenStreak, restoreStreak, settleStreak, streakState } from '../utils/streaks';
 import { baseCoinsOf, endTeamupsFor, groupTeamPending, openTeamupFor, teamShares, teamUpContext, teamUpInfo, type Teamup } from '../utils/teamups';
 import { currentShares, isPerPerson, sharesCompleteAt, sharesFor } from '../utils/shares';
 import { isHosted } from '../hosted/context';
@@ -94,8 +94,11 @@ function applyApprovedCompletion(
 
     const user = db.prepare('SELECT * FROM users WHERE id = ?').get(effectiveUserId) as any;
     const today = localDateStr();
+    // Kept on the completion, so taking this Done back can put the streak back (BUG-50)
+    const streakBefore = streakState(effectiveUserId);
     if (options?.lateDay) {
       lateStreak(effectiveUserId, options.lateDay);
+      keepStreakBefore(completionId, effectiveUserId, streakBefore);
       return completionId;
     }
     const globalVac = getGlobalVacation();
@@ -111,6 +114,7 @@ function applyApprovedCompletion(
       db.prepare('UPDATE users SET currentStreak = ?, lastActiveDate = ? WHERE id = ?')
         .run(newStreak, today, effectiveUserId);
       earnShieldAt(effectiveUserId, newStreak);
+      keepStreakBefore(completionId, effectiveUserId, streakBefore);
     }
 
   }
@@ -1192,13 +1196,13 @@ router.delete('/tasks/:id/snooze', (req: AuthRequest, res: Response) => {
 // still waits for approval. A team's completions are undone together and the team-up reopens.
 router.delete('/completions/:completionId', (req: AuthRequest, res: Response) => {
   const completion = db.prepare(
-    'SELECT id, taskId, userId, coinsEarned, status, teamupId, completedAt FROM task_completions WHERE id = ?'
-  ).get(req.params.completionId) as { id: number; taskId: number; userId: number; coinsEarned: number; status: string; teamupId: number | null; completedAt: string } | undefined;
+    'SELECT id, taskId, userId, coinsEarned, status, teamupId, completedAt, streakBefore FROM task_completions WHERE id = ?'
+  ).get(req.params.completionId) as { id: number; taskId: number; userId: number; coinsEarned: number; status: string; teamupId: number | null; completedAt: string; streakBefore: string | null } | undefined;
   if (!completion) return res.status(404).json({ error: 'Completion not found' });
 
-  type Row = { id: number; userId: number; coinsEarned: number; status: string; completedAt: string };
+  type Row = { id: number; userId: number; coinsEarned: number; status: string; completedAt: string; streakBefore: string | null };
   const rows = completion.teamupId
-    ? db.prepare('SELECT id, userId, coinsEarned, status, completedAt FROM task_completions WHERE teamupId = ?').all(completion.teamupId) as Row[]
+    ? db.prepare('SELECT id, userId, coinsEarned, status, completedAt, streakBefore FROM task_completions WHERE teamupId = ?').all(completion.teamupId) as Row[]
     : [completion];
   if (!ensureAdmin(req.userId)) {
     const mine = rows.some((r) => r.userId === req.userId);
@@ -1223,6 +1227,8 @@ router.delete('/completions/:completionId', (req: AuthRequest, res: Response) =>
     // A Done that was still waiting never changed the chore, so taking it back changes nothing either (BUG-46)
     const approved = rows.filter((r) => r.status === 'approved');
     if (approved.length === 0) return;
+    // The streak goes back to before the Done, if that Done moved it (BUG-50)
+    for (const r of approved) restoreStreak(r.userId, r.completedAt, r.streakBefore);
     const task = db.prepare('SELECT * FROM tasks WHERE id = ?').get(completion.taskId) as any;
     if (!task) return;
     const prev = db.prepare(

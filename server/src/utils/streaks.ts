@@ -129,6 +129,51 @@ export function lateStreak(userId: number, day: string): void {
   earnShieldAt(userId, streak);
 }
 
+/** The parts of a person's streak a Done can change (BUG-50). */
+type StreakState = {
+  currentStreak: number; lastActiveDate: string | null; streakShields: number;
+  brokenStreak: number | null; brokenStreakAfter: string | null; brokenStreakOn: string | null;
+};
+export function streakState(userId: number): StreakState | undefined {
+  return prepared('SELECT currentStreak, lastActiveDate, streakShields, brokenStreak, brokenStreakAfter, brokenStreakOn FROM users WHERE id = ?')
+    .get(userId) as StreakState | undefined;
+}
+const sameStreak = (a: StreakState, b: StreakState) =>
+  a.currentStreak === b.currentStreak && a.lastActiveDate === b.lastActiveDate && a.brokenStreak === b.brokenStreak
+  && a.brokenStreakAfter === b.brokenStreakAfter && a.brokenStreakOn === b.brokenStreakOn;
+
+/** A Done just moved the streak (or the shields): keep the before and after on the completion, for a take-back. */
+export function keepStreakBefore(completionId: number, userId: number, before: StreakState | undefined): void {
+  const after = streakState(userId);
+  if (!before || !after || (sameStreak(before, after) && before.streakShields === after.streakShields)) return;
+  prepared('UPDATE task_completions SET streakBefore = ? WHERE id = ?').run(JSON.stringify({ before, after }), completionId);
+}
+
+/**
+ * A Done that moved the streak was taken back (its row is already deleted): put the streak back as it
+ * was before it, with any shield it used or earned. Not when the streak has moved on since, and not
+ * while another Done still counts for that day; that one takes over the before, so taking it back
+ * later restores the streak instead.
+ */
+export function restoreStreak(userId: number, completedAt: string, saved: string | null): void {
+  if (!saved) return;
+  let kept: { before: StreakState; after: StreakState };
+  try { kept = JSON.parse(saved); } catch { return; }
+  const now = streakState(userId);
+  if (!now || !kept?.before || !kept?.after || !sameStreak(now, kept.after)) return;
+  const other = db.prepare(
+    `SELECT id FROM task_completions WHERE userId = ? AND status = 'approved' AND ${daySql('completedAt')} = ? ORDER BY completedAt, id LIMIT 1`
+  ).get(userId, localDateStr(new Date(completedAt))) as { id: number } | undefined;
+  if (other) {
+    prepared('UPDATE task_completions SET streakBefore = COALESCE(streakBefore, ?) WHERE id = ?').run(saved, other.id);
+    return;
+  }
+  const { before, after } = kept;
+  const shields = Math.max(0, Math.min(MAX_SHIELDS, now.streakShields + before.streakShields - after.streakShields));
+  prepared('UPDATE users SET currentStreak = ?, lastActiveDate = ?, streakShields = ?, brokenStreak = ?, brokenStreakAfter = ?, brokenStreakOn = ? WHERE id = ?')
+    .run(before.currentStreak, before.lastActiveDate, shields, before.brokenStreak, before.brokenStreakAfter, before.brokenStreakOn, userId);
+}
+
 function logShield(userId: number, kind: 'earned' | 'bought' | 'given' | 'used', fields: { count?: number; coins?: number; streak?: number; byUserId?: number } = {}) {
   prepared('INSERT INTO streak_shield_events (userId, kind, count, coins, streak, byUserId) VALUES (?, ?, ?, ?, ?, ?)')
     .run(userId, kind, fields.count ?? 1, fields.coins ?? 0, fields.streak ?? 0, fields.byUserId ?? null);

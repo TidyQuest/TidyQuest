@@ -154,6 +154,13 @@ What changed in each release, in plain language, newest first. Releases up to v0
 
 ### Fixed
 
+- **Taking back a Done puts the streak back** (BUG-50). Taking back a Done used to return the coins but leave the
+  streak as that Done set it, so a mistaken tap could reset a long streak to 1 or count an extra day. Now the streak,
+  its last day, and any shield the Done used or earned go back to how they were, unless another chore still counts for
+  that day or the streak has moved on since. Only Dones from this version on can be put back.
+- **Activity on tablets and small laptops** (BUG-56). Between 769 and 1024 pixels wide, the table's fixed columns
+  squeezed the chore names to one word per line and the page scrolled sideways. Those widths now use the phone layout
+  (room and time under the name).
 - **Settings on a computer:** opening a section lower in the list (like Double coins events) no longer jumps the
   page to the top. The list scrolls by itself and keeps your place.
 - **Settings → Look:** someone whose avatar has a frame showed their picture in the middle of the row instead of on
