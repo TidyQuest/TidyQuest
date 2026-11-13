@@ -74,18 +74,18 @@ export function CustomBadgesAdmin({ rooms, family, language }: {
   };
 
   const chip = (on: boolean): CSSProperties => ({
-    padding: '5px 10px', borderRadius: 20, fontSize: 12, fontWeight: 700, fontFamily: 'Nunito', cursor: 'pointer',
+    padding: '5px 10px', borderRadius: 'var(--shape-radius-control)', fontSize: 12, fontWeight: 700, fontFamily: 'Nunito', cursor: 'pointer',
     border: `1.5px solid ${on ? 'var(--warm-accent)' : 'var(--warm-border)'}`,
     backgroundColor: on ? 'var(--warm-accent-light)' : 'var(--warm-bg-input)', color: on ? 'var(--warm-accent)' : 'var(--warm-text)',
   });
   const row: CSSProperties = { display: 'flex', flexWrap: 'wrap', gap: 6, alignItems: 'center' };
-  const label: CSSProperties = { fontSize: 11, fontWeight: 800, color: 'var(--warm-text-light)', textTransform: 'uppercase', letterSpacing: '0.04em' };
+  const label: CSSProperties = { fontSize: 12, fontWeight: 800, color: 'var(--warm-text-light)' };
   const set = (patch: Partial<CustomBadgeInput>) => setForm((f) => (f ? { ...f, ...patch } : f));
   const needsTasks = form && (form.metric === 'task_count' || form.metric === 'task_weeks');
 
   return (
     <div style={{ display: 'grid', gap: 10 }}>
-      <div style={{ fontSize: 11, color: 'var(--warm-text-light)', fontWeight: 600 }}>{t('badges.adminDesc')}</div>
+      <div style={{ fontSize: 12, color: 'var(--warm-text-light)', fontWeight: 600 }}>{t('badges.adminDesc')}</div>
       <div style={{ ...row, fontSize: 12, fontWeight: 700, color: 'var(--warm-text-muted)' }}>
         {t('badges.builtinBonus')}
         <input type="number" min={0} className="tq-input-compact" value={builtinBonus} onChange={(e) => setBuiltinBonus(e.target.value)} style={{ width: 70 }} />
@@ -98,8 +98,8 @@ export function CustomBadgesAdmin({ rooms, family, language }: {
           <span style={{ fontSize: 22 }}>{b.icon}</span>
           <div style={{ flex: '1 1 180px', minWidth: 0 }}>
             <div style={{ fontSize: 13, fontWeight: 800, color: 'var(--warm-text)', overflowWrap: 'anywhere' }}>{b.title}{b.secret ? ' 🤫' : ''}</div>
-            <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--warm-text-muted)', overflowWrap: 'anywhere' }}>{ruleText(b)}</div>
-            <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--warm-text-light)' }}>
+            <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--warm-text-muted)', overflowWrap: 'anywhere' }}>{ruleText(b)}</div>
+            <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--warm-text-light)' }}>
               {[
                 b.userIds ? b.userIds.map((id) => family.find((m) => m.id === id)?.displayName ?? '?').join(', ') : t('rewardRules.everyone'),
                 b.bonusCoins > 0 ? `+${b.bonusCoins} ${t('settings.coins')}` : '',
@@ -182,7 +182,7 @@ export function CustomBadgesAdmin({ rooms, family, language }: {
               🤫 {t('badges.secretOption')}
             </label>
           </div>
-          <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--warm-text-light)' }}>{ruleText(form)}</div>
+          <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--warm-text-light)' }}>{ruleText(form)}</div>
           <div style={row}>
             <button className="tq-btn tq-btn-primary tq-btn-sm" onClick={save} disabled={!form.title.trim()}>{t('common.save')}</button>
             <button className="tq-btn tq-btn-secondary tq-btn-sm" onClick={() => { setForm(null); setEditingId(null); }}>{t('common.cancel')}</button>

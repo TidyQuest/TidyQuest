@@ -130,13 +130,13 @@ export function Focus({ focus, userId, language, coinsByEffort, gamificationEnab
   const coins = taskCoins(current, coinsByEffort) * (isMission ? mission!.multiplier : 1);
   const mustWait = !!timer?.mustWait(current);
   const next = line.slice(1, 3);
-  const big = { padding: '16px 20px', fontSize: 18, borderRadius: 16, flex: '1 1 140px' } as const;
+  const big = { padding: '16px 20px', fontSize: 18, borderRadius: 'var(--shape-radius-control)', flex: '1 1 140px' } as const;
 
   return (
     <div className="page-enter focus-page">
       {progress}
       <div className="tq-card tq-card-padded" style={{ display: 'grid', gap: 18, padding: '28px 20px', textAlign: 'center' }}>
-        <div style={{ width: 96, height: 96, margin: '0 auto', borderRadius: 28, backgroundColor: current.roomColor, display: 'flex', alignItems: 'center', justifyContent: 'center', border: `2px solid ${current.roomAccent}55` }}>
+        <div style={{ width: 96, height: 96, margin: '0 auto', borderRadius: 'var(--shape-radius-card)', backgroundColor: current.roomColor, display: 'flex', alignItems: 'center', justifyContent: 'center', border: `2px solid ${current.roomAccent}55` }}>
           <TaskIcon iconKey={current.iconKey} size={60} />
         </div>
         <div>
@@ -153,7 +153,7 @@ export function Focus({ focus, userId, language, coinsByEffort, gamificationEnab
         </div>
         {steps.length > 0 && (
           <div style={{ display: 'grid', gap: 8, textAlign: 'left', maxWidth: 440, width: '100%', margin: '0 auto' }}>
-            <div style={{ fontSize: 12, fontWeight: 800, color: 'var(--warm-text-light)', textTransform: 'uppercase', letterSpacing: 0.5 }}>{t('focus.steps')}</div>
+            <div style={{ fontSize: 12, fontWeight: 800, color: 'var(--warm-text-light)' }}>{t('focus.steps')}</div>
             {steps.map((step, i) => {
               const on = (ticked[current.id] ?? []).includes(i);
               return (
@@ -188,7 +188,7 @@ export function Focus({ focus, userId, language, coinsByEffort, gamificationEnab
         <div style={{ marginTop: 14, fontSize: 13, fontWeight: 700, color: 'var(--warm-text-light)', display: 'flex', gap: 6, flexWrap: 'wrap', alignItems: 'center' }}>
           <span>{t('focus.upNext')}</span>
           {next.map((c) => (
-            <span key={c.id} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '4px 10px', borderRadius: 12, border: '1.5px solid var(--warm-border)', color: 'var(--warm-text-muted)', overflowWrap: 'anywhere' }}>
+            <span key={c.id} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '4px 10px', borderRadius: 12, border: 'var(--shape-border-w) solid var(--warm-border)', color: 'var(--warm-text-muted)', overflowWrap: 'anywhere' }}>
               <TaskIcon iconKey={c.iconKey} size={14} /> {taskName(c.name, c.translationKey)}
             </span>
           ))}

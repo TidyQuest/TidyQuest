@@ -30,12 +30,12 @@ export function LevelStrip({ level, nextBadge, language, big = false, userId, ne
         <span style={{ display: 'flex', flexDirection: 'column', gap: 4, width: '100%' }}>
           <span style={{ display: 'flex', justifyContent: 'space-between', gap: 8, flexWrap: 'wrap', fontSize: big ? 16 : 13, fontWeight: 900, color: 'var(--warm-text)' }}>
             <span>⭐ {t('levels.level').replace('{n}', String(level.level))} · {title ?? t(level.titleKey)}</span>
-            <span style={{ fontSize: big ? 13 : 11, fontWeight: 700, color: 'var(--warm-text-muted)' }}>
+            <span style={{ fontSize: big ? 13 : 12, fontWeight: 700, color: 'var(--warm-text-muted)' }}>
               {t('levels.toNext').replace('{n}', formatCoins(level.nextLevelAt - level.coinsEarned)).replace('{level}', String(level.level + 1))}
             </span>
           </span>
           <span style={{ height: big ? 10 : 6, borderRadius: 99, background: 'var(--health-bar-track)', overflow: 'hidden', display: 'block' }}>
-            <span style={{ display: 'block', width: `${level.progress}%`, height: '100%', background: 'linear-gradient(90deg, #A78BFA, #7C3AED)' }} />
+            <span className="level-strip-fill" style={{ display: 'block', width: `${level.progress}%`, height: '100%' }} />
           </span>
         </span>
       )}

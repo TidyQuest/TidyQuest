@@ -444,9 +444,9 @@ function FamilyCard({ family: f, list, result, onAct, token, version, onFailed }
     <div className="tq-card" style={{ padding: 14 }}>
       <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
         <div style={{ flex: 1, minWidth: 0, fontSize: 15, fontWeight: 800, color: 'var(--warm-text)', overflowWrap: 'anywhere' }}>{f.name}</div>
-        <span style={{ ...PILLS[f.status], fontSize: 11, fontWeight: 800, borderRadius: 999, padding: '3px 9px', whiteSpace: 'nowrap' }}>{status}</span>
+        <span style={{ ...PILLS[f.status], fontSize: 12, fontWeight: 800, borderRadius: 999, padding: '3px 9px', whiteSpace: 'nowrap' }}>{status}</span>
       </div>
-      <div style={{ ...muted, fontFamily: 'ui-monospace, monospace', fontSize: 11, marginTop: 2, overflowWrap: 'anywhere' }}>
+      <div style={{ ...muted, fontFamily: 'ui-monospace, monospace', fontSize: 12, marginTop: 2, overflowWrap: 'anywhere' }}>
         {f.code ? `${f.code} · ` : ''}{f.id}
       </div>
       <div style={line}>
@@ -602,7 +602,7 @@ function Waitlist({ token, onChanged, onFailed }: { token: string; onChanged: ()
                     {i + 1}. {w.familyName}
                   </div>
                   {w.hasFamily && (
-                    <span style={{ ...PILLS.active, fontSize: 11, fontWeight: 800, borderRadius: 999, padding: '3px 9px', whiteSpace: 'nowrap' }}>Has a family now</span>
+                    <span style={{ ...PILLS.active, fontSize: 12, fontWeight: 800, borderRadius: 999, padding: '3px 9px', whiteSpace: 'nowrap' }}>Has a family now</span>
                   )}
                 </div>
                 <div style={{ ...line, display: 'flex', flexWrap: 'wrap', columnGap: 8 }}>
@@ -678,7 +678,7 @@ function History({ token, familyId, version = 0, onFailed }: {
 
   if (familyId) {
     return (
-      <div style={{ marginTop: 10, borderTop: '1.5px solid var(--warm-border)' }}>
+      <div style={{ marginTop: 10, borderTop: 'var(--shape-border-w) solid var(--warm-border)' }}>
         {list && (list.entries.length ? rows : <div style={line}>Nothing recorded yet.</div>)}
         {more && <button type="button" style={{ ...authLink, fontSize: 12, padding: '4px 0' }} onClick={showMore}>Show more</button>}
       </div>

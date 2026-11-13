@@ -120,6 +120,13 @@ export const GUIDE_FR: GuideSection[] = [
         'Mot de passe : un parent peut en définir un nouveau si quelqu’un oublie le sien. La personne est alors déconnectée de tous ses appareils et se reconnecte avec le nouveau.',
       ] },
       { tip: 'Active « Masquer aux enfants les pièces privées des autres » dans Paramètres → Général si les enfants ne doivent pas voir, par exemple, la pièce personnelle d’un parent.' },
+      { h: 'Le style de la famille' },
+      { where: 'Paramètres → Style (parents seulement)' },
+      { ul: [
+        'Un seul style pour toute la famille : Frais (par défaut : carte de résumé légèrement teintée, cartes claires), Quête (un bloc de couleur franc en haut, de gros boutons, chaque tâche dans sa propre tuile) ou Calme (plat, contours fins, couleur utilisée avec parcimonie).',
+        'Le style fixe les formes ; le thème de couleur de chacun (Profil) les remplit, donc chaque thème va avec chaque style. La page indique le thème de chacun sous les trois choix.',
+        'Il change tout de suite sur cet appareil, et sur ceux des autres à la prochaine actualisation de l’appli. Les sauvegardes le conservent.',
+      ] },
       { h: 'Quelqu’un qui ne se connecte pas' },
       { p: 'Pour un grand-parent, un tout-petit ou quiconque n’utilisera pas l’appli : ajoutez-le et faites tout à sa place, sans nom d’utilisateur ni mot de passe.' },
       { ul: [
@@ -175,9 +182,9 @@ export const GUIDE_FR: GuideSection[] = [
       { p: 'Les pièces contiennent des tâches. Une pièce attribuée à une seule personne est la sienne : elle seule (et les parents/membres) peut en faire les tâches, et elle ne participe jamais aux équipes.' },
       { ul: [
         'Crée une pièce sur la page Pièces ; un type de pièce ajoute des tâches suggérées parmi lesquelles choisir.',
-        'Les zones regroupent les pièces sur la page Pièces (par exemple « À l’étage » ou « Quêtes des parents »).',
+        'La page Pièces montre une tuile par pièce, les plus urgentes d’abord : sa santé, son nombre de tâches et combien sont à faire aujourd’hui. Les zones regroupent les tuiles (par exemple « À l’étage » ou « Quêtes des parents ») ; touche la pastille d’une zone en haut pour ne voir que ses pièces, ou Les miennes pour les tiennes. Les parents touchent ✏️ Modifier les pièces pour renommer une pièce, la mettre dans une zone (🏷️), l’attribuer à quelqu’un ou la supprimer, et pour ajouter, renommer ou supprimer des zones.',
         'La santé d’une pièce est la moyenne de ses tâches ; la pire pièce est celle pour laquelle la mascotte demande de l’aide.',
-        'La barre d’une tâche ne devient rouge qu’à son échéance. Une tâche qu’on ne peut pas encore faire (Complétion anticipée désactivée) s’arrête au jaune, dans sa pièce comme sur sa pastille de la page Pièces.',
+        'La barre d’une tâche ne devient rouge qu’à son échéance. Une tâche qu’on ne peut pas encore faire (Complétion anticipée désactivée) s’arrête au jaune dans sa pièce.',
       ] },
     ],
   },
@@ -188,6 +195,8 @@ export const GUIDE_FR: GuideSection[] = [
     parents: true,
     blocks: [
       { where: 'Pièces → une pièce → Ajouter une tâche, ou le ✏️ sur une tâche' },
+      { h: 'Le formulaire de tâche' },
+      { p: 'Ajouter une tâche et ✏️ Modifier ouvrent le même formulaire : un volet qui monte du bas sur un téléphone, un panneau à côté de la liste sur un ordinateur. Il est rangé en groupes : le nom, les notes et l’icône ; Quand (Tous les, Le, Chaque mois ou Une seule fois, ou À la demande) ; Qui (Tout le monde, ou touchez les personnes, puis Premier arrivé, Partagé, Rotation ou Personnalisé) ; Effort et pièces ; et Plus d’options, replié, pour les étapes, le minuteur, une date de début, la saison, la santé et la pause. Plus d’options indique ce qui y est réglé, pour que rien ne s’y cache. Enregistrer reste en bas, même en faisant défiler ; Supprimer la tâche est à la fin du formulaire.' },
       { h: 'Calendrier' },
       { ul: [
         'Tous les N jours : à refaire N jours après la dernière fois. Sa santé baisse pendant ces jours.',
@@ -202,7 +211,7 @@ export const GUIDE_FR: GuideSection[] = [
       ] },
       { h: 'Pièces' },
       { ul: [
-        'L’effort (1–5) fixe les pièces d’après Paramètres → Pièces par effort. Les pièces personnalisées les remplacent pour une tâche : remplissez la case Coins personnalisés en ajoutant ou en modifiant la tâche, ou laissez-la sur Auto.',
+        'L’effort (1–5) fixe les pièces d’après Paramètres → Pièces par effort. Les pièces personnalisées les remplacent pour une tâche : remplissez la case Pièces sous Effort et pièces en ajoutant ou en modifiant la tâche, ou laissez-la vide pour le montant selon l’effort.',
         'La Mission sauvetage et les événements pièces doublées les multiplient pour la journée.',
       ] },
       { h: 'Qui peut la faire' },
@@ -245,7 +254,7 @@ export const GUIDE_FR: GuideSection[] = [
       ] },
       { h: 'Mettre une tâche en pause' },
       { ul: [
-        'Pas utile pendant un temps (la piscine en hiver, un enfant en colonie) ? Les parents ouvrent la tâche dans sa pièce (en la touchant), touchent ⋯ (Plus d’options), puis ⏸️ Mettre en pause. Ou ouvrent Modifier, cochent ⏸️ En pause et choisissent un jour sous Reprend le (facultatif) pour qu’elle se réactive toute seule.',
+        'Pas utile pendant un temps (la piscine en hiver, un enfant en colonie) ? Les parents ouvrent la tâche dans sa pièce (en la touchant), touchent ⋯ (Plus d’options), puis ⏸️ Mettre en pause. Ou ouvrent Modifier, puis Plus d’options, activent ⏸️ En pause et choisissent un jour sous Reprend le (facultatif) pour qu’elle se réactive toute seule.',
         'Une tâche en pause quitte Aujourd\'hui, la page Tâches, le calendrier, les rappels, la mission de sauvetage, les équipes et la santé de la maison. Les parents la voient encore grisée dans sa pièce, marquée ⏸️ En pause ; les enfants ne la voient pas du tout.',
         'Ouvre la tâche et touche ⋯ → ▶️ Réactiver (ou décoche ⏸️ En pause). Elle revient comme si elle venait d’être faite, donc pas en retard. Son historique, ses pièces et les personnes assignées ne changent pas.',
       ] },
@@ -362,8 +371,8 @@ export const GUIDE_FR: GuideSection[] = [
         'Mascotte de la maison : l’une de 8 créatures, choisie et nommée ici. Elle grandit avec les pièces de la famille gagnées tant qu’elle est la mascotte active (elle éclôt à 500, puis 2 000, 5 000 et 10 000), son humeur suit la santé de la maison, et elle réagit aux anniversaires, à l’objectif familial et à la Mission sauvetage.',
         'Changer de mascotte : choisir une créature que tu n’as jamais eue la fait démarrer comme un nouvel œuf. Chaque créature garde sa propre croissance, son nom et sa tenue, donc revenir à elle la retrouve exactement comme elle était. Le ventre et l’heure du coucher sont partagés.',
         'Jouer avec la mascotte : appuie dessus pour une réaction. Son ventre 🍪 se remplit de 5 % à chaque tâche (une tâche en équipe compte une fois) et se vide en 2 jours. Elle ne fait la fête avec un 🍪 et un saut que pour les tâches plus grosses (effort de 3★ ou plus) ; les petites le remplissent sans bruit ; quand il est bas, elle dit juste qu’elle a faim. « Que faire ? » suggère une tâche que tu peux faire tout de suite. Elle ajoute un 🐾 d’encouragement aux tâches terminées de 3★ ou plus. Elle dort pendant l’heure du coucher de la famille (réglée sous la mascotte dans Fonctionnalités, de 21 h à 7 h par défaut).',
-        'Boutique de la mascotte (son propre interrupteur) : chacun peut lui acheter un accessoire de 1 à 5 pièces. Il y a une seule tenue partagée et pas de placard : un nouvel objet se met aussitôt pour tout le monde et remplace ce qui était à cet endroit (tête, visage, cou ou dos). Celui qui a acheté un objet, ou un parent, peut l’enlever gratuitement. Les achats apparaissent dans Activité. La boutique ouvre quand la mascotte éclôt. Désactiver la boutique la cache, ainsi que la tenue.',
-        'Décor de saison : Halloween en octobre, Thanksgiving en novembre, Noël en décembre : couleurs, décorations, un compte à rebours et un costume pour la mascotte. Chaque fête a son propre interrupteur et un bouton Aperçu.',
+        'Boutique de la mascotte (sa propre case à cocher) : chacun peut lui acheter un accessoire de 1 à 5 pièces. Il y a une seule tenue partagée et pas de placard : un nouvel objet se met aussitôt pour tout le monde et remplace ce qui était à cet endroit (tête, visage, cou ou dos). Celui qui a acheté un objet, ou un parent, peut l’enlever gratuitement. Les achats apparaissent dans Activité. La boutique ouvre quand la mascotte éclôt. Désactiver la boutique la cache, ainsi que la tenue.',
+        'Décor de saison : Halloween en octobre, Thanksgiving en novembre, Noël en décembre : couleurs, décorations, un compte à rebours et un costume pour la mascotte. Chaque fête a sa propre case à cocher et un bouton Aperçu.',
       ] },
       { h: 'Boucliers de série' },
       { ul: [
@@ -461,7 +470,7 @@ export const GUIDE_FR: GuideSection[] = [
         'Pour supprimer une tâche, ouvre-la avec Modifier ; Supprimer la tâche est en bas du formulaire. Elle va dans Paramètres → Supprimés récemment pendant 30 jours et peut y être restaurée. Les récompenses fonctionnent de la même façon.',
         'Supprimer ne retire jamais de pièces et n’efface pas ce qui a été fait : les réalisations passées restent visibles dans Activité, le Tableau et les objectifs sous le nom de la tâche, même après qu’elle a quitté Supprimés récemment.',
         'Une récompense supprimée garde son historique de la même façon : ce qui a été acheté reste dans Statistiques sous son nom. Une demande encore en attente reste dans Demandes de récompenses (sous le catalogue) : un parent peut toujours la valider ou la refuser, ce qui rend les pièces.',
-        'Supprimer une pièce (Pièces → 🗑) supprime aussi ses tâches, et la pièce ne peut pas être récupérée. Leur historique et leurs pièces restent.',
+        'Supprimer une pièce (Pièces → ✏️ Modifier les pièces → 🗑) supprime aussi ses tâches, et la pièce ne peut pas être récupérée. Leur historique et leurs pièces restent.',
         'Supprimer un membre de la famille (Supprimer l’utilisateur, dans Paramètres → Membres de la famille) est définitif. Sa récompense partagée encore en attente d’un parent est d’abord refusée, pour que les autres récupèrent leurs contributions. Une récompense que lui seul pouvait voir est masquée au lieu d’être montrée à tout le monde : touche Afficher dans Paramètres → Catalogue des récompenses si quelqu’un d’autre doit l’avoir.',
       ] },
       { p: 'Les photos de preuve suivent leur tâche : quand une tâche quitte Supprimés récemment (ou que sa pièce est supprimée), ses photos sont supprimées aussi, mais qui l’a faite et les pièces restent. La photo d’avatar d’une personne part quand elle est retirée.' },
@@ -535,7 +544,7 @@ export const GUIDE_FR: GuideSection[] = [
           'Les tâches à tout moment demandent que « Afficher dans Aujourd\'hui » soit activé.',
           'Hors saison (Seulement en saison) ou jours de la semaine fixés : elle n’est pas à faire aujourd’hui.',
           'Elle a une date de début (📅 Commence le) qui n’est pas encore arrivée : sa pièce affiche « Commence le … ».',
-          'Ton Affichage des tâches est peut-être sur « Les miennes » (l’interrupteur au-dessus des listes), ou un parent l’a mis sur « Seulement les siennes ».',
+          'Ton Affichage des tâches est peut-être sur « Les miennes » (les boutons au-dessus des listes), ou un parent l’a mis sur « Seulement les siennes ».',
           'Les tâches uniques apparaissent le jour de leur date « À faire avant » (sous À tout moment si elles n’en ont pas), et disparaissent une fois faites.',
           'Tu l’as peut-être mise en pause (💤) : elle attend sous « Voir les … prévues » pendant 3 jours. Touche-la là et Remettre maintenant, ou appuie tout de suite sur Annuler dans le message « mis en pause ».',
         ] },
@@ -647,6 +656,10 @@ export const GUIDE_FR: GuideSection[] = [
           'Elle ne fait la fête (🍪 et un saut) que pour les tâches plus grosses, effort de 3★ ou plus, et seulement une fois qu’une tâche en attente est approuvée. Les petites tâches remplissent quand même son ventre, sans bruit. Son 🐾 à côté d’une tâche terminée suit la même règle.',
           'Chaque appareil montre la fête une fois : un téléphone qui l’a déjà vue ne la refait pas.',
         ] },
+        { q: 'L’appli n’a pas la même allure sur le téléphone d’un autre membre de la famille', a: [
+          'Le style (Paramètres → Style) est un seul choix pour toute la famille, mais chaque appareil ne reçoit le changement qu’en rechargeant Aujourd’hui : ouvrez Aujourd’hui, ou passez à une autre appli puis revenez.',
+          'Les couleurs sont personnelles : chacun choisit son thème dans Profil, donc le même style peut être orange sur un téléphone et bleu sur un autre.',
+        ] },
         { q: 'Pas de décorations ni de couleurs de fête', a: [
           'Paramètres → Fonctionnalités → Décor de saison, et l’interrupteur de cette fête, doivent être activés. Cela suit la date de l’appareil.',
           'Profil → Couleurs des fêtes désactivé garde ton propre thème (les décorations s’affichent quand même).',
@@ -740,7 +753,7 @@ export const GUIDE_FR: GuideSection[] = [
         ] },
         { q: 'L’assistant de configuration ne s’est pas ouvert, ou je veux le relancer', a: [
           'Il s’ouvre tout seul seulement pour un parent, tant que la famille n’a pas de pièces (la pièce À faire ne compte pas), jusqu’à ce que quelqu’un le termine ou touche Pas maintenant.',
-          'Ouvre-le à tout moment depuis Paramètres → Assistant de configuration (sous Aide). Le relancer ne fait qu’ajouter : supprime toi-même les pièces (Pièces → 🗑) ou les récompenses dont tu ne veux pas.',
+          'Ouvre-le à tout moment depuis Paramètres → Assistant de configuration (sous Aide). Le relancer ne fait qu’ajouter : supprime toi-même les pièces (Pièces → ✏️ Modifier les pièces → 🗑) ou les récompenses dont tu ne veux pas.',
         ] },
         { q: 'Chaque enfant paie un prix différent pour la même récompense', a: [
           'L’assistant de configuration a donné à chacun son propre prix, pour que tout le monde paie à peu près les mêmes semaines de ses propres tâches : un enfant qui a plus de tâches gagne plus, donc paie plus. On le voit avec « prix personnalisés » sous la récompense.',

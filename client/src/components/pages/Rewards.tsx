@@ -90,7 +90,7 @@ function SharedPot({ pot, userCoins, language, onContribute }: { pot: RewardPot;
       <div style={{ height: 10, borderRadius: 99, backgroundColor: 'var(--warm-border)', overflow: 'hidden' }}>
         <div style={{ width: `${pct}%`, height: '100%', backgroundColor: 'var(--warm-accent)' }} />
       </div>
-      <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--warm-text-muted)' }}>
+      <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--warm-text-muted)' }}>
         {t('rewardRules.potSaved').replace('{saved}', formatCoins(pot.saved, locale)).replace('{target}', formatCoins(pot.target, locale))}
         {pot.contributors.length > 0 && ` · ${pot.contributors.map((c) => `${c.displayName} ${formatCoins(c.amount, locale)}`).join(', ')}`}
       </div>
@@ -108,7 +108,7 @@ function SharedPot({ pot, userCoins, language, onContribute }: { pot: RewardPot;
             })}>
             {t('rewardRules.chipIn')}
           </button>
-          {error && <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--warm-danger)' }}>{error}</span>}
+          {error && <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--warm-danger)' }}>{error}</span>}
         </div>
       )}
     </div>
@@ -171,7 +171,7 @@ export function Rewards({ language, rewards: ownRewards, mine: ownMine, userCoin
       : sort === 'name' ? rewardTitle(a).localeCompare(rewardTitle(b))
       : (sort === 'priceHigh' ? b.costCoins - a.costCoins : a.costCoins - b.costCoins));
   const chipStyle = (on: boolean): CSSProperties => ({
-    padding: '5px 12px', borderRadius: 20, fontSize: 12, fontWeight: 800, fontFamily: 'Nunito', cursor: 'pointer',
+    padding: '5px 12px', borderRadius: 'var(--shape-radius-control)', fontSize: 12, fontWeight: 800, fontFamily: 'Nunito', cursor: 'pointer',
     border: `1.5px solid ${on ? 'var(--warm-accent)' : 'var(--warm-border)'}`,
     backgroundColor: on ? 'var(--warm-accent-light)' : 'var(--warm-bg-input)', color: on ? 'var(--warm-accent)' : 'var(--warm-text-muted)',
   });
@@ -281,7 +281,7 @@ export function Rewards({ language, rewards: ownRewards, mine: ownMine, userCoin
             {buyingFor && `${forName}: `}{formatCoins(userCoins, localeFor(language))} {t('settings.coins')}
           </div>
         </div>
-        <div style={{ fontSize: 11, color: 'var(--warm-text-light)', fontWeight: 600, marginTop: 4 }}>
+        <div style={{ fontSize: 12, color: 'var(--warm-text-light)', fontWeight: 600, marginTop: 4 }}>
           {buyingFor ? t('rewards.buyingForHint').replace('{name}', forName) : t('rewards.balanceHint')}
         </div>
         {isAdmin && people && people.length > 0 && (
@@ -294,7 +294,7 @@ export function Rewards({ language, rewards: ownRewards, mine: ownMine, userCoin
             </select>
           </label>
         )}
-        {forFailed && <div role="alert" style={{ fontSize: 11, fontWeight: 700, color: 'var(--warm-danger)', marginTop: 6 }}>{t('common.actionFailed')}</div>}
+        {forFailed && <div role="alert" style={{ fontSize: 12, fontWeight: 700, color: 'var(--warm-danger)', marginTop: 6 }}>{t('common.actionFailed')}</div>}
       </div>
 
       {isAdmin && pendingRequests && (pendingRequests.filter(r => r.status === 'requested').length > 0 || decideFailed) && (
@@ -303,10 +303,10 @@ export function Rewards({ language, rewards: ownRewards, mine: ownMine, userCoin
           {decideFailed && <div role="alert" style={{ fontSize: 12, fontWeight: 700, color: 'var(--warm-danger)', marginBottom: 8 }}>{decideFailed}</div>}
           <div style={{ display: 'grid', gap: 8 }}>
             {pendingRequests.filter(r => r.status === 'requested').map((r) => (
-              <div key={r.id} style={{ border: '1.5px solid var(--warm-border)', borderRadius: 12, padding: 10, display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', columnGap: 10 }}>
+              <div key={r.id} style={{ border: 'var(--shape-border-w) solid var(--warm-border)', borderRadius: 12, padding: 10, display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', columnGap: 10 }}>
                 <div style={{ minWidth: 0, flex: '1 1 0' }}>
                   <div style={{ fontSize: 13, fontWeight: 800, color: 'var(--warm-text)', overflowWrap: 'anywhere' }}>{r.displayName} — {rewardTitleByName(r.title)}</div>
-                  <div style={{ fontSize: 10, color: 'var(--warm-text-light)', fontWeight: 700 }}>{new Date(r.redeemedAt).toLocaleString(locale)} · {formatCoins(r.costCoins, locale)} {t('settings.coins')}</div>
+                  <div style={{ fontSize: 12, color: 'var(--warm-text-light)', fontWeight: 700 }}>{new Date(r.redeemedAt).toLocaleString(locale)} · {formatCoins(r.costCoins, locale)} {t('settings.coins')}</div>
                 </div>
                 {rejecting === r.id ? (
                   <RewardRejectNote language={language} name={r.displayName} busy={deciding}
@@ -363,11 +363,11 @@ export function Rewards({ language, rewards: ownRewards, mine: ownMine, userCoin
             const usedUp = !!r.availability && r.availability.remaining <= 0;
             const canBuy = userCoins >= r.costCoins && !usedUp;
             return (
-              <div key={r.id} style={{ border: '1.5px solid var(--warm-border)', borderRadius: 14, padding: 12, backgroundColor: 'var(--warm-bg-subtle)' }}>
+              <div key={r.id} style={{ border: 'var(--shape-border-w) solid var(--warm-border)', borderRadius: 14, padding: 12, backgroundColor: 'var(--warm-bg-subtle)' }}>
                 <div style={{ fontSize: 14, fontWeight: 800, color: 'var(--warm-text)', marginBottom: 4 }}>{rewardTitle(r)}</div>
-                <div style={{ fontSize: 11, color: 'var(--warm-text-light)', fontWeight: 600, minHeight: 32 }}>{rewardDesc(r)}</div>
+                <div style={{ fontSize: 12, color: 'var(--warm-text-light)', fontWeight: 600, minHeight: 32 }}>{rewardDesc(r)}</div>
                 {(r.availability || r.availableUntil) && (
-                  <div style={{ fontSize: 11, fontWeight: 700, color: usedUp ? 'var(--warm-danger)' : 'var(--warm-text-muted)', marginTop: 4 }}>
+                  <div style={{ fontSize: 12, fontWeight: 700, color: usedUp ? 'var(--warm-danger)' : 'var(--warm-text-muted)', marginTop: 4 }}>
                     {r.availability && (usedUp
                       ? t(`rewardRules.usedUp_${r.availability.period}`).replace('{day}', r.availability.resetsAt ? new Date(r.availability.resetsAt).toLocaleDateString(localeFor(language), { weekday: 'long' }) : '')
                       : t(`rewardRules.left_${r.availability.period}`).replace('{n}', String(r.availability.remaining)))}
@@ -406,27 +406,27 @@ export function Rewards({ language, rewards: ownRewards, mine: ownMine, userCoin
         ) : (
           <div style={{ display: 'grid', gap: 8 }}>
             {mine.map((m) => (
-              <div key={m.id} className="rewards-my-row" style={{ border: '1.5px solid var(--warm-border)', borderRadius: 12, padding: 10, display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 10 }}>
+              <div key={m.id} className="rewards-my-row" style={{ border: 'var(--shape-border-w) solid var(--warm-border)', borderRadius: 12, padding: 10, display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 10 }}>
                 <div style={{ minWidth: 0 }}>
                   <div style={{ fontSize: 13, fontWeight: 800, color: 'var(--warm-text)' }}>{rewardTitleByName(m.title)}</div>
-                  <div style={{ fontSize: 10, color: 'var(--warm-text-light)', fontWeight: 700 }}>
+                  <div style={{ fontSize: 12, color: 'var(--warm-text-light)', fontWeight: 700 }}>
                     {new Date(m.redeemedAt).toLocaleString(locale)}
                     {m.boughtByName && ` · 🛒 ${t('rewards.boughtBy').replace('{name}', m.boughtByName)}`}
                   </div>
                   {m.status === 'rejected' && m.rejectNote && (
                     <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--warm-text-muted)', marginTop: 2, overflowWrap: 'anywhere' }}>💬 {m.rejectNote}</div>
                   )}
-                  {cancelFailed === m.id && <div role="alert" style={{ fontSize: 11, fontWeight: 700, color: 'var(--warm-danger)' }}>{t('common.actionFailed')}</div>}
+                  {cancelFailed === m.id && <div role="alert" style={{ fontSize: 12, fontWeight: 700, color: 'var(--warm-danger)' }}>{t('common.actionFailed')}</div>}
                 </div>
                 <div className="rewards-my-row-meta" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <div style={{ fontSize: 11, fontWeight: 800, color: 'var(--warm-accent)', display: 'inline-flex', alignItems: 'center', gap: 4 }}>- {m.costCoins} <CoinIcon /></div>
-                  <span style={{ ...statusStyle(m.status), fontSize: 10, fontWeight: 800, borderRadius: 999, padding: '2px 8px', textTransform: 'uppercase', letterSpacing: 0.4 }}>
+                  <div style={{ fontSize: 12, fontWeight: 800, color: 'var(--warm-accent)', display: 'inline-flex', alignItems: 'center', gap: 4 }}>- {m.costCoins} <CoinIcon /></div>
+                  <span style={{ ...statusStyle(m.status), fontSize: 12, fontWeight: 800, borderRadius: 999, padding: '2px 8px' }}>
                     {statusLabel(m.status)}
                   </span>
                   {m.status === 'requested' && m.isShared ? (
-                    <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--warm-text-muted)' }}>{t('rewards.sharedParentDecides')}</span>
+                    <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--warm-text-muted)' }}>{t('rewards.sharedParentDecides')}</span>
                   ) : m.status === 'requested' && !buyingFor && (
-                    <button className="tq-btn tq-btn-secondary" onClick={() => { setCancelFailed(null); onCancel(m.id).catch(() => setCancelFailed(m.id)); }} style={{ padding: '4px 8px', fontSize: 10 }}>
+                    <button className="tq-btn tq-btn-secondary" onClick={() => { setCancelFailed(null); onCancel(m.id).catch(() => setCancelFailed(m.id)); }} style={{ padding: '4px 8px', fontSize: 12 }}>
                       {t('rewards.cancelRequest')}
                     </button>
                   )}

@@ -120,6 +120,13 @@ export const GUIDE_IT: GuideSection[] = [
         'Password: un genitore può impostarne una nuova se qualcuno dimentica la sua. La persona viene disconnessa da tutti i dispositivi e rientra con quella nuova.',
       ] },
       { tip: 'Attiva "Nascondi ai bambini le stanze private degli altri" in Impostazioni → Generale se i bambini non devono vedere, per esempio, la stanza personale di un genitore.' },
+      { h: 'Lo stile della famiglia' },
+      { where: 'Impostazioni → Stile (solo genitori)' },
+      { ul: [
+        'Un solo stile per tutta la famiglia: Fresco (predefinito: scheda di riepilogo con una tinta leggera, schede chiare), Avventura (un blocco di colore deciso in alto, pulsanti grossi, ogni faccenda nella sua tessera) o Sobrio (piatto, contorni sottili, colore usato con parsimonia).',
+        'Lo stile stabilisce le forme; il tema colore di ciascuno (Profilo) le riempie, quindi ogni tema va con ogni stile. La pagina mostra il tema di ognuno sotto le tre scelte.',
+        'Cambia subito su questo dispositivo e su quelli degli altri al prossimo aggiornamento dell’app. I backup lo conservano.',
+      ] },
       { h: 'Qualcuno che non accede' },
       { p: 'Per un nonno, un bimbo piccolo o chiunque non userà l’app: aggiungilo e fai tutto tu al posto suo, senza nome utente né password.' },
       { ul: [
@@ -175,9 +182,9 @@ export const GUIDE_IT: GuideSection[] = [
       { p: 'Le stanze contengono le faccende. Una stanza assegnata a una sola persona è sua: solo lei (e i genitori/membri) può fare le sue faccende, e non partecipa mai alle squadre.' },
       { ul: [
         'Crea una stanza nella pagina Stanze; un tipo di stanza aggiunge faccende suggerite tra cui scegliere.',
-        'Le zone raggruppano le stanze nella pagina Stanze (per esempio "Piano di sopra" o "Missioni dei genitori").',
+        'La pagina Stanze mostra un riquadro per stanza, prima le più urgenti: la sua salute, quante faccende ha e quante sono da fare oggi. Le zone raggruppano i riquadri (per esempio "Piano di sopra" o "Missioni dei genitori"); tocca l’etichetta di una zona in alto per vedere solo le sue stanze, o Mie per le tue. I genitori toccano ✏️ Modifica stanze per rinominare una stanza, metterla in una zona (🏷️), assegnarla a qualcuno o eliminarla, e per aggiungere, rinominare o eliminare zone.',
         'La salute di una stanza è la media delle sue faccende; la stanza messa peggio è quella per cui la mascotte chiede aiuto.',
-        'La barra di un’attività diventa rossa solo quando è in scadenza. Un’attività che non si può ancora svolgere (Completamento anticipato disattivato) si ferma al giallo, sia nella sua stanza sia sulla sua etichetta nella pagina Stanze.',
+        'La barra di un’attività diventa rossa solo quando è in scadenza. Un’attività che non si può ancora svolgere (Completamento anticipato disattivato) si ferma al giallo nella sua stanza.',
       ] },
     ],
   },
@@ -188,6 +195,8 @@ export const GUIDE_IT: GuideSection[] = [
     parents: true,
     blocks: [
       { where: 'Stanze → una stanza → Aggiungi attività, oppure ✏️ su una faccenda' },
+      { h: 'Il modulo della faccenda' },
+      { p: 'Aggiungi attività e ✏️ Modifica aprono lo stesso modulo: un pannello dal basso sul telefono, un pannello accanto all’elenco sul computer. È diviso in gruppi: nome, note e icona; Quando (Ogni, Il, Ogni mese o Una volta, oppure Su richiesta); Chi (Tutti, oppure tocca le persone, poi Chi prima arriva, Condiviso, Rotazione o Personalizzato); Impegno e monete; e Altre opzioni, chiuso, per passaggi, timer, data di inizio, stagione, salute e pausa. Altre opzioni mostra cosa c’è impostato, così niente resta nascosto. Salva resta in fondo anche scorrendo; Elimina attività è alla fine del modulo.' },
       { h: 'Pianificazione' },
       { ul: [
         'Ogni N giorni: scade di nuovo N giorni dopo l’ultima volta. La sua salute cala in quei giorni.',
@@ -202,7 +211,7 @@ export const GUIDE_IT: GuideSection[] = [
       ] },
       { h: 'Monete' },
       { ul: [
-        'Lo sforzo (1–5) determina le monete da Impostazioni → Monete per sforzo. Le monete personalizzate lo sostituiscono per una singola faccenda: compila la casella Monete personalizzate quando aggiungi o modifichi la faccenda, oppure lasciala su Auto.',
+        'Lo sforzo (1–5) determina le monete da Impostazioni → Monete per sforzo. Le monete personalizzate lo sostituiscono per una singola faccenda: compila la casella Monete in Impegno e monete quando aggiungi o modifichi la faccenda, oppure lasciala vuota per l’importo in base all’impegno.',
         'La Missione di salvataggio e gli eventi monete doppie le moltiplicano per quel giorno.',
       ] },
       { h: 'Chi può farla' },
@@ -245,7 +254,7 @@ export const GUIDE_IT: GuideSection[] = [
       ] },
       { h: 'Mettere in pausa una faccenda' },
       { ul: [
-        'Non serve per un po’ (la piscina d’inverno, un figlio al campo estivo)? I genitori aprono la faccenda nella sua stanza (toccandola), toccano ⋯ (Altre opzioni), poi ⏸️ Metti in pausa. Oppure aprono Modifica, spuntano ⏸️ In pausa e scelgono un giorno in Torna il (facoltativo), così si riattiva da sola.',
+        'Non serve per un po’ (la piscina d’inverno, un figlio al campo estivo)? I genitori aprono la faccenda nella sua stanza (toccandola), toccano ⋯ (Altre opzioni), poi ⏸️ Metti in pausa. Oppure aprono Modifica, poi Altre opzioni, attivano ⏸️ In pausa e scelgono un giorno in Torna il (facoltativo), così si riattiva da sola.',
         'Una faccenda in pausa sparisce da Oggi, dalla pagina Compiti, dal Calendario, dai promemoria, dalla Missione di salvataggio, dalle squadre e dalla salute della casa. I genitori la vedono ancora in grigio nella sua stanza, con ⏸️ In pausa; i figli non la vedono affatto.',
         'Apri la faccenda e tocca ⋯ → ▶️ Riattiva (o togli la spunta a ⏸️ In pausa). Torna come appena fatta, quindi non è in ritardo. Cronologia, monete e assegnatari restano uguali.',
       ] },
@@ -362,8 +371,8 @@ export const GUIDE_IT: GuideSection[] = [
         'Mascotte di casa: una di 8 creature, scelta e battezzata qui. Cresce con le monete di famiglia guadagnate mentre è la mascotte attiva (si schiude a 500, poi 2.000, 5.000 e 10.000), il suo umore segue la salute della casa e reagisce a compleanni, obiettivo di famiglia e Missione di salvataggio.',
         'Cambiare mascotte: scegliere una creatura che non hai mai avuto la fa partire come un uovo nuovo. Ogni creatura mantiene la sua crescita, il suo nome e il suo vestito, quindi tornare indietro la riporta esattamente com’era. La pancia e l’ora della nanna sono condivise.',
         'Giocare con la mascotte: toccala per una reazione. La sua pancia 🍪 si riempie del 5% a ogni faccenda (una squadra conta una volta) e si svuota in 2 giorni. Festeggia con un 🍪 e un saltello solo le faccende più grandi (sforzo da 3★ in su); quelle piccole la riempiono in silenzio; quando è vuota dice solo che ha fame. "Cosa faccio?" suggerisce una faccenda che puoi fare subito. Aggiunge un 🐾 di tifo alle faccende finite da 3★ in su. Dorme durante la nanna della famiglia (si imposta sotto la mascotte in Funzioni, dalle 21 alle 7 di base).',
-        'Negozio della mascotte (con il suo interruttore): chiunque può comprarle un accessorio da 1 a 5 monete. C’è un solo vestito condiviso e nessun armadio: un nuovo oggetto si indossa subito per tutti e sostituisce quello che c’era in quel punto (testa, viso, collo o schiena). Chi ha comprato un oggetto, o un genitore, può toglierlo gratis. Gli acquisti compaiono in Attività. Il negozio apre quando la mascotte si schiude. Spegnere il negozio nasconde negozio e vestito.',
-        'Stile delle feste: Halloween a ottobre, Ringraziamento a novembre, Natale a dicembre: colori, decorazioni, un conto alla rovescia e un costume per la mascotte. Ogni festa ha il suo interruttore e un pulsante Anteprima.',
+        'Negozio della mascotte (con la sua casella): chiunque può comprarle un accessorio da 1 a 5 monete. C’è un solo vestito condiviso e nessun armadio: un nuovo oggetto si indossa subito per tutti e sostituisce quello che c’era in quel punto (testa, viso, collo o schiena). Chi ha comprato un oggetto, o un genitore, può toglierlo gratis. Gli acquisti compaiono in Attività. Il negozio apre quando la mascotte si schiude. Spegnere il negozio nasconde negozio e vestito.',
+        'Stile delle feste: Halloween a ottobre, Ringraziamento a novembre, Natale a dicembre: colori, decorazioni, un conto alla rovescia e un costume per la mascotte. Ogni festa ha la sua casella e un pulsante Anteprima.',
       ] },
       { h: 'Scudi della serie' },
       { ul: [
@@ -461,7 +470,7 @@ export const GUIDE_IT: GuideSection[] = [
         'Per eliminare una faccenda, aprila con Modifica; Elimina attività è in fondo al modulo. Va in Impostazioni → Eliminati di recente per 30 giorni e da lì si può ripristinare. Le ricompense funzionano allo stesso modo.',
         'Eliminare non toglie mai monete né cancella quanto fatto: i completamenti passati continuano a comparire in Attività, nella Classifica e negli obiettivi con il nome della faccenda, anche dopo che esce da Eliminati di recente.',
         'Una ricompensa eliminata conserva la sua cronologia allo stesso modo: ciò che è stato comprato resta in Statistiche con il suo nome. Una richiesta ancora in attesa resta in Richieste ricompensa (sotto il catalogo), così un genitore può ancora approvarla o rifiutarla; rifiutandola le monete tornano indietro.',
-        'Eliminare una stanza (Stanze → 🗑) elimina anche le sue faccende, e la stanza non si può riportare indietro. La loro cronologia e le monete restano.',
+        'Eliminare una stanza (Stanze → ✏️ Modifica stanze → 🗑) elimina anche le sue faccende, e la stanza non si può riportare indietro. La loro cronologia e le monete restano.',
         'Eliminare un membro della famiglia (Elimina utente, in Impostazioni → Membri della famiglia) è irreversibile. La sua ricompensa condivisa ancora in attesa di un genitore viene prima rifiutata, così gli altri riavranno i loro contributi. Una ricompensa che solo quella persona poteva vedere viene nascosta invece di essere mostrata a tutti: tocca Mostra in Impostazioni → Catalogo ricompense se deve averla qualcun altro.',
       ] },
       { p: 'Le foto di prova seguono la loro faccenda: quando una faccenda esce da Eliminati di recente (o la sua stanza viene eliminata), anche le sue foto vengono eliminate, ma chi l’ha fatta e le monete restano. La foto avatar di una persona se ne va quando la persona viene rimossa.' },
@@ -535,7 +544,7 @@ export const GUIDE_IT: GuideSection[] = [
           'Le faccende libere hanno bisogno di "Mostra in Oggi" attivo.',
           'Fuori stagione (Solo in stagione) o con giorni della settimana fissi: oggi non scade.',
           'Ha una data di inizio (📅 Inizia il) non ancora arrivata: la sua stanza mostra «Inizia il …».',
-          'La tua Vista compiti potrebbe essere su "I miei" (l’interruttore sopra le liste), oppure un genitore l’ha impostata su "Solo i suoi".',
+          'La tua Vista compiti potrebbe essere su "I miei" (i pulsanti sopra le liste), oppure un genitore l’ha impostata su "Solo i suoi".',
           'Le faccende una tantum compaiono nel giorno della loro data "Da fare entro" (sotto Quando vuoi se non ce l’hanno), e spariscono una volta fatte.',
           'Potresti averla rimandata (💤): aspetta sotto "Mostra le … programmate" per 3 giorni. Toccala lì e Riporta ora, oppure tocca Annulla subito sul messaggio di rinvio.',
         ] },
@@ -647,6 +656,10 @@ export const GUIDE_IT: GuideSection[] = [
           'Festeggia (🍪 e un saltello) solo le faccende più grandi, con sforzo da 3★ in su, e una faccenda in attesa solo quando viene approvata. Quelle piccole riempiono comunque la sua pancia, in silenzio. Il suo 🐾 accanto a una faccenda finita segue la stessa regola.',
           'Ogni dispositivo mostra la festa una volta: un telefono che l’ha già vista non la ripete.',
         ] },
+        { q: 'L’app ha un aspetto diverso sul telefono di un altro familiare', a: [
+          'Lo stile (Impostazioni → Stile) è una sola scelta per tutta la famiglia, ma ogni dispositivo riceve la modifica quando ricarica Oggi: apri Oggi, oppure passa a un’altra app e torna indietro.',
+          'I colori sono personali: ognuno sceglie il proprio tema in Profilo, quindi lo stesso stile può essere arancione su un telefono e blu su un altro.',
+        ] },
         { q: 'Nessuna decorazione o colore delle feste', a: [
           'Impostazioni → Funzioni → Stile delle feste, e l’interruttore di quella festa, devono essere attivi. Segue la data del dispositivo.',
           'Profilo → Colori delle feste disattivato mantiene il tuo tema (le decorazioni si vedono comunque).',
@@ -740,7 +753,7 @@ export const GUIDE_IT: GuideSection[] = [
         ] },
         { q: 'La configurazione guidata non si è aperta, o voglio riaprirla', a: [
           'Si apre da sola solo per un genitore, finché la famiglia non ha stanze (la stanza Da fare non conta), fino a quando qualcuno la completa o tocca Non ora.',
-          'Aprila quando vuoi da Impostazioni → Configurazione guidata (sotto Aiuto). Riaprirla aggiunge soltanto, quindi elimina tu le stanze (Stanze → 🗑) o le ricompense che non vuoi.',
+          'Aprila quando vuoi da Impostazioni → Configurazione guidata (sotto Aiuto). Riaprirla aggiunge soltanto, quindi elimina tu le stanze (Stanze → ✏️ Modifica stanze → 🗑) o le ricompense che non vuoi.',
         ] },
         { q: 'Ogni bambino paga un prezzo diverso per la stessa ricompensa', a: [
           'La configurazione guidata ha dato a ognuno il suo prezzo, così tutti pagano più o meno le stesse settimane delle proprie attività: un bambino con più attività guadagna di più, quindi paga di più. Sotto la ricompensa si vede «prezzi propri».',

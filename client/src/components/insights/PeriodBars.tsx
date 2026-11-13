@@ -2,7 +2,7 @@ import { useWidth } from './useWidth';
 import { barHit, useUnpinOutside } from './useBarPick';
 import { formatValue, niceTicks, type Stacked } from './insightsData';
 
-const AXIS_W = 30;
+const AXIS_W = 36;
 const PLOT_H = 170;
 const TOP = 8;
 const X_BAND = 22;
@@ -86,7 +86,7 @@ export function PeriodBars({ labels, stacked, language, selected, hovered, onSel
           return (
             <g key={v}>
               {v > 0 && <line x1={AXIS_W} x2={width} y1={y} y2={y} stroke="var(--viz-grid)" strokeWidth={1} />}
-              <text x={AXIS_W - 6} y={y + 3.5} textAnchor="end" fontSize={10} fill="var(--warm-text-muted)">{formatValue(v, language, 1)}</text>
+              <text x={AXIS_W - 6} y={y + 3.5} textAnchor="end" fontSize={12} fill="var(--warm-text-muted)">{formatValue(v, language, 1)}</text>
             </g>
           );
         })}
@@ -116,7 +116,7 @@ export function PeriodBars({ labels, stacked, language, selected, hovered, onSel
         })}
 
         {labels.map((l, i) => (i % every === 0 ? (
-          <text key={i} x={AXIS_W + slot * (i + 0.5)} y={base + 15} textAnchor="middle" fontSize={10}
+          <text key={i} x={AXIS_W + slot * (i + 0.5)} y={base + 15} textAnchor="middle" fontSize={12}
             fill={shown === i ? 'var(--warm-text)' : 'var(--warm-text-muted)'} fontWeight={shown === i ? 700 : 400}>{l.axis}</text>
         ) : null))}
 

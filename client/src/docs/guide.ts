@@ -144,6 +144,13 @@ export const GUIDE_EN: GuideSection[] = [
         'Password: a parent can set a new one if someone forgets theirs. That signs the person out on every device, so they log in again with the new one.',
       ] },
       { tip: 'Turn on "Hide other people’s private rooms from kids" in Settings → General if kids shouldn’t see, say, a parent’s own room.' },
+      { h: 'The family’s look' },
+      { where: 'Settings → Look (parents only)' },
+      { ul: [
+        'One look for the whole family: Fresh (the default: a softly tinted summary card, light cards), Quest (a bold block of colour at the top, chunky buttons, every chore its own tile) or Calm (flat, thin outlines, colour used sparingly).',
+        'The look sets the shapes; each person’s colour theme (Profile) fills them in, so every theme works with every look. The page lists everyone’s theme under the three choices.',
+        'It changes on this device at once and on everyone else’s the next time their app refreshes. Backups keep it.',
+      ] },
       { h: 'Someone who doesn’t log in' },
       { p: 'For a grandparent, a toddler or anyone who won’t use the app: add them and do everything for them, with no username or password.' },
       { ul: [
@@ -199,9 +206,9 @@ export const GUIDE_EN: GuideSection[] = [
       { p: 'Rooms hold chores. A room assigned to one person is theirs: only they (and parents/members) can do its chores, and it never takes part in team-ups.' },
       { ul: [
         'Create a room on the Rooms page; a room type adds suggested chores you can pick from.',
-        'Zones group rooms on the Rooms page (for example "Upstairs" or "Parents’ Quests").',
+        'The Rooms page shows a tile per room, neediest first: its health, how many chores it has and how many are due today. Zones group the tiles (for example "Upstairs" or "Parents’ Quests"); tap a zone’s chip at the top to see only its rooms, or Mine for yours. Parents tap ✏️ Edit rooms to rename a room, move it to a zone (🏷️), assign it to someone or delete it, and to add, rename or delete zones.',
         'A room’s health is the average of its chores; the worst room is the one the mascot asks for help with.',
-        'A chore’s bar turns red only once it’s due. A chore that can’t be done yet (Allow early completion off) stops at yellow, both in its room and on its chip on the Rooms page.',
+        'A chore’s bar turns red only once it’s due. A chore that can’t be done yet (Allow early completion off) stops at yellow in its room.',
       ] },
     ],
   },
@@ -212,6 +219,8 @@ export const GUIDE_EN: GuideSection[] = [
     parents: true,
     blocks: [
       { where: 'Rooms → a room → Add Task, or the ✏️ on a chore' },
+      { h: 'The chore form' },
+      { p: 'Add Task and ✏️ Edit open the same form: a sheet from the bottom on a phone, a panel beside the list on a computer. It comes in groups: the name, notes and icon; When (Every, On, Monthly or One time, or On Demand); Who (Everyone, or tap the people, then First come, Shared, Rotating or Custom); Effort & coins; and More options, folded, for steps, the timer, a start date, the season, health and pausing. More options lists what’s set in it, so nothing hides there. Save stays at the bottom however far you scroll; Delete Task is at the end of the form.' },
       { h: 'Schedule' },
       { ul: [
         'Every N days: due again N days after it was last done. Its health falls over those days.',
@@ -226,7 +235,7 @@ export const GUIDE_EN: GuideSection[] = [
       ] },
       { h: 'Coins' },
       { ul: [
-        'Effort (1–5) sets the coins from Settings → Coins per effort. Custom coins override that for one chore: fill in the Custom coins box when you add the chore or edit it, or leave it on Auto.',
+        'Effort (1–5) sets the coins from Settings → Coins per effort. Custom coins override that for one chore: fill in the Coins box under Effort & coins when you add the chore or edit it, or leave it empty for the amount from the effort.',
         'Rescue Mission and double coins events multiply them on the day.',
       ] },
       { h: 'Who can do it' },
@@ -269,7 +278,7 @@ export const GUIDE_EN: GuideSection[] = [
       ] },
       { h: 'Pausing a chore' },
       { ul: [
-        'Not needed for a while (the pool in winter, a kid away at camp)? Parents open the chore in its room (tap it), tap ⋯ (More options), then ⏸️ Pause. Or open Edit, tick ⏸️ Paused and pick a day under Back on (optional) so it switches back on by itself.',
+        'Not needed for a while (the pool in winter, a kid away at camp)? Parents open the chore in its room (tap it), tap ⋯ (More options), then ⏸️ Pause. Or open Edit, open More options, switch on ⏸️ Paused and pick a day under Back on (optional) so it switches back on by itself.',
         'A paused chore leaves Today, the Tasks page, the Calendar, reminders, the Rescue Mission, team-ups and house health. Parents still see it greyed in its room, marked ⏸️ Paused; kids don’t see it at all.',
         'Open the chore and tap ⋯ → ▶️ Switch back on (or untick ⏸️ Paused). It comes back as if just done, so it isn’t overdue. Its history, coins and who it’s assigned to stay the same.',
       ] },
@@ -386,8 +395,8 @@ export const GUIDE_EN: GuideSection[] = [
         'House mascot: one of 8 creatures, picked and named here. It grows with the family coins earned while it’s the active mascot (hatches at 500, then 2,000, 5,000 and 10,000), its mood follows house health, and it reacts to birthdays, the family goal and the Rescue Mission.',
         'Swapping mascots: picking a creature you haven’t had starts it as a new egg. Each creature keeps its own growth, name and outfit, so switching back brings it back exactly as it was. The tummy and bedtime are shared.',
         'Playing with the mascot: tap it for a reaction. Its 🍪 tummy fills 5% with every chore (a team-up counts once) and empties over 2 days. It cheers with a 🍪 and a hop only for bigger chores (3★ effort or more); smaller ones fill it quietly; when it’s low it just says it’s hungry. "What should I do?" suggests a chore you can do right now. It adds a 🐾 cheer to finished chores of 3★ or more. It sleeps during the family bedtime (set under the mascot in Features, 9 pm to 7 am by default).',
-        'Mascot shop (its own switch): anyone can buy it an accessory for 1 to 5 coins. There’s one shared outfit and no closet: a new item goes on right away for everyone and replaces whatever was in that spot (head, face, neck or back). Whoever bought an item, or a parent, can take it off for free. Purchases show in Activity. The shop opens once the mascot hatches. Turning the shop off hides it and the outfit.',
-        'Seasonal styling: Halloween in October, Thanksgiving in November, Christmas in December: colors, decorations, a countdown and a costume for the mascot. Each holiday has its own switch and a Preview button.',
+        'Mascot shop (its own tick box): anyone can buy it an accessory for 1 to 5 coins. There’s one shared outfit and no closet: a new item goes on right away for everyone and replaces whatever was in that spot (head, face, neck or back). Whoever bought an item, or a parent, can take it off for free. Purchases show in Activity. The shop opens once the mascot hatches. Turning the shop off hides it and the outfit.',
+        'Seasonal styling: Halloween in October, Thanksgiving in November, Christmas in December: colors, decorations, a countdown and a costume for the mascot. Each holiday has its own tick box and a Preview button.',
       ] },
       { h: 'Streak shields' },
       { ul: [
@@ -485,7 +494,7 @@ export const GUIDE_EN: GuideSection[] = [
         'To delete a chore, open it with Edit; Delete task is at the bottom of the form. It goes to Settings → Recently deleted for 30 days and can be restored from there. Rewards work the same way.',
         'Deleting never takes coins away or erases what was done: past completions keep showing in Activity, the Board and goals under the chore’s name, even after it leaves Recently deleted.',
         'A deleted reward keeps its history the same way: what was bought before stays in Insights under its name. A request still waiting stays in Reward requests (under the catalog), so a parent can still approve it or turn it down, which gives the coins back.',
-        'Deleting a room (Rooms → 🗑) deletes its chores too, and the room can’t be brought back. Their history and coins stay.',
+        'Deleting a room (Rooms → ✏️ Edit rooms → 🗑) deletes its chores too, and the room can’t be brought back. Their history and coins stay.',
         'Deleting a family member (Delete user, in Settings → Family Members) can’t be undone. A shared reward of theirs that was still waiting for a parent is turned down first, so everyone else gets their chip-ins back. A reward that only they could see is hidden, not shown to everyone: tap Show in Settings → Rewards Catalog if someone else should have it.',
       ] },
       { p: 'Proof photos go with their chore: when a chore leaves Recently deleted (or its room is deleted), its photos are deleted too, while who did it and the coins stay. A person’s avatar photo goes when they’re removed.' },
@@ -548,7 +557,7 @@ export const GUIDE_EN: GuideSection[] = [
           'Some parts only show when they have something in them (approvals, team-ups, Next up, Any time, the Rescue Mission chip), and some are for parents only. Rooms, the Calendar and Recent Activity are only on their own pages now.',
         ] },
         { q: 'A parent is missing from the Board', a: [
-          'A parent with Participates in tasks off shows on the Board only in a period when they did a chore. To keep them on it, turn the switch on in Settings → Family Members. Each parent can switch it on their own card too. The standings on Today follow the same rule.',
+          'A parent with Participates in tasks off shows on the Board only in a period when they did a chore. To keep them on it, tick it in Settings → Family Members. Each parent can switch it on their own card too. The standings on Today follow the same rule.',
         ] },
         { q: 'One thing at a time is missing, or a chore isn’t in it', a: [
           'For parents and members it’s off unless it’s set in Settings → Family Members. Kids get it (the Next up card on Today) unless a parent turned it off there. It can also be hidden in Today → Customise (Next up), or switched off in Settings → Features.',
@@ -559,7 +568,7 @@ export const GUIDE_EN: GuideSection[] = [
           'Anytime chores need "Show on Today" turned on.',
           'Out of season (Only in season) or set weekdays: it isn’t due today.',
           'It has a start date (📅 Starts on) that hasn’t come yet: it shows “Starts …” in its room.',
-          'Your Task view may be on "Mine" (the switch above the lists), or a parent set it to "Only theirs".',
+          'Your Task view may be on "Mine" (the buttons above the lists), or a parent set it to "Only theirs".',
           'One-time chores show on their Do by day (under Any time when they have none), and are gone once done.',
           'You may have snoozed it (💤): it waits under "Show … scheduled" for 3 days. Tap it there and Bring back now, or Undo on the "Snoozed" message right away.',
         ] },
@@ -671,6 +680,10 @@ export const GUIDE_EN: GuideSection[] = [
           'It cheers (🍪 and a hop) only for bigger chores, 3★ effort or more, and only once a waiting chore is approved. Smaller chores still fill its tummy, quietly. Its 🐾 next to a finished chore follows the same rule.',
           'Each device shows the cheer once: a phone that already saw it won’t cheer again.',
         ] },
+        { q: 'The app looks different on another family member’s phone', a: [
+          'The look (Settings → Look) is one choice for the whole family, but each device picks up a change when it next loads Today: open Today, or switch to another app and back.',
+          'Colours are personal: each person picks their theme in Profile, so the same look can be orange on one phone and blue on another.',
+        ] },
         { q: 'No holiday decorations or colors', a: [
           'Settings → Features → Seasonal styling, and that holiday’s own switch, must be on. It follows the device’s date.',
           'Profile → Holiday colors off keeps your own theme (decorations still show).',
@@ -764,7 +777,7 @@ export const GUIDE_EN: GuideSection[] = [
         ] },
         { q: 'The setup wizard didn’t open, or I want it again', a: [
           'It opens by itself only for a parent, while the family has no rooms yet (the To-dos room doesn’t count), until someone finishes it or taps Not now.',
-          'Open it any time from Settings → Setup wizard (under Help). Running it again only adds, so delete rooms (Rooms → 🗑) or rewards you don’t want yourself.',
+          'Open it any time from Settings → Setup wizard (under Help). Running it again only adds, so delete rooms (Rooms → ✏️ Edit rooms → 🗑) or rewards you don’t want yourself.',
         ] },
         { q: 'Each kid pays a different price for the same reward', a: [
           'The setup wizard gave each person their own price, so everyone pays about the same weeks of their own chores: a kid with more chores earns more, so pays more. It shows as “own prices” under the reward.',

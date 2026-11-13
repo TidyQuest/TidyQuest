@@ -111,23 +111,23 @@ export function Achievements({ data, language }: Props) {
     const tier = top ? tierIndex(sorted.indexOf(top)) : -1;
     return (
       <div key={metric} style={card(!!top)}>
-        <div style={{ fontSize: 10, fontWeight: 800, color: 'var(--warm-text-light)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>{t(`badges.ladder_${metric}`)}</div>
+        <div style={{ fontSize: 12, fontWeight: 800, color: 'var(--warm-text-light)' }}>{t(`badges.ladder_${metric}`)}</div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, margin: '4px 0' }}>
           <AchievementIcon type={(top ?? sorted[0]).icon} />
           <div style={{ fontSize: 13, fontWeight: 800, color: 'var(--warm-text)', flex: 1, minWidth: 0 }}>{top ? badgeTitle(top, t) : t('badges.notStarted')}</div>
           {top && (
-            <span style={{ fontSize: 10, fontWeight: 900, color: '#fff', backgroundColor: TIER_COLORS[tier], padding: '2px 8px', borderRadius: 99 }}>{t(TIER_KEYS[tier])}</span>
+            <span style={{ fontSize: 12, fontWeight: 900, color: '#fff', backgroundColor: TIER_COLORS[tier], padding: '2px 8px', borderRadius: 99 }}>{t(TIER_KEYS[tier])}</span>
           )}
         </div>
-        {top && <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--warm-text-light)' }}>{earnedOn(top.unlockedAt)}</div>}
+        {top && <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--warm-text-light)' }}>{earnedOn(top.unlockedAt)}</div>}
         {next ? (
           <>
             {bar(next.progress, 'var(--warm-coin)')}
-            <div style={{ fontSize: 10, color: 'var(--warm-text-light)', fontWeight: 700 }}>
+            <div style={{ fontSize: 12, color: 'var(--warm-text-light)', fontWeight: 700 }}>
               {t('badges.nextStep').replace('{name}', badgeTitle(next, t))} · {next.value}/{next.threshold}
             </div>
           </>
-        ) : <div style={{ fontSize: 11, fontWeight: 800, color: 'var(--health-green)', marginTop: 6 }}>{t('badges.ladderDone')}</div>}
+        ) : <div style={{ fontSize: 12, fontWeight: 800, color: 'var(--health-green)', marginTop: 6 }}>{t('badges.ladderDone')}</div>}
         <div style={{ display: 'flex', gap: 4, marginTop: 8 }} aria-hidden>
           {sorted.map((a, i) => (
             <span key={a.id} title={`${badgeTitle(a, t)} (${a.threshold})`} style={{
@@ -147,11 +147,11 @@ export function Achievements({ data, language }: Props) {
         <div style={{ fontSize: 13, fontWeight: 800, color: 'var(--warm-text)', flex: 1, minWidth: 0, overflowWrap: 'anywhere' }}>{badgeTitle(a, t)}</div>
         {a.custom && <span title={t('badges.familyBadge')} style={{ fontSize: 12 }}>🏠</span>}
       </div>
-      <div style={{ fontSize: 11, color: 'var(--warm-text-muted)', fontWeight: 600 }}>{badgeDescription(a, t)}</div>
+      <div style={{ fontSize: 12, color: 'var(--warm-text-muted)', fontWeight: 600 }}>{badgeDescription(a, t)}</div>
       {!(a.secret && !a.unlocked) && (
         <>
           {bar(a.unlocked ? 100 : a.progress, a.unlocked ? 'var(--health-green)' : 'var(--warm-coin)')}
-          <div style={{ display: 'flex', justifyContent: 'space-between', gap: 6, flexWrap: 'wrap', fontSize: 10, color: 'var(--warm-text-light)', fontWeight: 700 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', gap: 6, flexWrap: 'wrap', fontSize: 12, color: 'var(--warm-text-light)', fontWeight: 700 }}>
             <span>{a.unlocked ? earnedOn(a.unlockedAt) : `${a.value}/${a.threshold}`}</span>
             {(a.bonusCoins ?? 0) > 0 && <span style={{ color: a.unlocked ? 'var(--health-green)' : 'var(--warm-accent)' }}>+{a.bonusCoins} {t('settings.coins')}</span>}
           </div>
@@ -174,7 +174,7 @@ export function Achievements({ data, language }: Props) {
       <div key={u.id} className="tq-card tq-card-padded" style={{ display: 'grid', gap: 14 }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
           <h3 style={{ fontSize: 15, fontWeight: 900, color: 'var(--warm-text)', margin: 0 }}>{u.displayName}</h3>
-          <span style={{ fontSize: 11, fontWeight: 800, color: 'var(--warm-accent)', backgroundColor: 'var(--warm-accent-light)', padding: '4px 12px', borderRadius: 99 }}>
+          <span style={{ fontSize: 12, fontWeight: 800, color: 'var(--warm-accent)', backgroundColor: 'var(--warm-accent-light)', padding: '4px 12px', borderRadius: 99 }}>
             {earned}/{u.achievements.length}
           </span>
         </div>

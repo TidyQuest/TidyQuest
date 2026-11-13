@@ -69,7 +69,7 @@ export function PageHeader({ title, subtitle, user, onCoinsClick, onStreakClick,
             className="ph-button"
             style={{
               display: 'flex', alignItems: 'center', gap: 6,
-              backgroundColor: 'var(--warm-accent-light)', borderRadius: 14, padding: '8px 14px',
+              backgroundColor: 'var(--warm-accent-light)', borderRadius: 'var(--shape-radius-control)', padding: '8px 14px',
               border: '1.5px solid var(--warm-streak-border)', cursor: 'pointer',
               color: 'var(--warm-streak-text)', fontFamily: 'Nunito', fontSize: 14, fontWeight: 800,
             }}
@@ -80,7 +80,7 @@ export function PageHeader({ title, subtitle, user, onCoinsClick, onStreakClick,
         )}
         {addLabel && (
           <button onClick={fireHeaderAdd} aria-label={addLabel} title={addLabel} className="ph-button ph-add ph-phone"
-            style={{ alignItems: 'center', justifyContent: 'center', backgroundColor: 'var(--warm-accent)', color: '#fff', border: 'none', borderRadius: 14, cursor: 'pointer' }}>
+            style={{ alignItems: 'center', justifyContent: 'center', backgroundColor: 'var(--warm-accent)', color: '#fff', border: 'none', borderRadius: 'var(--shape-radius-control)', cursor: 'pointer' }}>
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
               <path d="M10 4V16M4 10H16" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" />
             </svg>
@@ -102,7 +102,7 @@ export function PageHeader({ title, subtitle, user, onCoinsClick, onStreakClick,
           className="ph-streak"
           style={{
           display: 'flex', alignItems: 'center', gap: 6,
-          backgroundColor: 'var(--warm-accent-light)', borderRadius: 14, padding: '8px 16px',
+          backgroundColor: 'var(--warm-accent-light)', borderRadius: 'var(--shape-radius-control)', padding: '8px 16px',
           border: '1.5px solid var(--warm-streak-border)',
           cursor: onStreakClick ? 'pointer' : 'default',
         }}>
@@ -124,7 +124,7 @@ export function PageHeader({ title, subtitle, user, onCoinsClick, onStreakClick,
           className="ph-coins"
           style={{
           display: 'flex', alignItems: 'center', gap: 6,
-          backgroundColor: 'var(--warm-accent-light)', borderRadius: 14, padding: '8px 16px',
+          backgroundColor: 'var(--warm-accent-light)', borderRadius: 'var(--shape-radius-control)', padding: '8px 16px',
           border: '1.5px solid var(--warm-streak-border)',
           cursor: onCoinsClick ? 'pointer' : 'default',
         }}>
@@ -145,14 +145,14 @@ export function PageHeader({ title, subtitle, user, onCoinsClick, onStreakClick,
           className="ph-points"
           style={{
           display: 'flex', alignItems: 'center', gap: 6,
-          backgroundColor: 'var(--warm-accent-light)', borderRadius: 14, padding: '8px 16px',
+          backgroundColor: 'var(--warm-accent-light)', borderRadius: 'var(--shape-radius-control)', padding: '8px 16px',
           border: '1.5px solid var(--warm-streak-border)',
           cursor: onPointsClick ? 'pointer' : 'default',
         }}>
           <PointsIcon />
           <span style={{ fontSize: 15, fontWeight: 800, color: 'var(--warm-streak-text)' }}>{formatCoins(userPoints ?? user.points)}</span>
           {pointsPeriodLabel && (
-            <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--warm-text-light)', textTransform: 'uppercase' }}>{pointsPeriodLabel}</span>
+            <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--warm-text-light)' }}>{pointsPeriodLabel}</span>
           )}
         </div>
         </>

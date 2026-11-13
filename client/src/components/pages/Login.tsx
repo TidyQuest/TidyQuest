@@ -97,7 +97,7 @@ export function Login({ onLogin, onSwitchToRegister, hosted = false, onSignUp }:
       <div className="tq-card auth-card" style={{ padding: 40, width: 380, maxWidth: 'calc(100vw - 24px)' }}>
         <div style={{ textAlign: 'center', marginBottom: 28 }}>
           <div style={{
-            width: 56, height: 56, borderRadius: 18, margin: '0 auto 14px',
+            width: 56, height: 56, borderRadius: 'var(--shape-radius-card)', margin: '0 auto 14px',
             background: 'var(--warm-streak-bg)',
             border: '1.5px solid var(--warm-streak-border)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -114,7 +114,7 @@ export function Login({ onLogin, onSwitchToRegister, hosted = false, onSignUp }:
               localStorage.setItem('tidyquest_auth_lang', v);
             }}
             style={{
-              marginTop: 10, padding: '6px 10px', borderRadius: 10, border: '1.5px solid var(--warm-border)',
+              marginTop: 10, padding: '6px 10px', borderRadius: 10, border: 'var(--shape-border-w) solid var(--warm-border)',
               fontSize: 12, fontFamily: 'Nunito', fontWeight: 700, color: 'var(--warm-text-secondary)', backgroundColor: 'var(--warm-bg-subtle)',
             }}
           >
@@ -129,7 +129,7 @@ export function Login({ onLogin, onSwitchToRegister, hosted = false, onSignUp }:
 
         {avatarUsers.length > 0 && !selectedUser && (
           <div style={{ marginBottom: 20 }}>
-            <p style={{ fontSize: 11, fontWeight: 700, color: 'var(--warm-text-light)', textAlign: 'center', marginBottom: 12 }}>
+            <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--warm-text-light)', textAlign: 'center', marginBottom: 12 }}>
               {t('auth.selectUser')}
             </p>
             <div style={{
@@ -142,7 +142,7 @@ export function Login({ onLogin, onSwitchToRegister, hosted = false, onSignUp }:
                   onClick={() => handleAvatarClick(u)}
                   style={{
                     display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
-                    padding: '10px 8px', borderRadius: 14, border: '1.5px solid var(--warm-border)',
+                    padding: '10px 8px', borderRadius: 14, border: 'var(--shape-border-w) solid var(--warm-border)',
                     backgroundColor: 'var(--warm-bg-subtle)', cursor: 'pointer',
                     minWidth: 72, transition: 'all 0.15s ease', fontFamily: 'Nunito',
                   }}
@@ -163,7 +163,7 @@ export function Login({ onLogin, onSwitchToRegister, hosted = false, onSignUp }:
                     avatarPreset={u.avatarPreset}
                     avatarPhotoUrl={u.avatarPhotoUrl}
                   />
-                  <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--warm-text)' }}>
+                  <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--warm-text)' }}>
                     {u.displayName}
                   </span>
                 </button>
@@ -175,7 +175,7 @@ export function Login({ onLogin, onSwitchToRegister, hosted = false, onSignUp }:
                 onClick={() => setSelectedUser('')}
                 style={{
                   background: 'none', border: 'none', color: 'var(--warm-text-light)',
-                  fontSize: 11, fontWeight: 600, cursor: 'pointer', fontFamily: 'Nunito',
+                  fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: 'Nunito',
                   textDecoration: 'underline',
                 }}
               >
@@ -208,7 +208,7 @@ export function Login({ onLogin, onSwitchToRegister, hosted = false, onSignUp }:
                         onClick={() => { setSelectedUser(null); setUsername(''); setPassword(''); setError(''); }}
                         style={{
                           background: 'none', border: 'none', color: 'var(--warm-text-light)',
-                          fontSize: 11, fontWeight: 600, cursor: 'pointer', fontFamily: 'Nunito',
+                          fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: 'Nunito',
                           textDecoration: 'underline',
                         }}
                       >
@@ -237,7 +237,7 @@ export function Login({ onLogin, onSwitchToRegister, hosted = false, onSignUp }:
                   className="tq-input" style={{ backgroundColor: 'var(--warm-bg-subtle)' }}
                   placeholder={t('hosted.familyCodePlaceholder')} autoCapitalize="none" autoCorrect="off" spellCheck={false}
                 />
-                <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--warm-text-light)', marginTop: 4 }}>{t('hosted.familyCodeHelp')}</div>
+                <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--warm-text-light)', marginTop: 4 }}>{t('hosted.familyCodeHelp')}</div>
               </div>
             ) : (
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, marginBottom: 14, fontSize: 12, fontWeight: 700, color: 'var(--warm-text-secondary)' }}>
@@ -265,7 +265,7 @@ export function Login({ onLogin, onSwitchToRegister, hosted = false, onSignUp }:
               {showForgot && hosted && (
                 <div id="forgot-password-help" style={{
                   marginTop: 4, padding: '10px 12px', borderRadius: 12, backgroundColor: 'var(--warm-bg-subtle)',
-                  border: '1.5px solid var(--warm-border)', fontSize: 12, fontWeight: 600,
+                  border: 'var(--shape-border-w) solid var(--warm-border)', fontSize: 12, fontWeight: 600,
                   color: 'var(--warm-text-secondary)', lineHeight: 1.5, display: 'grid', gap: 8,
                 }}>
                   <p style={{ margin: 0 }}>{t('hosted.forgotParents')}</p>
@@ -293,7 +293,7 @@ export function Login({ onLogin, onSwitchToRegister, hosted = false, onSignUp }:
               {showForgot && !hosted && (
                 <div id="forgot-password-help" style={{
                   marginTop: 4, padding: '10px 12px', borderRadius: 12, backgroundColor: 'var(--warm-bg-subtle)',
-                  border: '1.5px solid var(--warm-border)', fontSize: 12, fontWeight: 600,
+                  border: 'var(--shape-border-w) solid var(--warm-border)', fontSize: 12, fontWeight: 600,
                   color: 'var(--warm-text-secondary)', lineHeight: 1.5,
                 }}>
                   <p style={{ margin: 0 }}>{t('auth.forgotAskParent')}</p>

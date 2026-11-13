@@ -698,7 +698,18 @@
       "zoneCreated": "Zone created",
       "deleteRoomConfirmEmpty": "Delete “{room}”? This can't be undone.",
       "deleteRoomConfirmOne": "Delete “{room}” and its 1 chore? This can't be undone. Coins already earned and the history stay.",
-      "deleteRoomConfirmMany": "Delete “{room}” and its {n} chores? This can't be undone. Coins already earned and the history stay."
+      "deleteRoomConfirmMany": "Delete “{room}” and its {n} chores? This can't be undone. Coins already earned and the history stay.",
+      "allRooms": "All rooms",
+      "mineChip": "Mine",
+      "choreOne": "1 chore",
+      "choreMany": "{n} chores",
+      "dueCount": "{n} due",
+      "allDone": "all done",
+      "noChores": "no chores yet",
+      "editRooms": "Edit rooms",
+      "doneEditing": "Done",
+      "neediestFirst": "neediest first",
+      "zoneChips": "Show rooms"
     },
     "common": {
       "save": "Save",
@@ -2515,6 +2526,46 @@
       "urgentFirst": "Most urgent first",
       "showLater": "Show {n} more · later",
       "noneHere": "No chores here."
+    },
+    "choreForm": {
+      "titleAdd": "Add a chore",
+      "titleEdit": "Edit chore",
+      "when": "When",
+      "who": "Who",
+      "effortCoins": "Effort & coins",
+      "more": "More options",
+      "moreHint": "Steps · timer · start date · season · health · pause",
+      "moreHintAdd": "Steps · timer · start date · season · health",
+      "onDemandHint": "No schedule: do it when it's needed",
+      "everyone": "Everyone",
+      "specific": "Specific people",
+      "everyoneHint": "Anyone can do it; the first to finish gets the coins.",
+      "pickPeople": "Tap the people who do this chore.",
+      "firstCome": "First come",
+      "firstHint": "Any of them can do it; the first to finish gets the coins.",
+      "sharedHint": "Each of them does their part and gets an even share of the coins.",
+      "customHint": "Each of them gets the share of the coins you set.",
+      "coins": "Coins",
+      "coinsAuto": "Leave empty for {coins} from the effort",
+      "roomOwnerHint": "set for the whole room",
+      "sumSteps": "{n} steps",
+      "sumTimer": "{n}-min timer",
+      "sumStart": "starts later",
+      "sumSeason": "seasonal",
+      "sumPaused": "paused"
+    },
+    "look": {
+      "title": "Look",
+      "lede": "One look for the whole family. Only parents (admins) can change it, and it changes on everyone's devices the next time their app refreshes.",
+      "fresh": "Fresh",
+      "freshDesc": "Soft tinted summary card, light cards. Closest to how TidyQuest has always looked.",
+      "quest": "Quest",
+      "questDesc": "Bold block of colour at the top, chunky buttons, every chore its own tile. Game feel.",
+      "calm": "Calm",
+      "calmDesc": "Flat, thin outlines, colour used sparingly.",
+      "coloursTitle": "Colours stay personal",
+      "coloursNote": "The look sets the shapes. Each person's colour theme, picked in their profile, fills them in, so the drawings above are in your colours.",
+      "saveFailed": "Couldn't save the look. Check the connection and try again."
     }
   }
 }

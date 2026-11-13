@@ -830,10 +830,10 @@ const Dashboard: React.FC<DashboardProps> = ({
         <div className="tq-card tq-card-padded today-panel">
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6, flexWrap: 'wrap' }}>
             <div style={{ fontSize: 14, fontWeight: 800, color: 'var(--warm-text)' }}>{myGoal.title || t('dashboard.myGoal')}</div>
-            {myGoal.completed && <span style={{ fontSize: 11, fontWeight: 800, color: 'var(--health-green)' }}>{t('dashboard.goalCompleted')}</span>}
+            {myGoal.completed && <span style={{ fontSize: 12, fontWeight: 800, color: 'var(--health-green)' }}>{t('dashboard.goalCompleted')}</span>}
           </div>
           {(myGoal.goalStartAt || myGoal.goalEndAt) && (
-            <div style={{ fontSize: 11, color: 'var(--warm-text-light)', fontWeight: 700, marginBottom: 8 }}>
+            <div style={{ fontSize: 12, color: 'var(--warm-text-light)', fontWeight: 700, marginBottom: 8 }}>
               {(myGoal.goalStartAt ? new Date(myGoal.goalStartAt).toLocaleDateString(localeFor(language)) : '...')} - {(myGoal.goalEndAt ? new Date(myGoal.goalEndAt).toLocaleDateString(localeFor(language)) : '...')}
             </div>
           )}
@@ -894,7 +894,7 @@ const Dashboard: React.FC<DashboardProps> = ({
                   <div style={{ fontSize: 13, fontWeight: 800, color: 'var(--warm-text)' }}>{rr.displayName}</div>
                   <div style={{ fontSize: 12, color: 'var(--warm-text-light)', fontWeight: 700, overflowWrap: 'anywhere' }}>{rr.title}</div>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 6, marginTop: 6, flexWrap: 'wrap' }}>
-                    <span style={{ fontSize: 11, color: 'var(--warm-text-light)', fontWeight: 700 }}>{timeAgo(rr.redeemedAt)}</span>
+                    <span style={{ fontSize: 12, color: 'var(--warm-text-light)', fontWeight: 700 }}>{timeAgo(rr.redeemedAt)}</span>
                     <span style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
                       <span style={{ display: 'inline-flex', alignItems: 'center', gap: 3, fontSize: 12, fontWeight: 800, color: 'var(--warm-accent)' }}><CoinIcon /> {rr.costCoins}</span>
                       <button className="tq-btn tq-btn-secondary tq-btn-sm" onClick={() => onRewardRequestAction(rr.id, 'approved')}>{t('dashboard.approve')}</button>
@@ -956,7 +956,7 @@ const Dashboard: React.FC<DashboardProps> = ({
     <section className="tq-card today-next">
       <div className="today-next-head">
         <span>🎯 {t('today.nextUp')}</span>
-        {onOpenFocus && <button type="button" className="today-link" onClick={onOpenFocus}>{t('focus.title')} ›</button>}
+        {onOpenFocus && <button type="button" className="today-link" onClick={onOpenFocus}>{t('focus.title')}</button>}
       </div>
       <div className="chore-list">{questRow(nextUp, { key: `n-${nextUp.id}`, noTick: true, highlight: missionTask(nextUp) })}</div>
       <div className="today-next-acts">

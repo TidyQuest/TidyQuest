@@ -120,6 +120,13 @@ export const GUIDE_NL: GuideSection[] = [
         'Wachtwoord: een ouder kan een nieuw wachtwoord instellen als iemand het vergeten is. Diegene wordt dan op elk apparaat uitgelogd en logt weer in met het nieuwe.',
       ] },
       { tip: 'Zet "Privékamers van anderen verbergen voor kinderen" aan in Instellingen → Algemeen als kinderen bijvoorbeeld de eigen kamer van een ouder niet mogen zien.' },
+      { h: 'De stijl van het gezin' },
+      { where: 'Instellingen → Stijl (alleen ouders)' },
+      { ul: [
+        'Eén stijl voor het hele gezin: Fris (standaard: licht getinte overzichtskaart, lichte kaarten), Avontuur (een stevig kleurblok bovenaan, dikke knoppen, elke klus een eigen tegel) of Rustig (vlak, dunne lijnen, spaarzaam met kleur).',
+        'De stijl bepaalt de vormen; ieders kleurthema (Profiel) vult ze in, dus elk thema werkt met elke stijl. De pagina toont onder de drie keuzes ieders thema.',
+        'Hij verandert meteen op dit apparaat, en op dat van de anderen zodra hun app de volgende keer ververst. Back-ups bewaren hem.',
+      ] },
       { h: 'Iemand die niet inlogt' },
       { p: 'Voor een opa of oma, een peuter of iedereen die de app niet gebruikt: voeg ze toe en doe alles voor ze, zonder gebruikersnaam of wachtwoord.' },
       { ul: [
@@ -175,9 +182,9 @@ export const GUIDE_NL: GuideSection[] = [
       { p: 'Kamers bevatten klusjes. Een kamer die aan één persoon is toegewezen is van die persoon: alleen die persoon (en ouders/leden) kan de klusjes daar doen, en de kamer doet nooit mee aan Samen doen.' },
       { ul: [
         'Maak een kamer aan op de pagina Kamers; een kamertype voegt voorgestelde klusjes toe waaruit je kunt kiezen.',
-        'Zones groeperen kamers op de pagina Kamers (bijvoorbeeld "Boven" of "Ouderquests").',
+        'De pagina Kamers toont een tegel per kamer, de meest dringende eerst: de gezondheid, hoeveel klusjes er zijn en hoeveel er vandaag te doen zijn. Zones groeperen de tegels (bijvoorbeeld "Boven" of "Ouderquests"); tik bovenaan op het label van een zone om alleen die kamers te zien, of op Mijn voor de jouwe. Ouders tikken op ✏️ Kamers bewerken om een kamer te hernoemen, in een zone te zetten (🏷️), aan iemand toe te wijzen of te verwijderen, en om zones toe te voegen, te hernoemen of te verwijderen.',
         'De gezondheid van een kamer is het gemiddelde van de klusjes; de slechtste kamer is die waarvoor de mascotte om hulp vraagt.',
-        'De balk van een klusje wordt pas rood als het aan de beurt is. Een klusje dat nog niet kan (Vroegtijdig afronden toestaan uit) blijft geel, in de kamer en op zijn label op de pagina Kamers.',
+        'De balk van een klusje wordt pas rood als het aan de beurt is. Een klusje dat nog niet kan (Vroegtijdig afronden toestaan uit) blijft geel in de kamer.',
       ] },
     ],
   },
@@ -188,6 +195,8 @@ export const GUIDE_NL: GuideSection[] = [
     parents: true,
     blocks: [
       { where: 'Kamers → een kamer → Klusje Toevoegen, of de ✏️ bij een klusje' },
+      { h: 'Het klusjesformulier' },
+      { p: 'Klusje Toevoegen en ✏️ Aanpassen openen hetzelfde formulier: op een telefoon een venster van onderen, op een computer een paneel naast de lijst. Het is in groepen ingedeeld: naam, notities en pictogram; Wanneer (Elke, Op, Maandelijks of Eenmalig, of Wanneer nodig); Wie (Iedereen, of tik de mensen aan, en dan Wie het eerst komt, Samen delen, Om de beurt of Aangepast); Moeite & munten; en Meer opties, ingeklapt, voor stappen, de timer, een startdatum, het seizoen, de staat en pauzeren. Meer opties laat zien wat erin is ingesteld, zodat er niets verstopt zit. Opslaan blijft onderaan, hoe ver je ook scrolt; Klusje verwijderen staat aan het eind van het formulier.' },
       { h: 'Schema' },
       { ul: [
         'Om de N dagen: weer aan de beurt N dagen nadat het voor het laatst is gedaan. De gezondheid daalt in die dagen.',
@@ -202,7 +211,7 @@ export const GUIDE_NL: GuideSection[] = [
       ] },
       { h: 'Munten' },
       { ul: [
-        'Moeite (1–5) bepaalt de munten volgens Instellingen → Munten per klusje. Eigen munten gaan daar voor één klusje boven: vul het vak Eigen muntenwaarde in als je het klusje toevoegt of bewerkt, of laat het op Automatisch.',
+        'Moeite (1–5) bepaalt de munten volgens Instellingen → Munten per klusje. Eigen munten gaan daar voor één klusje boven: vul het vak Munten onder Moeite & munten in als je het klusje toevoegt of bewerkt, of laat het leeg voor het bedrag op basis van de moeite.',
         'De Reddingsmissie en dubbele-muntenacties vermenigvuldigen ze op die dag.',
       ] },
       { h: 'Wie het kan doen' },
@@ -245,7 +254,7 @@ export const GUIDE_NL: GuideSection[] = [
       ] },
       { h: 'Een klusje pauzeren' },
       { ul: [
-        'Even niet nodig (het zwembad in de winter, een kind op kamp)? Ouders openen het klusje in zijn kamer (erop tikken), tikken op ⋯ (Meer opties) en dan op ⏸️ Pauzeren. Of ze openen Aanpassen, vinken ⏸️ Gepauzeerd aan en kiezen een dag bij Weer aan op (optioneel), zodat het vanzelf weer aan gaat.',
+        'Even niet nodig (het zwembad in de winter, een kind op kamp)? Ouders openen het klusje in zijn kamer (erop tikken), tikken op ⋯ (Meer opties) en dan op ⏸️ Pauzeren. Of ze openen Aanpassen, dan Meer opties, zetten ⏸️ Gepauzeerd aan en kiezen een dag bij Weer aan op (optioneel), zodat het vanzelf weer aan gaat.',
         'Een gepauzeerd klusje verdwijnt van Vandaag, de Taken-pagina, de kalender, herinneringen, de reddingsmissie, team-ups en de gezondheid van het huis. Ouders zien het nog grijs in zijn kamer, met ⏸️ Gepauzeerd; kinderen zien het helemaal niet.',
         'Open het klusje en tik op ⋯ → ▶️ Weer aanzetten (of vink ⏸️ Gepauzeerd uit). Het komt terug alsof het net gedaan is, dus niet te laat. De geschiedenis, munten en wie het doet blijven hetzelfde.',
       ] },
@@ -362,8 +371,8 @@ export const GUIDE_NL: GuideSection[] = [
         'Huismascotte: een van de 8 wezentjes, hier gekozen en een naam gegeven. Het groeit mee met de gezinsmunten die verdiend worden zolang het de actieve mascotte is (komt uit bij 500, daarna 2.000, 5.000 en 10.000), de stemming volgt de huisgezondheid en het reageert op verjaardagen, het gezinsdoel en de Reddingsmissie.',
         'Van mascotte wisselen: kies je een wezentje dat je nog niet had, dan begint het als nieuw ei. Elk wezentje houdt zijn eigen groei, naam en outfit, dus terugwisselen brengt het precies terug zoals het was. Het buikje en de bedtijd worden gedeeld.',
         'Spelen met de mascotte: tik erop voor een reactie. Het 🍪-buikje vult zich 5% bij elk klusje (Samen doen telt één keer) en loopt in 2 dagen leeg. Alleen bij grotere klusjes (moeite 3★ of meer) juicht de mascotte met een 🍪 en een sprongetje; kleinere vullen het buikje stilletjes; als het laag is zegt de mascotte gewoon dat hij honger heeft. "Wat zal ik doen?" stelt een klusje voor dat je nu kunt doen. Bij afgeronde klusjes van 3★ of meer komt een 🐾-aanmoediging. Tijdens de bedtijd van het gezin slaapt de mascotte (in te stellen onder de mascotte bij Functies, standaard 21.00 tot 7.00 uur).',
-        'Mascottewinkel (eigen schakelaar): iedereen kan een accessoire voor de mascotte kopen voor 1 tot 5 munten. Er is één gedeelde outfit en geen kledingkast: een nieuw item gaat meteen aan voor iedereen en vervangt wat er op die plek zat (hoofd, gezicht, nek of rug). Wie een item kocht, of een ouder, kan het gratis uitdoen. Aankopen staan in Activiteit. De winkel gaat open zodra de mascotte uitkomt. Als je de winkel uitzet, verdwijnen de winkel en de outfit.',
-        'Feestdagenlook: Halloween in oktober, Thanksgiving in november, Kerst in december: kleuren, versieringen, een aftelling en een kostuum voor de mascotte. Elke feestdag heeft een eigen schakelaar en een knop Voorbeeld.',
+        'Mascottewinkel (eigen vinkje): iedereen kan een accessoire voor de mascotte kopen voor 1 tot 5 munten. Er is één gedeelde outfit en geen kledingkast: een nieuw item gaat meteen aan voor iedereen en vervangt wat er op die plek zat (hoofd, gezicht, nek of rug). Wie een item kocht, of een ouder, kan het gratis uitdoen. Aankopen staan in Activiteit. De winkel gaat open zodra de mascotte uitkomt. Als je de winkel uitzet, verdwijnen de winkel en de outfit.',
+        'Feestdagenlook: Halloween in oktober, Thanksgiving in november, Kerst in december: kleuren, versieringen, een aftelling en een kostuum voor de mascotte. Elke feestdag heeft een eigen vinkje en een knop Voorbeeld.',
       ] },
       { h: 'Reeksschilden' },
       { ul: [
@@ -461,7 +470,7 @@ export const GUIDE_NL: GuideSection[] = [
         'Om een klusje te verwijderen open je het met Bewerken; Klusje verwijderen staat onderaan het formulier. Het gaat 30 dagen naar Instellingen → Onlangs verwijderd en kan daar worden teruggezet. Beloningen werken hetzelfde.',
         'Verwijderen haalt nooit munten weg en wist niet wat gedaan is: eerdere voltooiingen blijven onder de naam van het klusje zichtbaar in Activiteit, het Scorebord en de doelen, ook nadat het uit Onlangs verwijderd is.',
         'Een verwijderde beloning houdt zijn historie op dezelfde manier: wat eerder gekocht is, blijft onder zijn naam in Inzichten. Een aanvraag die nog wacht, blijft in Aangevraagde beloningen (onder de winkel), zodat een ouder hem nog kan goedkeuren of afwijzen; bij afwijzen komen de munten terug.',
-        'Een kamer verwijderen (Kamers → 🗑) verwijdert ook de klusjes en de kamer kan niet worden teruggehaald. Hun historie en munten blijven.',
+        'Een kamer verwijderen (Kamers → ✏️ Kamers bewerken → 🗑) verwijdert ook de klusjes en de kamer kan niet worden teruggehaald. Hun historie en munten blijven.',
         'Een gezinslid verwijderen (Gebruiker wissen, in Instellingen → Gezinsleden) kan niet ongedaan worden gemaakt. Een gedeelde beloning van diegene die nog op een ouder wachtte, wordt eerst afgewezen, zodat de anderen hun bijdragen terugkrijgen. Een beloning die alleen diegene kon zien, wordt verborgen in plaats van aan iedereen getoond: tik op Tonen in Instellingen → Beloningen Winkel als iemand anders hem moet krijgen.',
       ] },
       { p: 'Bewijsfoto’s horen bij hun klusje: als een klusje uit Onlangs verwijderd gaat (of de kamer wordt verwijderd), gaan de foto’s ook weg, maar wie het deed en de munten blijven. De avatarfoto van iemand gaat weg als die persoon wordt verwijderd.' },
@@ -535,7 +544,7 @@ export const GUIDE_NL: GuideSection[] = [
           'Klusjes voor op elk moment moeten "Op Vandaag tonen" aan hebben.',
           'Buiten het seizoen (Alleen in het seizoen) of vaste weekdagen: het is vandaag niet aan de beurt.',
           'Het heeft een startdatum (📅 Begint op) die nog niet bereikt is: de kamer toont „Begint op …”.',
-          'Je Klusjesweergave staat misschien op "Mijn klusjes" (de schakelaar boven de lijsten), of een ouder heeft hem op "Alleen eigen" gezet.',
+          'Je Klusjesweergave staat misschien op "Mijn klusjes" (de knoppen boven de lijsten), of een ouder heeft hem op "Alleen eigen" gezet.',
           'Eenmalige klusjes verschijnen op hun "Doen voor"-dag (onder Wanneer je wilt als ze geen datum hebben) en zijn weg zodra ze gedaan zijn.',
           'Misschien heb je het uitgesteld (💤): het wacht 3 dagen onder "… geplande tonen". Tik het daar aan en dan op Nu terughalen, of tik meteen op Ongedaan maken in de melding "Uitgesteld".',
         ] },
@@ -647,6 +656,10 @@ export const GUIDE_NL: GuideSection[] = [
           'Hij juicht (🍪 en een sprongetje) alleen bij grotere klusjes, moeite 3★ of meer, en bij een wachtend klusje pas als het is goedgekeurd. Kleinere klusjes vullen het buikje toch, alleen stilletjes. Zijn 🐾 bij een afgerond klusje volgt dezelfde regel.',
           'Elk apparaat laat het juichen één keer zien: een telefoon die het al liet zien, juicht niet nog eens.',
         ] },
+        { q: 'De app ziet er op de telefoon van een ander gezinslid anders uit', a: [
+          'De stijl (Instellingen → Stijl) is één keuze voor het hele gezin, maar elk apparaat neemt een wijziging pas over als het Vandaag opnieuw laadt: open Vandaag, of ga even naar een andere app en terug.',
+          'Kleuren zijn persoonlijk: ieder kiest een thema in Profiel, dus dezelfde stijl kan op de ene telefoon oranje zijn en op de andere blauw.',
+        ] },
         { q: 'Geen feestdagversieringen of -kleuren', a: [
           'Instellingen → Functies → Feestdagenlook en de eigen schakelaar van die feestdag moeten aan staan. Het volgt de datum van het apparaat.',
           'Met Profiel → Feestdagkleuren uit blijft je eigen thema (versieringen blijven zichtbaar).',
@@ -740,7 +753,7 @@ export const GUIDE_NL: GuideSection[] = [
         ] },
         { q: 'De instelhulp ging niet open, of ik wil hem nog een keer', a: [
           'Hij gaat alleen vanzelf open voor een ouder, zolang het gezin nog geen kamers heeft (de kamer To-do’s telt niet), tot iemand hem afmaakt of op Niet nu tikt.',
-          'Open hem wanneer je wilt via Instellingen → Instelhulp (onder Hulp). Opnieuw gebruiken voegt alleen toe, dus verwijder zelf kamers (Kamers → 🗑) of beloningen die je niet wilt.',
+          'Open hem wanneer je wilt via Instellingen → Instelhulp (onder Hulp). Opnieuw gebruiken voegt alleen toe, dus verwijder zelf kamers (Kamers → ✏️ Kamers bewerken → 🗑) of beloningen die je niet wilt.',
         ] },
         { q: 'Elk kind betaalt een andere prijs voor dezelfde beloning', a: [
           'De instelhulp gaf iedereen een eigen prijs, zodat iedereen ongeveer evenveel weken van zijn eigen klusjes betaalt: een kind met meer klusjes verdient meer en betaalt dus meer. Onder de beloning staat dan „eigen prijzen”.',

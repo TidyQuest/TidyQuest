@@ -30,7 +30,7 @@ export function IconPicker({ value, onChange, taskName = '', roomName = '', room
       <button type="button" className="tq-btn tq-btn-secondary tq-btn-sm" onClick={() => setOpen(true)} aria-label={t('iconPicker.change')}
         style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: compact ? '4px 8px' : '6px 10px', maxWidth: '100%' }}>
         <TaskIcon iconKey={value} size={compact ? 18 : 22} />
-        <span style={{ fontSize: compact ? 11 : 12, fontWeight: 700, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{label(value)}</span>
+        <span style={{ fontSize: 12, fontWeight: 700, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{label(value)}</span>
       </button>
       {open && (
         <IconSheet value={value} taskName={taskName} roomName={roomName} roomColor={roomColor} coins={coins} language={language}
@@ -78,13 +78,13 @@ function IconSheet({ value, onPick, onClose, taskName, roomName, roomColor, coin
       <div className="tq-card tq-modal task-edit-sheet tq-card-padded" role="dialog" aria-modal="true" aria-label={t('iconPicker.title')} onClick={(e) => e.stopPropagation()}
         style={{ display: 'flex', flexDirection: 'column', gap: 12, maxHeight: '88vh' }}>
         {/* Live preview: the chore as it shows on Home */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 14px', borderRadius: 16, background: 'var(--warm-bg-subtle)', border: '1.5px solid var(--warm-border)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 14px', borderRadius: 'var(--shape-radius-card)', background: 'var(--warm-bg-subtle)', border: 'var(--shape-border-w) solid var(--warm-border)' }}>
           <div style={{ width: 44, height: 44, borderRadius: 14, backgroundColor: roomColor || 'var(--warm-accent-light)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
             <TaskIcon iconKey={value} size={28} />
           </div>
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ fontSize: 14, fontWeight: 800, color: 'var(--warm-text)', overflowWrap: 'anywhere' }}>{taskName.trim() || t('iconPicker.yourChore')}</div>
-            <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--warm-text-light)' }}>{roomName}{roomName ? ' · ' : ''}{label(value)}</div>
+            <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--warm-text-light)' }}>{roomName}{roomName ? ' · ' : ''}{label(value)}</div>
           </div>
           {coins != null && coins > 0 && (
             <span style={{ display: 'inline-flex', alignItems: 'center', gap: 3, fontSize: 12, fontWeight: 800, color: 'var(--warm-accent)' }}><CoinIcon />{coins}</span>
@@ -103,7 +103,7 @@ function IconSheet({ value, onPick, onClose, taskName, roomName, roomColor, coin
         <div style={{ overflowY: 'auto', display: 'grid', gap: 12, minHeight: 0 }}>
           {groups.map((g) => (
             <div key={g.id} style={{ display: 'grid', gap: 6 }}>
-              <div style={{ fontSize: 11, fontWeight: 800, color: 'var(--warm-text-light)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{t(`iconGroups.${g.id}`)}</div>
+              <div style={{ fontSize: 12, fontWeight: 800, color: 'var(--warm-text-light)' }}>{t(`iconGroups.${g.id}`)}</div>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>{g.keys.map(cell)}</div>
             </div>
           ))}

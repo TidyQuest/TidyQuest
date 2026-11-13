@@ -11,7 +11,7 @@ export function AuthCard({ title, subtitle, children }: { title: string; subtitl
       <div className="tq-card auth-card" style={{ padding: 40, width: 400, maxWidth: 'calc(100vw - 24px)' }}>
         <div style={{ textAlign: 'center', marginBottom: 24 }}>
           <div style={{
-            width: 56, height: 56, borderRadius: 18, margin: '0 auto 14px',
+            width: 56, height: 56, borderRadius: 'var(--shape-radius-card)', margin: '0 auto 14px',
             background: 'var(--warm-streak-bg)', border: '1.5px solid var(--warm-streak-border)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
@@ -32,7 +32,7 @@ export function AuthField({ label, hint, children }: { label: string; hint?: str
     <label style={{ display: 'block', marginBottom: 14 }}>
       <span className="tq-label" style={{ textTransform: 'none', display: 'block' }}>{label}</span>
       {children}
-      {hint && <span style={{ display: 'block', fontSize: 11, fontWeight: 600, color: 'var(--warm-text-light)', marginTop: 4 }}>{hint}</span>}
+      {hint && <span style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--warm-text-light)', marginTop: 4 }}>{hint}</span>}
     </label>
   );
 }

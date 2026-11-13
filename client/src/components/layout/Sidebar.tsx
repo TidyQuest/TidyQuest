@@ -26,7 +26,7 @@ export function Sidebar({ user, gamificationEnabled = true, collapsed = false, o
         style={{
           width: effectiveCollapsed ? 60 : 240,
           backgroundColor: 'var(--warm-sidebar)',
-          borderRight: '1.5px solid var(--warm-sidebar-border)',
+          borderRight: 'var(--shape-border-w) solid var(--warm-sidebar-border)',
           padding: effectiveCollapsed ? '24px 8px' : '24px 0',
           display: 'flex',
           flexDirection: 'column',
@@ -64,7 +64,7 @@ export function Sidebar({ user, gamificationEnabled = true, collapsed = false, o
               <div style={{
                 width: 42, height: 42, borderRadius: 14,
                 background: 'var(--warm-sidebar-active)',
-                border: '1.5px solid var(--warm-sidebar-user-border)',
+                border: 'var(--shape-border-w) solid var(--warm-sidebar-user-border)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 flexShrink: 0,
               }}>
@@ -72,7 +72,7 @@ export function Sidebar({ user, gamificationEnabled = true, collapsed = false, o
               </div>
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: 19, fontWeight: 900, color: 'var(--warm-text)', letterSpacing: -0.5 }}>TidyQuest</div>
-                <div style={{ fontSize: 10, color: 'var(--warm-text-light)', fontWeight: 700, letterSpacing: 1.2, textTransform: 'uppercase' }}>
+                <div style={{ fontSize: 12, color: 'var(--warm-text-light)', fontWeight: 700 }}>
                   {t('nav.tagline')}
                 </div>
               </div>
@@ -118,7 +118,7 @@ export function Sidebar({ user, gamificationEnabled = true, collapsed = false, o
                     display: 'flex', alignItems: 'center', gap: 12,
                     padding: effectiveCollapsed ? '11px 0' : '11px 16px',
                     justifyContent: effectiveCollapsed ? 'center' : 'flex-start',
-                    borderRadius: 14,
+                    borderRadius: 'var(--shape-radius-control)',
                     backgroundColor: isActive ? 'var(--warm-sidebar-active)' : 'transparent',
                     borderLeft: isActive ? '3px solid var(--warm-accent)' : '3px solid transparent',
                     transition: 'all 0.15s ease',
@@ -143,7 +143,7 @@ export function Sidebar({ user, gamificationEnabled = true, collapsed = false, o
               display: 'flex', alignItems: 'center', gap: effectiveCollapsed ? 0 : 10,
               padding: effectiveCollapsed ? '8px' : '12px 14px',
               justifyContent: effectiveCollapsed ? 'center' : 'flex-start',
-              backgroundColor: 'var(--warm-sidebar-user-bg)', borderRadius: 16, border: '1.5px solid var(--warm-sidebar-user-border)',
+              backgroundColor: 'var(--warm-sidebar-user-bg)', borderRadius: 'var(--shape-radius-card)', border: 'var(--shape-border-w) solid var(--warm-sidebar-user-border)',
               cursor: 'pointer', transition: 'all 0.15s ease',
             }}
           >
@@ -159,13 +159,13 @@ export function Sidebar({ user, gamificationEnabled = true, collapsed = false, o
             {!effectiveCollapsed && (
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: 13, fontWeight: 800, color: 'var(--warm-text)' }}>{user.displayName}</div>
-                <UserTitle userId={user.id} language={user.language} style={{ display: 'block', fontSize: 10 }} />
+                <UserTitle userId={user.id} language={user.language} style={{ display: 'block', fontSize: 12 }} />
                 {gamificationEnabled && (
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 2 }}>
-                    <span style={{ display: 'flex', alignItems: 'center', gap: 3, fontSize: 11, color: 'var(--warm-text-light)', fontWeight: 600 }}>
+                    <span style={{ display: 'flex', alignItems: 'center', gap: 3, fontSize: 12, color: 'var(--warm-text-light)', fontWeight: 600 }}>
                       <CoinIcon /> {formatCoins(user.coins)}
                     </span>
-                    <span style={{ display: 'flex', alignItems: 'center', gap: 3, fontSize: 11, color: 'var(--warm-text-light)', fontWeight: 600 }}>
+                    <span style={{ display: 'flex', alignItems: 'center', gap: 3, fontSize: 12, color: 'var(--warm-text-light)', fontWeight: 600 }}>
                       <FireIcon /> {t('common.daysShort').replace('{n}', String(user.currentStreak))}
                     </span>
                   </div>

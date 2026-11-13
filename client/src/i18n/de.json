@@ -698,7 +698,18 @@
       "zoneCreated": "Zone erstellt",
       "deleteRoomConfirmEmpty": "„{room}“ löschen? Das kann nicht rückgängig gemacht werden.",
       "deleteRoomConfirmOne": "„{room}“ und seine 1 Aufgabe löschen? Das kann nicht rückgängig gemacht werden. Verdiente Münzen und der Verlauf bleiben.",
-      "deleteRoomConfirmMany": "„{room}“ und seine {n} Aufgaben löschen? Das kann nicht rückgängig gemacht werden. Verdiente Münzen und der Verlauf bleiben."
+      "deleteRoomConfirmMany": "„{room}“ und seine {n} Aufgaben löschen? Das kann nicht rückgängig gemacht werden. Verdiente Münzen und der Verlauf bleiben.",
+      "allRooms": "Alle Räume",
+      "mineChip": "Meine",
+      "choreOne": "1 Aufgabe",
+      "choreMany": "{n} Aufgaben",
+      "dueCount": "{n} fällig",
+      "allDone": "alles erledigt",
+      "noChores": "noch keine Aufgaben",
+      "editRooms": "Räume bearbeiten",
+      "doneEditing": "Fertig",
+      "neediestFirst": "dringendste zuerst",
+      "zoneChips": "Räume anzeigen"
     },
     "common": {
       "save": "Speichern",
@@ -2515,6 +2526,46 @@
       "urgentFirst": "Dringendste zuerst",
       "showLater": "{n} weitere anzeigen · später",
       "noneHere": "Hier gibt es keine Aufgaben."
+    },
+    "choreForm": {
+      "titleAdd": "Aufgabe hinzufügen",
+      "titleEdit": "Aufgabe bearbeiten",
+      "when": "Wann",
+      "who": "Wer",
+      "effortCoins": "Aufwand & Münzen",
+      "more": "Weitere Optionen",
+      "moreHint": "Schritte · Timer · Startdatum · Saison · Zustand · Pause",
+      "moreHintAdd": "Schritte · Timer · Startdatum · Saison · Zustand",
+      "onDemandHint": "Kein Zeitplan: erledigen, wenn es nötig ist",
+      "everyone": "Alle",
+      "specific": "Bestimmte Personen",
+      "everyoneHint": "Jeder kann sie erledigen; wer zuerst fertig ist, bekommt die Münzen.",
+      "pickPeople": "Tippe auf die Personen, die diese Aufgabe erledigen.",
+      "firstCome": "Wer zuerst kommt",
+      "firstHint": "Jeder von ihnen kann sie erledigen; wer zuerst fertig ist, bekommt die Münzen.",
+      "sharedHint": "Jeder erledigt seinen Teil und bekommt einen gleichen Anteil der Münzen.",
+      "customHint": "Jeder bekommt den Anteil der Münzen, den du festlegst.",
+      "coins": "Münzen",
+      "coinsAuto": "Leer lassen für {coins} nach Aufwand",
+      "roomOwnerHint": "für den ganzen Raum festgelegt",
+      "sumSteps": "{n} Schritte",
+      "sumTimer": "{n}-Min.-Timer",
+      "sumStart": "beginnt später",
+      "sumSeason": "saisonal",
+      "sumPaused": "pausiert"
+    },
+    "look": {
+      "title": "Stil",
+      "lede": "Ein Stil für die ganze Familie. Nur Eltern (Admins) können ihn ändern, und er ändert sich auf allen Geräten, sobald die App sich das nächste Mal aktualisiert.",
+      "fresh": "Frisch",
+      "freshDesc": "Leicht getönte Übersichtskarte, helle Karten. Am nächsten an dem, wie TidyQuest immer aussah.",
+      "quest": "Abenteuer",
+      "questDesc": "Kräftiger Farbblock oben, dicke Knöpfe, jede Aufgabe eine eigene Kachel. Spielgefühl.",
+      "calm": "Ruhig",
+      "calmDesc": "Flach, dünne Umrisse, Farbe sparsam eingesetzt.",
+      "coloursTitle": "Farben bleiben persönlich",
+      "coloursNote": "Der Stil legt die Formen fest. Das Farbthema jeder Person, im eigenen Profil gewählt, füllt sie aus. Die Zeichnungen oben sind daher in deinen Farben.",
+      "saveFailed": "Der Stil konnte nicht gespeichert werden. Prüfe die Verbindung und versuche es erneut."
     }
   }
 }

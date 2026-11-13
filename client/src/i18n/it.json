@@ -698,7 +698,18 @@
       "zoneCreated": "Zona creata",
       "deleteRoomConfirmEmpty": "Eliminare «{room}»? Non si può annullare.",
       "deleteRoomConfirmOne": "Eliminare «{room}» e la sua attività? Non si può annullare. Le monete guadagnate e la cronologia restano.",
-      "deleteRoomConfirmMany": "Eliminare «{room}» e le sue {n} attività? Non si può annullare. Le monete guadagnate e la cronologia restano."
+      "deleteRoomConfirmMany": "Eliminare «{room}» e le sue {n} attività? Non si può annullare. Le monete guadagnate e la cronologia restano.",
+      "allRooms": "Tutte le stanze",
+      "mineChip": "Mie",
+      "choreOne": "1 faccenda",
+      "choreMany": "{n} faccende",
+      "dueCount": "{n} da fare",
+      "allDone": "tutto fatto",
+      "noChores": "nessuna faccenda",
+      "editRooms": "Modifica stanze",
+      "doneEditing": "Fatto",
+      "neediestFirst": "prima le più urgenti",
+      "zoneChips": "Mostra stanze"
     },
     "common": {
       "save": "Salva",
@@ -2515,6 +2526,46 @@
       "urgentFirst": "Le più urgenti prima",
       "showLater": "Mostra altre {n} · più avanti",
       "noneHere": "Nessuna faccenda qui."
+    },
+    "choreForm": {
+      "titleAdd": "Aggiungi un'attività",
+      "titleEdit": "Modifica attività",
+      "when": "Quando",
+      "who": "Chi",
+      "effortCoins": "Impegno e monete",
+      "more": "Altre opzioni",
+      "moreHint": "Passaggi · timer · data di inizio · stagione · salute · pausa",
+      "moreHintAdd": "Passaggi · timer · data di inizio · stagione · salute",
+      "onDemandHint": "Nessun programma: fallo quando serve",
+      "everyone": "Tutti",
+      "specific": "Persone specifiche",
+      "everyoneHint": "Chiunque può farlo; il primo che lo finisce prende le monete.",
+      "pickPeople": "Tocca le persone che fanno questa attività.",
+      "firstCome": "Chi prima arriva",
+      "firstHint": "Chiunque di loro può farlo; il primo che lo finisce prende le monete.",
+      "sharedHint": "Ognuno fa la sua parte e riceve una parte uguale delle monete.",
+      "customHint": "Ognuno riceve la parte delle monete che imposti tu.",
+      "coins": "Monete",
+      "coinsAuto": "Lascia vuoto per {coins} in base all'impegno",
+      "roomOwnerHint": "impostato per tutta la stanza",
+      "sumSteps": "{n} passaggi",
+      "sumTimer": "timer di {n} min",
+      "sumStart": "inizia più tardi",
+      "sumSeason": "stagionale",
+      "sumPaused": "in pausa"
+    },
+    "look": {
+      "title": "Stile",
+      "lede": "Un solo stile per tutta la famiglia. Solo i genitori (admin) possono cambiarlo, e cambia sui dispositivi di tutti al prossimo aggiornamento dell'app.",
+      "fresh": "Fresco",
+      "freshDesc": "Scheda di riepilogo con una tinta leggera, schede chiare. Il più vicino al TidyQuest di sempre.",
+      "quest": "Avventura",
+      "questDesc": "Un blocco di colore deciso in alto, pulsanti grossi, ogni faccenda nella sua tessera. Atmosfera da gioco.",
+      "calm": "Sobrio",
+      "calmDesc": "Piatto, contorni sottili, colore usato con parsimonia.",
+      "coloursTitle": "I colori restano personali",
+      "coloursNote": "Lo stile stabilisce le forme. Il tema colore di ciascuno, scelto nel proprio profilo, le riempie: i disegni qui sopra sono quindi nei tuoi colori.",
+      "saveFailed": "Impossibile salvare lo stile. Controlla la connessione e riprova."
     }
   }
 }

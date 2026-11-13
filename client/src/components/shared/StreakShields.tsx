@@ -49,7 +49,7 @@ export function ShieldPanel({ shields, streak, coins, config, language, onChange
             <span key={i} aria-hidden="true" style={i < shields ? undefined : { opacity: 0.25, filter: 'grayscale(1)' }}>🛡️</span>
           ))}
         </span>
-        <span style={{ flex: 1, minWidth: 0, fontSize: 11, fontWeight: 700, color: 'var(--warm-streak-subtext)' }}>
+        <span style={{ flex: 1, minWidth: 0, fontSize: 12, fontWeight: 700, color: 'var(--warm-streak-subtext)' }}>
           {full ? t('shields.full') : nextIn === 1 ? t('shields.nextInOne') : t('shields.nextIn').replace('{n}', String(nextIn))}
         </span>
         {!full && (
@@ -60,8 +60,8 @@ export function ShieldPanel({ shields, streak, coins, config, language, onChange
           </button>
         )}
       </div>
-      {shields === 0 && <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--warm-streak-subtext)', marginTop: 4 }}>{t('shields.what')}</div>}
-      {error && <div role="alert" style={{ fontSize: 11, fontWeight: 700, color: 'var(--warm-danger)', marginTop: 4 }}>{error}</div>}
+      {shields === 0 && <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--warm-streak-subtext)', marginTop: 4 }}>{t('shields.what')}</div>}
+      {error && <div role="alert" style={{ fontSize: 12, fontWeight: 700, color: 'var(--warm-danger)', marginTop: 4 }}>{error}</div>}
     </div>
   );
 }

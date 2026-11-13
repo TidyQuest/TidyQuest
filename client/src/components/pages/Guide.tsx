@@ -44,7 +44,7 @@ function Block({ b, query }: { b: GuideBlock; query: string }) {
   return (
     <div style={{ display: 'grid', gap: 8 }}>
       {items.map((x) => (
-        <details key={x.q} open={!!q} style={{ borderRadius: 12, border: '1.5px solid var(--warm-border)', background: 'var(--warm-bg-subtle)', padding: '10px 12px' }}>
+        <details key={x.q} open={!!q} style={{ borderRadius: 12, border: 'var(--shape-border-w) solid var(--warm-border)', background: 'var(--warm-bg-subtle)', padding: '10px 12px' }}>
           <summary style={{ cursor: 'pointer', fontSize: 14, fontWeight: 800, color: 'var(--warm-text)' }}>{x.q}</summary>
           <ul style={{ ...text, fontSize: 13, paddingLeft: 18, margin: '8px 0 0', display: 'grid', gap: 6 }}>{x.a.map((a, i) => <li key={i}>{a}</li>)}</ul>
         </details>
@@ -112,7 +112,7 @@ function GuideBody({ language }: { language?: string }) {
           onToggle={(e) => { if (!q) toggle(s.id, (e.target as HTMLDetailsElement).open); }} style={{ padding: '14px 16px', scrollMarginTop: 80 }}>
           <summary style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', fontSize: 16, fontWeight: 900, color: 'var(--warm-text)' }}>
             <span aria-hidden="true">{s.icon}</span> {s.title}
-            {s.parents && <span style={{ fontSize: 10, fontWeight: 800, color: 'var(--warm-text-light)', border: '1px solid var(--warm-border)', borderRadius: 99, padding: '2px 8px' }}>{t('guide.forParents')}</span>}
+            {s.parents && <span style={{ fontSize: 12, fontWeight: 800, color: 'var(--warm-text-light)', border: '1px solid var(--warm-border)', borderRadius: 99, padding: '2px 8px' }}>{t('guide.forParents')}</span>}
           </summary>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 12 }}>
             {s.blocks.map((b, i) => <Block key={i} b={b} query={query} />)}

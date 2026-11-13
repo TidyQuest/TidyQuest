@@ -698,7 +698,18 @@
       "zoneCreated": "Zone gemaakt",
       "deleteRoomConfirmEmpty": "“{room}” verwijderen? Dit kan niet ongedaan worden gemaakt.",
       "deleteRoomConfirmOne": "“{room}” en zijn 1 taak verwijderen? Dit kan niet ongedaan worden gemaakt. Verdiende munten en de geschiedenis blijven.",
-      "deleteRoomConfirmMany": "“{room}” en zijn {n} taken verwijderen? Dit kan niet ongedaan worden gemaakt. Verdiende munten en de geschiedenis blijven."
+      "deleteRoomConfirmMany": "“{room}” en zijn {n} taken verwijderen? Dit kan niet ongedaan worden gemaakt. Verdiende munten en de geschiedenis blijven.",
+      "allRooms": "Alle kamers",
+      "mineChip": "Mijn",
+      "choreOne": "1 taak",
+      "choreMany": "{n} taken",
+      "dueCount": "{n} te doen",
+      "allDone": "alles gedaan",
+      "noChores": "nog geen taken",
+      "editRooms": "Kamers bewerken",
+      "doneEditing": "Klaar",
+      "neediestFirst": "meest dringend eerst",
+      "zoneChips": "Kamers tonen"
     },
     "common": {
       "save": "Opslaan",
@@ -2515,6 +2526,46 @@
       "urgentFirst": "Dringendste eerst",
       "showLater": "Toon {n} meer · later",
       "noneHere": "Geen taken hier."
+    },
+    "choreForm": {
+      "titleAdd": "Klusje toevoegen",
+      "titleEdit": "Klusje bewerken",
+      "when": "Wanneer",
+      "who": "Wie",
+      "effortCoins": "Moeite & munten",
+      "more": "Meer opties",
+      "moreHint": "Stappen · timer · startdatum · seizoen · staat · pauze",
+      "moreHintAdd": "Stappen · timer · startdatum · seizoen · staat",
+      "onDemandHint": "Geen schema: doe het wanneer het nodig is",
+      "everyone": "Iedereen",
+      "specific": "Bepaalde mensen",
+      "everyoneHint": "Iedereen mag het doen; wie het eerst klaar is, krijgt de munten.",
+      "pickPeople": "Tik op de mensen die dit klusje doen.",
+      "firstCome": "Wie het eerst komt",
+      "firstHint": "Ieder van hen mag het doen; wie het eerst klaar is, krijgt de munten.",
+      "sharedHint": "Ieder doet zijn deel en krijgt een gelijk deel van de munten.",
+      "customHint": "Ieder krijgt het deel van de munten dat jij instelt.",
+      "coins": "Munten",
+      "coinsAuto": "Laat leeg voor {coins} op basis van de moeite",
+      "roomOwnerHint": "ingesteld voor de hele kamer",
+      "sumSteps": "{n} stappen",
+      "sumTimer": "timer van {n} min",
+      "sumStart": "begint later",
+      "sumSeason": "seizoensgebonden",
+      "sumPaused": "gepauzeerd"
+    },
+    "look": {
+      "title": "Stijl",
+      "lede": "Eén stijl voor het hele gezin. Alleen ouders (beheerders) kunnen hem wijzigen, en hij verandert op ieders apparaat zodra de app de volgende keer ververst.",
+      "fresh": "Fris",
+      "freshDesc": "Licht getinte overzichtskaart, lichte kaarten. Het dichtst bij hoe TidyQuest er altijd uitzag.",
+      "quest": "Avontuur",
+      "questDesc": "Een stevig kleurblok bovenaan, dikke knoppen, elke klus een eigen tegel. Spelgevoel.",
+      "calm": "Rustig",
+      "calmDesc": "Vlak, dunne lijnen, spaarzaam met kleur.",
+      "coloursTitle": "Kleuren blijven persoonlijk",
+      "coloursNote": "De stijl bepaalt de vormen. Ieders kleurthema, gekozen in het eigen profiel, vult ze in, dus de tekeningen hierboven zijn in jouw kleuren.",
+      "saveFailed": "De stijl kon niet worden opgeslagen. Controleer de verbinding en probeer het opnieuw."
     }
   }
 }

@@ -15,7 +15,7 @@ const subTitle = { fontSize: 14, fontWeight: 800, margin: '16px 0 2px', color: '
 const linkButton = { background: 'none', border: 'none', padding: 0, cursor: 'pointer', fontSize: 12, fontWeight: 700, color: 'var(--warm-accent)', fontFamily: 'inherit' } as const;
 const cell = { padding: '4px 6px', textAlign: 'right' as const, whiteSpace: 'nowrap' as const };
 const rowButton = { display: 'block', width: '100%', background: 'none', border: 'none', padding: 0, margin: 0, cursor: 'pointer', textAlign: 'left' as const, font: 'inherit', color: 'inherit' } as const;
-const waitingTag = { fontSize: 11, fontWeight: 700, padding: '1px 7px', borderRadius: 99, background: 'var(--warm-accent-light)', color: 'var(--warm-text)', whiteSpace: 'nowrap' as const };
+const waitingTag = { fontSize: 12, fontWeight: 700, padding: '1px 7px', borderRadius: 99, background: 'var(--warm-accent-light)', color: 'var(--warm-text)', whiteSpace: 'nowrap' as const };
 const RECENT_SHOWN = 8;
 
 /** A person's color dot and name, with their coins when several people paid. */
@@ -218,7 +218,7 @@ export function CoinsCard({ data, weeks, onWeeks, people, language, t, rangeLabe
                     <span style={{ ...muted, display: 'block' }}>{t('insights.coinsSpent').replace('{n}', fmt(r.coins))}</span>
                   </button>
                   {open && (
-                    <ul aria-label={t('insights.whoBought').replace('{name}', r.name)} style={{ margin: '6px 0 0', padding: '0 0 0 10px', borderLeft: '2px solid var(--warm-border-subtle)' }}>
+                    <ul aria-label={t('insights.whoBought').replace('{name}', r.name)} style={{ margin: '6px 0 0', padding: '0 0 0 10px', borderLeft: 'var(--shape-border-w) solid var(--warm-border-subtle)' }}>
                       {r.buyers.map((b) => (
                         <li key={b.id} style={{ listStyle: 'none', display: 'flex', alignItems: 'baseline', gap: 8, padding: '2px 0', fontSize: 13, color: 'var(--warm-text)' }}>
                           <span style={{ flex: 1, minWidth: 0 }}><Payer p={b} /></span>

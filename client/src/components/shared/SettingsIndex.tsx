@@ -53,7 +53,6 @@ export function SettingsIndex({ groups, selected, language, footer }: {
                   {r.summary && <small>{r.summary}</small>}
                 </span>
                 {!!r.badge && <span className="settings-row-badge">{r.badge}</span>}
-                <span className="settings-row-chev" aria-hidden="true">›</span>
               </button>
             ))}
           </div>

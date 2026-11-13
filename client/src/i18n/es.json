@@ -698,7 +698,18 @@
       "zoneCreated": "Zona creada",
       "deleteRoomConfirmEmpty": "¿Eliminar «{room}»? No se puede deshacer.",
       "deleteRoomConfirmOne": "¿Eliminar «{room}» y su tarea? No se puede deshacer. Las monedas ganadas y el historial se quedan.",
-      "deleteRoomConfirmMany": "¿Eliminar «{room}» y sus {n} tareas? No se puede deshacer. Las monedas ganadas y el historial se quedan."
+      "deleteRoomConfirmMany": "¿Eliminar «{room}» y sus {n} tareas? No se puede deshacer. Las monedas ganadas y el historial se quedan.",
+      "allRooms": "Todas las habitaciones",
+      "mineChip": "Mías",
+      "choreOne": "1 tarea",
+      "choreMany": "{n} tareas",
+      "dueCount": "{n} pendientes",
+      "allDone": "todo hecho",
+      "noChores": "sin tareas",
+      "editRooms": "Editar habitaciones",
+      "doneEditing": "Listo",
+      "neediestFirst": "las más urgentes primero",
+      "zoneChips": "Mostrar habitaciones"
     },
     "common": {
       "save": "Guardar",
@@ -2515,6 +2526,46 @@
       "urgentFirst": "Las más urgentes primero",
       "showLater": "Mostrar {n} más · más adelante",
       "noneHere": "No hay tareas aquí."
+    },
+    "choreForm": {
+      "titleAdd": "Añadir una tarea",
+      "titleEdit": "Editar tarea",
+      "when": "Cuándo",
+      "who": "Quién",
+      "effortCoins": "Esfuerzo y monedas",
+      "more": "Más opciones",
+      "moreHint": "Pasos · temporizador · fecha de inicio · temporada · salud · pausa",
+      "moreHintAdd": "Pasos · temporizador · fecha de inicio · temporada · salud",
+      "onDemandHint": "Sin horario: hazla cuando haga falta",
+      "everyone": "Todos",
+      "specific": "Personas concretas",
+      "everyoneHint": "Cualquiera puede hacerla; el primero en terminarla gana las monedas.",
+      "pickPeople": "Toca a las personas que hacen esta tarea.",
+      "firstCome": "El primero",
+      "firstHint": "Cualquiera de ellos puede hacerla; el primero en terminarla gana las monedas.",
+      "sharedHint": "Cada uno hace su parte y recibe una parte igual de las monedas.",
+      "customHint": "Cada uno recibe la parte de las monedas que tú fijes.",
+      "coins": "Monedas",
+      "coinsAuto": "Déjalo vacío para {coins} según el esfuerzo",
+      "roomOwnerHint": "fijado para toda la habitación",
+      "sumSteps": "{n} pasos",
+      "sumTimer": "temporizador de {n} min",
+      "sumStart": "empieza más tarde",
+      "sumSeason": "de temporada",
+      "sumPaused": "en pausa"
+    },
+    "look": {
+      "title": "Estilo",
+      "lede": "Un solo estilo para toda la familia. Solo los padres (admins) pueden cambiarlo, y cambia en los dispositivos de todos la próxima vez que se actualice la app.",
+      "fresh": "Fresco",
+      "freshDesc": "Tarjeta de resumen con un tono suave, tarjetas claras. Lo más parecido al TidyQuest de siempre.",
+      "quest": "Aventura",
+      "questDesc": "Un bloque de color intenso arriba, botones gruesos, cada tarea en su propio recuadro. Aire de juego.",
+      "calm": "Sereno",
+      "calmDesc": "Plano, contornos finos, color usado con moderación.",
+      "coloursTitle": "Los colores siguen siendo personales",
+      "coloursNote": "El estilo fija las formas. El tema de color de cada persona, elegido en su perfil, las rellena, así que los dibujos de arriba están en tus colores.",
+      "saveFailed": "No se pudo guardar el estilo. Revisa la conexión e inténtalo de nuevo."
     }
   }
 }

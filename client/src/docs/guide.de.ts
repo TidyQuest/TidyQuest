@@ -120,6 +120,13 @@ export const GUIDE_DE: GuideSection[] = [
         'Passwort: Ein Elternteil kann ein neues festlegen, wenn jemand seins vergisst. Die Person wird dann auf allen Geräten abgemeldet und meldet sich mit dem neuen wieder an.',
       ] },
       { tip: 'Schalte „Private Räume anderer vor Kindern verbergen“ unter Einstellungen → Allgemein ein, wenn Kinder zum Beispiel das eigene Zimmer eines Elternteils nicht sehen sollen.' },
+      { h: 'Der Stil der Familie' },
+      { where: 'Einstellungen → Stil (nur Eltern)' },
+      { ul: [
+        'Ein Stil für die ganze Familie: Frisch (Standard: leicht getönte Übersichtskarte, helle Karten), Abenteuer (kräftiger Farbblock oben, dicke Knöpfe, jede Aufgabe eine eigene Kachel) oder Ruhig (flach, dünne Umrisse, Farbe sparsam eingesetzt).',
+        'Der Stil legt die Formen fest; das Farbdesign jeder Person (Profil) füllt sie aus, also passt jedes Design zu jedem Stil. Die Seite zeigt unter den drei Möglichkeiten das Design jeder Person.',
+        'Er ändert sich sofort auf diesem Gerät und auf den anderen, sobald die App sich dort das nächste Mal aktualisiert. Sicherungen behalten ihn.',
+      ] },
       { h: 'Jemand, der sich nicht anmeldet' },
       { p: 'Für Großeltern, ein Kleinkind oder alle, die die App nicht nutzen: Füge sie hinzu und erledige alles für sie, ohne Benutzername und Passwort.' },
       { ul: [
@@ -175,9 +182,9 @@ export const GUIDE_DE: GuideSection[] = [
       { p: 'Räume enthalten Aufgaben. Ein Raum, der einer Person zugewiesen ist, gehört ihr: Nur sie (und Eltern/Mitglieder) kann seine Aufgaben machen, und er nimmt nie an Teamwork teil.' },
       { ul: [
         'Lege einen Raum auf der Seite Räume an; ein Raumtyp bringt vorgeschlagene Aufgaben mit, aus denen du wählen kannst.',
-        'Zonen gruppieren Räume auf der Seite Räume (zum Beispiel „Obergeschoss“ oder „Eltern-Quests“).',
+        'Die Seite Räume zeigt eine Kachel pro Raum, die dringendsten zuerst: seine Gesundheit, wie viele Aufgaben er hat und wie viele heute fällig sind. Zonen gruppieren die Kacheln (zum Beispiel „Obergeschoss“ oder „Eltern-Quests“); tippe oben auf den Chip einer Zone, um nur ihre Räume zu sehen, oder auf Meine für deine. Eltern tippen auf ✏️ Räume bearbeiten, um einen Raum umzubenennen, einer Zone zuzuordnen (🏷️), jemandem zuzuweisen oder zu löschen, und um Zonen anzulegen, umzubenennen oder zu löschen.',
         'Die Gesundheit eines Raums ist der Durchschnitt seiner Aufgaben; der schlechteste Raum ist der, bei dem das Maskottchen um Hilfe bittet.',
-        'Der Balken einer Aufgabe wird erst rot, wenn sie fällig ist. Eine Aufgabe, die noch nicht erledigt werden kann (Frühe Erledigung aus), bleibt gelb, im Raum und auf ihrem Chip auf der Seite Räume.',
+        'Der Balken einer Aufgabe wird erst rot, wenn sie fällig ist. Eine Aufgabe, die noch nicht erledigt werden kann (Frühe Erledigung aus), bleibt gelb in ihrem Raum.',
       ] },
     ],
   },
@@ -188,6 +195,8 @@ export const GUIDE_DE: GuideSection[] = [
     parents: true,
     blocks: [
       { where: 'Räume → ein Raum → Aufgabe hinzufügen, oder das ✏️ an einer Aufgabe' },
+      { h: 'Das Aufgabenformular' },
+      { p: 'Aufgabe hinzufügen und ✏️ Bearbeiten öffnen dasselbe Formular: auf dem Handy ein Fenster von unten, am Computer ein Feld neben der Liste. Es ist in Gruppen geordnet: Name, Notizen und Symbol; Wann (Alle, Am, Monatlich oder Einmalig, oder Auf Abruf); Wer (Alle, oder tippe die Personen an, dann Wer zuerst kommt, Geteilt, Rotation oder Benutzerdefiniert); Aufwand & Münzen; und Weitere Optionen, eingeklappt, für Schritte, Timer, Startdatum, Saison, Zustand und Pause. Weitere Optionen zeigt, was darin eingestellt ist, damit sich dort nichts versteckt. Speichern bleibt unten, egal wie weit du scrollst; Aufgabe löschen steht am Ende des Formulars.' },
       { h: 'Zeitplan' },
       { ul: [
         'Alle N Tage: wieder fällig N Tage nach dem letzten Mal. Ihre Gesundheit sinkt über diese Tage.',
@@ -202,7 +211,7 @@ export const GUIDE_DE: GuideSection[] = [
       ] },
       { h: 'Münzen' },
       { ul: [
-        'Der Aufwand (1–5) bestimmt die Münzen aus Einstellungen → Münzen pro Aufwand. Eigene Coins ersetzen das für eine einzelne Aufgabe: Trag sie beim Hinzufügen oder Bearbeiten der Aufgabe ins Feld Eigene Coins ein oder lass es auf Auto.',
+        'Der Aufwand (1–5) bestimmt die Münzen aus Einstellungen → Münzen pro Aufwand. Eigene Coins ersetzen das für eine einzelne Aufgabe: Trag sie beim Hinzufügen oder Bearbeiten der Aufgabe unter Aufwand & Münzen ins Feld Münzen ein oder lass es leer für den Betrag nach Aufwand.',
         'Die Rettungsmission und Doppelte-Münzen-Aktionen vervielfachen sie am jeweiligen Tag.',
       ] },
       { h: 'Wer sie machen darf' },
@@ -245,7 +254,7 @@ export const GUIDE_DE: GuideSection[] = [
       ] },
       { h: 'Eine Aufgabe pausieren' },
       { ul: [
-        'Eine Weile nicht nötig (der Pool im Winter, ein Kind im Ferienlager)? Eltern öffnen die Aufgabe in ihrem Raum (antippen), tippen auf ⋯ (Weitere Optionen), dann auf ⏸️ Pausieren. Oder sie öffnen Bearbeiten, haken ⏸️ Pausiert an und wählen unter Wieder an (optional) einen Tag, an dem sie sich von selbst wieder einschaltet.',
+        'Eine Weile nicht nötig (der Pool im Winter, ein Kind im Ferienlager)? Eltern öffnen die Aufgabe in ihrem Raum (antippen), tippen auf ⋯ (Weitere Optionen), dann auf ⏸️ Pausieren. Oder sie öffnen Bearbeiten, dann Weitere Optionen, schalten ⏸️ Pausiert ein und wählen unter Wieder an (optional) einen Tag, an dem sie sich von selbst wieder einschaltet.',
         'Eine pausierte Aufgabe verschwindet von Heute, der Aufgaben-Seite, dem Kalender, den Erinnerungen, der Rettungsmission, den Team-ups und der Hausgesundheit. Eltern sehen sie weiter ausgegraut in ihrem Raum, markiert mit ⏸️ Pausiert; Kinder sehen sie gar nicht.',
         'Öffne die Aufgabe und tippe auf ⋯ → ▶️ Wieder einschalten (oder entferne den Haken bei ⏸️ Pausiert). Sie kommt zurück, als wäre sie gerade erledigt, also nicht überfällig. Verlauf, Münzen und Zuständige bleiben gleich.',
       ] },
@@ -362,8 +371,8 @@ export const GUIDE_DE: GuideSection[] = [
         'Haus-Maskottchen: eines von 8 Wesen, hier ausgewählt und benannt. Es wächst mit den verdienten Familienmünzen, solange es das aktive Maskottchen ist (schlüpft bei 500, dann bei 2.000, 5.000 und 10.000), seine Stimmung folgt der Hausgesundheit, und es reagiert auf Geburtstage, das Familienziel und die Rettungsmission.',
         'Maskottchen wechseln: Wählst du ein Wesen, das du noch nicht hattest, beginnt es als neues Ei. Jedes Wesen behält sein eigenes Wachstum, seinen Namen und sein Outfit, sodass ein Zurückwechseln es genau so zurückbringt, wie es war. Bauch und Schlafenszeit sind gemeinsam.',
         'Mit dem Maskottchen spielen: Tippe darauf für eine Reaktion. Sein 🍪-Bauch füllt sich mit jeder Aufgabe um 5 % (ein Teamwork zählt einmal) und leert sich über 2 Tage. Mit einem 🍪 und einem Hüpfer jubelt es nur bei größeren Aufgaben (Aufwand ab 3★); kleinere füllen ihn still; ist er niedrig, sagt es einfach, dass es Hunger hat. „Was soll ich tun?“ schlägt eine Aufgabe vor, die du jetzt gleich machen kannst. Es fügt erledigten Aufgaben ab 3★ ein 🐾-Anfeuern hinzu. Es schläft während der Schlafenszeit der Familie (unter dem Maskottchen in Funktionen einstellbar, standardmäßig 21 bis 7 Uhr).',
-        'Maskottchen-Laden (eigener Schalter): Jeder kann ihm ein Accessoire für 1 bis 5 Münzen kaufen. Es gibt ein gemeinsames Outfit und keinen Schrank: Ein neues Teil wird sofort für alle angezogen und ersetzt, was an dieser Stelle war (Kopf, Gesicht, Hals oder Rücken). Wer ein Teil gekauft hat, oder ein Elternteil, kann es kostenlos ausziehen. Käufe erscheinen unter Aktivität. Der Laden öffnet, sobald das Maskottchen geschlüpft ist. Schaltest du den Laden aus, sind er und das Outfit verborgen.',
-        'Festtags-Look: Halloween im Oktober, Thanksgiving im November, Weihnachten im Dezember: Farben, Dekoration, ein Countdown und ein Kostüm für das Maskottchen. Jeder Feiertag hat einen eigenen Schalter und einen Vorschau-Knopf.',
+        'Maskottchen-Laden (eigenes Kästchen): Jeder kann ihm ein Accessoire für 1 bis 5 Münzen kaufen. Es gibt ein gemeinsames Outfit und keinen Schrank: Ein neues Teil wird sofort für alle angezogen und ersetzt, was an dieser Stelle war (Kopf, Gesicht, Hals oder Rücken). Wer ein Teil gekauft hat, oder ein Elternteil, kann es kostenlos ausziehen. Käufe erscheinen unter Aktivität. Der Laden öffnet, sobald das Maskottchen geschlüpft ist. Schaltest du den Laden aus, sind er und das Outfit verborgen.',
+        'Festtags-Look: Halloween im Oktober, Thanksgiving im November, Weihnachten im Dezember: Farben, Dekoration, ein Countdown und ein Kostüm für das Maskottchen. Jeder Feiertag hat ein eigenes Kästchen und einen Vorschau-Knopf.',
       ] },
       { h: 'Serienschilde' },
       { ul: [
@@ -461,7 +470,7 @@ export const GUIDE_DE: GuideSection[] = [
         'Um eine Aufgabe zu löschen, öffne sie mit Bearbeiten; Aufgabe löschen steht unten im Formular. Sie landet 30 Tage lang unter Einstellungen → Zuletzt gelöscht und kann von dort wiederhergestellt werden. Belohnungen funktionieren genauso.',
         'Löschen nimmt nie Münzen weg und löscht nicht, was erledigt wurde: Frühere Erledigungen erscheinen weiter unter Aktivität, auf dem Board und in Zielen unter dem Namen der Aufgabe, auch nachdem sie aus Zuletzt gelöscht verschwunden ist.',
         'Eine gelöschte Belohnung behält ihren Verlauf genauso: Was schon gekauft wurde, bleibt unter ihrem Namen in der Auswertung. Eine noch offene Anfrage bleibt in Belohnungsanfragen (unter dem Katalog), sodass ein Elternteil sie noch freigeben oder ablehnen kann; beim Ablehnen gibt es die Münzen zurück.',
-        'Das Löschen eines Raums (Räume → 🗑) löscht auch seine Aufgaben, und der Raum lässt sich nicht zurückholen. Ihr Verlauf und die Münzen bleiben.',
+        'Das Löschen eines Raums (Räume → ✏️ Räume bearbeiten → 🗑) löscht auch seine Aufgaben, und der Raum lässt sich nicht zurückholen. Ihr Verlauf und die Münzen bleiben.',
         'Ein Familienmitglied zu löschen (Benutzer löschen, unter Einstellungen → Familienmitglieder) lässt sich nicht rückgängig machen. Seine gemeinsame Belohnung, die noch auf ein Elternteil wartete, wird zuerst abgelehnt, damit alle anderen ihre Einzahlungen zurückbekommen. Eine Belohnung, die nur dieses Mitglied sehen konnte, wird versteckt und nicht allen gezeigt: Tippe unter Einstellungen → Belohnungskatalog auf Zeigen, wenn jemand anderes sie bekommen soll.',
       ] },
       { p: 'Nachweisfotos gehören zu ihrer Aufgabe: Verlässt eine Aufgabe Zuletzt gelöscht (oder wird ihr Raum gelöscht), werden ihre Fotos mit gelöscht; wer sie erledigt hat und die Münzen bleiben. Das Avatar-Foto einer Person geht, wenn sie entfernt wird.' },
@@ -535,7 +544,7 @@ export const GUIDE_DE: GuideSection[] = [
           'Jederzeit machbare Aufgaben brauchen eingeschaltetes „Auf Heute anzeigen“.',
           'Außerhalb der Saison (Nur in der Saison) oder bei bestimmten Wochentagen: Sie ist heute nicht fällig.',
           'Sie hat ein Startdatum (📅 Beginnt am), das noch nicht erreicht ist: Ihr Raum zeigt „Beginnt am …“.',
-          'Deine Aufgabenansicht steht vielleicht auf „Meine“ (der Schalter über den Listen), oder ein Elternteil hat sie auf „Nur eigene“ gestellt.',
+          'Deine Aufgabenansicht steht vielleicht auf „Meine“ (die Knöpfe über den Listen), oder ein Elternteil hat sie auf „Nur eigene“ gestellt.',
           'Einmalige Aufgaben erscheinen an ihrem „Erledigen bis“-Tag (ohne Datum unter Jederzeit) und verschwinden, sobald sie erledigt sind.',
           'Du hast sie vielleicht pausiert (💤): Sie wartet 3 Tage unter „… geplante zeigen“. Tippe sie dort an und dann auf Jetzt zurückholen, oder tippe sofort auf Rückgängig in der Meldung „Pausiert“.',
         ] },
@@ -647,6 +656,10 @@ export const GUIDE_DE: GuideSection[] = [
           'Es jubelt (🍪 und ein Hüpfer) nur bei größeren Aufgaben mit Aufwand ab 3★, und bei einer wartenden Aufgabe erst nach der Freigabe. Kleinere Aufgaben füllen seinen Bauch trotzdem, nur still. Sein 🐾 neben einer erledigten Aufgabe folgt derselben Regel.',
           'Jedes Gerät zeigt den Jubel einmal: Ein Handy, das ihn schon gezeigt hat, jubelt nicht noch mal.',
         ] },
+        { q: 'Die App sieht auf dem Handy eines anderen Familienmitglieds anders aus', a: [
+          'Der Stil (Einstellungen → Stil) gilt für die ganze Familie, aber jedes Gerät übernimmt eine Änderung erst, wenn es Heute neu lädt: Heute öffnen oder kurz zu einer anderen App wechseln und zurück.',
+          'Farben sind persönlich: Jede Person wählt ihr Design im Profil, also kann derselbe Stil auf einem Handy orange und auf einem anderen blau sein.',
+        ] },
         { q: 'Keine Feiertagsdekoration oder -farben', a: [
           'Einstellungen → Funktionen → Festtags-Look und der eigene Schalter dieses Feiertags müssen eingeschaltet sein. Es richtet sich nach dem Datum des Geräts.',
           'Profil → Feiertagsfarben aus behält dein eigenes Theme (Dekoration wird weiter angezeigt).',
@@ -740,7 +753,7 @@ export const GUIDE_DE: GuideSection[] = [
         ] },
         { q: 'Der Einrichtungsassistent hat sich nicht geöffnet, oder ich will ihn noch einmal', a: [
           'Er öffnet sich nur für ein Elternteil von selbst, solange die Familie noch keine Räume hat (der Raum Erledigen zählt nicht), bis ihn jemand abschließt oder auf Nicht jetzt tippt.',
-          'Öffne ihn jederzeit über Einstellungen → Einrichtungsassistent (unter Hilfe). Ein neuer Durchlauf fügt nur hinzu, also lösche Räume (Räume → 🗑) oder Belohnungen, die du nicht willst, selbst.',
+          'Öffne ihn jederzeit über Einstellungen → Einrichtungsassistent (unter Hilfe). Ein neuer Durchlauf fügt nur hinzu, also lösche Räume (Räume → ✏️ Räume bearbeiten → 🗑) oder Belohnungen, die du nicht willst, selbst.',
         ] },
         { q: 'Jedes Kind zahlt für dieselbe Belohnung einen anderen Preis', a: [
           'Der Einrichtungsassistent hat jeder Person einen eigenen Preis gegeben, damit alle etwa gleich viele Wochen ihrer eigenen Aufgaben zahlen: Ein Kind mit mehr Aufgaben verdient mehr und zahlt deshalb mehr. Unter der Belohnung steht dann „eigene Preise“.',

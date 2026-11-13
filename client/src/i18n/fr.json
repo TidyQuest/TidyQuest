@@ -698,7 +698,18 @@
       "zoneCreated": "Zone créée",
       "deleteRoomConfirmEmpty": "Supprimer « {room} » ? C'est définitif.",
       "deleteRoomConfirmOne": "Supprimer « {room} » et sa tâche ? C'est définitif. Les pièces déjà gagnées et l'historique restent.",
-      "deleteRoomConfirmMany": "Supprimer « {room} » et ses {n} tâches ? C'est définitif. Les pièces déjà gagnées et l'historique restent."
+      "deleteRoomConfirmMany": "Supprimer « {room} » et ses {n} tâches ? C'est définitif. Les pièces déjà gagnées et l'historique restent.",
+      "allRooms": "Toutes les pièces",
+      "mineChip": "Les miennes",
+      "choreOne": "1 tâche",
+      "choreMany": "{n} tâches",
+      "dueCount": "{n} à faire",
+      "allDone": "tout est fait",
+      "noChores": "aucune tâche",
+      "editRooms": "Modifier les pièces",
+      "doneEditing": "Terminé",
+      "neediestFirst": "les plus urgentes d'abord",
+      "zoneChips": "Afficher les pièces"
     },
     "common": {
       "save": "Enregistrer",
@@ -2515,6 +2526,46 @@
       "urgentFirst": "Les plus urgentes d'abord",
       "showLater": "Afficher {n} de plus · plus tard",
       "noneHere": "Aucune tâche ici."
+    },
+    "choreForm": {
+      "titleAdd": "Ajouter une tâche",
+      "titleEdit": "Modifier la tâche",
+      "when": "Quand",
+      "who": "Qui",
+      "effortCoins": "Effort et pièces",
+      "more": "Plus d'options",
+      "moreHint": "Étapes · minuteur · date de début · saison · santé · pause",
+      "moreHintAdd": "Étapes · minuteur · date de début · saison · santé",
+      "onDemandHint": "Pas de calendrier : à faire quand il le faut",
+      "everyone": "Tout le monde",
+      "specific": "Certaines personnes",
+      "everyoneHint": "N'importe qui peut la faire ; le premier qui la termine gagne les pièces.",
+      "pickPeople": "Touchez les personnes qui font cette tâche.",
+      "firstCome": "Premier arrivé",
+      "firstHint": "N'importe lequel peut la faire ; le premier qui la termine gagne les pièces.",
+      "sharedHint": "Chacun fait sa part et reçoit une part égale des pièces.",
+      "customHint": "Chacun reçoit la part des pièces que vous fixez.",
+      "coins": "Pièces",
+      "coinsAuto": "Laissez vide pour {coins} selon l'effort",
+      "roomOwnerHint": "défini pour toute la pièce",
+      "sumSteps": "{n} étapes",
+      "sumTimer": "minuteur de {n} min",
+      "sumStart": "commence plus tard",
+      "sumSeason": "saisonnière",
+      "sumPaused": "en pause"
+    },
+    "look": {
+      "title": "Style",
+      "lede": "Un seul style pour toute la famille. Seuls les parents (admins) peuvent le changer, et il change sur les appareils de chacun à la prochaine actualisation de l'appli.",
+      "fresh": "Frais",
+      "freshDesc": "Carte de résumé légèrement teintée, cartes claires. Le plus proche de l'apparence habituelle de TidyQuest.",
+      "quest": "Quête",
+      "questDesc": "Un bloc de couleur franc en haut, de gros boutons, chaque tâche dans sa propre tuile. Ambiance jeu.",
+      "calm": "Calme",
+      "calmDesc": "Plat, contours fins, couleur utilisée avec parcimonie.",
+      "coloursTitle": "Les couleurs restent personnelles",
+      "coloursNote": "Le style fixe les formes. Le thème de couleur de chacun, choisi dans son profil, les remplit : les dessins ci-dessus sont donc dans vos couleurs.",
+      "saveFailed": "Impossible d'enregistrer le style. Vérifiez la connexion et réessayez."
     }
   }
 }

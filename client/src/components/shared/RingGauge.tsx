@@ -66,7 +66,7 @@ const RingGauge: React.FC<RingGaugeProps> = ({
         </div>
         <div
           style={{
-            fontSize: 11,
+            fontSize: 12,
             color: 'var(--warm-text-light)',
             fontWeight: 600,
             marginTop: 2,

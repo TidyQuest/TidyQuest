@@ -5,8 +5,8 @@ import { localeFor } from '../../utils/locale';
 import { pushBlock, pushFailure, pushOwner } from '../../utils/push';
 import { pushOnHere, turnOffPush, turnOnPush } from '../../utils/pushSync';
 
-const label: CSSProperties = { fontSize: 11, fontWeight: 700, color: 'var(--warm-text-muted)' };
-const hint: CSSProperties = { fontSize: 11, fontWeight: 600, color: 'var(--warm-text-light)' };
+const label: CSSProperties = { fontSize: 12, fontWeight: 700, color: 'var(--warm-text-muted)' };
+const hint: CSSProperties = { fontSize: 12, fontWeight: 600, color: 'var(--warm-text-light)' };
 const row: CSSProperties = { display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center' };
 
 /**

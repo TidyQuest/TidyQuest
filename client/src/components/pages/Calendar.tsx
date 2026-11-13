@@ -136,18 +136,18 @@ export function Calendar({ tasks, language, onOpenTask, viewer }: CalendarProps)
   const selectedDone = selectedKey ? completionsByDay.get(selectedKey) || [] : [];
   const selectedLabel = selected ? new Date(year, month, selected).toLocaleDateString(locale, { weekday: 'long', month: 'long', day: 'numeric' }) : '';
 
-  const navBtn = { width: 36, height: 36, borderRadius: 12, border: '1.5px solid var(--warm-border)', background: 'var(--warm-bg-subtle)', color: 'var(--warm-text)', cursor: 'pointer', fontSize: 18, fontWeight: 800, fontFamily: 'Nunito' } as const;
+  const navBtn = { width: 36, height: 36, borderRadius: 12, border: 'var(--shape-border-w) solid var(--warm-border)', background: 'var(--warm-bg-subtle)', color: 'var(--warm-text)', cursor: 'pointer', fontSize: 18, fontWeight: 800, fontFamily: 'Nunito' } as const;
   const itemRow = (key: string, iconKey: string | undefined, title: string, subtitle: string, onClick?: () => void) => (
     <button key={key} onClick={onClick} disabled={!onClick} style={{
       display: 'flex', alignItems: 'center', gap: 10, width: '100%', textAlign: 'left', padding: '10px 4px',
       border: 'none', borderBottom: '1px solid var(--warm-border)', background: 'none', cursor: onClick ? 'pointer' : 'default', fontFamily: 'Nunito', color: 'inherit',
     }}>
-      <span style={{ width: 34, height: 34, borderRadius: 12, backgroundColor: 'var(--warm-accent-light)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1.5px solid var(--warm-border)', flexShrink: 0 }}>
+      <span style={{ width: 34, height: 34, borderRadius: 12, backgroundColor: 'var(--warm-accent-light)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: 'var(--shape-border-w) solid var(--warm-border)', flexShrink: 0 }}>
         <TaskIcon iconKey={iconKey} size={20} />
       </span>
       <span style={{ flex: 1, minWidth: 0 }}>
         <span style={{ display: 'block', fontSize: 13, fontWeight: 700, color: 'var(--warm-text)' }}>{title}</span>
-        <span style={{ display: 'block', fontSize: 11, color: 'var(--warm-text-light)', fontWeight: 600 }}>{subtitle}</span>
+        <span style={{ display: 'block', fontSize: 12, color: 'var(--warm-text-light)', fontWeight: 600 }}>{subtitle}</span>
       </span>
     </button>
   );
@@ -224,14 +224,14 @@ export function Calendar({ tasks, language, onOpenTask, viewer }: CalendarProps)
             )}
             {selectedDue.length > 0 && (
               <>
-                <div style={{ fontSize: 11, fontWeight: 800, color: 'var(--health-red)', textTransform: 'uppercase', letterSpacing: '0.05em', marginTop: 8 }}>{t('calendar.tasksDue')}</div>
+                <div style={{ fontSize: 12, fontWeight: 800, color: 'var(--health-red)', marginTop: 8 }}>{t('calendar.tasksDue')}</div>
                 {selectedDue.map((task) => itemRow(`d${task.id}`, task.iconKey, taskName(task.name, task.translationKey), roomDisplayName(task.roomName, task.roomType),
                   onOpenTask ? () => onOpenTask(task.roomId, task.id) : undefined))}
               </>
             )}
             {selectedDone.length > 0 && (
               <>
-                <div style={{ fontSize: 11, fontWeight: 800, color: 'var(--health-green)', textTransform: 'uppercase', letterSpacing: '0.05em', marginTop: 12 }}>{t('calendar.choresDone')}</div>
+                <div style={{ fontSize: 12, fontWeight: 800, color: 'var(--health-green)', marginTop: 12 }}>{t('calendar.choresDone')}</div>
                 {selectedDone.map((c) => {
                   const who = c.participants && c.participants.length > 1 ? c.participants.map((p) => p.displayName).join(' & ') : c.displayName;
                   const time = new Date(c.completedAt).toLocaleTimeString(locale, { hour: 'numeric', minute: '2-digit', timeZone: familyZone() });
@@ -256,14 +256,14 @@ export function Calendar({ tasks, language, onOpenTask, viewer }: CalendarProps)
             <div style={{
               width: 36, height: 36, borderRadius: 12,
               backgroundColor: 'var(--warm-accent-light)', display: 'flex', alignItems: 'center', justifyContent: 'center',
-              border: '1.5px solid var(--warm-border)',
+              border: 'var(--shape-border-w) solid var(--warm-border)',
             }}><TaskIcon iconKey={item.iconKey} size={20} /></div>
             <div style={{ flex: 1 }}>
               <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--warm-text)' }}>{taskName(item.name, item.translationKey)}</div>
-              <div style={{ fontSize: 11, color: 'var(--warm-text-light)', fontWeight: 600 }}>{roomDisplayName(item.roomName, item.roomType)}</div>
+              <div style={{ fontSize: 12, color: 'var(--warm-text-light)', fontWeight: 600 }}>{roomDisplayName(item.roomName, item.roomType)}</div>
             </div>
             <div style={{
-              fontSize: 11, fontWeight: 800, padding: '4px 12px', borderRadius: 10,
+              fontSize: 12, fontWeight: 800, padding: '4px 12px', borderRadius: 10,
               backgroundColor: item.dueInDays <= 5 ? 'var(--health-red-bg)' : 'var(--health-yellow-bg)',
               color: item.dueInDays <= 5 ? 'var(--health-red)' : 'var(--health-yellow)',
             }}>{t('calendar.inDays').replace('{days}', `${item.dueInDays}`)}</div>

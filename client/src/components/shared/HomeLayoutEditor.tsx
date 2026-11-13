@@ -28,7 +28,7 @@ export function HomeLayoutEditor({ cards, onToggle, onReset, onClose, error, t }
           {cards.map((card) => (
             <div key={card.id} className="layout-row" style={{
               display: 'flex', alignItems: 'center', gap: 8, padding: '6px 8px 6px 12px', borderRadius: 12,
-              border: '1.5px solid var(--warm-border)', backgroundColor: 'var(--warm-bg-subtle)', opacity: card.visible ? 1 : 0.6,
+              border: 'var(--shape-border-w) solid var(--warm-border)', backgroundColor: 'var(--warm-bg-subtle)', opacity: card.visible ? 1 : 0.6,
             }}>
               <span style={{ flex: '1 1 0', width: 0, fontSize: 14, fontWeight: 700, color: 'var(--warm-text)', overflowWrap: 'anywhere', textDecoration: card.visible ? 'none' : 'line-through' }}>{card.label}</span>
               <button type="button" className="tq-btn tq-btn-sm" style={iconBtn} onClick={() => onToggle(card.id)} aria-pressed={card.visible}

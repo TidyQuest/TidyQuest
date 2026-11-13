@@ -70,4 +70,20 @@ describe('Settings → Features', () => {
     const me = (await agent.put(`/api/users/${kid.user.id}/profile`).set(auth(kid.token)).send({ holidayColors: false })).body;
     expect(me.holidayColors).toBe(0);
   });
+  it('keeps one look for the whole family, changed by admins only (NEW-37)', async () => {
+    const admin = await createAdmin(agent);
+    const kid = await createUser(agent, admin.token, { username: 'kid', displayName: 'Kid', password: 'pass123', role: 'child' });
+    expect((await agent.get('/api/dashboard').set(auth(kid.token))).body.look).toBe('fresh');
+    expect((await agent.get('/api/features').set(auth(kid.token))).body.look).toBe('fresh');
+    expect((await agent.put('/api/features').set(auth(kid.token)).send({ look: 'quest' })).status).toBe(403);
+    expect((await agent.put('/api/features').set(auth(admin.token)).send({ look: 'neon' })).body.error).toBe('invalid_look');
+    expect((await agent.put('/api/features').set(auth(admin.token)).send({ look: 'calm' })).body.look).toBe('calm');
+    expect((await agent.get('/api/dashboard').set(auth(kid.token))).body.look).toBe('calm');
+    // Kept in backups
+    const backup = (await agent.get('/api/export').set(auth(admin.token))).body;
+    expect(backup.settings.find((s: any) => s.key === 'look')?.value).toBe('calm');
+    // A stored value the app doesn't know falls back to Fresh
+    db.prepare("UPDATE app_settings SET value = 'neon' WHERE key = 'look'").run();
+    expect((await agent.get('/api/dashboard').set(auth(kid.token))).body.look).toBe('fresh');
+  });
 });

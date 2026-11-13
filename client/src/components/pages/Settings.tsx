@@ -15,6 +15,7 @@ import { ThemePicker } from '../shared/ThemePicker';
 import { isTheme, type Theme } from '../../utils/themes';
 import { CustomBadgesAdmin } from '../shared/CustomBadgesAdmin';
 import { FeaturesAdmin } from '../shared/FeaturesAdmin';
+import { LookAdmin } from '../shared/LookAdmin';
 import { NotificationLog, NotifyScheduleAdmin, PeopleNotifyAdmin } from '../shared/NotifyAdmin';
 import { CsvTransfer } from '../shared/CsvTransfer';
 import { SettingsIndex, type SettingsIndexGroup } from '../shared/SettingsIndex';
@@ -700,11 +701,15 @@ export function Settings({
   // beside the index (General when none is picked). Nothing is renamed, so "Settings → X" in the guide still works.
   const go = (id: string) => () => navigate(`/settings/${id}`);
   const onOff = (on: boolean) => (on ? t('settingsIndex.on') : t('notifyAdmin.off'));
+  // The family's look as App.tsx last set it (NEW-37)
+  const lookNow = () => { const l = document.documentElement.getAttribute('data-look'); return l === 'quest' || l === 'calm' ? l : 'fresh'; };
   const awayCount = family.filter((u) => !!(memberVacation[u.id] ?? u.isVacationMode)).length;
   const indexGroups: SettingsIndexGroup[] = [
     { title: t('settingsGroups.household'), rows: [
       { id: 'general', icon: '⚙️', title: t('settings.general'), summary: t('settingsIndex.generalSum'), onOpen: go('general'),
         keywords: [t('settings.strictMode'), t('settings.weekStart'), t('settings.hidePrivateRooms'), t('settings.gamificationEnabled'), t('settings.registrationEnabled'), t('settings.version'), t('settings.timeZone')] },
+      ...(isAdmin ? [{ id: 'look', icon: '🎨', title: t('look.title'), summary: t(`look.${lookNow()}`), onOpen: go('look'),
+        keywords: [t('look.fresh'), t('look.quest'), t('look.calm'), t('settings.theme')] }] : []),
       ...(hostedAccount?.isParent ? [{ id: 'email', icon: '✉️', title: t('hosted.signInEmailTitle'), summary: t('settingsIndex.emailSum'), onOpen: go('email') }] : []),
       { id: 'family', icon: '👨‍👩‍👧‍👦', title: t('settings.familyMembers'), onOpen: go('family'),
         summary: t('settingsIndex.familySum').replace('{n}', String(family.length)).replace('{p}', String(family.filter((u) => u.role === 'admin').length)),
@@ -760,7 +765,7 @@ export function Settings({
               <BellIcon />
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--warm-text)' }}>{t('settings.notifications')}</div>
-                <div style={{ fontSize: 11, color: 'var(--warm-text-light)', fontWeight: 600 }}>{t('settings.notificationsDesc')}</div>
+                <div style={{ fontSize: 12, color: 'var(--warm-text-light)', fontWeight: 600 }}>{t('settings.notificationsDesc')}</div>
               </div>
               <Toggle checked={notifMasterEnabled} onChange={isAdmin ? switchNotifications : () => {}} />
             </div>
@@ -771,7 +776,7 @@ export function Settings({
                   <>
                     {/* Notification time */}
                     <div style={{ display: 'grid', gap: 4 }}>
-                      <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--warm-text-muted)' }}>{t('settings.notificationTime')}</label>
+                      <label style={{ fontSize: 12, fontWeight: 700, color: 'var(--warm-text-muted)' }}>{t('settings.notificationTime')}</label>
                       <input type="time" className="tq-input" value={notifTime} onChange={(e) => {
                         setNotifTime(e.target.value || '09:00');
                         if (e.target.value) saveNotifChoice({ notificationTime: e.target.value });
@@ -779,28 +784,28 @@ export function Settings({
                     </div>
                     {/* Notification types */}
                     <div style={{ display: 'grid', gap: 6, marginTop: 2 }}>
-                      <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--warm-text-muted)' }}>
+                      <label style={{ fontSize: 12, fontWeight: 700, color: 'var(--warm-text-muted)' }}>
                         <input type="checkbox" checked={notifTypes.taskDue} onChange={(e) => tickNotifType('taskDue', e.target.checked)} style={{ marginRight: 6 }} />
                         {t('settings.notificationTypeTaskDue')}
                       </label>
-                      <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--warm-text-muted)' }}>
+                      <label style={{ fontSize: 12, fontWeight: 700, color: 'var(--warm-text-muted)' }}>
                         <input type="checkbox" checked={notifTypes.rewardRequest} onChange={(e) => tickNotifType('rewardRequest', e.target.checked)} style={{ marginRight: 6 }} />
                         {t('settings.notificationTypeRewardRequest')}
                       </label>
-                      <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--warm-text-muted)' }}>
+                      <label style={{ fontSize: 12, fontWeight: 700, color: 'var(--warm-text-muted)' }}>
                         <input type="checkbox" checked={notifTypes.achievementUnlocked} onChange={(e) => tickNotifType('achievementUnlocked', e.target.checked)} style={{ marginRight: 6 }} />
                         {t('settings.notificationTypeAchievementUnlocked')}
                       </label>
-                      <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--warm-text-muted)' }}>
+                      <label style={{ fontSize: 12, fontWeight: 700, color: 'var(--warm-text-muted)' }}>
                         <input type="checkbox" checked={notifTypes.choreApproval !== false} onChange={(e) => tickNotifType('choreApproval', e.target.checked)} style={{ marginRight: 6 }} />
                         {t('settings.notificationTypeChoreApproval')}
                       </label>
-                      <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--warm-text-muted)' }}>
+                      <label style={{ fontSize: 12, fontWeight: 700, color: 'var(--warm-text-muted)' }}>
                         <input type="checkbox" checked={notifTypes.coinBoost !== false} onChange={(e) => tickNotifType('coinBoost', e.target.checked)} style={{ marginRight: 6 }} />
                         {t('settings.notificationTypeCoinBoost')}
                       </label>
                       {(['reminder', 'outcome', 'summary', 'nudge'] as const).map((k) => (
-                        <label key={k} style={{ fontSize: 11, fontWeight: 700, color: 'var(--warm-text-muted)' }}>
+                        <label key={k} style={{ fontSize: 12, fontWeight: 700, color: 'var(--warm-text-muted)' }}>
                           <input type="checkbox" checked={notifTypes[k] !== false} onChange={(e) => tickNotifType(k, e.target.checked)} style={{ marginRight: 6 }} />
                           {t(`notifyAdmin.kind_${k}`)} <span style={{ fontWeight: 600, color: 'var(--warm-text-light)' }}>· {t(`notifyAdmin.kindDesc_${k}`)}</span>
                         </label>
@@ -817,9 +822,9 @@ export function Settings({
                       {telegramEnabled && (
                         <div style={{ display: 'grid', gap: 6, marginTop: 8 }}>
                           <input className="tq-input" value={notifChatId} onChange={(e) => setNotifChatId(e.target.value)} placeholder={t('settings.telegramChatId')} />
-                          <div style={{ fontSize: 11, color: 'var(--warm-text-muted)', fontWeight: 700 }}>{t('settings.telegramChatIdHint')}</div>
+                          <div style={{ fontSize: 12, color: 'var(--warm-text-muted)', fontWeight: 700 }}>{t('settings.telegramChatIdHint')}</div>
                           <input type="password" className="tq-input" value={notifToken} onChange={(e) => setNotifToken(e.target.value)} placeholder={notifHasToken ? t('settings.telegramTokenConfigured') : t('settings.telegramToken')} />
-                          <div style={{ fontSize: 11, color: 'var(--warm-text-muted)', fontWeight: 700 }}>{t('settings.telegramTokenHint')}</div>
+                          <div style={{ fontSize: 12, color: 'var(--warm-text-muted)', fontWeight: 700 }}>{t('settings.telegramTokenHint')}</div>
                           <div style={{ display: 'flex', gap: 8 }}>
                             <button className="tq-btn tq-btn-secondary tq-btn-sm" onClick={saveNotifications}>{t('common.save')}</button>
                             <button className="tq-btn tq-btn-secondary tq-btn-sm" onClick={testTelegram}>{t('settings.sendTestNotification')}</button>
@@ -839,18 +844,18 @@ export function Settings({
                         <div style={{ display: 'grid', gap: 6, marginTop: 8 }}>
                           {!hosted && (
                             <div style={{ display: 'grid', gap: 4 }}>
-                              <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--warm-text-muted)' }}>{t('settings.ntfyServerUrl')}</label>
+                              <label style={{ fontSize: 12, fontWeight: 700, color: 'var(--warm-text-muted)' }}>{t('settings.ntfyServerUrl')}</label>
                               <input className="tq-input" value={ntfyServerUrl} onChange={(e) => setNtfyServerUrl(e.target.value)} placeholder="https://ntfy.sh" />
                             </div>
                           )}
                           <div style={{ display: 'grid', gap: 4 }}>
-                            <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--warm-text-muted)' }}>{t('settings.ntfyTopic')}</label>
+                            <label style={{ fontSize: 12, fontWeight: 700, color: 'var(--warm-text-muted)' }}>{t('settings.ntfyTopic')}</label>
                             <input className="tq-input" value={ntfyTopic} onChange={(e) => setNtfyTopic(e.target.value)} placeholder={t('settings.ntfyTopicPlaceholder')} />
                           </div>
                           <div style={{ display: 'grid', gap: 4 }}>
-                            <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--warm-text-muted)' }}>{t('settings.ntfyToken')}</label>
+                            <label style={{ fontSize: 12, fontWeight: 700, color: 'var(--warm-text-muted)' }}>{t('settings.ntfyToken')}</label>
                             <input type="password" className="tq-input" value={ntfyToken} onChange={(e) => setNtfyToken(e.target.value)} placeholder={ntfyHasToken ? t('settings.ntfyTokenConfigured') : t('settings.ntfyTokenPlaceholder')} />
-                            <div style={{ fontSize: 11, color: 'var(--warm-text-muted)', fontWeight: 700 }}>{t('settings.ntfyTokenHint')}</div>
+                            <div style={{ fontSize: 12, color: 'var(--warm-text-muted)', fontWeight: 700 }}>{t('settings.ntfyTokenHint')}</div>
                           </div>
                           <div style={{ display: 'flex', gap: 8 }}>
                             <button className="tq-btn tq-btn-secondary tq-btn-sm" onClick={saveNotifications}>{t('common.save')}</button>
@@ -860,10 +865,10 @@ export function Settings({
                       )}
                     </div>
 
-                    {notifMsg && <div style={{ fontSize: 11, color: notifMsg.includes('✓') || notifMsg.includes('saved') || notifMsg.includes('sent') || notifMsg.includes('enregistr') || notifMsg.includes('envoy') ? 'var(--health-green)' : 'var(--warm-text-muted)', fontWeight: 700 }}>{notifMsg}</div>}
+                    {notifMsg && <div style={{ fontSize: 12, color: notifMsg.includes('✓') || notifMsg.includes('saved') || notifMsg.includes('sent') || notifMsg.includes('enregistr') || notifMsg.includes('envoy') ? 'var(--health-green)' : 'var(--warm-text-muted)', fontWeight: 700 }}>{notifMsg}</div>}
                   </>
                 ) : (
-                  <div style={{ fontSize: 11, color: 'var(--warm-text-muted)', fontWeight: 700 }}>
+                  <div style={{ fontSize: 12, color: 'var(--warm-text-muted)', fontWeight: 700 }}>
                     {t('settings.notificationsDisabledHint')}
                   </div>
                 )}
@@ -879,9 +884,9 @@ export function Settings({
                 </svg>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--warm-text)' }}>{t('settings.vacationMode')}</div>
-                  <div style={{ fontSize: 11, color: 'var(--warm-text-light)', fontWeight: 600 }}>{t('settings.vacationDesc')}</div>
+                  <div style={{ fontSize: 12, color: 'var(--warm-text-light)', fontWeight: 600 }}>{t('settings.vacationDesc')}</div>
                   {vacationEnabled && vacationConfig?.vacationStartDate && (
-                    <div style={{ fontSize: 11, color: 'var(--warm-accent)', marginTop: 2 }}>
+                    <div style={{ fontSize: 12, color: 'var(--warm-accent)', marginTop: 2 }}>
                       {t('settings.vacationSince')} {new Date(vacationConfig.vacationStartDate).toLocaleDateString()}
                     </div>
                   )}
@@ -930,7 +935,7 @@ export function Settings({
                         <div style={{ flex: 1 }}>
                           <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--warm-text)' }}>{u.displayName}</div>
                           {isOn && u.vacationStartDate && (
-                            <div style={{ fontSize: 10, color: 'var(--warm-accent)' }}>{t('settings.vacationSince')} {new Date(u.vacationStartDate).toLocaleDateString()}</div>
+                            <div style={{ fontSize: 12, color: 'var(--warm-accent)' }}>{t('settings.vacationSince')} {new Date(u.vacationStartDate).toLocaleDateString()}</div>
                           )}
                         </div>
                         <Toggle checked={isOn} onChange={async (val) => {
@@ -945,7 +950,7 @@ export function Settings({
                       </div>
                       {isOn && (
                         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 6, paddingLeft: 38 }}>
-                          <label style={{ fontSize: 11, fontWeight: 600, color: 'var(--warm-text-light)', whiteSpace: 'nowrap' }}>
+                          <label style={{ fontSize: 12, fontWeight: 600, color: 'var(--warm-text-light)', whiteSpace: 'nowrap' }}>
                             {t('settings.vacationReturnDate')}
                           </label>
                           <input
@@ -964,7 +969,7 @@ export function Settings({
                                 setMemberReturn((prev) => ({ ...prev, [u.id]: returnDate })); // not saved: show what is
                               }
                             }}
-                            style={{ fontSize: 11 }}
+                            style={{ fontSize: 12 }}
                           />
                         </div>
                       )}
@@ -983,7 +988,7 @@ export function Settings({
                 </svg>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--warm-text)' }}>{t('settings.registrationEnabled')}</div>
-                  <div style={{ fontSize: 11, color: 'var(--warm-text-light)', fontWeight: 600 }}>{t('settings.registrationEnabledDesc')}</div>
+                  <div style={{ fontSize: 12, color: 'var(--warm-text-light)', fontWeight: 600 }}>{t('settings.registrationEnabledDesc')}</div>
                 </div>
                 <Toggle
                   checked={registrationEnabled}
@@ -1004,7 +1009,7 @@ export function Settings({
                 </svg>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--warm-text)' }}>{t('settings.strictMode')}</div>
-                  <div style={{ fontSize: 11, color: 'var(--warm-text-light)', fontWeight: 600 }}>{t('settings.strictModeDesc')}</div>
+                  <div style={{ fontSize: 12, color: 'var(--warm-text-light)', fontWeight: 600 }}>{t('settings.strictModeDesc')}</div>
                 </div>
                 <Toggle
                   checked={strictModeEnabled}
@@ -1025,7 +1030,7 @@ export function Settings({
                 </svg>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--warm-text)' }}>{t('settings.weekStart')}</div>
-                  <div style={{ fontSize: 11, color: 'var(--warm-text-light)', fontWeight: 600 }}>{t('settings.weekStartDesc')}</div>
+                  <div style={{ fontSize: 12, color: 'var(--warm-text-light)', fontWeight: 600 }}>{t('settings.weekStartDesc')}</div>
                 </div>
                 <select className="tq-input-compact" aria-label={t('settings.weekStart')} value={weekStartPick ?? weekStart} disabled={weekStartPick !== null}
                   onChange={(e) => {
@@ -1048,7 +1053,7 @@ export function Settings({
                 </svg>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--warm-text)' }}>{t('settings.hidePrivateRooms')}</div>
-                  <div style={{ fontSize: 11, color: 'var(--warm-text-light)', fontWeight: 600 }}>{t('settings.hidePrivateRoomsDesc')}</div>
+                  <div style={{ fontSize: 12, color: 'var(--warm-text-light)', fontWeight: 600 }}>{t('settings.hidePrivateRoomsDesc')}</div>
                 </div>
                 <Toggle
                   checked={hidePrivateRooms}
@@ -1066,7 +1071,7 @@ export function Settings({
                 </svg>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--warm-text)' }}>{t('settings.gamificationEnabled')}</div>
-                  <div style={{ fontSize: 11, color: 'var(--warm-text-light)', fontWeight: 600 }}>{t('settings.gamificationEnabledDesc')}</div>
+                  <div style={{ fontSize: 12, color: 'var(--warm-text-light)', fontWeight: 600 }}>{t('settings.gamificationEnabledDesc')}</div>
                 </div>
                 <Toggle
                   checked={gamificationEnabled}
@@ -1080,7 +1085,7 @@ export function Settings({
               </div>
             )}
             {!isAdmin && (
-              <div style={{ marginTop: 8, fontSize: 11, color: 'var(--warm-text-muted)', fontWeight: 700 }}>
+              <div style={{ marginTop: 8, fontSize: 12, color: 'var(--warm-text-muted)', fontWeight: 700 }}>
                 {t('settings.adminRequired')}
               </div>
             )}
@@ -1092,7 +1097,7 @@ export function Settings({
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--warm-text)' }}>{t('settings.version')}</div>
                 {/* NEW-20: the AGPL's offer of this version's code */}
-                <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--warm-text-light)', marginTop: 2 }}>
+                <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--warm-text-light)', marginTop: 2 }}>
                   {sourceUrl
                     ? <a href={sourceUrl} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--warm-accent)', fontWeight: 700 }}>{t('about.sourceCode')}</a>
                     : t('about.sourceCode')}
@@ -1102,7 +1107,7 @@ export function Settings({
                 </div>
               </div>
               <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--warm-text-muted)', textAlign: 'right' }}>
-                v{__APP_VERSION__}{__APP_BUILD__ && <span style={{ display: 'block', fontSize: 11, color: 'var(--warm-text-light)' }}>{__APP_BUILD__}</span>}
+                v{__APP_VERSION__}{__APP_BUILD__ && <span style={{ display: 'block', fontSize: 12, color: 'var(--warm-text-light)' }}>{__APP_BUILD__}</span>}
               </span>
             </div>
           </div>)}
@@ -1111,21 +1116,21 @@ export function Settings({
           {cur === 'approvals' && isAdmin && strictModeEnabled && (
             <div className="tq-card settings-admin-card" style={{ padding: 24 }}>
               <h3 style={{ fontSize: 15, fontWeight: 800, color: 'var(--warm-text)', margin: '0 0 12px' }}>{t('settings.pendingValidations')}</h3>
-              <div style={{ fontSize: 11, color: 'var(--warm-text-light)', fontWeight: 600, marginBottom: 10 }}>{t('settings.pendingValidationsDesc')}</div>
+              <div style={{ fontSize: 12, color: 'var(--warm-text-light)', fontWeight: 600, marginBottom: 10 }}>{t('settings.pendingValidationsDesc')}</div>
               <PendingApprovals items={pendingCompletions} language={user.language} gamificationEnabled={gamificationEnabled} onChanged={loadPendingCompletions} />
               {pendingCompletions.length === 0 && (
-                <div style={{ fontSize: 11, color: 'var(--warm-text-light)', fontWeight: 600 }}>{t('settings.noPendingValidations')}</div>
+                <div style={{ fontSize: 12, color: 'var(--warm-text-light)', fontWeight: 600 }}>{t('settings.noPendingValidations')}</div>
               )}
             </div>
           )}
           {cur === 'coins' && isAdmin && gamificationEnabled && (
             <div className="tq-card tq-card-padded settings-admin-card">
               <h3 className="tq-card-title">{t('settings.coinsPerEffort')}</h3>
-              <div style={{ fontSize: 11, color: 'var(--warm-text-light)', fontWeight: 600, marginBottom: 10 }}>{t('settings.coinsPerEffortDesc')}</div>
+              <div style={{ fontSize: 12, color: 'var(--warm-text-light)', fontWeight: 600, marginBottom: 10 }}>{t('settings.coinsPerEffortDesc')}</div>
               <div style={{ display: 'grid', gap: 8, marginBottom: 10 }}>
                 {[1, 2, 3, 4, 5].map((e) => (
-                    <div key={e} className="coins-effort-row" style={{ display: 'grid', gridTemplateColumns: '96px minmax(0, 1fr) 116px', alignItems: 'center', gap: 10, backgroundColor: 'var(--warm-bg-subtle)', border: '1.5px solid var(--warm-border)', borderRadius: 12, padding: '8px 10px' }}>
-                      <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--warm-text-muted)' }}>{t('roomDetail.effort')} {e}</div>
+                    <div key={e} className="coins-effort-row" style={{ display: 'grid', gridTemplateColumns: '96px minmax(0, 1fr) 116px', alignItems: 'center', gap: 10, backgroundColor: 'var(--warm-bg-subtle)', border: 'var(--shape-border-w) solid var(--warm-border)', borderRadius: 12, padding: '8px 10px' }}>
+                      <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--warm-text-muted)' }}>{t('roomDetail.effort')} {e}</div>
                       <div className="coins-effort-dots"><EffortDots effort={e} /></div>
                       <div className="coins-effort-value" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                         <CoinIcon />
@@ -1150,8 +1155,8 @@ export function Settings({
           {cur === 'goals' && isAdmin && gamificationEnabled && (
             <div className="tq-card tq-card-padded settings-admin-card">
               <h3 className="tq-card-title">{t('settings.goalsSection')}</h3>
-              <div style={{ fontSize: 11, color: 'var(--warm-text-light)', fontWeight: 600, marginBottom: 10 }}>{t('settings.goalsSectionDesc')}</div>
-              <div style={{ backgroundColor: 'var(--warm-bg-subtle)', border: '1.5px solid var(--warm-border)', borderRadius: 12, padding: '10px 12px', marginBottom: 10 }}>
+              <div style={{ fontSize: 12, color: 'var(--warm-text-light)', fontWeight: 600, marginBottom: 10 }}>{t('settings.goalsSectionDesc')}</div>
+              <div style={{ backgroundColor: 'var(--warm-bg-subtle)', border: 'var(--shape-border-w) solid var(--warm-border)', borderRadius: 12, padding: '10px 12px', marginBottom: 10 }}>
                 <div style={{ fontSize: 12, fontWeight: 800, color: 'var(--warm-text)', marginBottom: 6 }}>🤝 {t('board.familyGoalAdmin')}</div>
                 <FamilyGoalAdmin language={user.language} />
               </div>
@@ -1159,7 +1164,7 @@ export function Settings({
                 {family
                   .filter((u) => u.id !== user.id && u.role !== 'admin')
                   .map((u) => (
-                    <div key={u.id} style={{ backgroundColor: 'var(--warm-bg-subtle)', border: '1.5px solid var(--warm-border)', borderRadius: 12, padding: '10px 12px' }}>
+                    <div key={u.id} style={{ backgroundColor: 'var(--warm-bg-subtle)', border: 'var(--shape-border-w) solid var(--warm-border)', borderRadius: 12, padding: '10px 12px' }}>
                       <div style={{ fontSize: 12, fontWeight: 800, color: 'var(--warm-text)', marginBottom: 8 }}>{u.displayName}</div>
                       <div style={{ display: 'grid', gap: 6, marginBottom: 8 }}>
                         {(memberGoals[u.id] || []).map((g) => (
@@ -1167,7 +1172,7 @@ export function Settings({
                         ))}
                       </div>
                       {memberGoalMsg[u.id] && (
-                        <div style={{ fontSize: 11, color: 'var(--warm-text-light)', fontWeight: 700 }}>{memberGoalMsg[u.id]}</div>
+                        <div style={{ fontSize: 12, color: 'var(--warm-text-light)', fontWeight: 700 }}>{memberGoalMsg[u.id]}</div>
                       )}
                       <div className="goal-member-form" style={{ display: 'grid', gridTemplateColumns: '1.4fr 100px 90px 130px auto', gap: 8 }}>
                         <input
@@ -1205,7 +1210,7 @@ export function Settings({
                         <button className="tq-btn tq-btn-secondary tq-btn-sm" onClick={() => handleAddGoal(u)}>{t('settings.addGoal')}</button>
                       </div>
                       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, alignItems: 'center', marginTop: 6 }}>
-                        <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, fontWeight: 700, color: 'var(--warm-text-muted)', cursor: 'pointer' }}>
+                        <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 700, color: 'var(--warm-text-muted)', cursor: 'pointer' }}>
                           <input type="checkbox" checked={!!goalRepeat[u.id]} onChange={(e) => setGoalRepeat((prev) => ({ ...prev, [u.id]: e.target.checked }))} style={{ accentColor: 'var(--warm-accent)' }} />
                           {t('goals.repeatWeekly')}
                         </label>
@@ -1242,8 +1247,14 @@ export function Settings({
           {cur === 'boosts' && isAdmin && gamificationEnabled && (
             <div className="tq-card tq-card-padded settings-admin-card">
               <h3 className="tq-card-title">{t('boosts.title')}</h3>
-              <div style={{ fontSize: 11, color: 'var(--warm-text-light)', fontWeight: 600, marginBottom: 10 }}>{t('boosts.desc')}</div>
+              <div style={{ fontSize: 12, color: 'var(--warm-text-light)', fontWeight: 600, marginBottom: 10 }}>{t('boosts.desc')}</div>
               <CoinBoostsAdmin rooms={rooms} language={user.language} />
+            </div>
+          )}
+          {cur === 'look' && isAdmin && (
+            <div className="tq-card tq-card-padded settings-admin-card">
+              <h3 className="tq-card-title">🎨 {t('look.title')}</h3>
+              <LookAdmin language={user.language} family={family} onChanged={onDataChanged} />
             </div>
           )}
           {cur === 'features' && isAdmin && (
@@ -1275,7 +1286,7 @@ export function Settings({
                 {s.icon}
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--warm-text)' }}>{s.title}</div>
-                  <div style={{ fontSize: 11, color: 'var(--warm-text-light)', fontWeight: 600 }}>{s.desc}</div>
+                  <div style={{ fontSize: 12, color: 'var(--warm-text-light)', fontWeight: 600 }}>{s.desc}</div>
                 </div>
                 {s.btn && (
                   <button className="tq-btn tq-btn-sm" onClick={isAdmin ? s.action! : () => {}} disabled={!isAdmin} style={{ backgroundColor: 'var(--warm-accent-light)', color: 'var(--warm-accent)', border: '1.5px solid var(--warm-accent)' }}>
@@ -1309,7 +1320,7 @@ export function Settings({
       {cur === 'rewards' && isAdmin && gamificationEnabled && (
         <div className="tq-card tq-card-padded settings-admin-card">
           <h3 className="tq-card-title">{t('settings.rewardsSection')}</h3>
-          <div style={{ fontSize: 11, color: 'var(--warm-text-light)', fontWeight: 600, marginBottom: 10 }}>{t('settings.rewardsSectionDesc')}</div>
+          <div style={{ fontSize: 12, color: 'var(--warm-text-light)', fontWeight: 600, marginBottom: 10 }}>{t('settings.rewardsSectionDesc')}</div>
           <div className="rewards-add-form" style={{ display: 'grid', gridTemplateColumns: '1.2fr 1.4fr 100px auto auto', gap: 8, marginBottom: 10 }}>
             <input className="tq-input" value={rewardDraft.title} onChange={(e) => setRewardDraft((p) => ({ ...p, title: e.target.value }))} placeholder={t('settings.rewardTitle')} />
             <input className="tq-input" value={rewardDraft.description} onChange={(e) => setRewardDraft((p) => ({ ...p, description: e.target.value }))} placeholder={t('settings.rewardDesc')} />
@@ -1345,18 +1356,18 @@ export function Settings({
                         if (e.key === 'Enter') await saveRewardEdit(r);
                         if (e.key === 'Escape') cancelRewardEdit();
                       }}
-                      style={{ fontSize: 11 }}
+                      style={{ fontSize: 12 }}
                     />
                   </>
                 ) : (
                   <>
                     <div style={{ fontSize: 12, fontWeight: 800, color: 'var(--warm-text)', opacity: r.isActive === false ? 0.55 : 1 }}>
-                      {r.isActive === false && <span style={{ marginRight: 6, fontSize: 10, padding: '1px 6px', borderRadius: 6, border: '1px solid var(--warm-border)', color: 'var(--warm-text-secondary)' }}>{t('pause.hidden')}</span>}
+                      {r.isActive === false && <span style={{ marginRight: 6, fontSize: 12, padding: '1px 6px', borderRadius: 6, border: '1px solid var(--warm-border)', color: 'var(--warm-text-secondary)' }}>{t('pause.hidden')}</span>}
                       {rewardTitle(r)}
-                      {r.category && <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--warm-text-muted)' }}>🏷 {r.category}</div>}
-                      {rulesSummary(r, family, t) && <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--warm-accent)' }}>{rulesSummary(r, family, t)}</div>}
+                      {r.category && <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--warm-text-muted)' }}>🏷 {r.category}</div>}
+                      {rulesSummary(r, family, t) && <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--warm-accent)' }}>{rulesSummary(r, family, t)}</div>}
                     </div>
-                    <div style={{ fontSize: 11, color: 'var(--warm-text-light)', fontWeight: 600 }}>{rewardDesc(r)}</div>
+                    <div style={{ fontSize: 12, color: 'var(--warm-text-light)', fontWeight: 600 }}>{rewardDesc(r)}</div>
                   </>
                 )}
                 {editingRewardId === r.id ? (
@@ -1369,28 +1380,28 @@ export function Settings({
                       if (e.key === 'Enter') await saveRewardEdit(r);
                       if (e.key === 'Escape') cancelRewardEdit();
                     }}
-                    style={{ padding: '6px 8px', borderRadius: 8, border: '1.5px solid var(--warm-border)', fontFamily: 'Nunito', fontSize: 12 }}
+                    style={{ padding: '6px 8px', borderRadius: 8, border: 'var(--shape-border-w) solid var(--warm-border)', fontFamily: 'Nunito', fontSize: 12 }}
                   />
                 ) : (
                   <div style={{ fontSize: 12, fontWeight: 800, color: 'var(--warm-accent)', display: 'flex', alignItems: 'center', gap: 4 }}><CoinIcon /> {formatCoins(r.costCoins)}</div>
                 )}
                 {editingRewardId === r.id ? (
                   <div className="rewards-row-actions" style={{ display: 'flex', gap: 6, justifyContent: 'flex-end' }}>
-                    <button className="tq-btn" onClick={async () => { cancelRewardEdit(); await deleteReward(r); }} style={{ padding: '4px 8px', fontSize: 10, background: 'none', color: 'var(--warm-danger)', border: '1.5px solid var(--warm-danger-border)', marginRight: 'auto' }}>{t('common.delete')}</button>
-                    <button className="tq-btn" onClick={cancelRewardEdit} style={{ padding: '4px 8px', fontSize: 10 }}>{t('common.cancel')}</button>
-                    <button className="tq-btn tq-btn-primary" onClick={async () => { await saveRewardEdit(r); }} style={{ padding: '4px 8px', fontSize: 10 }}>{t('common.save')}</button>
+                    <button className="tq-btn" onClick={async () => { cancelRewardEdit(); await deleteReward(r); }} style={{ padding: '4px 8px', fontSize: 12, background: 'none', color: 'var(--warm-danger)', border: '1.5px solid var(--warm-danger-border)', marginRight: 'auto' }}>{t('common.delete')}</button>
+                    <button className="tq-btn" onClick={cancelRewardEdit} style={{ padding: '4px 8px', fontSize: 12 }}>{t('common.cancel')}</button>
+                    <button className="tq-btn tq-btn-primary" onClick={async () => { await saveRewardEdit(r); }} style={{ padding: '4px 8px', fontSize: 12 }}>{t('common.save')}</button>
                   </div>
                 ) : (
                   <div className="rewards-row-actions" style={{ display: 'flex', gap: 6, justifyContent: 'flex-end' }}>
-                    <button className="tq-btn" onClick={() => moveReward(r.id, -1)} disabled={index === 0} aria-label={t('rewardOrder.up')} title={t('rewardOrder.up')} style={{ padding: '4px 7px', fontSize: 10 }}>↑</button>
-                    <button className="tq-btn" onClick={() => moveReward(r.id, 1)} disabled={index === orderedRewards.length - 1} aria-label={t('rewardOrder.down')} title={t('rewardOrder.down')} style={{ padding: '4px 7px', fontSize: 10 }}>↓</button>
-                    <button className="tq-btn" onClick={() => setRulesOpenId(rulesOpenId === r.id ? null : r.id)} style={{ padding: '4px 8px', fontSize: 10 }}>{t('rewardRules.rules')}</button>
-                    <button className="tq-btn" onClick={() => toggleRewardHidden(r)} aria-pressed={r.isActive === false} style={{ padding: '4px 8px', fontSize: 10 }}>{r.isActive === false ? t('pause.show') : t('pause.hide')}</button>
-                    <button className="tq-btn" onClick={() => startRewardEdit(r)} style={{ padding: '4px 8px', fontSize: 10 }}>{t('common.edit')}</button>
+                    <button className="tq-btn" onClick={() => moveReward(r.id, -1)} disabled={index === 0} aria-label={t('rewardOrder.up')} title={t('rewardOrder.up')} style={{ padding: '4px 7px', fontSize: 12 }}>↑</button>
+                    <button className="tq-btn" onClick={() => moveReward(r.id, 1)} disabled={index === orderedRewards.length - 1} aria-label={t('rewardOrder.down')} title={t('rewardOrder.down')} style={{ padding: '4px 7px', fontSize: 12 }}>↓</button>
+                    <button className="tq-btn" onClick={() => setRulesOpenId(rulesOpenId === r.id ? null : r.id)} style={{ padding: '4px 8px', fontSize: 12 }}>{t('rewardRules.rules')}</button>
+                    <button className="tq-btn" onClick={() => toggleRewardHidden(r)} aria-pressed={r.isActive === false} style={{ padding: '4px 8px', fontSize: 12 }}>{r.isActive === false ? t('pause.show') : t('pause.hide')}</button>
+                    <button className="tq-btn" onClick={() => startRewardEdit(r)} style={{ padding: '4px 8px', fontSize: 12 }}>{t('common.edit')}</button>
                   </div>
                 )}
                 {editingRewardId === r.id && (
-                  <label style={{ gridColumn: '1 / -1', display: 'flex', alignItems: 'center', gap: 8, fontSize: 11, fontWeight: 700, color: 'var(--warm-text-light)' }}>
+                  <label style={{ gridColumn: '1 / -1', display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, fontWeight: 700, color: 'var(--warm-text-light)' }}>
                     {t('rewardOrder.category')}
                     <input className="tq-input-compact" list="reward-categories" value={editingRewardCategory} maxLength={40}
                       onChange={(e) => setEditingRewardCategory(e.target.value)} placeholder={t('rewardOrder.categoryPlaceholder')} style={{ flex: 1, minWidth: 0 }} />
@@ -1416,29 +1427,29 @@ export function Settings({
               {rewardRequests.map((rr) => (
                 <div key={rr.id} className="rewards-requests-row" style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr 90px 110px 130px', gap: 8, alignItems: 'center', border: '1px solid var(--warm-border)', borderRadius: 10, padding: '8px 10px', backgroundColor: 'var(--warm-bg-subtle)' }}>
                   <div style={{ fontSize: 12, fontWeight: 800, color: 'var(--warm-text)' }}>{rr.displayName}</div>
-                  <div style={{ fontSize: 11, color: 'var(--warm-text-light)', fontWeight: 700, minWidth: 0, overflowWrap: 'anywhere' }}>
+                  <div style={{ fontSize: 12, color: 'var(--warm-text-light)', fontWeight: 700, minWidth: 0, overflowWrap: 'anywhere' }}>
                     {rewardTitle(rr)}
                     {rr.status === 'rejected' && rr.rejectNote && <div style={{ color: 'var(--warm-text-muted)' }}>💬 {rr.rejectNote}</div>}
                   </div>
-                  <div style={{ fontSize: 11, fontWeight: 800, color: 'var(--warm-accent)', display: 'flex', alignItems: 'center', gap: 4, justifyContent: 'center' }}><CoinIcon /> {rr.costCoins}</div>
-                  <div style={{ fontSize: 10, fontWeight: 800, color: rr.status === 'approved' ? '#15803D' : rr.status === 'rejected' ? '#B91C1C' : rr.status === 'cancelled' ? '#374151' : 'var(--warm-text-light)', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 4 }}>
+                  <div style={{ fontSize: 12, fontWeight: 800, color: 'var(--warm-accent)', display: 'flex', alignItems: 'center', gap: 4, justifyContent: 'center' }}><CoinIcon /> {rr.costCoins}</div>
+                  <div style={{ fontSize: 12, fontWeight: 800, color: rr.status === 'approved' ? '#15803D' : rr.status === 'rejected' ? '#B91C1C' : rr.status === 'cancelled' ? '#374151' : 'var(--warm-text-light)', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 4 }}>
                     {rewardStatusLabel(rr.status)}
                     {rr.status === 'approved' && (
                       <button
                         type="button"
                         className="tq-btn tq-btn-secondary"
-                        style={{ padding: '3px 8px', fontSize: 10 }}
+                        style={{ padding: '3px 8px', fontSize: 12 }}
                         onClick={() => void refundRedemption(rr)}
                       >
                         {t('settings.refundReward')}
                       </button>
                     )}
                   </div>
-                  <div style={{ fontSize: 10, color: 'var(--warm-text-light)', fontWeight: 700 }}>{formatDate(rr.redeemedAt)}</div>
+                  <div style={{ fontSize: 12, color: 'var(--warm-text-light)', fontWeight: 700 }}>{formatDate(rr.redeemedAt)}</div>
                 </div>
               ))}
               {rewardRequests.length === 0 && (
-                <div style={{ fontSize: 11, color: 'var(--warm-text-light)', fontWeight: 600 }}>{t('settings.noRewardRequests')}</div>
+                <div style={{ fontSize: 12, color: 'var(--warm-text-light)', fontWeight: 600 }}>{t('settings.noRewardRequests')}</div>
               )}
             </div>
           </div>
@@ -1452,11 +1463,11 @@ export function Settings({
           </button>
         </div>
         {showAddMember && (
-          <div style={{ marginBottom: 14, padding: 12, borderRadius: 12, backgroundColor: 'var(--warm-bg-warm)', border: '1.5px solid var(--warm-border)' }}>
+          <div style={{ marginBottom: 14, padding: 12, borderRadius: 12, backgroundColor: 'var(--warm-bg-warm)', border: 'var(--shape-border-w) solid var(--warm-border)' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, marginBottom: 10 }}>
               <div>
                 <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--warm-text)' }}>{t('memberLogin.title')}</div>
-                <div style={{ fontSize: 11, color: 'var(--warm-text-light)', fontWeight: 500, marginTop: 2 }}>{t(newMemberCanLogIn ? 'memberLogin.addOnDesc' : 'memberLogin.addOffDesc')}</div>
+                <div style={{ fontSize: 12, color: 'var(--warm-text-light)', fontWeight: 500, marginTop: 2 }}>{t(newMemberCanLogIn ? 'memberLogin.addOnDesc' : 'memberLogin.addOffDesc')}</div>
               </div>
               <Toggle checked={newMemberCanLogIn} onChange={setNewMemberCanLogIn} label={t('memberLogin.title')} />
             </div>
@@ -1472,7 +1483,7 @@ export function Settings({
             {addMemberError && <div role="alert" style={{ marginTop: 8, fontSize: 12, fontWeight: 700, color: 'var(--warm-danger)' }}>{addMemberError}</div>}
             {/* NEW-34 (COPPA §312.4(d)): the privacy policy where a child's details are entered */}
             {hostedAccount?.privacyUrl && (
-              <div style={{ marginTop: 8, fontSize: 11, fontWeight: 600, color: 'var(--warm-text-light)' }}>
+              <div style={{ marginTop: 8, fontSize: 12, fontWeight: 600, color: 'var(--warm-text-light)' }}>
                 <WithLinks text={t('hosted.memberPrivacy')} links={{ privacy: { href: hostedAccount.privacyUrl, label: t('hosted.privacy') } }} />
               </div>
             )}
@@ -1480,14 +1491,14 @@ export function Settings({
         )}
         <div className="family-members-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 12 }}>
           {family.map((u) => (
-            <div key={u.id} className="family-member-card" style={{ backgroundColor: 'var(--warm-bg-warm)', borderRadius: 16, border: '1.5px solid var(--warm-border)', padding: '14px 16px' }}>
+            <div key={u.id} className="family-member-card" style={{ backgroundColor: 'var(--warm-bg-warm)', borderRadius: 'var(--shape-radius-card)', border: 'var(--shape-border-w) solid var(--warm-border)', padding: '14px 16px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                 <UserAvatar userId={u.id} name={u.displayName} color={u.avatarColor} size={44} avatarType={u.avatarType as any} avatarPreset={u.avatarPreset} avatarPhotoUrl={u.avatarPhotoUrl} />
                 <div style={{ flex: 1 }}>
                   <div className="family-member-title-row" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                     <div style={{ fontSize: 14, fontWeight: 800, color: 'var(--warm-text)' }}>{u.displayName}</div>
                     <span style={{
-                      fontSize: 10, fontWeight: 800, textTransform: 'uppercase', letterSpacing: 0.5,
+                      fontSize: 12, fontWeight: 800,
                     color: u.role === 'admin' ? '#C2410C' : u.role === 'member' ? '#0369A1' : '#8A7A6A',
                     backgroundColor: u.role === 'admin' ? '#FFF1E5' : u.role === 'member' ? '#EAF6FF' : '#F4EEE7',
                     border: `1px solid ${u.role === 'admin' ? '#FDBA74' : u.role === 'member' ? '#BAE6FD' : '#E2D5C5'}`,
@@ -1496,15 +1507,15 @@ export function Settings({
                       {u.role === 'admin' ? t('settings.roleAdmin') : u.role === 'member' ? t('settings.roleMember') : t('settings.roleChild')}
                   </span>
                   {u.canLogIn === 0 && (
-                    <span title={t('memberLogin.offDesc')} style={{ fontSize: 10, fontWeight: 800, color: 'var(--warm-text-muted)', border: '1px solid var(--warm-border)', borderRadius: 999, padding: '2px 7px', whiteSpace: 'nowrap' }}>
+                    <span title={t('memberLogin.offDesc')} style={{ fontSize: 12, fontWeight: 800, color: 'var(--warm-text-muted)', border: '1px solid var(--warm-border)', borderRadius: 999, padding: '2px 7px', whiteSpace: 'nowrap' }}>
                       🔒 {t('memberLogin.chip')}
                     </span>
                   )}
                   </div>
                   <div className="family-member-stats" style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 2 }}>
-                    <span style={{ fontSize: 11, color: 'var(--warm-text-light)', fontWeight: 600 }}>{u.coins} {t('settings.coins')}</span>
-                    <span style={{ fontSize: 11, color: 'var(--warm-text-light)', fontWeight: 600 }}>{t('common.daysShort').replace('{n}', String(u.currentStreak))} {t('settings.streak')}</span>
-                    {shields && <ShieldIcons count={u.streakShields} language={user.language} style={{ fontSize: 11 }} />}
+                    <span style={{ fontSize: 12, color: 'var(--warm-text-light)', fontWeight: 600 }}>{u.coins} {t('settings.coins')}</span>
+                    <span style={{ fontSize: 12, color: 'var(--warm-text-light)', fontWeight: 600 }}>{t('common.daysShort').replace('{n}', String(u.currentStreak))} {t('settings.streak')}</span>
+                    {shields && <ShieldIcons count={u.streakShields} language={user.language} style={{ fontSize: 12 }} />}
                   </div>
                 </div>
               </div>
@@ -1515,7 +1526,7 @@ export function Settings({
                       className="tq-input"
                       value={u.role || 'member'}
                       onChange={(e) => onUpdateRole(u.id, e.target.value as 'admin' | 'member' | 'child')}
-                      style={{ width: 'auto', cursor: 'pointer', fontSize: 11 }}
+                      style={{ width: 'auto', cursor: 'pointer', fontSize: 12 }}
                     >
                       {/* A parent always logs in (ENH-16) */}
                       <option value="admin" disabled={u.canLogIn === 0}>{t('settings.roleAdmin')}</option>
@@ -1561,7 +1572,7 @@ export function Settings({
                 <div style={{ marginTop: 10, paddingTop: 10, borderTop: '1px solid var(--warm-border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   <div>
                     <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--warm-text)' }}>{t('settings.participantMode')}</div>
-                    <div style={{ fontSize: 11, color: 'var(--warm-text-light)', fontWeight: 500, marginTop: 2 }}>{t('settings.participantDesc')}</div>
+                    <div style={{ fontSize: 12, color: 'var(--warm-text-light)', fontWeight: 500, marginTop: 2 }}>{t('settings.participantDesc')}</div>
                   </div>
                   <Toggle
                     checked={!!(memberParticipant[u.id] ?? u.isParticipant)}
@@ -1589,7 +1600,7 @@ export function Settings({
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, flexWrap: 'wrap' }}>
                       <div style={{ flex: '1 1 160px' }}>
                         <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--warm-text)' }}>{t('settings.taskView')}</div>
-                        <div style={{ fontSize: 11, color: 'var(--warm-text-light)', fontWeight: 500, marginTop: 2 }}>{t('settings.taskViewDesc')}</div>
+                        <div style={{ fontSize: 12, color: 'var(--warm-text-light)', fontWeight: 500, marginTop: 2 }}>{t('settings.taskViewDesc')}</div>
                       </div>
                       <select className="tq-input" value={view.taskView} style={{ width: 'auto', maxWidth: '100%', cursor: 'pointer', fontSize: 12 }}
                         onChange={(e) => saveView({ ...view, taskView: e.target.value as 'all' | 'mine' | 'mineOnly' })}>
@@ -1601,14 +1612,14 @@ export function Settings({
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10 }}>
                       <div>
                         <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--warm-text)' }}>{t('settings.kidMode')}</div>
-                        <div style={{ fontSize: 11, color: 'var(--warm-text-light)', fontWeight: 500, marginTop: 2 }}>{t('settings.kidModeDesc')}</div>
+                        <div style={{ fontSize: 12, color: 'var(--warm-text-light)', fontWeight: 500, marginTop: 2 }}>{t('settings.kidModeDesc')}</div>
                       </div>
                       <Toggle checked={view.kidMode} onChange={(val) => saveView({ ...view, kidMode: val })} />
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, flexWrap: 'wrap' }}>
                       <div style={{ flex: '1 1 160px' }}>
                         <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--warm-text)' }}>🎯 {t('focus.title')}</div>
-                        <div style={{ fontSize: 11, color: 'var(--warm-text-light)', fontWeight: 500, marginTop: 2 }}>{t('focus.settingDesc')}</div>
+                        <div style={{ fontSize: 12, color: 'var(--warm-text-light)', fontWeight: 500, marginTop: 2 }}>{t('focus.settingDesc')}</div>
                       </div>
                       <select className="tq-input" value={view.focusMode ?? ''} style={{ width: 'auto', maxWidth: '100%', cursor: 'pointer', fontSize: 12 }}
                         aria-label={t('focus.title')}
@@ -1658,7 +1669,7 @@ export function Settings({
                     <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
                       <button className="tq-btn tq-btn-primary tq-btn-sm" onClick={() => handleSaveChildProfile(u)}>{t('common.save')}</button>
                       {memberProfileMsg[u.id] && (
-                        <div style={{ fontSize: 11, color: 'var(--warm-text-light)', fontWeight: 700 }}>{memberProfileMsg[u.id]}</div>
+                        <div style={{ fontSize: 12, color: 'var(--warm-text-light)', fontWeight: 700 }}>{memberProfileMsg[u.id]}</div>
                       )}
                     </div>
                     {u.canLogIn !== 0 && <>
@@ -1667,18 +1678,18 @@ export function Settings({
                       <button className="tq-btn tq-btn-secondary tq-btn-sm" onClick={() => handleSetChildPassword(u)}>{t('settings.resetPassword')}</button>
                     </div>
                     {memberPasswordMsg[u.id] && (
-                      <div style={{ fontSize: 11, color: 'var(--warm-text-light)', fontWeight: 700 }}>{memberPasswordMsg[u.id]}</div>
+                      <div style={{ fontSize: 12, color: 'var(--warm-text-light)', fontWeight: 700 }}>{memberPasswordMsg[u.id]}</div>
                     )}
                     <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
                       <button className="tq-btn tq-btn-secondary tq-btn-sm" onClick={() => handleLogoutAllDevices(u)}>🚪 {t('settings.logoutAllDevices')}</button>
                       {logoutAllMsg[u.id] && (
-                        <span style={{ fontSize: 11, color: 'var(--warm-text-light)', fontWeight: 700 }}>{logoutAllMsg[u.id]}</span>
+                        <span style={{ fontSize: 12, color: 'var(--warm-text-light)', fontWeight: 700 }}>{logoutAllMsg[u.id]}</span>
                       )}
                     </div>
                     </>}
                   </>)}
                   {gamificationEnabled && <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
-                    <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--warm-text-light)' }}>{t('settings.coinsBalance')}: {formatCoins(u.coins)}</span>
+                    <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--warm-text-light)' }}>{t('settings.coinsBalance')}: {formatCoins(u.coins)}</span>
                     <input
                       type="number"
                       className="tq-input-compact"
@@ -1715,7 +1726,7 @@ export function Settings({
                       setCoinAdjustMsg((prev) => ({ ...prev, [u.id]: `${amt > 0 ? '+' : ''}${amt} ✓` }));
                       setTimeout(() => setCoinAdjustMsg((prev) => ({ ...prev, [u.id]: '' })), 2000);
                     })}>{t('settings.adjustCoins')}</button>
-                    {coinAdjustMsg[u.id] && <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--warm-accent)' }}>{coinAdjustMsg[u.id]}</span>}
+                    {coinAdjustMsg[u.id] && <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--warm-accent)' }}>{coinAdjustMsg[u.id]}</span>}
                   </div>}
                 </div>
               )}

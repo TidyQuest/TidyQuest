@@ -120,6 +120,13 @@ export const GUIDE_ES: GuideSection[] = [
         'Contraseña: un padre o una madre puede poner una nueva si alguien olvida la suya. Eso cierra la sesión de esa persona en todos sus dispositivos, y vuelve a entrar con la nueva.',
       ] },
       { tip: 'Activa "Ocultar a los niños las habitaciones privadas de otros" en Ajustes → General si los niños no deben ver, por ejemplo, la habitación de un padre o una madre.' },
+      { h: 'El estilo de la familia' },
+      { where: 'Ajustes → Estilo (solo padres)' },
+      { ul: [
+        'Un solo estilo para toda la familia: Fresco (el predeterminado: tarjeta de resumen con un tono suave, tarjetas claras), Aventura (un bloque de color intenso arriba, botones gruesos, cada tarea en su propio recuadro) o Sereno (plano, contornos finos, color usado con moderación).',
+        'El estilo fija las formas; el tema de color de cada persona (Perfil) las rellena, así que cada tema funciona con cada estilo. La página muestra el tema de cada uno bajo las tres opciones.',
+        'Cambia al momento en este dispositivo y en los de los demás la próxima vez que se actualice la app. Las copias de seguridad lo guardan.',
+      ] },
       { h: 'Alguien que no inicia sesión' },
       { p: 'Para un abuelo, un niño pequeño o cualquiera que no vaya a usar la app: añádelo y hazlo todo por esa persona, sin usuario ni contraseña.' },
       { ul: [
@@ -175,9 +182,9 @@ export const GUIDE_ES: GuideSection[] = [
       { p: 'Las habitaciones contienen tareas. Una habitación asignada a una persona es suya: solo ella (y los padres y miembros) puede hacer sus tareas, y nunca participa en En equipo.' },
       { ul: [
         'Crea una habitación en la página Habitaciones; un tipo de habitación añade tareas sugeridas entre las que puedes elegir.',
-        'Las zonas agrupan habitaciones en la página Habitaciones (por ejemplo "Planta de arriba" o "Misiones de los padres").',
+        'La página Habitaciones muestra una ficha por habitación, las más urgentes primero: su salud, cuántas tareas tiene y cuántas están pendientes hoy. Las zonas agrupan las fichas (por ejemplo "Planta de arriba" o "Misiones de los padres"); toca la etiqueta de una zona arriba para ver solo sus habitaciones, o Mías para las tuyas. Los padres tocan ✏️ Editar habitaciones para renombrar una habitación, ponerla en una zona (🏷️), asignarla a alguien o eliminarla, y para añadir, renombrar o eliminar zonas.',
         'La salud de una habitación es el promedio de sus tareas; la peor habitación es aquella con la que la mascota pide ayuda.',
-        'La barra de una tarea solo se pone roja cuando le toca. Una tarea que aún no se puede hacer (Completar antes desactivado) se queda en amarillo, tanto en su habitación como en su etiqueta de la página Habitaciones.',
+        'La barra de una tarea solo se pone roja cuando le toca. Una tarea que aún no se puede hacer (Completar antes desactivado) se queda en amarillo en su habitación.',
       ] },
     ],
   },
@@ -188,6 +195,8 @@ export const GUIDE_ES: GuideSection[] = [
     parents: true,
     blocks: [
       { where: 'Habitaciones → una habitación → Añadir tarea, o el ✏️ de una tarea' },
+      { h: 'El formulario de tarea' },
+      { p: 'Añadir tarea y ✏️ Editar abren el mismo formulario: una hoja desde abajo en el móvil, un panel junto a la lista en el ordenador. Va por grupos: el nombre, las notas y el icono; Cuándo (Cada, Los, Cada mes o Una vez, o A demanda); Quién (Todos, o toca a las personas, y luego El primero, Compartido, Rotación o Personalizado); Esfuerzo y monedas; y Más opciones, plegado, para los pasos, el temporizador, una fecha de inicio, la temporada, la salud y la pausa. Más opciones dice lo que tiene configurado, así nada se esconde ahí. Guardar se queda abajo por mucho que bajes; Eliminar tarea está al final del formulario.' },
       { h: 'Calendario' },
       { ul: [
         'Cada N días: toca de nuevo N días después de la última vez. Su salud baja durante esos días.',
@@ -202,7 +211,7 @@ export const GUIDE_ES: GuideSection[] = [
       ] },
       { h: 'Monedas' },
       { ul: [
-        'El esfuerzo (1–5) fija las monedas de Ajustes → Monedas por esfuerzo. Las monedas personalizadas lo sustituyen en una tarea: rellena la casilla Monedas personalizadas al añadir o editar la tarea, o déjala en Auto.',
+        'El esfuerzo (1–5) fija las monedas de Ajustes → Monedas por esfuerzo. Las monedas personalizadas lo sustituyen en una tarea: rellena la casilla Monedas en Esfuerzo y monedas al añadir o editar la tarea, o déjala vacía para la cantidad según el esfuerzo.',
         'La Misión de rescate y los eventos de monedas dobles las multiplican ese día.',
       ] },
       { h: 'Quién puede hacerla' },
@@ -245,7 +254,7 @@ export const GUIDE_ES: GuideSection[] = [
       ] },
       { h: 'Pausar una tarea' },
       { ul: [
-        '¿No hace falta durante un tiempo (la piscina en invierno, un niño de campamento)? Los padres abren la tarea en su sala (tocándola), tocan ⋯ (Más opciones) y luego ⏸️ Pausar. O abren Editar, marcan ⏸️ En pausa y eligen un día en Vuelve el (opcional) para que se reactive sola.',
+        '¿No hace falta durante un tiempo (la piscina en invierno, un niño de campamento)? Los padres abren la tarea en su sala (tocándola), tocan ⋯ (Más opciones) y luego ⏸️ Pausar. O abren Editar, luego Más opciones, activan ⏸️ En pausa y eligen un día en Vuelve el (opcional) para que se reactive sola.',
         'Una tarea en pausa sale de Hoy, la página de Tareas, el Calendario, los recordatorios, la Misión de rescate, los equipos y la salud de la casa. Los padres la siguen viendo en gris en su sala, marcada ⏸️ En pausa; los niños no la ven.',
         'Abre la tarea y toca ⋯ → ▶️ Reactivar (o desmarca ⏸️ En pausa). Vuelve como recién hecha, así que no está atrasada. Su historial, sus monedas y a quién está asignada no cambian.',
       ] },
@@ -362,8 +371,8 @@ export const GUIDE_ES: GuideSection[] = [
         'Mascota de la casa: una de 8 criaturas, que se elige y se nombra aquí. Crece con las monedas de la familia ganadas mientras es la mascota activa (eclosiona a las 500, luego a las 2.000, 5.000 y 10.000), su ánimo sigue la salud de la casa y reacciona a los cumpleaños, al objetivo familiar y a la Misión de rescate.',
         'Cambiar de mascota: elegir una criatura que no has tenido empieza como un huevo nuevo. Cada criatura conserva su propio crecimiento, nombre y atuendo, así que al volver a la anterior vuelve tal como estaba. La barriguita y la hora de dormir son compartidas.',
         'Jugar con la mascota: púlsala para ver una reacción. Su barriguita 🍪 se llena un 5% con cada tarea (En equipo cuenta una vez) y se vacía en 2 días. Solo celebra con una 🍪 y un salto las tareas más grandes (esfuerzo de 3★ o más); las pequeñas la llenan sin hacer ruido; cuando está baja, solo dice que tiene hambre. "¿Qué hago?" sugiere una tarea que puedes hacer ahora mismo. Añade un ánimo 🐾 a las tareas terminadas de 3★ o más. Duerme durante la hora de dormir de la familia (se fija bajo la mascota en Funciones, de 9 pm a 7 am por defecto).',
-        'Tienda de la mascota (con su propio interruptor): cualquiera puede comprarle un accesorio por 1 a 5 monedas. Hay un único atuendo compartido y no hay armario: un artículo nuevo se pone al instante para todos y sustituye lo que hubiera en ese sitio (cabeza, cara, cuello o espalda). Quien compró un artículo, o un padre o una madre, puede quitarlo gratis. Las compras aparecen en Actividad. La tienda abre cuando la mascota eclosiona. Al desactivar la tienda se ocultan ella y el atuendo.',
-        'Decoración de temporada: Halloween en octubre, Acción de Gracias en noviembre, Navidad en diciembre: colores, adornos, una cuenta atrás y un disfraz para la mascota. Cada fiesta tiene su propio interruptor y un botón de Vista previa.',
+        'Tienda de la mascota (con su propia casilla): cualquiera puede comprarle un accesorio por 1 a 5 monedas. Hay un único atuendo compartido y no hay armario: un artículo nuevo se pone al instante para todos y sustituye lo que hubiera en ese sitio (cabeza, cara, cuello o espalda). Quien compró un artículo, o un padre o una madre, puede quitarlo gratis. Las compras aparecen en Actividad. La tienda abre cuando la mascota eclosiona. Al desactivar la tienda se ocultan ella y el atuendo.',
+        'Decoración de temporada: Halloween en octubre, Acción de Gracias en noviembre, Navidad en diciembre: colores, adornos, una cuenta atrás y un disfraz para la mascota. Cada fiesta tiene su propia casilla y un botón de Vista previa.',
       ] },
       { h: 'Escudos de racha' },
       { ul: [
@@ -461,7 +470,7 @@ export const GUIDE_ES: GuideSection[] = [
         'Para eliminar una tarea, ábrela con Editar; Eliminar tarea está al final del formulario. Va a Ajustes → Eliminados recientemente durante 30 días y se puede restaurar desde ahí. Las recompensas funcionan igual.',
         'Eliminar nunca quita monedas ni borra lo que se hizo: las veces que se completó siguen apareciendo en Actividad, el Tablero y los objetivos con el nombre de la tarea, incluso cuando ya no está en Eliminados recientemente.',
         'Una recompensa eliminada conserva su historial igual: lo que se compró sigue en Estadísticas con su nombre. Una solicitud que aún espera sigue en Solicitudes de recompensas (bajo el catálogo), así que un padre o una madre todavía puede aprobarla o rechazarla, y al rechazarla se devuelven las monedas.',
-        'Eliminar una habitación (Habitaciones → 🗑) elimina también sus tareas, y la habitación no se puede recuperar. Su historial y sus monedas se quedan.',
+        'Eliminar una habitación (Habitaciones → ✏️ Editar habitaciones → 🗑) elimina también sus tareas, y la habitación no se puede recuperar. Su historial y sus monedas se quedan.',
         'Eliminar a un miembro de la familia (Eliminar usuario, en Ajustes → Miembros de la familia) no se puede deshacer. Su recompensa compartida que aún esperaba a un padre o una madre se rechaza primero, para que los demás recuperen sus aportaciones. Una recompensa que solo esa persona podía ver se oculta en lugar de mostrarse a todos: toca Mostrar en Ajustes → Catálogo de recompensas si debe tenerla otra persona.',
       ] },
       { p: 'Las fotos de prueba van con su tarea: cuando una tarea sale de Eliminados recientemente (o se elimina su habitación), sus fotos se eliminan también, pero quién la hizo y las monedas se quedan. La foto de avatar de una persona se va cuando se la quita.' },
@@ -535,7 +544,7 @@ export const GUIDE_ES: GuideSection[] = [
           'Las tareas a demanda necesitan "Mostrar en Hoy" activado.',
           'Fuera de temporada (Solo en temporada) o con días de la semana fijos: hoy no toca.',
           'Tiene una fecha de inicio (📅 Empieza el) que aún no ha llegado: su habitación muestra «Empieza el …».',
-          'Tu Vista de tareas puede estar en "Mías" (el interruptor encima de las listas), o un padre o una madre la puso en "Solo las suyas".',
+          'Tu Vista de tareas puede estar en "Mías" (los botones encima de las listas), o un padre o una madre la puso en "Solo las suyas".',
           'Las tareas únicas aparecen el día de su fecha "Hacer antes del" (en Cuando quieras si no tienen), y desaparecen al hacerlas.',
           'Puede que la hayas pospuesto (💤): espera en "Ver … programadas" durante 3 días. Tócala ahí y Recuperar ahora, o pulsa Deshacer en el mensaje de "Pospuesta" enseguida.',
         ] },
@@ -647,6 +656,10 @@ export const GUIDE_ES: GuideSection[] = [
           'Solo celebra (🍪 y un salto) las tareas más grandes, de esfuerzo 3★ o más, y una tarea en espera solo cuando se aprueba. Las tareas pequeñas llenan igual su barriguita, sin hacer ruido. Su 🐾 junto a una tarea terminada sigue la misma regla.',
           'Cada dispositivo muestra la celebración una vez: un teléfono que ya la vio no la repite.',
         ] },
+        { q: 'La app se ve distinta en el teléfono de otro miembro de la familia', a: [
+          'El estilo (Ajustes → Estilo) es una sola elección para toda la familia, pero cada dispositivo recoge el cambio cuando vuelve a cargar Hoy: abre Hoy, o cambia a otra app y vuelve.',
+          'Los colores son personales: cada persona elige su tema en Perfil, así que el mismo estilo puede ser naranja en un teléfono y azul en otro.',
+        ] },
         { q: 'No hay adornos ni colores de fiesta', a: [
           'Ajustes → Funciones → Decoración de temporada, y el interruptor de esa fiesta, deben estar activados. Sigue la fecha del dispositivo.',
           'Perfil → Colores de fiesta desactivado conserva tu propio tema (los adornos se siguen viendo).',
@@ -740,7 +753,7 @@ export const GUIDE_ES: GuideSection[] = [
         ] },
         { q: 'El asistente de configuración no se abrió, o quiero volver a usarlo', a: [
           'Solo se abre solo para un padre o una madre, mientras la familia no tiene habitaciones (la habitación Pendientes no cuenta), hasta que alguien lo termina o toca Ahora no.',
-          'Ábrelo cuando quieras desde Ajustes → Asistente de configuración (en Ayuda). Volver a usarlo solo añade, así que elimina tú las habitaciones (Habitaciones → 🗑) o recompensas que no quieras.',
+          'Ábrelo cuando quieras desde Ajustes → Asistente de configuración (en Ayuda). Volver a usarlo solo añade, así que elimina tú las habitaciones (Habitaciones → ✏️ Editar habitaciones → 🗑) o recompensas que no quieras.',
         ] },
         { q: 'Cada niño paga un precio distinto por la misma recompensa', a: [
           'El asistente de configuración dio a cada persona su propio precio para que todos paguen más o menos las mismas semanas de sus propias tareas: un niño con más tareas gana más, así que paga más. Se ve como «precios propios» bajo la recompensa.',

@@ -31,6 +31,18 @@ export function rescueMultiplier(): number {
 /** Holidays the seasonal styling knows (client/src/utils/seasons.ts has their looks and dates). */
 export const HOLIDAYS = ['halloween', 'thanksgiving', 'christmas'] as const;
 
+/** The family's look (Settings → Look, NEW-37): shapes only, colours stay each person's theme. */
+export const LOOKS = ['fresh', 'quest', 'calm'] as const;
+export type Look = typeof LOOKS[number];
+
+/** The look the family picked (app_settings 'look'); Fresh until an admin picks another. */
+export function getLook(): Look {
+  try {
+    const raw = (db.prepare("SELECT value FROM app_settings WHERE key = 'look'").get() as { value: string } | undefined)?.value;
+    return (LOOKS as readonly string[]).includes(raw ?? '') ? raw as Look : 'fresh';
+  } catch { return 'fresh'; }
+}
+
 /** Holidays the family switched off one by one (app_settings 'holidaysOff', a JSON array). */
 export function holidaysOff(): string[] {
   try {

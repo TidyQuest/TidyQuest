@@ -9,8 +9,42 @@ What changed in each release, in plain language, newest first. Releases up to v0
 
 ## Unreleased
 
+### Added
+
+- **Settings → Look: one style for the whole family** (NEW-37, the last step of the new look). Parents pick Fresh
+  (the default: a softly tinted summary card and light cards), Quest (a bold block of colour at the top of the page
+  and in the summary card, gold progress, chunky buttons with a pressed edge, every chore its own tile with a solid
+  green ✓) or Calm (flat, thin outlines, smaller corners, colour only where something needs attention). Each choice has
+  a small drawing in your own colours, and the page lists everyone's colour theme underneath. The look sets the
+  shapes and each person's theme still sets the colours, so every theme works with every look. It changes on your
+  device at once and on everyone else's when their Today next loads, and backups keep it. Kids and members don't see
+  the setting.
+
 ### Changed
 
+- **A calmer, plainer look: "Fresh"** (ENH-30, the last layout step of the new look). Cards have thin borders and
+  smaller corners, buttons are square-cornered with no glow, and filled buttons and links in the seven light colour
+  themes use a deeper shade of their colour, so white text on them is easier to read (the default orange went from
+  #F97316 to #C94A0B). The dark themes keep their colours. On/off settings are tick boxes instead of sliding switches;
+  All / Mine, Insights' periods and the chore form's choices (Every / On / Monthly, Everyone / Specific people, First
+  come / Shared / Rotating / Custom) are rows of joined buttons. Headings are ordinary bold text instead of small
+  capitals, Settings rows no longer end in ›, and no text is smaller than 12px (the bottom tabs' labels, chart labels
+  and many small notes got a little bigger).
+- **Rooms are a grid of small tiles** (ENH-29). Each room is a tile with its icon, its health, how many chores it has
+  and how many are due today ("6 chores · 3 due", or "all done"), and a bar, neediest first. Two tiles fit across a
+  phone, so about six rooms show on the first screen instead of one. A room given to one person shows their picture on
+  the icon. Chips at the top show All rooms, Mine, or one zone. The list of every chore inside each room's card is gone
+  (open the room to see them). For parents, renaming, zones (🏷️), assigning and deleting moved under ✏️ Edit rooms,
+  along with adding, renaming and deleting zones.
+- **Today on a computer** (ENH-29). On wide screens the chore list stops at a comfortable width instead of stretching
+  across the whole screen, and the mascot in the column on the right is a smaller picture beside its message.
+- **The chore form, in groups** (ENH-28, second half). Add Task and ✏️ Edit now open the same form, in groups: the
+  name, notes and icon; When (Every, On, Monthly, One time, or On Demand); Who (Everyone, or tap the people, then First
+  come, Shared, Rotating or Custom, with a line saying what each means); Effort & coins (the Coins box shows the
+  effort's amount when it's left empty); and More options, folded, for steps, the timer, a start date, the season,
+  health and pausing. More options says what's set inside it. Save stays at the bottom of the screen on a phone,
+  however far you scroll, and on a computer the form opens as a panel beside the room's list. Add Task now also offers
+  Allow early completion.
 - **A room page you can take in at a glance** (ENH-28, first half). The big room banner is now a short summary: the
   room's health ring, "3 overdue · 2 left today · 9 fine for now" and the coins waiting there. Under it, chips filter
   the chores (All, Mine, Overdue, Paused), and the chores sit under Overdue, Today, This week, When needed and Paused;

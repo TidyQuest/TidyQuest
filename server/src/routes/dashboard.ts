@@ -13,7 +13,7 @@ import { boostTaskNames, getActiveBoosts } from '../utils/boosts';
 import { achievementsFor } from '../utils/achievementStats';
 import { forgottenTasks, todaySections, usualTasks } from '../utils/homeSections';
 import { rescueCandidates, todaysMission } from '../utils/rescue';
-import { getFeatures, holidaysOff, isFeatureOn } from '../utils/features';
+import { getFeatures, getLook, holidaysOff, isFeatureOn } from '../utils/features';
 import { setupNeeded } from '../setup/apply';
 import { weekStartDay } from '../utils/periods';
 import { daySql, familyZone, savedZone } from '../utils/clock';
@@ -357,6 +357,8 @@ router.get('/', (req: AuthRequest, res: Response) => {
     focus,
     features,
     holidaysOff: holidaysOff(),
+    // The family's look: shapes for everyone's screens (Settings → Look, NEW-37)
+    look: getLook(),
     // The week's first day, like Date.getDay(): 1 = Monday, 0 = Sunday (Settings → General)
     weekStart: weekStartDay(),
     // The family's time zone (Settings → General); timeZoneSet is false while the server's own (TZ) is used

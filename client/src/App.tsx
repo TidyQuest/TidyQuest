@@ -280,6 +280,15 @@ function AppContent() {
     localStorage.setItem('tidyquest_theme', theme);
   }, [theme]);
 
+  // The family's look (Settings → Look, NEW-37): shapes only. Remembered on this device so the next start (and the
+  // login screen) doesn't flash Fresh first; Fresh is no attribute.
+  const look: string | null = dashboardData?.look ?? (typeof localStorage !== 'undefined' ? localStorage.getItem('tidyquest_look') : null);
+  useEffect(() => {
+    const html = document.documentElement;
+    if (look === 'quest' || look === 'calm') html.setAttribute('data-look', look); else html.removeAttribute('data-look');
+    if (dashboardData?.look) { try { localStorage.setItem('tidyquest_look', dashboardData.look); } catch { /* private mode */ } }
+  }, [look, dashboardData?.look]);
+
   useEffect(() => {
     const html = document.documentElement;
     const set = (name: string, value: string | null) => (value ? html.setAttribute(name, value) : html.removeAttribute(name));
@@ -580,7 +589,6 @@ function AppContent() {
             <>
               <PageHeader title={t('nav.rooms')} subtitle={`${rooms.length} ${t('app.roomsConfigured')}`} addLabel={user.role === 'admin' ? t('rooms.addRoom') : undefined} user={user} onCoinsClick={() => navigate('/rewards')} onStreakClick={() => navigate('/achievements')} onPointsClick={handlePointsClick} userPoints={myPoints} pointsPeriodLabel={pointsPeriodLabel} gamificationEnabled={gamificationEnabled} shieldsOn={!!dashboardData?.shields} />
               <RoomsList rooms={activeRooms} language={user.language} onSelectRoom={(id) => navigate(`/rooms/${id}`)}
-                onOpenTask={(roomId, taskId) => navigate(`/rooms/${roomId}?task=${taskId}`)}
                 isAdmin={user.role === 'admin'}
                 users={familySettings}
                 onCreateRoom={async (data) => {
