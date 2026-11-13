@@ -1,30 +1,31 @@
 import { Router, Response } from 'express';
-import db from '../database';
+import db, { prepared } from '../database';
 import { AuthRequest, authMiddleware } from '../middleware/auth';
 import { ensureAdmin } from '../utils/adminHelpers';
-import { achievementsFor, builtinBadgeBonus } from '../utils/achievementStats';
+import { achievementsFor, builtinBadgeBonus, newStatsShared, type StatsShared } from '../utils/achievementStats';
 import { getFeatures } from '../utils/features';
 import { customBadgeKey, listCustomBadges, readCustomBadgeInput, saveCustomBadge } from '../utils/badges';
 
 const router = Router();
 router.use(authMiddleware);
 
-function getUserStats(userId: number) {
-  const user = db.prepare('SELECT id, displayName, role, avatarColor, avatarType, avatarPreset, avatarPhotoUrl FROM users WHERE id = ?').get(userId) as any;
+function getUserStats(userId: number, shared?: StatsShared) {
+  const user = prepared('SELECT id, displayName, role, avatarColor, avatarType, avatarPreset, avatarPhotoUrl FROM users WHERE id = ?').get(userId) as any;
   if (!user) return null;
-  const result = achievementsFor(userId);
+  const result = achievementsFor(userId, { shared });
   if (!result) return null;
   const features = getFeatures();
   return { ...user, achievements: result.achievements, level: features.levels ? result.level : null, nextBadge: features.nextBadge ? result.nextBadge : null };
 }
 
 router.get('/', (req: AuthRequest, res: Response) => {
-  const me = getUserStats(req.userId!);
+  const shared = newStatsShared(); // rooms clean is worked out once for the whole family (ENH-19)
+  const me = getUserStats(req.userId!, shared);
   if (!me) return res.status(404).json({ error: 'User not found' });
 
   const family = me.role === 'admin'
-    ? (db.prepare("SELECT id FROM users WHERE role IN ('child', 'member') OR (role = 'admin' AND isParticipant = 1) ORDER BY displayName").all() as Array<{ id: number }>)
-      .map((u) => getUserStats(u.id))
+    ? (prepared("SELECT id FROM users WHERE role IN ('child', 'member') OR (role = 'admin' AND isParticipant = 1) ORDER BY displayName").all() as Array<{ id: number }>)
+      .map((u) => getUserStats(u.id, shared))
       .filter(Boolean)
     : [];
 
@@ -35,7 +36,7 @@ router.get('/', (req: AuthRequest, res: Response) => {
 
 router.get('/custom', (req: AuthRequest, res: Response) => {
   if (!ensureAdmin(req.userId)) return res.status(403).json({ error: 'Admin only' });
-  const earnedCount = db.prepare('SELECT COUNT(*) AS n FROM user_achievement_notifications WHERE achievementId = ?');
+  const earnedCount = prepared('SELECT COUNT(*) AS n FROM user_achievement_notifications WHERE achievementId = ?');
   res.json({
     badges: listCustomBadges().map((b) => ({ ...b, earnedBy: (earnedCount.get(customBadgeKey(b.id)) as { n: number }).n })),
     builtinBonusCoins: builtinBadgeBonus(),
@@ -53,7 +54,7 @@ router.post('/custom', (req: AuthRequest, res: Response) => {
 router.put('/custom/:id', (req: AuthRequest, res: Response) => {
   if (!ensureAdmin(req.userId)) return res.status(403).json({ error: 'Admin only' });
   const id = Number(req.params.id);
-  if (!db.prepare('SELECT 1 FROM custom_badges WHERE id = ?').get(id)) return res.status(404).json({ error: 'not_found' });
+  if (!prepared('SELECT 1 FROM custom_badges WHERE id = ?').get(id)) return res.status(404).json({ error: 'not_found' });
   const input = readCustomBadgeInput(req.body);
   if ('error' in input) return res.status(400).json({ error: input.error });
   saveCustomBadge(input.values, id);
@@ -65,8 +66,8 @@ router.delete('/custom/:id', (req: AuthRequest, res: Response) => {
   if (!ensureAdmin(req.userId)) return res.status(403).json({ error: 'Admin only' });
   const id = Number(req.params.id);
   const removed = db.transaction(() => {
-    db.prepare('DELETE FROM user_achievement_notifications WHERE achievementId = ?').run(customBadgeKey(id));
-    return db.prepare('DELETE FROM custom_badges WHERE id = ?').run(id).changes;
+    prepared('DELETE FROM user_achievement_notifications WHERE achievementId = ?').run(customBadgeKey(id));
+    return prepared('DELETE FROM custom_badges WHERE id = ?').run(id).changes;
   })();
   if (!removed) return res.status(404).json({ error: 'not_found' });
   res.json({ success: true });
@@ -76,7 +77,7 @@ router.put('/config', (req: AuthRequest, res: Response) => {
   if (!ensureAdmin(req.userId)) return res.status(403).json({ error: 'Admin only' });
   const bonus = Math.round(Number(req.body?.builtinBonusCoins));
   if (!(bonus >= 0 && bonus <= 10000)) return res.status(400).json({ error: 'invalid_bonus' });
-  db.prepare("INSERT OR REPLACE INTO app_settings (key, value) VALUES ('badgeBonusCoins', ?)").run(String(bonus));
+  prepared("INSERT OR REPLACE INTO app_settings (key, value) VALUES ('badgeBonusCoins', ?)").run(String(bonus));
   res.json({ builtinBonusCoins: bonus });
 });
 

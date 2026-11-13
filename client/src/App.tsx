@@ -5,6 +5,8 @@ import { taskErrorText } from './utils/taskError';
 import { useAppUpdate } from './utils/appUpdate';
 import { api, NEW_TOKEN_EVENT } from './hooks/useApi';
 import { Sidebar } from './components/layout/Sidebar';
+import { TabBar } from './components/layout/TabBar';
+import { More } from './components/pages/More';
 import { PageHeader } from './components/layout/PageHeader';
 import { ConfettiEffect } from './components/shared/ConfettiEffect';
 import { ChoreTimerBar, ChoreTimerProvider } from './components/shared/ChoreTimer';
@@ -26,6 +28,8 @@ import { Settings } from './components/pages/Settings';
 import { Profile } from './components/pages/Profile';
 import { Guide } from './components/pages/Guide';
 import { SetupWizard } from './components/pages/SetupWizard';
+import { WhatsNew } from './components/shared/WhatsNew';
+import { latestWhatsNew } from './utils/whatsNew';
 import { Login } from './components/pages/Login';
 import { Register } from './components/pages/Register';
 import { SignUp } from './components/pages/SignUp';
@@ -42,6 +46,7 @@ import { CosmeticsContext, type Cosmetic } from './utils/unlocks';
 import { WeekStartContext } from './utils/week';
 import { familyZone, setFamilyZone } from './utils/clock';
 import { syncPush } from './utils/pushSync';
+import { NotifyCard, type NotifyCardKind } from './components/shared/NotifyCard';
 
 const NO_COSMETICS: Record<number, Cosmetic> = {};
 import { SeasonGreeting, SeasonParticles, SeasonStrip } from './components/shared/SeasonalDecor';
@@ -106,6 +111,10 @@ function AppContent() {
   const vacationUpdatePending = useRef(false);
   const dashboardLoadInFlight = useRef<Promise<void> | null>(null);
   const roomsRefreshInFlight = useRef<Promise<void> | null>(null);
+  // The family's data as of the last full load, and when that was (ENH-20): the 15-second check loads
+  // again only when it moved, or after 5 minutes so due times and room health keep up with the clock
+  const seenVersion = useRef<string | null>(null);
+  const lastFullLoad = useRef(0);
   const [gamificationEnabled, setGamificationEnabled] = useState(true);
   const [confetti, setConfetti] = useState(false);
   // The short banner after a Done: red when it failed, green (ok) when it only waits for a parent (FIX-33)
@@ -114,8 +123,14 @@ function AppContent() {
   const [unlockedAchievements, setUnlockedAchievements] = useState<string[]>([]);
   // Names for the pop-up from the completion itself (parent-made and secret badges aren't in the page data yet)
   const [unlockedInfo, setUnlockedInfo] = useState<Array<{ id: string; titleKey: string | null; title: string | null }>>([]);
-  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  // "What's new" after a big update (NEW-38): who closed it on this visit, or replayed from the guide
+  const [whatsNewClosedBy, setWhatsNewClosedBy] = useState<number | null>(null);
+  // The "turn on notifications" card (ENH-31): kept after Turn on, so it can say what they'll get even once the
+  // server stops sending it, and gone for this sign-in after Not now or Got it
+  const [notifyCardHeld, setNotifyCardHeld] = useState<{ userId: number; kind: NotifyCardKind } | null>(null);
+  const [notifyCardGoneFor, setNotifyCardGoneFor] = useState<number | null>(null);
+  const [whatsNewReplay, setWhatsNewReplay] = useState(false);
   const openSearch = useCallback(() => setSearchOpen(true), []);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
     if (typeof window === 'undefined') return false;
@@ -155,6 +170,8 @@ function AppContent() {
         ]);
         // The family's clock first, so everything drawn from this dashboard counts days at home
         setFamilyZone(dash.timeZone);
+        seenVersion.current = dash.dataVersion ?? null;
+        lastFullLoad.current = Date.now();
         setDashboardData(dash);
         if (dash.vacation && !vacationUpdatePending.current) setVacationConfig(dash.vacation);
         setRooms(roomsData);
@@ -223,13 +240,20 @@ function AppContent() {
     const isRewardsPath = location.pathname === '/rewards';
     const tick = () => {
       if (document.visibilityState !== 'visible') return;
-      // The coin balance in the header and on Rewards: a parent may just have approved a chore, given a bonus
-      // or refunded a reward (BUG-36)
-      void refreshUser();
-      // Rewards shows the parents' request list, which comes with the dashboard
-      if (isDashboardPath || isRewardsPath) loadDashboard();
-      if (isRoomsPath) refreshRooms();
-      if (isRewardsPath) loadRewards();
+      // Ask first whether anything changed (a few bytes); a failed check loads anyway (ENH-20)
+      void api.dataChanges().then((r) => r.v, () => null).then((v) => {
+        const stale = Date.now() - lastFullLoad.current > 5 * 60_000;
+        if (v !== null && v === seenVersion.current && !stale) return;
+        seenVersion.current = v;
+        lastFullLoad.current = Date.now();
+        // The coin balance in the header and on Rewards: a parent may just have approved a chore, given a bonus
+        // or refunded a reward (BUG-36)
+        void refreshUser();
+        // Rewards shows the parents' request list, which comes with the dashboard
+        if (isDashboardPath || isRewardsPath) loadDashboard();
+        if (isRoomsPath) refreshRooms();
+        if (isRewardsPath) loadRewards();
+      });
     };
     const interval = setInterval(tick, 15000);
     document.addEventListener('visibilitychange', tick);
@@ -244,8 +268,15 @@ function AppContent() {
   // back from a room returns to where it was (RoomsList); parent effects run after child effects,
   // so skip those here or it would undo them.
   const navType = useNavigationType();
+  // The setup wizard opened from Settings: its ← and Cancel go back there (to the same section)
+  const setupFromSettings = (location.state as { from?: string } | null)?.from === 'settings';
+  const prevPath = useRef(location.pathname);
   useEffect(() => {
+    const from = prevPath.current;
+    prevPath.current = location.pathname;
     if (new URLSearchParams(location.search).has('task') || location.hash) return;
+    // Between Settings sections, Settings decides (on a computer the list keeps its place)
+    if (from.startsWith('/settings') && location.pathname.startsWith('/settings')) return;
     if (location.pathname === '/rooms' && (navType === 'POP' || (location.state as { fromRoom?: number } | null)?.fromRoom)) return;
     window.scrollTo(0, 0);
   }, [location.pathname]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -278,6 +309,15 @@ function AppContent() {
     }
     localStorage.setItem('tidyquest_theme', theme);
   }, [theme]);
+
+  // The family's look (Settings → Look, NEW-37): shapes only. Remembered on this device so the next start (and the
+  // login screen) doesn't flash Fresh first; Fresh is no attribute.
+  const look: string | null = dashboardData?.look ?? (typeof localStorage !== 'undefined' ? localStorage.getItem('tidyquest_look') : null);
+  useEffect(() => {
+    const html = document.documentElement;
+    if (look === 'quest' || look === 'calm') html.setAttribute('data-look', look); else html.removeAttribute('data-look');
+    if (dashboardData?.look) { try { localStorage.setItem('tidyquest_look', dashboardData.look); } catch { /* private mode */ } }
+  }, [look, dashboardData?.look]);
 
   useEffect(() => {
     const html = document.documentElement;
@@ -438,6 +478,8 @@ function AppContent() {
   }
 
   const today = new Date().toLocaleDateString(localeFor(user.language), { weekday: 'long', month: 'long', day: 'numeric', timeZone: familyZone() });
+  // The phone's top bar on Home: "Hi, Dad" over a short date (ENH-24)
+  const todayShort = new Date().toLocaleDateString(localeFor(user.language), { weekday: 'short', month: 'short', day: 'numeric', timeZone: familyZone() });
   const periods: Array<'all' | 'week' | 'month' | 'year'> = ['all', 'week', 'month', 'year'];
   const myPoints = pointsPeriod === 'all'
     ? (user.points ?? 0)
@@ -464,11 +506,27 @@ function AppContent() {
   // One thing at a time: a page of its own, or Home itself when a parent chose that ("?all=1" shows the full Home)
   const focusData: FocusData | null = dashboardData?.focus ?? null;
   const focusIsHome = focusData?.mode === 'home' && !new URLSearchParams(location.search).has('all');
+  // Shown by itself on opening the app, but not over Focus, the setup wizard or the guide
+  const unseenWhatsNew = whatsNewClosedBy === user.id ? null : latestWhatsNew(dashboardData?.whatsNew);
+  const autoWhatsNew = !!unseenWhatsNew && !focusIsHome && !['/focus', '/setup', '/guide'].includes(location.pathname);
+  const closeWhatsNew = () => {
+    setWhatsNewReplay(false);
+    setWhatsNewClosedBy(user.id);
+    // Skipping counts as seen, and so does watching it from the guide
+    if (unseenWhatsNew) api.whatsNewSeen([unseenWhatsNew]).catch(() => {});
+  };
+  const notifyCardKind: NotifyCardKind | null = !user || notifyCardGoneFor === user.id ? null
+    : notifyCardHeld?.userId === user.id ? notifyCardHeld.kind : dashboardData?.notifyCard ?? null;
+  const notifyCard = notifyCardKind && (
+    <NotifyCard key={user.id} kind={notifyCardKind} userId={user.id} language={user.language}
+      onTurnedOn={() => setNotifyCardHeld({ userId: user.id, kind: notifyCardKind })} onGone={() => setNotifyCardGoneFor(user.id)} />
+  );
   const focusPage = (onLeave: () => void, leaveLabel: string) => focusData && (
     <Focus focus={focusData} userId={user.id} language={user.language} coinsByEffort={coinsByEffort}
       gamificationEnabled={gamificationEnabled} mission={gamificationEnabled ? dashboardData?.rescueMission : null}
       roomName={(name, roomId) => roomDisplayName(name, rooms.find((r: { id: number; roomType?: string }) => r.id === roomId)?.roomType || '')}
-      onComplete={(id) => handleCompleteTask(id)} onSeeAll={() => navigate('/tasks')} onLeave={onLeave} leaveLabel={leaveLabel} />
+      onComplete={(id) => handleCompleteTask(id)} onSeeAll={() => navigate('/tasks')} onLeave={onLeave} leaveLabel={leaveLabel}
+      doneExtra={notifyCard} />
   );
 
   return (
@@ -478,6 +536,11 @@ function AppContent() {
     <ChoreTimerProvider key={user.id} userId={user.id} role={user.role} language={user.language} onComplete={(id) => handleCompleteTask(id)}>
     <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: 'var(--warm-bg)' }}>
       <ConfettiEffect show={confetti} season={season} celebration={dashboardData?.cosmetics?.[user.id]?.celebration} />
+      {(autoWhatsNew || whatsNewReplay) && (
+        <WhatsNew user={user} gamificationEnabled={gamificationEnabled} auto={!whatsNewReplay} onClose={closeWhatsNew}
+          onOpenGuide={() => { closeWhatsNew(); navigate('/guide'); }}
+          onOpenLook={() => { closeWhatsNew(); navigate('/settings/look'); }} />
+      )}
       {season && <SeasonParticles season={season} />}
 
       {searchOpen && (
@@ -523,42 +586,13 @@ function AppContent() {
           onClose={() => setPhotoProblem((p) => (p === photoProblem ? null : p))} />
       )}
 
-      {/* Mobile hamburger menu */}
-      <button
-        onClick={() => setIsMobileSidebarOpen(true)}
-        className="mobile-only hamburger-menu"
-        style={{
-          position: 'fixed',
-          top: 16,
-          left: 16,
-          zIndex: 40,
-          background: 'var(--warm-card)',
-          border: '1.5px solid var(--warm-border)',
-          borderRadius: 12,
-          width: 44,
-          height: 44,
-          display: 'none',
-          alignItems: 'center',
-          justifyContent: 'center',
-          cursor: 'pointer',
-          boxShadow: '0 2px 8px var(--warm-shadow)',
-          color: 'var(--warm-text)',
-        }}
-        aria-label={t('common.openMenu')}
-      >
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-          <path d="M3 12h18M3 6h18M3 18h18" />
-        </svg>
-      </button>
-
       <Sidebar
         user={user}
-        isMobileOpen={isMobileSidebarOpen}
-        onClose={() => setIsMobileSidebarOpen(false)}
         gamificationEnabled={gamificationEnabled}
         collapsed={sidebarCollapsed}
         onToggle={() => setSidebarCollapsed(prev => !prev)}
       />
+      <TabBar user={user} gamificationEnabled={gamificationEnabled} />
 
       <main style={{ marginLeft: sidebarCollapsed ? 60 : 240, flex: 1, padding: '28px 36px', maxWidth: 1320, backgroundColor: 'var(--warm-bg)', transition: 'margin-left 0.3s ease' }} className={`main-content${user.kidMode ? ' kid-mode' : ''}`}>
         <ChoreTimerBar language={user.language} />
@@ -567,14 +601,16 @@ function AppContent() {
         <Routes>
           <Route path="/" element={
             <>
-              <PageHeader title={focusIsHome ? t('focus.title') : t('nav.home')} subtitle={today} user={user} onCoinsClick={() => navigate('/rewards')} onStreakClick={() => navigate('/achievements')} onPointsClick={handlePointsClick} userPoints={myPoints} pointsPeriodLabel={pointsPeriodLabel} gamificationEnabled={gamificationEnabled} shieldsOn={!!dashboardData?.shields} />
-              {season && <SeasonGreeting season={season} language={user.language} />}
+              <PageHeader title={focusIsHome ? t('focus.title') : t('nav.home')} subtitle={today} homeDate={focusIsHome ? undefined : todayShort} user={user} onCoinsClick={() => navigate('/rewards')} onStreakClick={() => navigate('/achievements')} onPointsClick={handlePointsClick} userPoints={myPoints} pointsPeriodLabel={pointsPeriodLabel} gamificationEnabled={gamificationEnabled} shieldsOn={!!dashboardData?.shields} />
+              {/* Today shows the countdown as a chip (ENH-26) */}
+              {season && focusIsHome && <SeasonGreeting season={season} language={user.language} />}
               {focusIsHome && focusPage(() => navigate('/?all=1'), t('focus.fullHome'))}
               {dashboardData && !focusIsHome && (
                 <Dashboard
                   data={dashboardData}
                   allRooms={activeRooms}
                   seasonCostume={season?.costume}
+                  season={season}
                   family={family}
                   users={familySettings}
                   language={user.language}
@@ -585,6 +621,7 @@ function AppContent() {
                   onCoinsChanged={refreshUser}
                   onNavigateToRoom={(id) => navigate(`/rooms/${id}`)}
                   onOpenTask={(roomId, taskId) => navigate(`/rooms/${roomId}?task=${taskId}`)}
+                  notifyCard={notifyCard}
                   coinsByEffort={coinsByEffort}
                   onNavigateToActivity={() => navigate('/activity')}
                   onNavigateToRewards={() => navigate('/rewards')}
@@ -602,9 +639,8 @@ function AppContent() {
 
           <Route path="/rooms" element={
             <>
-              <PageHeader title={t('nav.rooms')} subtitle={`${rooms.length} ${t('app.roomsConfigured')}`} user={user} onCoinsClick={() => navigate('/rewards')} onStreakClick={() => navigate('/achievements')} onPointsClick={handlePointsClick} userPoints={myPoints} pointsPeriodLabel={pointsPeriodLabel} gamificationEnabled={gamificationEnabled} shieldsOn={!!dashboardData?.shields} />
+              <PageHeader title={t('nav.rooms')} subtitle={`${rooms.length} ${t('app.roomsConfigured')}`} addLabel={user.role === 'admin' ? t('rooms.addRoom') : undefined} user={user} onCoinsClick={() => navigate('/rewards')} onStreakClick={() => navigate('/achievements')} onPointsClick={handlePointsClick} userPoints={myPoints} pointsPeriodLabel={pointsPeriodLabel} gamificationEnabled={gamificationEnabled} shieldsOn={!!dashboardData?.shields} />
               <RoomsList rooms={activeRooms} language={user.language} onSelectRoom={(id) => navigate(`/rooms/${id}`)}
-                onOpenTask={(roomId, taskId) => navigate(`/rooms/${roomId}?task=${taskId}`)}
                 isAdmin={user.role === 'admin'}
                 users={familySettings}
                 onCreateRoom={async (data) => {
@@ -696,6 +732,13 @@ function AppContent() {
             </>
           )} />
 
+          <Route path="/more" element={
+            <>
+              <PageHeader title={t('nav.more')} subtitle="" user={user} onCoinsClick={() => navigate('/rewards')} onStreakClick={() => navigate('/achievements')} onPointsClick={handlePointsClick} userPoints={myPoints} pointsPeriodLabel={pointsPeriodLabel} gamificationEnabled={gamificationEnabled} shieldsOn={!!dashboardData?.shields} />
+              <More user={user} gamificationEnabled={gamificationEnabled} />
+            </>
+          } />
+
           <Route path="/profile" element={
             <>
               <PageHeader title={t('nav.profile')} subtitle={t('app.profileSubtitle')} user={user} onCoinsClick={() => navigate('/rewards')} onStreakClick={() => navigate('/achievements')} onPointsClick={handlePointsClick} userPoints={myPoints} pointsPeriodLabel={pointsPeriodLabel} gamificationEnabled={gamificationEnabled} shieldsOn={!!dashboardData?.shields} />
@@ -706,10 +749,10 @@ function AppContent() {
           <Route path="/guide" element={
             <>
               <PageHeader title={t('guide.title')} subtitle={t('guide.subtitle')} user={user} onCoinsClick={() => navigate('/rewards')} onStreakClick={() => navigate('/achievements')} onPointsClick={handlePointsClick} userPoints={myPoints} pointsPeriodLabel={pointsPeriodLabel} gamificationEnabled={gamificationEnabled} shieldsOn={!!dashboardData?.shields} />
-              <Guide language={user.language} />
+              <Guide language={user.language} onWhatsNew={() => setWhatsNewReplay(true)} />
             </>
           } />
-          <Route path="/settings" element={
+          <Route path="/settings/:section?" element={
             <>
               <PageHeader title={t('nav.settings')} subtitle={t('app.settingsSubtitle')} user={user} onCoinsClick={() => navigate('/rewards')} onStreakClick={() => navigate('/achievements')} onPointsClick={handlePointsClick} userPoints={myPoints} pointsPeriodLabel={pointsPeriodLabel} gamificationEnabled={gamificationEnabled} shieldsOn={!!dashboardData?.shields} />
               <Settings
@@ -788,8 +831,9 @@ function AppContent() {
           } />
           <Route path="/setup" element={user.role !== 'admin' ? <Navigate to="/" replace /> : (
             <>
-              <PageHeader title={t('setup.title')} subtitle={t('setup.subtitle')} user={user} onCoinsClick={() => navigate('/rewards')} onStreakClick={() => navigate('/achievements')} onPointsClick={handlePointsClick} userPoints={myPoints} pointsPeriodLabel={pointsPeriodLabel} gamificationEnabled={gamificationEnabled} shieldsOn={!!dashboardData?.shields} />
-              <SetupWizard user={user} onSaved={() => Promise.all([loadDashboard(), loadRewards()])} onExit={() => { loadDashboard(); navigate('/', { replace: true }); }} onOpenGuide={() => navigate('/guide', { replace: true })} />
+              <PageHeader title={t('setup.title')} subtitle={t('setup.subtitle')} onBack={() => (setupFromSettings ? navigate(-1) : navigate('/settings'))} backLabel={t('nav.settings')} user={user} onCoinsClick={() => navigate('/rewards')} onStreakClick={() => navigate('/achievements')} onPointsClick={handlePointsClick} userPoints={myPoints} pointsPeriodLabel={pointsPeriodLabel} gamificationEnabled={gamificationEnabled} shieldsOn={!!dashboardData?.shields} />
+              <SetupWizard user={user} onSaved={() => Promise.all([loadDashboard(), loadRewards()])} onExit={() => { loadDashboard(); navigate('/', { replace: true }); }}
+                onCancel={setupFromSettings ? () => navigate(-1) : undefined} onOpenGuide={() => navigate('/guide', { replace: true })} />
             </>
           )} />
           <Route path="/achievements" element={
@@ -887,8 +931,8 @@ function RoomDetailWrapper({ rooms, roomsLoaded, strictMode, shieldsOn, allowOne
 
   return (
     <>
-      <PageHeader title={roomDisplayName(room.name, room.roomType)} subtitle={room.isTodoRoom ? t('todos.countLine').replace('{n}', String(room.todoCount ?? 0)) : `${room.tasks?.length || 0} ${t('rooms.tasksTracked')}`} user={user} onCoinsClick={() => navigate('/rewards')} onStreakClick={() => navigate('/achievements')} gamificationEnabled={gamificationEnabled} shieldsOn={shieldsOn} />
-      <RoomDetail room={room} language={user?.language} isAdmin={user?.role === 'admin'} currentUserId={user?.id} currentUserRole={user?.role} users={users} coinsByEffort={coinsByEffort} onCompleteTask={onCompleteTask} onBack={() => navigate('/rooms', { state: { fromRoom: room.id } })} onOpenRoom={(id) => navigate(`/rooms/${id}`)} allowOneTime={allowOneTime} allowPhotos={allowPhotos} allowPins={allowPins} focusTaskId={focusTaskId} strictMode={strictMode} onlyMine={user?.taskView === 'mineOnly' || !!user?.kidMode} onRefresh={onRefresh} onAchievementsUnlocked={onAchievementsUnlocked} />
+      <PageHeader title={roomDisplayName(room.name, room.roomType)} subtitle={room.isTodoRoom ? t('todos.countLine').replace('{n}', String(room.todoCount ?? 0)) : `${room.tasks?.length || 0} ${t('rooms.tasksTracked')}`} addLabel={user?.role === 'admin' ? t(room.isTodoRoom ? 'todos.add' : 'roomDetail.addTask') : undefined} onBack={() => navigate('/rooms', { state: { fromRoom: room.id } })} backLabel={t('rooms.backToRooms')} user={user} onCoinsClick={() => navigate('/rewards')} onStreakClick={() => navigate('/achievements')} gamificationEnabled={gamificationEnabled} shieldsOn={shieldsOn} />
+      <RoomDetail room={room} language={user?.language} isAdmin={user?.role === 'admin'} currentUserId={user?.id} currentUserRole={user?.role} users={users} coinsByEffort={coinsByEffort} onCompleteTask={onCompleteTask} onOpenRoom={(id) => navigate(`/rooms/${id}`)} allowOneTime={allowOneTime} allowPhotos={allowPhotos} allowPins={allowPins} focusTaskId={focusTaskId} strictMode={strictMode} onlyMine={user?.taskView === 'mineOnly' || !!user?.kidMode} onRefresh={onRefresh} onAchievementsUnlocked={onAchievementsUnlocked} />
     </>
   );
 }

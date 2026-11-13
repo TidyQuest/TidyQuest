@@ -1,4 +1,4 @@
-import db from '../database';
+import db, { prepared } from '../database';
 import { startOfLocalDay, startOfLocalWeek } from './periods';
 import { startOfDay } from './clock';
 
@@ -41,9 +41,7 @@ export function periodStart(period: RepeatPeriod, now: Date = new Date()): Date 
 export function countInPeriod(taskId: number, userId: number, period: RepeatPeriod, now: Date = new Date()): number {
   const start = periodStart(period, now);
   const end = startOfDay(start, period === 'day' ? 1 : 7);
-  const row = db.prepare(
-    "SELECT COUNT(*) AS n FROM task_completions WHERE taskId = ? AND userId = ? AND status IN ('approved', 'pending') AND completedAt >= ? AND completedAt < ?"
-  ).get(taskId, userId, start.toISOString(), end.toISOString()) as { n: number };
+  const row = prepared("SELECT COUNT(*) AS n FROM task_completions WHERE taskId = ? AND userId = ? AND status IN ('approved', 'pending') AND completedAt >= ? AND completedAt < ?").get(taskId, userId, start.toISOString(), end.toISOString()) as { n: number };
   return row.n;
 }
 
@@ -54,9 +52,7 @@ export function repeatCountsFor(userId: number | undefined, tasks: Array<{ id: n
   const limited = tasks.filter((t) => repeatLimitOf(t));
   if (limited.length === 0) return counts;
   const countsSince = (period: RepeatPeriod) => new Map(
-    (db.prepare(
-      "SELECT taskId, COUNT(*) AS n FROM task_completions WHERE userId = ? AND status IN ('approved', 'pending') AND completedAt >= ? GROUP BY taskId"
-    ).all(userId, periodStart(period, now).toISOString()) as { taskId: number; n: number }[]).map((r) => [r.taskId, r.n])
+    (prepared("SELECT taskId, COUNT(*) AS n FROM task_completions WHERE userId = ? AND status IN ('approved', 'pending') AND completedAt >= ? GROUP BY taskId").all(userId, periodStart(period, now).toISOString()) as { taskId: number; n: number }[]).map((r) => [r.taskId, r.n])
   );
   const byPeriod: Partial<Record<RepeatPeriod, Map<number, number>>> = {};
   for (const t of limited) {

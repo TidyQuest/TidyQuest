@@ -1,4 +1,4 @@
-import db from '../database';
+import db, { prepared } from '../database';
 import { addLocalDays, currentLocalWeek } from './periods';
 import { familyZone } from './clock';
 import { tr } from './i18n';
@@ -40,28 +40,22 @@ export function rollOverRepeatingGoals(userId: number, now: Date = new Date()): 
   const nowIso = now.toISOString();
   db.transaction(() => {
     for (let i = 0; i < MAX_CATCH_UP_WEEKS; i++) {
-      const head = db.prepare(
-        `SELECT id, title, goalCoins, rewardCoins, startAt, endAt, createdBy FROM user_goals
+      const head = prepared(`SELECT id, title, goalCoins, rewardCoins, startAt, endAt, createdBy FROM user_goals
          WHERE userId = ? AND repeatWeekly = 1 AND endAt IS NOT NULL AND endAt < ?
-         ORDER BY endAt ASC, id ASC LIMIT 1`
-      ).get(userId, nowIso) as { id: number; title: string; goalCoins: number; rewardCoins: number; startAt: string | null; endAt: string; createdBy: number | null } | undefined;
+         ORDER BY endAt ASC, id ASC LIMIT 1`).get(userId, nowIso) as { id: number; title: string; goalCoins: number; rewardCoins: number; startAt: string | null; endAt: string; createdBy: number | null } | undefined;
       if (!head) return;
 
       const startAt = head.startAt ? addLocalDays(head.startAt, 7) : new Date(new Date(head.endAt).getTime() + 1).toISOString();
       const endAt = addLocalDays(head.endAt, 7);
       const base = goalTitleBase(head.title).toLowerCase();
-      const existing = (db.prepare(
-        `SELECT id, title FROM user_goals
-         WHERE userId = ? AND id != ? AND startAt IS NOT NULL AND ABS(julianday(startAt) - julianday(?)) < 0.5`
-      ).all(userId, head.id, startAt) as { id: number; title: string }[]).find((g) => goalTitleBase(g.title).toLowerCase() === base);
+      const existing = (prepared(`SELECT id, title FROM user_goals
+         WHERE userId = ? AND id != ? AND startAt IS NOT NULL AND ABS(julianday(startAt) - julianday(?)) < 0.5`).all(userId, head.id, startAt) as { id: number; title: string }[]).find((g) => goalTitleBase(g.title).toLowerCase() === base);
 
-      db.prepare('UPDATE user_goals SET repeatWeekly = 0 WHERE id = ?').run(head.id);
+      prepared('UPDATE user_goals SET repeatWeekly = 0 WHERE id = ?').run(head.id);
       if (existing) {
-        db.prepare('UPDATE user_goals SET repeatWeekly = 1 WHERE id = ?').run(existing.id);
+        prepared('UPDATE user_goals SET repeatWeekly = 1 WHERE id = ?').run(existing.id);
       } else {
-        db.prepare(
-          'INSERT INTO user_goals (userId, title, goalCoins, startAt, endAt, rewardCoins, repeatWeekly, createdBy) VALUES (?, ?, ?, ?, ?, ?, 1, ?)'
-        ).run(userId, weekTitle(head.title, startAt), head.goalCoins, startAt, endAt, head.rewardCoins, head.createdBy);
+        prepared('INSERT INTO user_goals (userId, title, goalCoins, startAt, endAt, rewardCoins, repeatWeekly, createdBy) VALUES (?, ?, ?, ?, ?, ?, 1, ?)').run(userId, weekTitle(head.title, startAt), head.goalCoins, startAt, endAt, head.rewardCoins, head.createdBy);
       }
     }
   })();
@@ -75,16 +69,14 @@ export function rollOverRepeatingGoals(userId: number, now: Date = new Date()): 
  */
 export function realignWeeklyGoals(oldFirst: number, newFirst: number, now: Date = new Date(), oldZone = familyZone(), newZone = oldZone): number[] {
   if (oldFirst === newFirst && oldZone === newZone) return [];
-  const heads = db.prepare(
-    'SELECT id, userId, title, startAt, endAt FROM user_goals WHERE repeatWeekly = 1 AND startAt IS NOT NULL AND endAt IS NOT NULL AND endAt >= ?'
-  ).all(now.toISOString()) as { id: number; userId: number; title: string; startAt: string; endAt: string }[];
+  const heads = prepared('SELECT id, userId, title, startAt, endAt FROM user_goals WHERE repeatWeekly = 1 AND startAt IS NOT NULL AND endAt IS NOT NULL AND endAt >= ?').all(now.toISOString()) as { id: number; userId: number; title: string; startAt: string; endAt: string }[];
   const moved = new Set<number>();
   for (const g of heads) {
     const old = currentLocalWeek(new Date(g.startAt), oldFirst, oldZone);
     if (Date.parse(old.startAt) !== Date.parse(g.startAt) || Date.parse(old.endAt) !== Date.parse(g.endAt)) continue;
     const { startAt, endAt } = currentLocalWeek(new Date(addLocalDays(g.startAt, 3, oldZone)), newFirst, newZone);
     if (Date.parse(startAt) === Date.parse(g.startAt) && Date.parse(endAt) === Date.parse(g.endAt)) continue;
-    db.prepare('UPDATE user_goals SET startAt = ?, endAt = ?, title = ? WHERE id = ?').run(startAt, endAt, weekTitle(g.title, startAt), g.id);
+    prepared('UPDATE user_goals SET startAt = ?, endAt = ?, title = ? WHERE id = ?').run(startAt, endAt, weekTitle(g.title, startAt), g.id);
     moved.add(g.userId);
   }
   return [...moved];
@@ -108,34 +100,29 @@ export function syncPrimaryGoal(userId: number): PrimaryGoal | null {
   rollOverRepeatingGoals(userId);
 
   // Auto-complete any active goals where coins >= target
-  const activeGoals = db.prepare(
-    `SELECT id, title, goalCoins, rewardCoins, startAt, endAt, createdAt FROM user_goals WHERE userId = ? AND status = 'active'`
-  ).all(userId) as { id: number; title: string; goalCoins: number; rewardCoins: number; startAt: string | null; endAt: string | null; createdAt: string }[];
+  const activeGoals = prepared(`SELECT id, title, goalCoins, rewardCoins, startAt, endAt, createdAt FROM user_goals WHERE userId = ? AND status = 'active'`).all(userId) as { id: number; title: string; goalCoins: number; rewardCoins: number; startAt: string | null; endAt: string | null; createdAt: string }[];
   for (const g of activeGoals) {
     // Use startAt if set, otherwise fall back to createdAt so that goals without an
     // explicit start date only count coins earned after the goal was created — prevents
     // goals from auto-completing instantly when the user already has enough coins.
     const from = g.startAt || g.createdAt || '1970-01-01T00:00:00.000Z';
     const to = g.endAt || '9999-12-31T23:59:59.999Z';
-    const row = db.prepare(
-      "SELECT COALESCE(SUM(coinsEarned), 0) as total FROM task_completions WHERE userId = ? AND status = 'approved' AND completedAt >= ? AND completedAt <= ?"
-    ).get(userId, from, to) as { total: number };
+    const row = prepared("SELECT COALESCE(SUM(coinsEarned), 0) as total FROM task_completions WHERE userId = ? AND status = 'approved' AND completedAt >= ? AND completedAt <= ?").get(userId, from, to) as { total: number };
     if (row.total >= g.goalCoins) {
-      const changed = db.prepare("UPDATE user_goals SET status = 'completed', completedAt = ? WHERE id = ? AND status = 'active'").run(nowIso, g.id);
+      const changed = prepared("UPDATE user_goals SET status = 'completed', completedAt = ? WHERE id = ? AND status = 'active'").run(nowIso, g.id);
       // Award bonus coins if configured (only on the call that actually completed it)
       if (changed.changes > 0 && g.rewardCoins > 0) {
-        db.prepare('UPDATE users SET coins = coins + ? WHERE id = ?').run(g.rewardCoins, userId);
+        prepared('UPDATE users SET coins = coins + ? WHERE id = ?').run(g.rewardCoins, userId);
         // Shows up in Activity like a parent's coin adjustment
         // Stored as text, so in the language of the person who reached it
-        const lang = (db.prepare('SELECT language FROM users WHERE id = ?').get(userId) as { language?: string } | undefined)?.language;
-        db.prepare('INSERT INTO coin_adjustments (userId, amount, reason, createdBy, createdAt) VALUES (?, ?, ?, NULL, ?)')
+        const lang = (prepared('SELECT language FROM users WHERE id = ?').get(userId) as { language?: string } | undefined)?.language;
+        prepared('INSERT INTO coin_adjustments (userId, amount, reason, createdBy, createdAt) VALUES (?, ?, ?, NULL, ?)')
           .run(userId, g.rewardCoins, tr(lang, 'goals.reachedReason', { title: goalTitleBase(g.title) }), nowIso);
       }
     }
   }
 
-  const primary = db.prepare(
-    `SELECT id, title, goalCoins, rewardCoins, startAt, endAt, status
+  const primary = prepared(`SELECT id, title, goalCoins, rewardCoins, startAt, endAt, status
      FROM user_goals
      WHERE userId = ?
        AND (endAt IS NULL OR endAt >= ?)
@@ -149,15 +136,13 @@ export function syncPrimaryGoal(userId: number): PrimaryGoal | null {
        CASE WHEN status = 'active' THEN 0 ELSE 1 END,
        COALESCE(startAt, createdAt) ASC,
        id DESC
-     LIMIT 1`
-  ).get(userId, nowIso, nowIso, nowIso, nowIso) as PrimaryGoal | undefined;
+     LIMIT 1`).get(userId, nowIso, nowIso, nowIso, nowIso) as PrimaryGoal | undefined;
 
-  if (!primary) {
-    db.prepare('UPDATE users SET goalCoins = NULL, goalStartAt = NULL, goalEndAt = NULL WHERE id = ?').run(userId);
-    return null;
-  }
-
-  db.prepare('UPDATE users SET goalCoins = ?, goalStartAt = ?, goalEndAt = ? WHERE id = ?')
-    .run(primary.goalCoins, primary.startAt || null, primary.endAt || null, userId);
-  return primary;
+  // Written only when it changed (ENH-19): Home runs this for everyone on each refresh
+  const goalCoins = primary ? primary.goalCoins : null;
+  const goalStartAt = primary ? primary.startAt || null : null;
+  const goalEndAt = primary ? primary.endAt || null : null;
+  prepared('UPDATE users SET goalCoins = ?, goalStartAt = ?, goalEndAt = ? WHERE id = ? AND (goalCoins IS NOT ? OR goalStartAt IS NOT ? OR goalEndAt IS NOT ?)')
+    .run(goalCoins, goalStartAt, goalEndAt, userId, goalCoins, goalStartAt, goalEndAt);
+  return primary ?? null;
 }

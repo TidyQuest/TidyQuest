@@ -10,7 +10,7 @@ import { CoinIcon } from '../icons/UIIcons';
  * A chore's icon: shows the current one, and opens a sheet with a live preview of the chore card,
  * the icon its name suggests, a search box and every icon grouped by area.
  */
-export function IconPicker({ value, onChange, taskName = '', roomName = '', roomColor, coins, language, compact = false }: {
+export function IconPicker({ value, onChange, taskName = '', roomName = '', roomColor, coins, language, compact = false, previewName, firstGroup }: {
   value: string;
   onChange: (iconKey: string) => void;
   /** For the preview and the suggestion */
@@ -21,6 +21,10 @@ export function IconPicker({ value, onChange, taskName = '', roomName = '', room
   language?: string;
   /** Smaller button (the room-setup list) */
   compact?: boolean;
+  /** The preview's name when taskName is empty (a badge: "Your badge"); default "Your chore" */
+  previewName?: string;
+  /** A group listed first (badges: wins) */
+  firstGroup?: string;
 }) {
   const { t } = useTranslation(language);
   const [open, setOpen] = useState(false);
@@ -30,18 +34,19 @@ export function IconPicker({ value, onChange, taskName = '', roomName = '', room
       <button type="button" className="tq-btn tq-btn-secondary tq-btn-sm" onClick={() => setOpen(true)} aria-label={t('iconPicker.change')}
         style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: compact ? '4px 8px' : '6px 10px', maxWidth: '100%' }}>
         <TaskIcon iconKey={value} size={compact ? 18 : 22} />
-        <span style={{ fontSize: compact ? 11 : 12, fontWeight: 700, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{label(value)}</span>
+        <span style={{ fontSize: 12, fontWeight: 700, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{label(value)}</span>
       </button>
       {open && (
-        <IconSheet value={value} taskName={taskName} roomName={roomName} roomColor={roomColor} coins={coins} language={language}
+        <IconSheet value={value} taskName={taskName} roomName={roomName} roomColor={roomColor} coins={coins} language={language} previewName={previewName} firstGroup={firstGroup}
           onPick={(k) => onChange(k)} onClose={() => setOpen(false)} />
       )}
     </>
   );
 }
 
-function IconSheet({ value, onPick, onClose, taskName, roomName, roomColor, coins, language }: {
+function IconSheet({ value, onPick, onClose, taskName, roomName, roomColor, coins, language, previewName, firstGroup }: {
   value: string; onPick: (k: string) => void; onClose: () => void; taskName: string; roomName: string; roomColor?: string; coins?: number | null; language?: string;
+  previewName?: string; firstGroup?: string;
 }) {
   const { t } = useTranslation(language);
   const [query, setQuery] = useState('');
@@ -59,9 +64,10 @@ function IconSheet({ value, onPick, onClose, taskName, roomName, roomColor, coin
 
   // Search matches icon names (and keys); a group's name only when no icon matches ("pets" → the Pets group)
   const q = query.trim().toLowerCase();
-  const byIcon = ICON_GROUPS.map((g) => ({ ...g, keys: q ? g.keys.filter((k) => `${label(k)} ${k}`.toLowerCase().includes(q)) : g.keys }))
+  const ordered = firstGroup ? [...ICON_GROUPS].sort((a, b) => Number(b.id === firstGroup) - Number(a.id === firstGroup)) : ICON_GROUPS;
+  const byIcon = ordered.map((g) => ({ ...g, keys: q ? g.keys.filter((k) => `${label(k)} ${k}`.toLowerCase().includes(q)) : g.keys }))
     .filter((g) => g.keys.length > 0);
-  const groups = byIcon.length > 0 ? byIcon : ICON_GROUPS.filter((g) => t(`iconGroups.${g.id}`).toLowerCase().includes(q));
+  const groups = byIcon.length > 0 ? byIcon : ordered.filter((g) => t(`iconGroups.${g.id}`).toLowerCase().includes(q));
 
   const cell = (k: string) => (
     <button key={k} type="button" onClick={() => onPick(k)} aria-pressed={value === k} title={label(k)} aria-label={label(k)} style={{
@@ -78,13 +84,13 @@ function IconSheet({ value, onPick, onClose, taskName, roomName, roomColor, coin
       <div className="tq-card tq-modal task-edit-sheet tq-card-padded" role="dialog" aria-modal="true" aria-label={t('iconPicker.title')} onClick={(e) => e.stopPropagation()}
         style={{ display: 'flex', flexDirection: 'column', gap: 12, maxHeight: '88vh' }}>
         {/* Live preview: the chore as it shows on Home */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 14px', borderRadius: 16, background: 'var(--warm-bg-subtle)', border: '1.5px solid var(--warm-border)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 14px', borderRadius: 'var(--shape-radius-card)', background: 'var(--warm-bg-subtle)', border: 'var(--shape-border-w) solid var(--warm-border)' }}>
           <div style={{ width: 44, height: 44, borderRadius: 14, backgroundColor: roomColor || 'var(--warm-accent-light)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
             <TaskIcon iconKey={value} size={28} />
           </div>
           <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ fontSize: 14, fontWeight: 800, color: 'var(--warm-text)', overflowWrap: 'anywhere' }}>{taskName.trim() || t('iconPicker.yourChore')}</div>
-            <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--warm-text-light)' }}>{roomName}{roomName ? ' · ' : ''}{label(value)}</div>
+            <div style={{ fontSize: 14, fontWeight: 800, color: 'var(--warm-text)', overflowWrap: 'anywhere' }}>{taskName.trim() || previewName || t('iconPicker.yourChore')}</div>
+            <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--warm-text-light)' }}>{roomName}{roomName ? ' · ' : ''}{label(value)}</div>
           </div>
           {coins != null && coins > 0 && (
             <span style={{ display: 'inline-flex', alignItems: 'center', gap: 3, fontSize: 12, fontWeight: 800, color: 'var(--warm-accent)' }}><CoinIcon />{coins}</span>
@@ -103,7 +109,7 @@ function IconSheet({ value, onPick, onClose, taskName, roomName, roomColor, coin
         <div style={{ overflowY: 'auto', display: 'grid', gap: 12, minHeight: 0 }}>
           {groups.map((g) => (
             <div key={g.id} style={{ display: 'grid', gap: 6 }}>
-              <div style={{ fontSize: 11, fontWeight: 800, color: 'var(--warm-text-light)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{t(`iconGroups.${g.id}`)}</div>
+              <div style={{ fontSize: 12, fontWeight: 800, color: 'var(--warm-text-light)' }}>{t(`iconGroups.${g.id}`)}</div>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>{g.keys.map(cell)}</div>
             </div>
           ))}

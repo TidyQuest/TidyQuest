@@ -29,7 +29,7 @@ export function FamilyGoalAdmin({ language }: { language?: string }) {
 
   return (
     <div style={{ display: 'grid', gap: 8 }}>
-      <div style={{ fontSize: 11, color: 'var(--warm-text-light)', fontWeight: 600 }}>{t('board.familyGoalAdminDesc')}</div>
+      <div style={{ fontSize: 12, color: 'var(--warm-text-light)', fontWeight: 600 }}>{t('board.familyGoalAdminDesc')}</div>
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center' }}>
         <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 700, color: 'var(--warm-text-muted)' }}>
           {t('board.familyGoalTarget')}

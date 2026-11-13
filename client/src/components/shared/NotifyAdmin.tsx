@@ -5,8 +5,8 @@ import { localeFor } from '../../utils/locale';
 import { useHosted } from '../../utils/hosted';
 import { PushDevices } from './PushDevices';
 
-const KINDS: NotifyKind[] = ['taskDue', 'reminder', 'outcome', 'summary', 'nudge', 'achievementUnlocked', 'choreApproval', 'rewardRequest', 'coinBoost', 'rescue', 'cheer', 'teamup'];
-const label: CSSProperties = { fontSize: 11, fontWeight: 700, color: 'var(--warm-text-muted)' };
+const KINDS: NotifyKind[] = ['taskDue', 'reminder', 'openChores', 'outcome', 'summary', 'nudge', 'achievementUnlocked', 'choreApproval', 'rewardRequest', 'coinBoost', 'rescue', 'cheer', 'teamup'];
+const label: CSSProperties = { fontSize: 12, fontWeight: 700, color: 'var(--warm-text-muted)' };
 const row: CSSProperties = { display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center' };
 const box: CSSProperties = { padding: 10, border: '1px solid var(--warm-border)', borderRadius: 10, display: 'grid', gap: 8 };
 const errorText = (err: unknown, t: (k: string) => string) => {
@@ -65,14 +65,14 @@ export function NotifyScheduleAdmin({ language }: { language?: string }) {
           🏫 {t('notifyAdmin.school')}
           {s.schoolHoursEnabled && <>{time(s.schoolStart, (v) => set({ schoolStart: v }), t('notifyAdmin.quietFrom'))} – {time(s.schoolEnd, (v) => set({ schoolEnd: v }), t('notifyAdmin.quietTo'))}</>}
         </label>
-        <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--warm-text-light)' }}>{t('notifyAdmin.quietDesc')}</div>
+        <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--warm-text-light)' }}>{t('notifyAdmin.quietDesc')}</div>
       </div>
       {!hosted && <div style={box}>
         <div style={{ ...label, fontSize: 12 }}>🏠 Home Assistant</div>
         <input className="tq-input" value={s.haUrl} placeholder="http://homeassistant.local:8123" onChange={(e) => set({ haUrl: e.target.value })} aria-label={t('notifyAdmin.haUrl')} />
         <input type="password" className="tq-input" value={haToken} placeholder={s.hasHaToken ? t('notifyAdmin.haTokenSaved') : t('notifyAdmin.haToken')} onChange={(e) => setHaToken(e.target.value)} aria-label={t('notifyAdmin.haToken')} />
         <input className="tq-input" value={s.haFamilyService} placeholder={t('notifyAdmin.haFamilyService')} onChange={(e) => set({ haFamilyService: e.target.value })} aria-label={t('notifyAdmin.haFamilyService')} />
-        <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--warm-text-light)' }}>{t('notifyAdmin.haDesc')}</div>
+        <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--warm-text-light)' }}>{t('notifyAdmin.haDesc')}</div>
       </div>}
       <div style={row}>
         <button className="tq-btn tq-btn-primary tq-btn-sm" onClick={save}>{t('common.save')}</button>
@@ -129,7 +129,7 @@ export function PersonNotify({ person, language, onSaved, own }: { person: Notif
             onChange={(e) => setP({ ...p, [field]: e.target.value })} />
         </label>
       ))}
-      {channelsLocked && <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--warm-text-light)' }}>{t('hosted.channelsParentOnly')}</div>}
+      {channelsLocked && <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--warm-text-light)' }}>{t('hosted.channelsParentOnly')}</div>}
       <div style={{ ...label }}>{t('notifyAdmin.gets')}</div>
       <div style={row}>
         {KINDS.map((k) => (
@@ -159,19 +159,20 @@ export function PeopleNotifyAdmin({ language }: { language?: string }) {
   useEffect(() => { api.pushInfo().then((i) => setPush(i.on)).catch(() => setPush(false)); }, []);
   return (
     <div style={{ display: 'grid', gap: 8 }}>
-      <div style={{ fontSize: 11, color: 'var(--warm-text-light)', fontWeight: 600 }}>{t(`notifyAdmin.${hosted ? 'peopleDescHosted' : 'peopleDesc'}${push ? 'Push' : ''}`)}</div>
+      <div style={{ fontSize: 12, color: 'var(--warm-text-light)', fontWeight: 600 }}>{t(`notifyAdmin.${hosted ? 'peopleDescHosted' : 'peopleDesc'}${push ? 'Push' : ''}`)}</div>
       {people.map((p) => p.canLogIn === false ? (
         // Can't log in (ENH-16): nothing goes to them; their settings come back with their login
         <div key={p.id} style={{ ...box, ...row, justifyContent: 'space-between' }}>
           <span style={{ fontSize: 13, fontWeight: 800, color: 'var(--warm-text)' }}>{p.displayName}</span>
-          <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--warm-text-light)' }}>🔕 {t('memberLogin.noNotifications')}</span>
+          <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--warm-text-light)' }}>🔕 {t('memberLogin.noNotifications')}</span>
         </div>
       ) : (
         <div key={p.id} style={box}>
           <button onClick={() => setOpen(open === p.id ? null : p.id)} style={{ ...row, justifyContent: 'space-between', background: 'none', border: 'none', padding: 0, cursor: 'pointer', fontFamily: 'Nunito', color: 'inherit', width: '100%' }}>
             <span style={{ fontSize: 13, fontWeight: 800, color: 'var(--warm-text)' }}>{p.displayName}</span>
-            <span style={{ fontSize: 11, fontWeight: 700, color: p.channels.length ? 'var(--health-green)' : 'var(--warm-text-light)' }}>
-              {p.channels.length ? p.channels.join(' · ') : t('notifyAdmin.familyChannel')} {open === p.id ? '▲' : '▼'}
+            {/* No channel of their own and no family channel: nothing reaches them (ENH-31) */}
+            <span style={{ fontSize: 12, fontWeight: 700, color: p.channels.length ? 'var(--health-green)' : p.familyChannel ? 'var(--warm-text-light)' : 'var(--warm-accent)' }}>
+              {p.channels.length ? p.channels.join(' · ') : p.familyChannel ? t('notifyAdmin.familyOnly') : `⚠️ ${t('notifyAdmin.getsNothing')}`} {open === p.id ? '▲' : '▼'}
             </span>
           </button>
           {open === p.id && <PersonNotify person={p} language={language} onSaved={(next) => setPeople((all) => all.map((x) => (x.id === next.id ? next : x)))} />}
@@ -185,24 +186,27 @@ export function PeopleNotifyAdmin({ language }: { language?: string }) {
 export function NotificationLog({ language }: { language?: string }) {
   const { t } = useTranslation(language);
   const [rows, setRows] = useState<Awaited<ReturnType<typeof api.getNotifyLog>>>([]);
-  const [showAll, setShowAll] = useState(false);
+  const STEP = 10;
+  const [limit, setLimit] = useState(STEP);
   const load = () => api.getNotifyLog().then(setRows).catch(() => setRows([]));
   useEffect(() => { void load(); }, []);
   const when = (iso: string) => new Date(iso).toLocaleString(localeFor(language), { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
-  const shown = showAll ? rows : rows.slice(0, 10);
+  const shown = rows.slice(0, limit);
+  const hidden = rows.length - shown.length;
   return (
     <div style={{ display: 'grid', gap: 6 }}>
       {rows.length === 0 && <div style={{ fontSize: 12, color: 'var(--warm-text-light)', fontWeight: 600 }}>{t('notifyAdmin.logEmpty')}</div>}
       {shown.map((r) => (
         <div key={r.id} style={{ fontSize: 12, padding: '6px 8px', borderRadius: 8, backgroundColor: r.ok ? 'var(--warm-bg-subtle)' : 'var(--warm-danger-bg)', overflowWrap: 'anywhere' }}>
-          <div style={{ fontSize: 10, fontWeight: 800, color: 'var(--warm-text-light)' }}>
+          <div style={{ fontSize: 12, fontWeight: 800, color: 'var(--warm-text-light)' }}>
             {when(r.sentAt)} · {r.displayName ?? t('notifyAdmin.familyChannel')} · {r.channel}{r.ok ? '' : ` · ✗ ${r.error ?? ''}`}
           </div>
           <div style={{ fontWeight: 600, color: 'var(--warm-text)', whiteSpace: 'pre-line' }}>{r.message}</div>
         </div>
       ))}
       <div style={row}>
-        {rows.length > 10 && <button className="tq-btn tq-btn-sm tq-btn-secondary" onClick={() => setShowAll((v) => !v)}>{showAll ? t('common.showLess') : t('common.showMore')}</button>}
+        {hidden > 0 && <button className="tq-btn tq-btn-sm tq-btn-secondary" onClick={() => setLimit((l) => l + STEP)}>{t('common.showMore').replace('{n}', String(Math.min(STEP, hidden)))}</button>}
+        {hidden === 0 && rows.length > STEP && <button className="tq-btn tq-btn-sm tq-btn-secondary" onClick={() => setLimit(STEP)}>{t('common.showLess')}</button>}
         <button className="tq-btn tq-btn-sm tq-btn-secondary" onClick={() => void load()}>{t('notifyAdmin.refresh')}</button>
       </div>
     </div>

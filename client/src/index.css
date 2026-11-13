@@ -15,9 +15,9 @@
   --warm-text-secondary: #6B5B4A;
   --warm-text-muted: #8A7A6A;
   --warm-text-light: #B0A090;
-  --warm-accent: #F97316;
+  --warm-accent: #C94A0B; /* ENH-30: deeper, for readable white text */
   --warm-accent-light: #FFF7ED;
-  --warm-accent-hover: #EA580C;
+  --warm-accent-hover: #AF4109;
   --warm-bg-subtle: #FFFBF5;
   --warm-bg-warm: #FFF9F0;
   --warm-bg-input: #FFFFFF;
@@ -78,19 +78,40 @@
   --space-3xl: 32px;
 
   /* Design System — Radius scale */
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
-  --radius-xl: 20px;
+  --radius-sm: var(--shape-radius-small);
+  --radius-md: var(--shape-radius-control);
+  --radius-lg: var(--shape-radius-card);
+  --radius-xl: var(--shape-radius-card);
 
   /* Design System — Card padding */
   --card-padding: 20px;
 
   /* Design System — Input sizing */
   --input-padding: 10px 14px;
-  --input-radius: 12px;
-  --input-border: 1.5px solid var(--warm-border);
+  --input-radius: var(--shape-radius-control);
+  --input-border: var(--shape-border-w) solid var(--warm-border);
   --input-font-size: 14px;
+
+  /* ── The look's shape (ENH-30 "Fresh"): corners, borders, shadows and weights. Kept apart from the colour themes
+     above so a look (NEW-37) only swaps these; the looks carry no colours. ── */
+  --shape-radius-card: 14px;      /* cards, panels, sheets, tiles */
+  --shape-radius-control: 8px;    /* buttons, boxes, drop-downs, joined button rows */
+  --shape-radius-chip: 10px;      /* filter and name chips */
+  --shape-radius-small: 6px;      /* badges, tick boxes, icon squares */
+  --shape-border-w: 1px;          /* hairline borders */
+  --shape-shadow-card: none;
+  --shape-shadow-raised: 0 4px 16px rgba(0, 0, 0, 0.08);
+  --shape-btn-shadow: none;
+  --shape-hover-lift: none;
+  --shape-heading-weight: 800;
+
+  /* ── Text sizes: six, nothing under 12px ── */
+  --fs-xs: 12px;   /* small print, badges */
+  --fs-sm: 13px;   /* second lines, chips, small buttons */
+  --fs-md: 15px;   /* body, rows, inputs */
+  --fs-lg: 17px;   /* section and card titles */
+  --fs-xl: 22px;   /* page summaries */
+  --fs-2xl: 28px;  /* page titles */
 }
 
 html[data-theme='blue'] {
@@ -102,9 +123,9 @@ html[data-theme='blue'] {
   --warm-text-secondary: #3D5570;
   --warm-text-muted: #5A7A98;
   --warm-text-light: #8194A8;
-  --warm-accent: #3B82F6;
+  --warm-accent: #2157CF; /* ENH-30: deeper, for readable white text */
   --warm-accent-light: #EAF2FF;
-  --warm-accent-hover: #2563EB;
+  --warm-accent-hover: #1C4AB0;
   --warm-bg-subtle: #F8FBFF;
   --warm-bg-warm: #F0F6FF;
   --warm-bg-input: #FFFFFF;
@@ -129,9 +150,9 @@ html[data-theme='rose'] {
   --warm-text-secondary: #6E3E55;
   --warm-text-muted: #8A6070;
   --warm-text-light: #A37E8F;
-  --warm-accent: #EC4899;
+  --warm-accent: #C12269; /* ENH-30: deeper, for readable white text */
   --warm-accent-light: #FDEAF3;
-  --warm-accent-hover: #DB2777;
+  --warm-accent-hover: #A41D59;
   --warm-bg-subtle: #FFF9FB;
   --warm-bg-warm: #FFF0F5;
   --warm-bg-input: #FFFFFF;
@@ -156,9 +177,9 @@ html[data-theme='mint'] {
   --warm-text-secondary: #365A4A;
   --warm-text-muted: #577A69;
   --warm-text-light: #7E9A8C;
-  --warm-accent: #10B981;
+  --warm-accent: #04845C; /* ENH-30: deeper, for readable white text */
   --warm-accent-light: #E3F8EE;
-  --warm-accent-hover: #059669;
+  --warm-accent-hover: #03704E;
   --warm-bg-subtle: #F7FDF9;
   --warm-bg-warm: #ECF9F2;
   --warm-bg-input: #FFFFFF;
@@ -183,9 +204,9 @@ html[data-theme='grape'] {
   --warm-text-secondary: #4A3A6E;
   --warm-text-muted: #6B5C8D;
   --warm-text-light: #8E81AA;
-  --warm-accent: #8B5CF6;
+  --warm-accent: #6D33D1; /* ENH-30: deeper, for readable white text */
   --warm-accent-light: #EFE9FE;
-  --warm-accent-hover: #7C3AED;
+  --warm-accent-hover: #5D2BB2;
   --warm-bg-subtle: #FBF9FF;
   --warm-bg-warm: #F3EEFF;
   --warm-bg-input: #FFFFFF;
@@ -210,9 +231,9 @@ html[data-theme='sunny'] {
   --warm-text-secondary: #5E5022;
   --warm-text-muted: #7E6E3A;
   --warm-text-light: #9E8F5E;
-  --warm-accent: #CA8A04;
+  --warm-accent: #8E5606; /* ENH-30: deeper, for readable white text */
   --warm-accent-light: #FEF6D3;
-  --warm-accent-hover: #A16207;
+  --warm-accent-hover: #794905;
   --warm-bg-subtle: #FFFDF4;
   --warm-bg-warm: #FFF7DC;
   --warm-bg-input: #FFFFFF;
@@ -375,14 +396,16 @@ body {
 
 .tq-card {
   background: var(--warm-card);
-  border-radius: 20px;
-  border: 1.5px solid var(--warm-border);
+  border-radius: var(--shape-radius-card);
+  border: var(--shape-border-w) solid var(--warm-border);
+  box-shadow: var(--shape-shadow-card);
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 .tq-card-hover:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 28px var(--warm-shadow);
+  transform: var(--shape-hover-lift);
+  border-color: var(--warm-accent);
+  box-shadow: var(--shape-shadow-card);
 }
 
 .tq-btn {
@@ -390,26 +413,26 @@ body {
   cursor: pointer;
   font-family: 'Nunito', sans-serif;
   font-weight: 700;
-  border-radius: 14px;
+  border-radius: var(--shape-radius-control);
   padding: 10px 16px; /* the same as on phones; .tq-btn-sm/md/lg and inline styles override it (#151) */
   transition: all 0.15s ease;
   display: inline-flex;
   align-items: center;
   gap: 6px;
 }
-.tq-btn:hover { filter: brightness(1.05); transform: scale(1.02); }
-.tq-btn:active { transform: scale(0.97); }
+.tq-btn:hover { filter: brightness(1.05); }
+.tq-btn:active { filter: brightness(0.95); }
 
 .tq-btn-primary {
   background: var(--warm-accent);
   color: #fff;
-  box-shadow: 0 4px 14px var(--warm-primary-shadow);
+  box-shadow: var(--shape-btn-shadow);
 }
 
 .tq-btn-secondary {
   background: var(--warm-card);
   color: var(--warm-text);
-  border: 1.5px solid var(--warm-border);
+  border: var(--shape-border-w) solid var(--warm-border);
 }
 .tq-btn-secondary:hover {
   border-color: var(--warm-accent);
@@ -421,9 +444,9 @@ body {
    ======================================== */
 
 /* Button sizes */
-.tq-btn-sm { padding: 6px 12px; font-size: 12px; }
-.tq-btn-md { padding: 10px 16px; font-size: 13px; }
-.tq-btn-lg { padding: 12px 20px; font-size: 14px; }
+.tq-btn-sm { padding: 6px 12px; font-size: var(--fs-xs); }
+.tq-btn-md { padding: 10px 16px; font-size: var(--fs-sm); }
+.tq-btn-lg { padding: 12px 20px; font-size: var(--fs-md); }
 
 /* Standardized input */
 .tq-input {
@@ -462,11 +485,9 @@ body {
 
 /* Standardized label */
 .tq-label {
-  font-size: 12px;
+  font-size: var(--fs-sm);
   font-weight: 800;
   color: var(--warm-text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
   margin-bottom: 6px;
   display: block;
 }
@@ -494,6 +515,10 @@ body {
   justify-content: center;
   z-index: 100;
 }
+
+/* While a pop-up is open, pulling down mustn't reload the page (phones' pull-to-refresh) */
+html:has(.tq-modal-overlay) { overscroll-behavior-y: none; }
+.tq-modal-overlay { overscroll-behavior: contain; }
 
 /* Modal container — responsive by default */
 .tq-modal {
@@ -537,47 +562,106 @@ body {
 .tq-page-medium { max-width: 700px; }
 .tq-page-wide { max-width: 900px; }
 
-/* Dashboard grid layout */
-.dashboard-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: var(--space-xl);
-  animation: fadeIn 0.3s ease;
-  align-items: start;
-}
-.dashboard-grid > .dashboard-hero {
-  grid-column: 1 / -1;
-}
-
 /* Settings grid — via CSS class, not inline */
 /* Settings: grouped cards in two columns that each grow at their own height (no stretched cards) */
 .settings-page {
   display: grid;
   gap: var(--space-xl);
 }
-.settings-cols {
+/* ENH-27: Settings as an index. Phones: the index, or one section on its own page. Desktops: the index on the
+   left and the open section beside it. */
+.settings-layout {
   display: grid;
-  grid-template-columns: 1fr 1fr;
   gap: var(--space-xl);
   align-items: start;
 }
-.settings-col {
+.settings-index, .settings-pane {
   display: flex;
   flex-direction: column;
   gap: var(--space-lg);
   min-width: 0;
 }
-.settings-group-title {
-  font-size: 11px;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--warm-text-light);
-  margin: var(--space-sm) 2px calc(-1 * var(--space-sm));
+.settings-index-group { display: grid; gap: var(--space-sm); }
+.settings-index .settings-group-title { margin: 0 2px; }
+.settings-search { width: 100%; box-sizing: border-box; }
+.settings-index-list { padding: 4px 0; overflow: hidden; }
+.settings-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 56px;
+  padding: 8px 14px;
+  border: 0;
+  border-top: 1px solid var(--warm-border-subtle);
+  background: none;
+  color: var(--warm-text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
 }
-.settings-col > .settings-group-title:first-child { margin-top: 0; }
-/* Kids only see a card or two: one column */
-.settings-cols.settings-cols-single { grid-template-columns: 1fr; }
+.settings-row:first-child { border-top: 0; }
+.settings-row:hover { background: var(--warm-bg-subtle); }
+.settings-row.on { background: var(--warm-accent-light); }
+.settings-row:focus-visible { outline: 2px solid var(--warm-accent); outline-offset: -2px; }
+.settings-row-icon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: var(--warm-bg-warm);
+  font-size: 18px;
+}
+.settings-row-text { flex: 1; min-width: 0; display: grid; gap: 2px; }
+.settings-row-text b { font-size: 14px; font-weight: 700; }
+.settings-row-text small {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--warm-text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.settings-row-badge {
+  flex: none;
+  min-width: 22px;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: var(--warm-accent);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 800;
+  text-align: center;
+  box-sizing: border-box;
+}
+.settings-index-empty { padding: 12px 4px; font-size: 13px; font-weight: 600; color: var(--warm-text-muted); }
+.settings-back {
+  justify-self: start;
+  align-self: flex-start;
+  padding: 6px 2px;
+  border: 0;
+  background: none;
+  color: var(--warm-accent);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+}
+@media (max-width: 899px) {
+  .settings-layout.has-section .settings-index { display: none; }
+  .settings-layout:not(.has-section) .settings-pane { display: none; }
+}
+@media (min-width: 900px) {
+  .settings-layout { grid-template-columns: minmax(260px, 320px) minmax(0, 1fr); }
+  /* The list scrolls by itself, so opening a lower section doesn't lose your place in it */
+  .settings-index {
+    position: sticky; top: var(--space-lg); max-height: calc(100vh - 2 * var(--space-lg));
+    overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; padding-right: 4px;
+  }
+  .settings-back { display: none; }
+}
 
 /* ========================================
    UNLOCKABLE THEMES (levels 4, 7 and 10; utils/unlocks.ts)
@@ -591,9 +675,9 @@ html[data-theme='forest'] {
   --warm-text-secondary: #3E5A44;
   --warm-text-muted: #5F7A63;
   --warm-text-light: #8BA38E;
-  --warm-accent: #2F855A;
+  --warm-accent: #225B40; /* ENH-30: deeper, for readable white text */
   --warm-accent-light: #E3F4EA;
-  --warm-accent-hover: #276749;
+  --warm-accent-hover: #1D4D36;
   --warm-bg-subtle: #F8FBF7;
   --warm-bg-warm: #EEF6EB;
   --warm-bg-input: #FFFFFF;
@@ -978,7 +1062,24 @@ html[data-theme='lava'] option {
 
 /* Utility classes for responsive behavior */
 .mobile-only { display: none; }
+/* The phone's bottom bar (TabBar) and what shows only beside it. --tabbar-h lifts toasts and sticky bars above it. */
+:root { --tabbar-h: 0px; }
+.tabbar { display: none; }
+.ph-phone { display: none !important; }
 .history-mobile-meta { display: none; }
+/* Activity: the card layout (room and time under the name) on phones and up to 1024px, where the
+   table's fixed columns beside the side menu left the name column almost no room (BUG-56) */
+@media (max-width: 1024px) {
+  .history-table-scroll { overflow-x: unset; }
+  .history-header { display: none !important; }
+  .history-row {
+    grid-template-columns: 38px minmax(0, 1fr) 70px !important;
+    min-width: 0 !important;
+  }
+  .history-col-room,
+  .history-col-when { display: none !important; }
+  .history-mobile-meta { display: block !important; }
+}
 .desktop-only { display: block; }
 
 /* Tablet breakpoint (max-width: 1024px) */
@@ -988,7 +1089,7 @@ html[data-theme='lava'] option {
   }
 
   .tq-card {
-    border-radius: 16px;
+    border-radius: var(--shape-radius-card);
   }
 
   .tq-btn {
@@ -1014,7 +1115,7 @@ html[data-theme='lava'] option {
   }
 
   .tq-card {
-    border-radius: 14px;
+    border-radius: var(--shape-radius-card);
     border-width: 1px;
   }
 
@@ -1068,9 +1169,6 @@ html[data-theme='lava'] option {
   }
 
   /* Page-specific responsive grids */
-  .settings-cols {
-    grid-template-columns: 1fr;
-  }
 
   .room-type-grid {
     grid-template-columns: repeat(2, 1fr) !important;
@@ -1088,137 +1186,92 @@ html[data-theme='lava'] option {
     display: none !important;
   }
 
-  /* Dashboard: force single column on mobile */
-  .dashboard-grid {
-    grid-template-columns: 1fr !important;
+  /* The top bar is one line on phones (ENH-24): the title or greeting, then coins, streak and one button.
+     The subtitle, the search button's word and the points chip are for wider screens. */
+  .page-header {
+    flex-wrap: nowrap !important;
+    gap: 8px !important;
+    margin-bottom: 14px !important;
   }
 
-  .page-header {
-    flex-direction: column !important;
-    align-items: flex-start !important;
-    gap: 10px !important;
-    margin-bottom: 18px !important;
+  .page-header-title {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+  }
+
+  .page-header h1 {
+    font-size: clamp(18px, 5.6vw, 22px) !important;
+    line-height: 1.15;
+    overflow-wrap: anywhere;
+  }
+
+  /* A long room name next to two buttons: two lines at most, then … */
+  .page-header:not(.page-header-home) h1 {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+  }
+
+  .page-header-sub {
+    display: none;
+  }
+
+  .page-header-home h1 {
+    font-size: 16px !important;
+    letter-spacing: 0 !important;
+  }
+
+  .page-header-home .page-header-sub {
+    display: block;
+    font-size: 12px !important;
+    margin-top: 1px !important;
+  }
+
+  .page-header-home h1,
+  .page-header-home .page-header-sub {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .page-header-actions {
-    width: 100%;
-    gap: 8px !important;
-    justify-content: flex-start !important;
-    flex-wrap: wrap;
+    flex: none;
+    flex-wrap: nowrap !important;
+    gap: 6px !important;
   }
 
   .page-header-actions > div {
-    padding: 7px 12px !important;
+    height: 38px;
+    padding: 0 9px !important;
+    border-radius: 12px !important;
+    gap: 4px !important;
+  }
+
+  .page-header-actions .ph-coins { order: 1; }
+  .page-header-actions .ph-streak { order: 2; }
+  .page-header-actions .ph-points { display: none !important; }
+
+  .page-header-actions .ph-add { order: 4 !important; }
+
+  .page-header-actions .ph-button {
+    order: 3;
+    width: 40px;
+    height: 38px;
+    padding: 0 !important;
+    border-radius: 12px !important;
+    justify-content: center;
+  }
+
+  .search-button-label {
+    display: none;
   }
 
   .auth-card {
     padding: 24px !important;
-  }
-
-  /* Activity: responsive card layout on mobile */
-  .history-table-scroll {
-    overflow-x: unset;
-  }
-
-  .history-header {
-    display: none !important;
-  }
-
-  .history-row {
-    grid-template-columns: 38px 1fr 70px !important;
-    min-width: 0 !important;
-  }
-
-  .history-col-room,
-  .history-col-when {
-    display: none !important;
-  }
-
-  .history-mobile-meta {
-    display: block !important;
-  }
-
-  /* Rooms task table: scrollable */
-  .room-table-scroll {
-    overflow-x: auto;
-  }
-
-  .room-table-scroll > div {
-    min-width: 580px;
-  }
-
-  .room-detail-hero {
-    flex-direction: column !important;
-    align-items: flex-start !important;
-    gap: 14px !important;
-    padding: 18px !important;
-  }
-
-  .room-detail-hero .tq-btn {
-    width: 100%;
-  }
-
-  .room-detail-scroll > div {
-    min-width: 0 !important;
-  }
-
-  .room-table-header {
-    display: none !important;
-  }
-
-  .room-task-row {
-    grid-template-columns: 1fr !important;
-    gap: 8px !important;
-    padding: 12px 8px !important;
-  }
-
-  .room-task-main,
-  .room-task-health,
-  .room-task-frequency,
-  .room-task-effort,
-  .room-task-coins,
-  .room-task-due,
-  .room-task-assigned,
-  .room-task-actions {
-    min-width: 0 !important;
-  }
-
-  /* Small tools on the left, Done on its own side with room between them */
-  .room-task-actions {
-    justify-content: space-between !important;
-    flex-wrap: wrap;
-    gap: 8px 16px !important;
-  }
-
-  /* The tools sit on the left here, so the ⋯ menu opens rightward from their left edge and stays on the card */
-  .room-task-tools {
-    position: relative;
-  }
-
-  .room-task-more {
-    position: static !important;
-  }
-
-  .room-task-menu {
-    left: 0;
-    right: auto !important;
-  }
-
-  .room-task-tools > button,
-  .room-task-more-btn,
-  .room-task-done > button,
-  .room-task-done .tq-btn {
-    min-width: 44px;
-    min-height: 44px;
-  }
-
-  .room-task-done {
-    flex: 1 1 160px;
-    justify-content: flex-end;
-  }
-
-  .room-task-done > button:last-child {
-    flex: 1 1 auto;
   }
 
   .task-add-form {
@@ -1331,21 +1384,6 @@ html[data-theme='lava'] option {
     overflow-wrap: anywhere;
   }
 
-  .rewards-catalog-grid {
-    grid-template-columns: 1fr !important;
-  }
-
-  .rewards-my-row {
-    flex-direction: column !important;
-    align-items: stretch !important;
-  }
-
-  .rewards-my-row-meta {
-    justify-content: space-between !important;
-    width: 100%;
-    flex-wrap: wrap;
-  }
-
   .rewards-confirm-modal {
     width: calc(100vw - 24px) !important;
     max-width: calc(100vw - 24px) !important;
@@ -1382,8 +1420,9 @@ html[data-theme='lava'] option {
     width: 100%;
   }
 
+  /* minmax(0, …): a long name or button row wraps inside its card instead of widening the page (360px phones) */
   .family-members-grid {
-    grid-template-columns: 1fr !important;
+    grid-template-columns: minmax(0, 1fr) !important;
   }
 
   .family-member-card {
@@ -1429,49 +1468,94 @@ html[data-theme='lava'] option {
     width: 100% !important;
   }
 
-  /* Mobile sidebar - hidden by default, slides in when open */
+  /* Phones get the bottom bar instead of the side menu (ENH-24) */
   .sidebar {
-    transform: translateX(-100%);
+    display: none !important;
   }
 
-  .sidebar.mobile-open {
-    transform: translateX(0);
-    box-shadow: 4px 0 16px rgba(0, 0, 0, 0.2);
-  }
-
-  /* Show mobile overlay when sidebar is open */
-  .mobile-overlay {
-    display: block !important;
-  }
-
-  /* The page behind the open menu doesn't scroll (BUG-15: scrolling it hid the browser's toolbars and left a
-     strip of page under the menu) */
-  html.phone-menu-open {
-    overflow: hidden;
-  }
-
-  /* Show mobile-only close button */
   .mobile-only {
     display: block !important;
   }
 
-  /* The menu's close button: a 44px tap target. Collapsing is a desktop thing, so its button hides on phones */
-  .sidebar .sidebar-close {
-    display: flex !important;
-  }
-  .sidebar .sidebar-collapse {
-    display: none !important;
+  :root {
+    --tabbar-h: 60px;
   }
 
-  /* Show hamburger menu on mobile */
-  .hamburger-menu {
-    display: flex !important;
+  .tabbar {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 45;
+    height: calc(var(--tabbar-h) + env(safe-area-inset-bottom));
+    padding-bottom: env(safe-area-inset-bottom);
+    background: var(--warm-sidebar);
+    border-top: 1px solid var(--warm-sidebar-border);
   }
+
+  .tabbar-tab {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    min-width: 0;
+    padding: 0 2px;
+    text-decoration: none;
+    color: var(--warm-text-secondary);
+    font-size: var(--fs-xs);
+    font-weight: 700;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .tabbar-tab span {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* The label is in the text colour, not the accent: several themes' accents are too pale for 11px words */
+  .tabbar-tab.on {
+    color: var(--warm-text);
+    font-weight: 800;
+  }
+
+  .tabbar-tab.on svg {
+    color: var(--warm-accent);
+  }
+
+  /* The marker over the tab you're on */
+  .tabbar-tab.on::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 24%;
+    right: 24%;
+    height: 3px;
+    border-radius: 0 0 3px 3px;
+    background: var(--warm-accent);
+  }
+
+  /* With the one-line top bar the garland is a thin line along the top of the screen */
+  .season-strip {
+    height: 22px;
+    font-size: 14px;
+    margin: -4px 0 6px;
+    padding-top: 2px;
+  }
+
+  .ph-phone { display: revert !important; }
+  .ph-desktop { display: none !important; }
+  button.ph-phone { display: flex !important; }
 
   /* Adjust main content for mobile - remove sidebar margin */
   .main-content {
     margin-left: 0 !important;
-    padding: 72px 16px 24px 16px !important;
+    padding: 12px 16px calc(24px + var(--tabbar-h) + env(safe-area-inset-bottom)) 16px !important;
   }
 }
 
@@ -1482,16 +1566,6 @@ html[data-theme='lava'] option {
   height: 100dvh;
 }
 
-/* Desktop - ensure sidebar is always visible */
-@media (min-width: 769px) {
-  .sidebar {
-    transform: translateX(0) !important;
-  }
-
-  .mobile-overlay {
-    display: none !important;
-  }
-}
 
 /* Task opened from search or the task list (RoomDetail adds this briefly) */
 [data-task-id] {
@@ -1515,7 +1589,7 @@ html[data-theme='lava'] option {
   width: 100%;
   margin-bottom: 14px;
   padding: 10px 14px;
-  border-radius: 14px;
+  border-radius: var(--shape-radius-card);
   border: 2px solid var(--warm-accent);
   background-color: var(--warm-accent-light);
   color: var(--warm-accent);
@@ -1535,25 +1609,8 @@ html[data-theme='lava'] option {
     width: 100vw !important;
     max-width: 100vw !important;
     max-height: 88vh !important;
-    border-radius: 20px 20px 0 0 !important;
+    border-radius: var(--shape-radius-card) var(--shape-radius-card) 0 0 !important;
   }
-}
-
-/* Kid mode: bigger, easier targets on the task lists */
-.kid-mode [data-task-id] {
-  padding: 16px !important;
-}
-.kid-mode [data-task-id] .tq-btn {
-  font-size: 15px !important;
-  padding: 12px 18px !important;
-  border-radius: 14px !important;
-}
-.kid-mode [data-task-id] > div:nth-child(2) > div:first-child {
-  font-size: 16px !important;
-}
-/* Same inset as the padded chores, so the room table's header lines up with them */
-.kid-mode .room-table-header {
-  margin: 0 16px;
 }
 
 /* Achievement pop-up: centred on phones, top-right on wider screens */
@@ -1571,23 +1628,11 @@ html[data-theme='lava'] option {
   flex: 1 1 140px;
   padding: 16px 20px !important;
   font-size: 18px !important;
-  border-radius: 16px !important;
+  border-radius: var(--shape-radius-card) !important;
 }
 .focus-page {
   max-width: 640px;
   margin: 0 auto;
-}
-.focus-card {
-  grid-column: 1 / -1;
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  width: 100%;
-  cursor: pointer;
-  font-family: Nunito, sans-serif;
-  border: 2px solid var(--warm-accent) !important;
-  background: var(--warm-accent-light) !important;
-  box-sizing: border-box;
 }
 
 /* Insights charts (NEW-7). Categorical slots and the blue ramp are the dataviz reference palette,
@@ -1618,56 +1663,6 @@ html[data-theme='lava'] input[type='date'], html[data-season-dark] input[type='d
   color-scheme: dark;
 }
 
-/* A paused chore (ENH-1): greyed in its room; its buttons (Edit, ⋯ to switch it back on) stay clear */
-.room-task-paused > :not(.room-task-actions) {
-  opacity: 0.5;
-}
-
-/* Room task table on a computer narrower than its columns' minimums (TASK_COLUMNS in RoomDetail.tsx, BUG-11): each
-   chore wraps instead, name on top, then health through assigned with the buttons at the right. The header stays as
-   a row of sort links. Phones keep their own layout above. */
-.room-table-scroll {
-  container: room-table / inline-size;
-}
-
-@media (min-width: 769px) {
-  /* Extra buttons (📎, 📅, timer, team-up) wrap above Done instead of spilling out of the column */
-  .room-task-done {
-    flex-wrap: wrap;
-    justify-content: flex-end;
-  }
-
-  @container room-table (max-width: 953px) {
-    .room-table-header {
-      display: flex !important;
-      flex-wrap: wrap;
-      gap: 6px 20px !important;
-    }
-
-    .room-table-header > :last-child {
-      display: none;
-    }
-
-    .room-task-row {
-      display: flex !important;
-      flex-wrap: wrap;
-      gap: 10px 20px !important;
-    }
-
-    .room-task-main {
-      flex: 1 1 100%;
-    }
-
-    .room-task-health {
-      flex: 0 1 150px;
-    }
-
-    .room-task-actions {
-      margin-left: auto;
-    }
-  }
-}
-
 /* Setup wizard (NEW-17): one column, fits 390px phones */
 .setup-page { display: grid; gap: 12px; max-width: 720px; }
 .setup-card { display: grid; gap: 10px; }
@@ -1679,8 +1674,8 @@ html[data-theme='lava'] input[type='date'], html[data-season-dark] input[type='d
 .setup-step.done { color: var(--warm-text); }
 .setup-chips { display: flex; flex-wrap: wrap; gap: 8px; }
 .setup-chip {
-  border: 2px solid var(--warm-border); background: var(--warm-card); color: var(--warm-text);
-  border-radius: 999px; padding: 6px 14px; font-weight: 800; font-size: 14px; cursor: pointer; font-family: inherit;
+  border: var(--shape-border-w) solid var(--warm-border); background: var(--warm-card); color: var(--warm-text);
+  border-radius: var(--shape-radius-chip); padding: 6px 14px; font-weight: 800; font-size: 14px; cursor: pointer; font-family: inherit;
 }
 .setup-chip.on { border-color: var(--warm-accent); background: var(--warm-accent-light); }
 .setup-row { display: flex; align-items: flex-start; gap: 10px; cursor: pointer; padding: 4px 0; }
@@ -1691,15 +1686,15 @@ html[data-theme='lava'] input[type='date'], html[data-season-dark] input[type='d
 .setup-login { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .setup-login .tq-label, .setup-allowance, .setup-card > .tq-label { display: grid; gap: 4px; margin: 0; }
 .setup-add { display: flex; flex-wrap: wrap; gap: 8px; }
-.setup-nav { display: flex; justify-content: space-between; gap: 8px; position: sticky; bottom: 0; padding: 10px 0; background: var(--warm-bg); }
+.setup-nav { display: flex; justify-content: space-between; gap: 8px; position: sticky; bottom: var(--tabbar-h); padding: 10px 0; background: var(--warm-bg); }
 .setup-error { margin: 0; color: #DC2626; font-weight: 700; }
 .setup-tips { margin: 0; padding-left: 20px; display: grid; gap: 6px; font-weight: 600; }
 .setup-subhead { margin: 6px 0 0; font-size: 15px; font-weight: 800; }
-.setup-mock { display: grid; gap: 8px; padding: 12px; border-radius: 14px; background: var(--warm-bg); border: 1.5px dashed var(--warm-border); }
-.setup-mock-row { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 12px; background: var(--warm-card); border: 1.5px solid var(--warm-border); flex-wrap: wrap; }
+.setup-mock { display: grid; gap: 8px; padding: 12px; border-radius: var(--shape-radius-card); background: var(--warm-bg); border: 1.5px dashed var(--warm-border); }
+.setup-mock-row { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 12px; background: var(--warm-card); border: var(--shape-border-w) solid var(--warm-border); flex-wrap: wrap; }
 .setup-mock-name { flex: 1; min-width: 0; display: grid; font-weight: 800; font-size: 14px; overflow-wrap: anywhere; }
-.setup-mock-name small { font-size: 11px; font-weight: 600; color: var(--warm-text-light); }
-.setup-mock-btn { border: 1.5px solid var(--warm-border); border-radius: 10px; padding: 4px 10px; font-size: 12px; font-weight: 700; color: var(--warm-text-muted); background: var(--warm-card); white-space: nowrap; }
+.setup-mock-name small { font-size: var(--fs-xs); font-weight: 600; color: var(--warm-text-light); }
+.setup-mock-btn { border: var(--shape-border-w) solid var(--warm-border); border-radius: 10px; padding: 4px 10px; font-size: 12px; font-weight: 700; color: var(--warm-text-muted); background: var(--warm-card); white-space: nowrap; }
 .setup-mock-btn.hl { border-color: var(--warm-accent); color: var(--warm-accent); box-shadow: 0 0 0 3px var(--warm-accent-light); animation: setup-pulse 1.6s ease-in-out infinite; }
 .setup-mock-menu { justify-self: end; }
 .setup-mock-scale { justify-content: flex-start; }
@@ -1714,6 +1709,621 @@ html[data-theme='lava'] input[type='date'], html[data-season-dark] input[type='d
 .setup-tour-nav { position: static; padding: 0; background: none; align-items: center; }
 @keyframes setup-pulse { 50% { box-shadow: 0 0 0 6px var(--warm-accent-light); } }
 @media (prefers-reduced-motion: reduce) { .setup-mock-btn.hl { animation: none; } }
+/* "What's new" slides after a big update (NEW-38): the wizard tour's cards in a pop-up above the tab bar */
+.whats-new-overlay { z-index: 120; padding: 16px; box-sizing: border-box; }
+.whats-new { display: grid; gap: 12px; overflow-y: auto; width: 100%; }
+.whats-new-more { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+.whats-new-kid .setup-mock-name { font-size: 18px; }
+.whats-new-kid .setup-mock-btn { font-size: 16px; padding: 8px 14px; }
+.whats-new-kid .setup-tour-steps { font-size: 17px; }
 @media (max-width: 480px) {
   .setup-login { grid-template-columns: 1fr; }
+}
+
+/* One chore row for Home, Tasks and room pages (ENH-25, shared/ChoreRow.tsx): icon, name, "room · when", coins and a
+   square tick; tapping the row opens its details and the less-used buttons underneath. */
+.chore-list { display: flex; flex-direction: column; min-width: 0; }
+/* contain: a long one-line "room · when" must not widen the card it's in (it's cut with … instead) */
+.chore-row { min-width: 0; border-radius: 12px; contain: inline-size; }
+.chore-row + .chore-row { border-top: 1px solid var(--warm-border-subtle); border-top-left-radius: 0; border-top-right-radius: 0; }
+.chore-row-top { display: flex; align-items: center; gap: 10px; min-height: 64px; padding: 6px 6px; }
+.chore-row-main {
+  flex: 1; min-width: 0; display: flex; align-items: center; gap: 12px; padding: 4px 0; margin: 0;
+  background: none; border: 0; text-align: left; font: inherit; color: inherit; cursor: pointer; border-radius: 10px;
+}
+.chore-row-main:focus-visible, .chore-tick:focus-visible, .chore-act:focus-visible { outline: 2px solid var(--warm-accent); outline-offset: 2px; }
+.chore-tile {
+  width: 42px; height: 42px; border-radius: 12px; flex: none; display: grid; place-items: center;
+  background: var(--warm-bg-subtle); border: 1px solid var(--warm-border);
+}
+.chore-text { flex: 1; min-width: 0; display: block; }
+.chore-name {
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; overflow-wrap: anywhere;
+  font-size: 15px; font-weight: 800; line-height: 1.25; color: var(--warm-text);
+}
+/* Two lines at most while closed, so "26 days overdue" after a long room name isn't cut off on a narrow phone */
+.chore-sub {
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; overflow-wrap: anywhere;
+  margin-top: 1px; font-size: 12.5px; font-weight: 600; line-height: 1.3; color: var(--warm-text-muted);
+}
+.chore-row.open .chore-sub, .chore-sub.wrap, .chore-row.open .chore-name { display: block; overflow: visible; }
+.chore-late { color: var(--health-red); font-weight: 800; }
+.chore-coins { flex: none; display: flex; flex-direction: column; align-items: flex-end; gap: 2px; font-size: 13.5px; font-weight: 800; color: var(--warm-text); }
+.chore-coins-amount { display: inline-flex; align-items: center; gap: 4px; }
+.chore-coins svg { width: 17px; height: 17px; }
+.chore-coins-boost { font-size: var(--fs-xs); font-weight: 900; color: #fff; background: var(--warm-accent); border-radius: 6px; padding: 1px 5px; white-space: nowrap; }
+.chore-tick {
+  width: 40px; height: 40px; flex: none; padding: 0; display: grid; place-items: center; cursor: pointer;
+  border-radius: 10px; border: 2px solid var(--warm-accent); background: var(--warm-card); color: var(--warm-accent);
+  transition: background-color 0.15s ease, transform 0.1s ease;
+}
+.chore-tick.ready:hover { background: var(--warm-accent-light); }
+.chore-tick.ready:active { transform: scale(0.94); }
+.chore-tick.done { background: var(--health-green); border-color: var(--health-green); color: #fff; cursor: default; }
+.chore-tick.off { border-color: var(--warm-border); color: var(--warm-text-light); opacity: 0.55; cursor: default; }
+.chore-row.done .chore-name { text-decoration: line-through; color: var(--warm-text-muted); font-weight: 700; }
+.chore-row.open { background: var(--warm-bg-warm); }
+.chore-row.highlight { background: var(--warm-accent-light); box-shadow: inset 0 0 0 1.5px var(--warm-accent); }
+.chore-row.flash { background: var(--health-green-bg); }
+.chore-row.selected { background: var(--warm-accent-light); }
+.chore-row.paused .chore-row-main { opacity: 0.55; }
+.chore-detail { padding: 2px 6px 12px; min-width: 0; }
+.chore-notes { margin: 0 0 10px; font-size: 13.5px; font-weight: 600; line-height: 1.4; color: var(--warm-text-secondary); white-space: pre-wrap; overflow-wrap: anywhere; }
+.chore-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+.chore-tag {
+  min-height: 26px; padding: 2px 9px; border-radius: 8px; display: inline-flex; align-items: center; gap: 5px;
+  background: var(--warm-bg-subtle); border: 1px solid var(--warm-border-subtle);
+  font-size: 12.5px; font-weight: 700; color: var(--warm-text); overflow-wrap: anywhere;
+}
+.chore-acts { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.chore-act, .chore-acts .tq-btn {
+  min-height: 36px; padding: 0 11px; display: inline-flex; align-items: center; gap: 5px; cursor: pointer;
+  border-radius: 10px; border: 1px solid var(--warm-border); background: var(--warm-card); box-shadow: none;
+  font-family: inherit; font-size: 13px; font-weight: 800; color: var(--warm-text); white-space: nowrap;
+}
+.chore-act:hover { background: var(--warm-bg-subtle); }
+.chore-act.on, .chore-act.tq-btn-primary { background: var(--warm-accent); border-color: var(--warm-accent); color: #fff; }
+.chore-act:disabled { opacity: 0.55; cursor: default; }
+.chore-menu { margin-top: 8px; border: 1px solid var(--warm-border); border-radius: 10px; background: var(--warm-card); overflow: hidden; max-width: 320px; }
+.chore-menu button {
+  display: flex; justify-content: space-between; align-items: center; gap: 8px; width: 100%; min-height: 40px; padding: 8px 12px;
+  background: none; border: 0; text-align: left; cursor: pointer; font-family: inherit; font-size: 13px; font-weight: 700; color: var(--warm-text);
+}
+.chore-menu button + button, .chore-menu-rooms { border-top: 1px solid var(--warm-border-subtle); }
+.chore-menu-rooms { background: var(--warm-bg-subtle); }
+.chore-menu-rooms button { padding-left: 22px; font-weight: 600; }
+.chore-select-box {
+  width: 22px; height: 22px; flex: none; display: grid; place-items: center; border-radius: 6px;
+  border: var(--shape-border-w) solid var(--warm-border); color: #fff; font-size: 13px; font-weight: 900;
+}
+.chore-select-box.on { border-color: var(--warm-accent); background: var(--warm-accent); }
+.chore-sort { display: flex; align-items: center; justify-content: flex-end; gap: 6px; margin-bottom: 6px; }
+.chore-sort label { font-size: 12px; font-weight: 800; color: var(--warm-text-light); }
+.chore-sort select { width: auto; max-width: 100%; }
+@media (pointer: coarse) {
+  .chore-tick { width: 44px; height: 44px; }
+  .chore-act, .chore-acts .tq-btn { min-height: 40px; }
+}
+/* Kid mode: bigger names and a bigger tick */
+.kid-mode .chore-row-top { min-height: 68px; }
+.kid-mode .chore-name { font-size: 16px; }
+.kid-mode .chore-sub { font-size: 13px; }
+.kid-mode .chore-tick { width: 46px; height: 46px; }
+
+/* Today (ENH-26, pages/Dashboard.tsx): the summary card, chips, the approvals notice, Mine / Everyone, the lists and
+   the week's standings. One column on phones; from 1100px a side column holds approvals, the mascot, house health
+   and the week. */
+.today { display: flex; flex-direction: column; gap: 14px; min-width: 0; animation: fadeIn 0.3s ease; }
+.today.wide { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 24px; align-items: start; }
+/* ENH-29: on wide screens the chore list stops at a comfortable reading width and the rail stays beside it */
+@media (min-width: 1440px) { .today.wide { grid-template-columns: minmax(0, 780px) 340px; } }
+.today-side .mascot-card { align-items: flex-start !important; gap: 12px !important; }
+.today-side .mascot-card > button svg { width: 64px; height: 64px; }
+.today-main, .today-side { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.today-summary { padding: 16px; border-radius: var(--shape-radius-card); background: var(--warm-accent-light); border: var(--shape-border-w) solid var(--warm-border); min-width: 0; }
+.today-summary-top { display: grid; grid-template-columns: 72px minmax(0, 1fr); gap: 14px; align-items: center; }
+.today-ring { position: relative; width: 72px; height: 72px; }
+.today-ring svg { width: 72px; height: 72px; transform: rotate(-90deg); display: block; }
+.today-ring circle { fill: none; stroke-width: 8; }
+.today-ring-track { stroke: var(--warm-border); }
+.today-ring-fill { stroke: var(--warm-accent); stroke-linecap: round; transition: stroke-dasharray 0.4s ease; }
+.today-ring-n {
+  position: absolute; inset: 0; display: grid; place-content: center; text-align: center;
+  font-size: 22px; font-weight: 900; line-height: 1; color: var(--warm-text);
+}
+.today-ring-n small { display: block; margin-top: 2px; font-size: var(--fs-xs); font-weight: 700; color: var(--warm-text-muted); }
+.today-summary-text { min-width: 0; }
+.today-summary-text h2 { margin: 0; font-size: 19px; font-weight: 900; line-height: 1.2; color: var(--warm-text); overflow-wrap: anywhere; }
+.today-summary-text p { margin: 2px 0 0; font-size: 13px; font-weight: 600; color: var(--warm-text-muted); }
+.today-level { margin-top: 10px; }
+.today-goal { margin-top: 10px; }
+.today-goal-top { display: flex; justify-content: space-between; gap: 8px; margin-bottom: 5px; font-size: 13px; font-weight: 800; color: var(--warm-text); }
+.today-goal-top span:first-child { min-width: 0; overflow-wrap: anywhere; }
+.today-goal-top span:last-child { color: var(--warm-text-muted); white-space: nowrap; }
+.today-bar { height: 8px; border-radius: 99px; background: var(--warm-border); overflow: hidden; }
+.today-bar span { display: block; height: 100%; border-radius: inherit; background: var(--warm-accent); }
+.today-goal-note { margin-top: 5px; font-size: 12px; font-weight: 700; color: var(--warm-text-muted); }
+.today-mascot-line {
+  display: flex; align-items: center; gap: 10px; width: 100%; margin-top: 12px; padding: 10px 0 0;
+  border: 0; border-top: 1px solid var(--warm-border); background: none; text-align: left; font: inherit; color: var(--warm-text); cursor: pointer;
+}
+.today-mascot-pic { width: 44px; height: 44px; flex: none; display: grid; place-items: center; overflow: hidden; }
+.today-mascot-text { flex: 1; min-width: 0; font-size: 13.5px; font-weight: 600; line-height: 1.35; overflow-wrap: anywhere; }
+.today-mascot-text b { font-weight: 900; }
+/* The chips scroll sideways inside their own row, never the page */
+.today-chips { display: flex; gap: 8px; min-width: 0; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; contain: inline-size; }
+.today-chips::-webkit-scrollbar { display: none; }
+/* A mouse can't swipe a hidden-scrollbar row: on desktop the chips wrap instead */
+@media (hover: hover) and (pointer: fine) { .today-chips { flex-wrap: wrap; overflow-x: visible; } }
+.today-chip {
+  flex: none; height: 34px; padding: 0 12px; border-radius: var(--shape-radius-chip); display: inline-flex; align-items: center; gap: 4px; white-space: nowrap;
+  background: var(--warm-card); border: 1px solid var(--warm-border); font-family: inherit; font-size: 13px; font-weight: 700; color: var(--warm-text);
+}
+button.today-chip { cursor: pointer; }
+.today-chip em { font-style: normal; font-weight: 900; }
+.today-chip.hot { background: var(--warm-accent-light); border-color: var(--warm-accent); color: var(--warm-accent); }
+.today-chip.on { background: var(--warm-accent); border-color: var(--warm-accent); color: #fff; }
+.today-chip.on em { color: inherit !important; }
+.today-chip:focus-visible, .today-link:focus-visible, .today-tabs button:focus-visible, .today-more:focus-visible, .today-mascot-line:focus-visible {
+  outline: 2px solid var(--warm-accent); outline-offset: 2px;
+}
+.today-panel { min-width: 0; }
+.today-panel-note { margin-bottom: 8px; font-size: 13px; font-weight: 800; color: var(--warm-accent); }
+.today-notice-wrap { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.today-notice {
+  display: flex; align-items: center; gap: 10px; padding: 10px 10px 10px 14px; border-radius: var(--shape-radius-card);
+  background: var(--warm-streak-bg); border: 1.5px solid var(--warm-streak-border); color: var(--warm-streak-text);
+  /* the one-line "Cylis · Morning Feeding…" is cut with … instead of widening the page */
+  contain: inline-size;
+}
+.today-notice-icon { flex: none; font-size: 22px; }
+.today-notice-calm { background: var(--warm-card); border-color: var(--warm-border); color: var(--warm-text-light); padding: 8px 14px; }
+.today-notice-calm .today-notice-icon { font-size: 18px; }
+.today-notice-calm b { font-weight: 700; }
+.today-notice > div { flex: 1; min-width: 0; }
+.today-notice b { display: block; font-size: 14px; font-weight: 800; }
+.today-notice > div span { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12.5px; font-weight: 600; color: var(--warm-streak-subtext); }
+.today-notice .tq-btn { flex: none; }
+/* "Turn on notifications" (ENH-31, NotifyCard.tsx) */
+.notify-card {
+  display: flex; gap: 12px; padding: 14px; border-radius: var(--shape-radius-card); min-width: 0;
+  background: var(--warm-card); border: 1.5px solid var(--warm-accent); color: var(--warm-text);
+}
+.notify-card-icon { flex: none; font-size: 24px; line-height: 1.2; }
+.notify-card-body { flex: 1; min-width: 0; display: grid; gap: 6px; }
+.notify-card-body b { font-size: 15px; font-weight: 800; overflow-wrap: anywhere; }
+.notify-card-body p { margin: 0; font-size: 13px; font-weight: 600; color: var(--warm-text-muted); overflow-wrap: anywhere; }
+.notify-card-body .notify-card-error { color: var(--warm-accent); font-weight: 700; }
+.notify-card-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+.today-tabs-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.today-tabs { display: inline-flex; max-width: 100%; border: var(--shape-border-w) solid var(--warm-border); border-radius: var(--shape-radius-control); overflow: hidden; background: var(--warm-card); }
+.today-tabs button {
+  min-height: 40px; padding: 0 14px; border: 0; background: none; cursor: pointer; white-space: nowrap;
+  font-family: inherit; font-size: 14px; font-weight: 800; color: var(--warm-text-muted);
+}
+.today-tabs button + button { border-left: 1px solid var(--warm-border); }
+.today-tabs button.on { background: var(--warm-accent-light); color: var(--warm-text); box-shadow: inset 0 -2px 0 var(--warm-accent); }
+.today-tabs i { margin-left: 3px; font-style: normal; font-weight: 700; opacity: 0.7; }
+.today-link {
+  border: 0; background: none; padding: 6px 2px; cursor: pointer; white-space: nowrap;
+  font-family: inherit; font-size: 14px; font-weight: 800; color: var(--warm-accent);
+}
+.today-link.quiet { font-size: 13px; font-weight: 700; color: var(--warm-text-muted); }
+.today-section { display: flex; flex-direction: column; min-width: 0; }
+.today-sec { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 4px 4px 8px; }
+.today-sec h3 { margin: 0; display: flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 800; color: var(--warm-text); }
+.today-sec.late h3 { color: var(--health-red); }
+.today-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--health-red); }
+.today-list { padding: 2px 6px; }
+.today-more {
+  display: block; width: 100%; padding: 12px; border: 0; background: none; cursor: pointer; text-align: center;
+  font-family: inherit; font-size: 14px; font-weight: 800; color: var(--warm-accent);
+}
+.today-next { padding: 14px 14px 16px; border: 2px solid var(--warm-accent); min-width: 0; }
+.today-next-head {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  font-size: var(--fs-md); font-weight: var(--shape-heading-weight); color: var(--warm-accent);
+}
+.today-next-head .today-link { font-size: 13px; letter-spacing: 0; text-transform: none; }
+.today-next .chore-row-top { padding-left: 0; padding-right: 0; }
+.today-next-acts { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; margin-top: 6px; }
+.today-next-acts > :only-child { grid-column: 1 / -1; }
+.today-done { min-height: 48px; justify-content: center; font-size: 17px; font-weight: 900; }
+.today-standings { display: flex; gap: 4px; padding: 12px 8px; overflow-x: auto; scrollbar-width: none; contain: inline-size; }
+.today-standings::-webkit-scrollbar { display: none; }
+.today-person { flex: 1 0 64px; min-width: 64px; display: flex; flex-direction: column; align-items: center; gap: 4px; text-align: center; }
+.today-rank { display: none; }
+.today-person-pic { position: relative; display: inline-flex; border-radius: 50%; }
+.today-person.first .today-person-pic { box-shadow: 0 0 0 3px var(--warm-accent); }
+.today-person-badge {
+  position: absolute; right: -3px; bottom: -3px; width: 16px; height: 16px; border-radius: 50%; display: grid; place-items: center;
+  font-size: var(--fs-xs); font-weight: 900; color: #fff;
+}
+.today-person-name { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; font-weight: 800; color: var(--warm-text); }
+.today-person-pts { display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; font-size: 12px; font-weight: 700; color: var(--warm-text-muted); }
+.today-side .today-standings { flex-direction: column; gap: 0; padding: 4px 16px; overflow: visible; }
+.today-side .today-person { flex-direction: row; gap: 10px; min-width: 0; padding: 8px 0; text-align: left; }
+.today-side .today-person + .today-person { border-top: 1px solid var(--warm-border-subtle); }
+.today-side .today-rank { display: block; width: 16px; flex: none; font-size: 13px; font-weight: 800; color: var(--warm-text-light); }
+.today-side .today-person-name { flex: 1; min-width: 0; font-size: 14px; }
+.today-side .today-person-pts { font-size: 14px; font-weight: 900; color: var(--warm-text); }
+.today-side .today-person-pts small { display: none; }
+.today-side .today-person-pts svg { width: 16px; height: 16px; }
+.today-health h3 { margin: 0 0 10px; font-size: 15px; font-weight: 800; color: var(--warm-text); }
+.today-health-top { display: flex; align-items: center; gap: 14px; margin-bottom: 12px; }
+.today-health-top p { flex: 1; min-width: 0; margin: 0; font-size: 13.5px; font-weight: 600; line-height: 1.4; color: var(--warm-text-secondary); }
+.today-health-boxes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.today-health-boxes button {
+  padding: 8px 4px; border-radius: 12px; border: var(--shape-border-w) solid var(--warm-border); background: var(--warm-card);
+  font-family: inherit; text-align: center; cursor: pointer; color: var(--warm-text);
+}
+.today-health-boxes button:disabled { cursor: default; }
+.today-health-boxes b { display: block; font-size: 20px; font-weight: 900; }
+.today-health-boxes span { display: block; font-size: var(--fs-xs); font-weight: 700; color: var(--warm-text-light); overflow-wrap: anywhere; }
+.today-empty { text-align: center; font-size: 15px; font-weight: 700; color: var(--warm-text-muted); }
+.today-added { font-size: 13px; font-weight: 700; color: var(--health-green); }
+.today-customise { display: flex; justify-content: center; padding-top: 4px; }
+/* Kid mode: a bigger headline and Done! */
+.kid-mode .today-summary-text h2 { font-size: 21px; }
+.kid-mode .today-done { min-height: 54px; font-size: 19px; }
+
+/* ── Room page (ENH-28): a short header, filter chips and the chores in sections ── */
+.page-header-title:has(.ph-back) { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.ph-back {
+  flex: none; width: 40px; height: 40px; display: grid; place-items: center; padding: 0; cursor: pointer;
+  border: 1px solid var(--warm-border); border-radius: 10px; background: var(--warm-card); color: var(--warm-text);
+}
+.ph-back:focus-visible, .room-hero-more:focus-visible { outline: 2px solid var(--warm-accent); outline-offset: 2px; }
+.room-hero { position: relative; display: flex; align-items: center; gap: 14px; padding: 14px 16px; margin-bottom: 14px; min-width: 0; }
+.room-hero:has(.room-hero-more) .room-hero-h { padding-right: 36px; }
+.room-hero-text { flex: 1; min-width: 0; }
+.room-hero-h { font-size: 17px; font-weight: 900; color: var(--warm-text); line-height: 1.25; }
+.room-hero-s { font-size: 13px; font-weight: 600; color: var(--warm-text-muted); margin-top: 3px; }
+.room-hero-coins { font-weight: 800; color: var(--warm-text); }
+.room-hero-todo {
+  width: 64px; height: 64px; flex: none; border-radius: 50%; border: 3px solid; background: var(--warm-card);
+  display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1.1;
+}
+.room-hero-todo span { font-size: 18px; }
+.room-hero-todo b { font-size: 16px; font-weight: 900; color: var(--warm-text); }
+.room-hero-more {
+  position: absolute; top: 10px; right: 10px; width: 36px; height: 36px; display: grid; place-items: center; padding: 0; cursor: pointer;
+  border: 1px solid var(--warm-border); border-radius: 10px; background: var(--warm-card); color: var(--warm-text);
+}
+.room-menu { margin: -6px 0 14px auto; }
+.room-body { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.room-tools { min-width: 0; }
+select.today-chip.room-sort { cursor: pointer; appearance: auto; padding-right: 6px; max-width: none; width: auto; }
+.room-hero-coins, .room-hero-n { white-space: nowrap; }
+.room-sec-note { font-size: 12px; font-weight: 700; color: var(--warm-text-light); }
+.room-later { border: 1px dashed var(--warm-border); border-radius: 12px; }
+
+/* The chore form (ENH-28, ChoreForm.tsx): groups, Save pinned to the bottom; a bottom sheet on phones, a panel beside
+   the list on a computer */
+.cf-sheet { display: flex; flex-direction: column; padding: 0; max-width: 560px; max-height: 88vh; overflow: hidden; }
+.cf-sheet-head { display: flex; align-items: baseline; gap: 8px; padding: 14px 16px 10px; border-bottom: 1px solid var(--warm-border-subtle); }
+.cf-sheet-head h2 { margin: 0; font-size: 18px; font-weight: 800; }
+.cf-sheet-room { flex: 1; min-width: 0; font-size: 13px; font-weight: 700; color: var(--warm-text-light); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cf-sheet-x { flex: none; align-self: center; width: 36px; height: 36px; border: 0; border-radius: 50%; background: none; font-size: 24px; line-height: 1; color: var(--warm-text-light); cursor: pointer; }
+.cf-sheet-x:hover { background: var(--warm-bg-subtle); }
+.cf-sheet-body { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 12px; display: grid; gap: 12px; background: var(--warm-bg-warm); }
+.cf-sheet-foot { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; padding: 10px 16px calc(10px + env(safe-area-inset-bottom)); border-top: 1px solid var(--warm-border-subtle); background: var(--warm-card); }
+.cf-sheet-foot .tq-btn { min-width: 96px; }
+.cf-group { display: grid; gap: 10px; min-width: 0; padding: 14px; border: 1px solid var(--warm-border-subtle); border-radius: var(--shape-radius-card); background: var(--warm-card); }
+.cf-group h3 { margin: 0; font-size: var(--fs-md); font-weight: var(--shape-heading-weight); color: var(--warm-text); }
+.cf-field { font-size: 12px; font-weight: 700; color: var(--warm-text-light); margin-bottom: -4px; }
+.cf-err { font-size: 12px; font-weight: 700; color: var(--health-red); }
+.cf-hint { margin: 0; font-size: 12px; font-weight: 600; color: var(--warm-text-muted); }
+.cf-row { display: flex; align-items: center; gap: 12px; min-height: 36px; }
+.cf-row-text { flex: 1; min-width: 0; display: grid; gap: 2px; text-align: left; }
+.cf-row-text b, .cf-row-text label { font-size: 14px; font-weight: 700; color: var(--warm-text); }
+.cf-row-text small { font-size: 12px; font-weight: 600; color: var(--warm-text-muted); }
+.cf-row-ctl { flex: none; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; justify-content: flex-end; max-width: 60%; }
+.cf-seg { display: flex; flex-wrap: wrap; gap: 0; padding: 0; border-radius: var(--shape-radius-control); background: var(--warm-card); border: var(--shape-border-w) solid var(--warm-border); overflow: hidden; width: 100%; box-sizing: border-box; }
+/* A joined row (ENH-30): each button draws its left and top hairline; the box clips the outer edges, so wrapped rows join too */
+.cf-seg button { flex: 1 1 auto; min-height: 36px; padding: 6px 10px; border: 0; border-radius: 0; background: none; box-shadow: -1px 0 0 var(--warm-border), 0 -1px 0 var(--warm-border); font: 700 13px Nunito, sans-serif; color: var(--warm-text-muted); cursor: pointer; }
+.cf-seg button.on { background: var(--warm-accent); color: #fff; }
+.cf-people { display: flex; flex-wrap: wrap; gap: 8px; }
+.cf-person { display: inline-flex; align-items: center; gap: 6px; min-height: 34px; padding: 5px 12px; border-radius: var(--shape-radius-chip); border: var(--shape-border-w) solid var(--warm-border); background: var(--warm-bg-input); font: 700 13px Nunito, sans-serif; color: var(--warm-text); cursor: pointer; }
+.cf-person.on { border-color: var(--warm-accent); background: var(--warm-accent-light); color: var(--warm-accent); }
+.cf-split { display: grid; gap: 6px; }
+.cf-split label { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; }
+.cf-split label > span:first-child { min-width: 90px; }
+.cf-more { padding-top: 4px; padding-bottom: 4px; }
+.cf-more-btn { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 48px; padding: 6px 0; border: 0; background: none; cursor: pointer; font-family: inherit; }
+.cf-more-chev { font-size: 20px; color: var(--warm-text-light); transition: transform .15s ease; }
+.cf-more-chev.open { transform: rotate(180deg); }
+.cf-more-body { display: grid; gap: 14px; padding: 4px 0 10px; border-top: 1px solid var(--warm-border-subtle); padding-top: 12px; }
+.cf-health-head { display: flex; justify-content: space-between; font-size: 13px; font-weight: 700; }
+.cf-health-ends { display: flex; justify-content: space-between; font-size: var(--fs-xs); font-weight: 600; color: var(--warm-text-light); }
+.cf-delete { justify-self: start; min-height: 40px; padding: 8px 14px; border: 1.5px solid var(--warm-danger-border); border-radius: 10px; background: none; font: 700 13px Nunito, sans-serif; color: var(--warm-danger); cursor: pointer; }
+@media (max-width: 768px) {
+  /* dvh: the screen you can see (vh counts the space under the address bar, which pushed the sheet to the top) */
+  .cf-sheet { width: 100vw !important; max-width: 100vw !important; height: 85vh; height: 85dvh; max-height: 85vh !important; max-height: 85dvh !important; border-radius: var(--shape-radius-card) var(--shape-radius-card) 0 0 !important; }
+  .cf-sheet-foot .tq-btn { flex: 1; }
+}
+@media (min-width: 1024px) {
+  /* A panel on the right: the room's list stays in view beside it */
+  .cf-sheet-overlay { justify-content: flex-end !important; align-items: stretch !important; background-color: rgba(0, 0, 0, .12) !important; }
+  .cf-sheet { width: 460px; max-width: 460px; height: 100vh; max-height: 100vh; border-radius: 0; border-top: 0; border-bottom: 0; border-right: 0; }
+}
+
+/* ========================================
+   ROOMS GRID (ENH-29): small tiles, neediest first, zones as chips
+   ======================================== */
+.rooms-tools { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; min-width: 0; }
+.rooms-chips { flex: 1; }
+.rooms-add { flex: none; margin-left: auto; }
+.rooms-zones { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 16px; padding: 10px 12px; border: 1px dashed var(--warm-border); border-radius: 12px; }
+.rooms-zones-label { font-size: 13px; font-weight: 800; color: var(--warm-text-muted); }
+.rooms-zone { display: inline-flex; align-items: center; gap: 4px; padding: 3px 6px 3px 10px; border-radius: 8px; background: var(--warm-card); border: 1px solid var(--warm-border); font-size: 13px; font-weight: 700; color: var(--warm-text); }
+.rooms-zone button { background: none; border: 0; padding: 2px 4px; font: inherit; color: var(--warm-text-muted); cursor: pointer; }
+.rooms-zone .rooms-zone-name { color: var(--warm-text); padding-left: 0; }
+.rooms-zone input { font: inherit; width: 120px; padding: 2px 6px; border: 1px solid var(--warm-accent); border-radius: 6px; background: var(--warm-bg-input); color: var(--warm-text); outline: none; }
+.rooms-zone.add { border-style: dashed; color: var(--warm-text-muted); cursor: pointer; padding: 3px 10px; font-family: inherit; }
+.rooms-section + .rooms-section { margin-top: 22px; }
+.rooms-sec { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 0 4px 8px; min-height: 28px; }
+.rooms-sec-title { display: flex; align-items: baseline; flex-wrap: wrap; column-gap: 10px; min-width: 0; }
+.rooms-sec h3 { margin: 0; font-size: 15px; font-weight: 800; color: var(--warm-text); }
+.rooms-sec-note { font-size: 12px; font-weight: 700; color: var(--warm-text-light); white-space: nowrap; }
+.rooms-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
+@media (min-width: 900px) { .rooms-grid { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 14px; } }
+@media (max-width: 420px) { .rooms-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; } }
+.rooms-tile {
+  display: flex; flex-direction: column; gap: 4px; min-width: 0; padding: 12px; cursor: pointer;
+  background: var(--warm-card); border: 1px solid var(--warm-border); border-radius: 12px; color: var(--warm-text);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.rooms-tile:hover { border-color: var(--warm-accent); }
+.rooms-tile:focus-visible { outline: 2px solid var(--warm-accent); outline-offset: 2px; }
+.rooms-tile-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; margin-bottom: 6px; }
+.rooms-tile-icon { position: relative; width: 42px; height: 42px; flex: none; border-radius: 10px; display: flex; align-items: center; justify-content: center; }
+.rooms-tile-icon > svg { width: 28px; height: 28px; }
+/* A solid backing: letter avatars are see-through tints and would show the room's colour */
+.rooms-tile-who { position: absolute; right: -6px; bottom: -6px; display: flex; border-radius: 35%; background: var(--warm-card); box-shadow: 0 0 0 2px var(--warm-card); }
+.rooms-tile-pct { font-size: 18px; font-weight: 900; line-height: 1.2; }
+.rooms-tile-name { font-size: 15px; font-weight: 800; line-height: 1.25; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow-wrap: anywhere; }
+.rooms-tile-sub { font-size: 13px; font-weight: 600; color: var(--warm-text-muted); }
+.rooms-tile-sub.late { color: var(--health-red); font-weight: 700; }
+.rooms-tile-bar { height: 6px; margin-top: 6px; border-radius: 3px; background: var(--health-bar-track, var(--warm-border-subtle)); overflow: hidden; }
+.rooms-tile-bar span { display: block; height: 100%; border-radius: 3px; }
+.rooms-tile-rename { display: flex; align-items: center; gap: 4px; min-width: 0; }
+.rooms-tile-rename .tq-input { flex: 1; min-width: 0; padding: 4px 8px; font-size: 14px; font-weight: 700; }
+.rooms-tile-rename button { background: none; border: 0; padding: 4px; font-size: 15px; font-weight: 800; color: var(--warm-text-muted); cursor: pointer; }
+.rooms-tile-rename button:first-of-type { color: var(--warm-accent); }
+.rooms-tile-acts { position: relative; display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--warm-border-subtle); }
+.rooms-tile-act {
+  width: 30px; height: 30px; padding: 0; display: inline-flex; align-items: center; justify-content: center; cursor: pointer;
+  border: 1px solid var(--warm-border); border-radius: 8px; background: var(--warm-bg-subtle); color: var(--warm-text-muted); font-size: 13px;
+}
+.rooms-tile-act.on { border-color: var(--warm-accent); background: var(--warm-accent-light); color: var(--warm-accent); }
+.rooms-tile-act.danger { border-color: var(--warm-danger-border); background: var(--warm-danger-bg); color: var(--warm-danger); }
+.rooms-tile-zone { display: contents; }
+.rooms-zone-menu {
+  position: absolute; left: 0; right: 0; top: calc(100% + 4px); z-index: 100; overflow: hidden;
+  background: var(--warm-card); border: 1px solid var(--warm-border); border-radius: 10px; box-shadow: 0 4px 16px rgba(0,0,0,0.14);
+}
+.rooms-zone-menu button { display: block; width: 100%; text-align: left; padding: 9px 14px; font: inherit; font-size: 13px; font-weight: 600; color: var(--warm-text); background: none; border: 0; border-bottom: 1px solid var(--warm-border-subtle); cursor: pointer; }
+.rooms-zone-menu button.on { color: var(--warm-accent); font-weight: 800; }
+
+/* ========================================
+   THE "FRESH" LOOK (ENH-30): platform-neutral controls
+   ======================================== */
+/* A tick box for on/off settings (shared/Toggle.tsx) */
+.tq-tick {
+  width: 24px; height: 24px; flex: none; padding: 0; display: inline-flex; align-items: center; justify-content: center; cursor: pointer;
+  border: 2px solid var(--warm-text-light); border-radius: var(--shape-radius-small); background: var(--warm-bg-input); color: #fff;
+}
+.tq-tick.on { background: var(--warm-accent); border-color: var(--warm-accent); }
+.tq-tick:focus-visible { outline: 2px solid var(--warm-accent); outline-offset: 2px; }
+/* A joined row of buttons, one pressed (All / Mine, Insights' periods) */
+.tq-joined { display: inline-flex; min-width: 0; border: var(--shape-border-w) solid var(--warm-border); border-radius: var(--shape-radius-control); overflow: hidden; background: var(--warm-card); }
+.tq-joined > button {
+  min-width: 0; padding: 6px 10px; border: 0; background: none; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  font-family: inherit; font-size: var(--fs-sm); font-weight: 700; color: var(--warm-text-muted);
+}
+.tq-joined > button + button { border-left: var(--shape-border-w) solid var(--warm-border); }
+.tq-joined > button[aria-pressed='true'] { background: var(--warm-accent); color: #fff; }
+.tq-joined > button:focus-visible { outline: 2px solid var(--warm-accent); outline-offset: -2px; }
+.today-person-pts small { font-size: var(--fs-xs); }
+
+/* The level bar (LevelStrip.tsx); Quest's colour block makes it gold */
+.level-strip-fill { background: linear-gradient(90deg, #A78BFA, #7C3AED); }
+
+/* ========================================
+   NEW-37: the family's look (Settings → Look). Fresh is everything above; Quest and Calm swap the --shape-*
+   values and restyle a few parts. A look carries no colours of its own: it is drawn in the person's theme, so
+   every look works with every theme. App.tsx sets html[data-look] from the dashboard (no attribute = Fresh).
+   ======================================== */
+
+/* ── Quest: bold and game-like. The top of the page is a solid block of the person's colour with gold progress,
+   buttons have a pressed edge, every chore is its own tile and the tick is a solid green block. ── */
+html[data-look='quest'] {
+  --shape-radius-card: 16px;
+  --shape-radius-control: 10px;
+  --shape-radius-chip: 12px;
+  --shape-radius-small: 8px;
+  --shape-border-w: 2px;
+  --shape-btn-shadow: 0 3px 0 color-mix(in srgb, var(--warm-accent) 62%, #000);
+  --shape-heading-weight: 900;
+}
+/* Quest's colour block (also drawn on the Look page whatever the look). Dark themes have light accents: a deeper
+   block keeps white text at 4.5:1 or better (Ocean's teal is the lowest). */
+html {
+  --look-block: linear-gradient(150deg, color-mix(in srgb, var(--warm-accent) 55%, #000) 0%, color-mix(in srgb, var(--warm-accent) 84%, #000) 100%);
+  --look-gold: #FFC53D;
+}
+html:is([data-theme='night'], [data-theme='ocean'], [data-theme='galaxy'], [data-theme='lava'], [data-season-dark]) {
+  --look-block: linear-gradient(150deg, color-mix(in srgb, var(--warm-accent) 40%, #000) 0%, color-mix(in srgb, var(--warm-accent) 62%, #000) 100%);
+}
+html[data-look='quest'] .tq-card,
+html[data-look='quest'] .tq-btn-secondary,
+html[data-look='quest'] .today-chip { border-width: var(--shape-border-w); border-bottom-width: 4px; }
+html[data-look='quest'] .tq-btn-secondary, html[data-look='quest'] .today-chip { border-bottom-width: 3px; }
+html[data-look='quest'] .tq-btn-primary:active { transform: translateY(2px); box-shadow: 0 1px 0 color-mix(in srgb, var(--warm-accent) 62%, #000); }
+
+/* The coloured blocks: the colour variables are redefined inside them, so text that uses them turns white */
+html[data-look='quest'] .today-summary {
+  background: var(--look-block); border-color: transparent;
+  --warm-text: #fff; --warm-text-secondary: rgba(255, 255, 255, 0.9); --warm-text-muted: rgba(255, 255, 255, 0.84);
+  --warm-text-light: rgba(255, 255, 255, 0.8); --warm-border: rgba(255, 255, 255, 0.25); --warm-accent: var(--look-gold);
+}
+html[data-look='quest'] .today-ring-fill, html[data-look='quest'] .today-summary .today-bar span { stroke: var(--look-gold); background: var(--look-gold); }
+html[data-look='quest'] .today-summary { --health-bar-track: rgba(255, 255, 255, 0.25); }
+html[data-look='quest'] .today-summary .level-strip-fill { background: var(--look-gold); }
+
+/* Chores: each its own tile instead of rows in one card */
+html[data-look='quest'] .chore-list.tq-card { background: none; border: 0; box-shadow: none; padding: 0; gap: 8px; }
+html[data-look='quest'] .chore-list > .chore-row,
+html[data-look='quest'] .chore-list > div > .chore-row {
+  background: var(--warm-card); border: 2px solid var(--warm-border); border-bottom-width: 4px; border-radius: var(--shape-radius-card);
+}
+html[data-look='quest'] .chore-list > .chore-row + .chore-row { border-top: 2px solid var(--warm-border); border-radius: var(--shape-radius-card); }
+html[data-look='quest'] .chore-row.open { background: var(--warm-bg-warm); }
+html[data-look='quest'] .chore-row.highlight { border-color: var(--warm-accent); box-shadow: none; }
+html[data-look='quest'] .chore-row.done { opacity: 0.7; }
+html[data-look='quest'] .chore-tick.ready {
+  border: 0; border-radius: 12px; background: var(--health-green); color: #fff;
+  box-shadow: 0 3px 0 color-mix(in srgb, var(--health-green) 65%, #000);
+}
+html[data-look='quest'] .chore-tick.ready:hover { background: var(--health-green); filter: brightness(1.06); }
+html[data-look='quest'] .chore-tick.ready:active { transform: translateY(2px); box-shadow: 0 1px 0 color-mix(in srgb, var(--health-green) 65%, #000); }
+html[data-look='quest'] .today-tabs { border-bottom-width: 4px; }
+
+/* Phones: the top bar is the block, edge to edge under the garland */
+@media (max-width: 768px) {
+  html[data-look='quest'] .page-header {
+    margin: -12px -16px 14px !important; padding: 12px 16px 14px; border-radius: 0 0 18px 18px; background: var(--look-block);
+    --warm-text: #fff; --warm-text-light: rgba(255, 255, 255, 0.82); --warm-text-muted: rgba(255, 255, 255, 0.84);
+    --warm-accent-light: rgba(255, 255, 255, 0.18); --warm-streak-border: transparent; --warm-streak-text: #fff;
+    --warm-border: rgba(255, 255, 255, 0.3); --warm-card: rgba(255, 255, 255, 0.18); --warm-accent: #fff;
+  }
+  /* The garland lies over the top of the block instead of pushing it down */
+  html[data-look='quest'] .season-strip { position: relative; z-index: 1; margin: 0 -16px -22px; padding: 2px 16px 0; pointer-events: none; }
+  html[data-look='quest'] .season-strip:first-child { margin-top: -12px; }
+  html[data-look='quest'] .season-strip ~ .page-header { margin-top: 0 !important; padding-top: 28px; }
+  html[data-look='quest'] .page-header .ph-add { background-color: var(--look-gold) !important; color: #3A2A00 !important; }
+}
+/* Computers: the side menu is the block */
+@media (min-width: 769px) {
+  html[data-look='quest'] .sidebar {
+    background: var(--look-block) !important; border-color: transparent !important;
+    --warm-text: #fff; --warm-text-muted: rgba(255, 255, 255, 0.8); --warm-text-light: rgba(255, 255, 255, 0.75);
+    --warm-sidebar-active: rgba(255, 255, 255, 0.16); --warm-sidebar-border: transparent; --warm-accent: #fff;
+    --warm-sidebar-user-bg: rgba(255, 255, 255, 0.12); --warm-sidebar-user-border: transparent; --warm-border: rgba(255, 255, 255, 0.25);
+  }
+}
+
+/* ── Calm: quiet and flat. A plain summary card, square-ish corners, thin outlines, colour only where something
+   needs attention. ── */
+html[data-look='calm'] {
+  --shape-radius-card: 8px;
+  --shape-radius-control: 6px;
+  --shape-radius-chip: 6px;
+  --shape-radius-small: 4px;
+  --shape-border-w: 1px;
+  --shape-shadow-raised: 0 2px 8px rgba(0, 0, 0, 0.06);
+  --shape-heading-weight: 800;
+}
+html[data-look='calm'] .today-summary { background: var(--warm-card); }
+html[data-look='calm'] .today-notice { background: var(--warm-card); border: 1px solid var(--warm-border); color: var(--warm-text); }
+html[data-look='calm'] .today-notice > div span { color: var(--warm-text-muted); }
+html[data-look='calm'] .chore-tick.ready { border-width: 1.5px; border-color: var(--warm-border); color: var(--warm-text-muted); border-radius: 6px; }
+html[data-look='calm'] .chore-tick.ready:hover { border-color: var(--warm-accent); color: var(--warm-accent); background: var(--warm-card); }
+html[data-look='calm'] .chore-tile { border-radius: 6px; }
+html[data-look='calm'] .chore-row, html[data-look='calm'] .chore-row-main { border-radius: 6px; }
+html[data-look='calm'] .today-tabs button.on { background: var(--warm-card); }
+
+/* Settings → Look (LookAdmin.tsx): three choices with a small drawing each, then everyone's colour theme */
+.look-admin { display: grid; gap: 12px; min-width: 0; }
+.look-lede, .look-note { margin: 0; font-size: var(--fs-sm); font-weight: 600; line-height: 1.45; color: var(--warm-text-muted); }
+.look-choices { display: grid; gap: 10px; grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 1100px) { .look-choices { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.look-choice { display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 12px; align-items: center; padding: 12px; cursor: pointer; min-width: 0; }
+@media (min-width: 1100px) { .look-choice { grid-template-columns: minmax(0, 1fr); align-items: start; } }
+.look-choice.on { border-color: var(--warm-accent); box-shadow: 0 0 0 1px var(--warm-accent); }
+.look-choice:has(input:focus-visible) { outline: 2px solid var(--warm-accent); outline-offset: 2px; }
+.look-choice-text { min-width: 0; }
+.look-choice-name { display: flex; align-items: center; gap: 8px; font-size: var(--fs-lg); font-weight: var(--shape-heading-weight); color: var(--warm-text); }
+.look-choice-name input { width: 20px; height: 20px; margin: 0; flex: none; accent-color: var(--warm-accent); cursor: pointer; }
+.look-choice small { display: block; margin-top: 4px; font-size: var(--fs-sm); font-weight: 600; line-height: 1.4; color: var(--warm-text-muted); overflow-wrap: anywhere; }
+.look-error { font-size: var(--fs-sm); font-weight: 700; color: var(--health-red); }
+.look-people-title { margin: 6px 0 0; font-size: var(--fs-md); font-weight: var(--shape-heading-weight); color: var(--warm-text); }
+.look-people { padding: 4px 14px; }
+.look-person { display: flex; align-items: center; gap: 10px; padding: 8px 0; min-width: 0; }
+.look-person + .look-person { border-top: 1px solid var(--warm-border-subtle); }
+.look-person b { min-width: 0; overflow-wrap: anywhere; font-size: var(--fs-md); font-weight: 800; color: var(--warm-text); }
+/* Its own class: an avatar with a frame is a <span> too, and margin-left: auto pushed it to the middle */
+.look-person-theme { margin-left: auto; display: inline-flex; align-items: center; gap: 7px; font-size: var(--fs-sm); font-weight: 700; color: var(--warm-text-muted); white-space: nowrap; }
+.look-swatch { width: 30px; height: 18px; border-radius: 5px; border: 1px solid rgba(128, 128, 128, 0.35); display: inline-block; }
+
+/* The drawings: each shows its own look's shapes whatever look the page is in */
+.look-mini { background: var(--warm-bg); border: 1px solid var(--warm-border); border-radius: 8px; padding: 0 0 7px; overflow: hidden; display: grid; gap: 5px; }
+.look-mini-head { height: 34px; margin: 6px 6px 0; border-radius: 8px; display: flex; align-items: center; gap: 7px; padding: 0 8px;
+  background: var(--warm-accent-light); border: 1px solid var(--warm-border); }
+.look-mini-head i { width: 18px; height: 18px; border-radius: 50%; border: 4px solid var(--warm-border); border-top-color: var(--warm-accent); flex: none; }
+.look-mini-head u { height: 6px; width: 48px; border-radius: 3px; background: var(--warm-text); opacity: 0.55; }
+.look-mini-list { margin: 0 6px; background: var(--warm-card); border: 1px solid var(--warm-border); border-radius: 8px; }
+.look-mini-row { height: 22px; display: flex; align-items: center; gap: 6px; padding: 0 6px; }
+.look-mini-row + .look-mini-row { border-top: 1px solid var(--warm-border-subtle); }
+.look-mini-row s { width: 12px; height: 12px; border-radius: 4px; background: var(--warm-accent-light); flex: none; }
+.look-mini-row u { flex: 1; height: 5px; border-radius: 3px; background: var(--warm-text); opacity: 0.3; }
+.look-mini-row em { width: 13px; height: 13px; border-radius: 4px; border: 1.5px solid var(--warm-accent); flex: none; }
+.look-mini-quest .look-mini-head { margin: 0; height: 40px; border: 0; border-radius: 0 0 9px 9px;
+  background: var(--look-block); }
+.look-mini-quest .look-mini-head i { border-color: rgba(255, 255, 255, 0.3); border-top-color: var(--look-gold); }
+.look-mini-quest .look-mini-head u { background: #fff; opacity: 0.7; }
+.look-mini-quest .look-mini-list { background: none; border: 0; display: grid; gap: 4px; }
+.look-mini-quest .look-mini-row { height: 24px; background: var(--warm-card); border: 1.5px solid var(--warm-border); border-bottom-width: 3px; border-radius: 7px; }
+.look-mini-quest .look-mini-row + .look-mini-row { border-top: 1.5px solid var(--warm-border); }
+.look-mini-quest .look-mini-row em { border: 0; background: var(--health-green); box-shadow: 0 2px 0 color-mix(in srgb, var(--health-green) 65%, #000); }
+.look-mini-calm .look-mini-head { background: var(--warm-card); border-radius: 4px; }
+.look-mini-calm .look-mini-list { border-radius: 4px; }
+.look-mini-calm .look-mini-row em { border-color: var(--warm-border); border-radius: 3px; }
+
+/* ========================================
+   REWARDS: the shop as compact rows, requests first, categories as chips
+   ======================================== */
+.rw-page { display: grid; gap: 16px; min-width: 0; }
+.rw-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 12px; padding: 0 4px; }
+.rw-balance { display: inline-flex; align-items: center; gap: 8px; font-size: var(--fs-md); font-weight: 800; color: var(--warm-text); }
+.rw-for { display: flex; align-items: center; gap: 8px; min-width: 0; font-size: 13px; font-weight: 700; color: var(--warm-text-muted); }
+.rw-for select { padding: 6px 10px; font-size: 13px; cursor: pointer; min-width: 0; max-width: 160px; }
+.rw-hint { margin-top: -8px; padding: 0 4px; font-size: var(--fs-xs); font-weight: 600; color: var(--warm-text-muted); }
+.rw-alert { font-size: var(--fs-xs); font-weight: 700; color: var(--warm-danger); padding: 0 4px; }
+.rw-shop { gap: 10px; }
+.rw-shop .today-sec { padding-bottom: 0; }
+.rw-tools { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.rw-tools .tq-input { flex: 1; min-width: 0; }
+.rw-afford { flex: none; display: inline-flex; align-items: center; gap: 8px; cursor: pointer; white-space: nowrap; font-size: 13px; font-weight: 700; color: var(--warm-text-muted); }
+.rw-sort { flex: 0 1 auto; min-width: 0; max-width: 55%; padding: 6px 10px; font-size: 13px; cursor: pointer; }
+.rw-tile { font-size: 22px; line-height: 1; }
+.rw-tile svg { width: 22px; height: 22px; }
+.rw-row .chore-coins svg { flex: none; }
+.rw-need { color: var(--warm-text-light); font-weight: 700; }
+.rw-used { color: var(--warm-danger); font-weight: 700; }
+.rw-side { flex: none; display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+.rw-shop .today-sec h3 { white-space: nowrap; }
+.rw-buy {
+  flex: none; min-width: 76px; height: 34px; padding: 0 12px; cursor: pointer; white-space: nowrap;
+  border-radius: var(--shape-radius-control); border: 2px solid var(--warm-accent); background: var(--warm-card);
+  font-family: inherit; font-size: 13px; font-weight: 800; color: var(--warm-accent);
+}
+.rw-buy:hover:not(:disabled) { background: var(--warm-accent-light); }
+.rw-buy:focus-visible { outline: 2px solid var(--warm-accent); outline-offset: 2px; }
+.rw-buy:disabled { border-color: var(--warm-border); color: var(--warm-text-light); opacity: 0.6; cursor: default; }
+.rw-under { padding: 0 6px 10px 60px; min-width: 0; }
+.rw-actions { display: flex; justify-content: flex-end; gap: 8px; }
+.rw-status { display: inline-block; padding: 0 6px; border-radius: 6px; font-size: var(--fs-xs); font-weight: 800; }
+.rw-past .chore-name { color: var(--warm-text-muted); }
+.rw-cancel { flex: none; }
+@media (max-width: 420px) {
+  .rw-buy { min-width: 0; padding: 0 10px; }
+  .rw-under { padding-left: 6px; }
+  .rw-shop .today-sec h3 { font-size: 14px; }
+}
+/* Two columns of rewards on a wide screen */
+@media (min-width: 1100px) {
+  .rw-list { display: grid; grid-template-columns: 1fr 1fr; column-gap: 20px; }
+  .rw-list > .chore-row:nth-child(2) { border-top: 0; border-top-left-radius: 12px; border-top-right-radius: 12px; }
 }

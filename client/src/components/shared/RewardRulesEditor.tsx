@@ -56,9 +56,9 @@ export function RewardRulesEditor({ reward, family, language, onSaved }: {
     }
   };
 
-  const label = { fontSize: 11, fontWeight: 800, color: 'var(--warm-text-light)', textTransform: 'uppercase' as const, letterSpacing: '0.04em' };
+  const label = { fontSize: 12, fontWeight: 800, color: 'var(--warm-text-light)' };
   const chip = (on: boolean) => ({
-    padding: '5px 10px', borderRadius: 20, fontSize: 12, fontWeight: 700, fontFamily: 'Nunito', cursor: 'pointer',
+    padding: '5px 10px', borderRadius: 'var(--shape-radius-control)', fontSize: 12, fontWeight: 700, fontFamily: 'Nunito', cursor: 'pointer',
     border: `1.5px solid ${on ? 'var(--warm-accent)' : 'var(--warm-border)'}`,
     backgroundColor: on ? 'var(--warm-accent-light)' : 'var(--warm-bg-input)', color: on ? 'var(--warm-accent)' : 'var(--warm-text)',
   });
@@ -136,11 +136,11 @@ export function RewardRulesEditor({ reward, family, language, onSaved }: {
       <div style={{ display: 'grid', gap: 6 }}>
         <label style={{ display: 'flex', alignItems: 'flex-start', gap: 8, fontSize: 12, fontWeight: 700, cursor: 'pointer' }}>
           <input type="checkbox" checked={isRotating} onChange={(e) => setIsRotating(e.target.checked)} style={{ accentColor: 'var(--warm-accent)', marginTop: 2 }} />
-          <span>{t('rewardRules.rotating')}<span style={{ display: 'block', fontSize: 11, fontWeight: 600, color: 'var(--warm-text-light)' }}>{t('rewardRules.rotatingDesc')}</span></span>
+          <span>{t('rewardRules.rotating')}<span style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--warm-text-light)' }}>{t('rewardRules.rotatingDesc')}</span></span>
         </label>
         <label style={{ display: 'flex', alignItems: 'flex-start', gap: 8, fontSize: 12, fontWeight: 700, cursor: 'pointer' }}>
           <input type="checkbox" checked={isShared} onChange={(e) => setIsShared(e.target.checked)} style={{ accentColor: 'var(--warm-accent)', marginTop: 2 }} />
-          <span>{t('rewardRules.shared')}<span style={{ display: 'block', fontSize: 11, fontWeight: 600, color: 'var(--warm-text-light)' }}>{t('rewardRules.sharedDesc')}</span></span>
+          <span>{t('rewardRules.shared')}<span style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--warm-text-light)' }}>{t('rewardRules.sharedDesc')}</span></span>
         </label>
       </div>
 

@@ -7,7 +7,7 @@ import { SEASONS, setSeasonPreview, useSeasonPreview } from '../../utils/seasons
 import { CREATURE_IDS, CREATURES, type CreatureId } from '../mascot/MascotArt';
 import { MascotPicture } from '../mascot/MascotCard';
 
-const ORDER: Array<keyof FeatureFlags> = ['rescue', 'usual', 'forgot', 'todos', 'boardAwards', 'levels', 'nextBadge', 'shields', 'cheers', 'teamups', 'mascot', 'mascotShop', 'focus', 'proofPhotos', 'webPush', 'seasonal'];
+const ORDER: Array<keyof FeatureFlags> = ['rescue', 'usual', 'forgot', 'todos', 'boardAwards', 'levels', 'nextBadge', 'shields', 'cheers', 'teamups', 'mascot', 'mascotShop', 'focus', 'proofPhotos', 'webPush', 'whatsNew', 'seasonal'];
 const MULTIPLIERS = [1.5, 2, 3];
 const SHIELD_PRICES = [10, 15, 20, 25, 30, 40, 50, 75, 100];
 
@@ -42,14 +42,14 @@ export function FeaturesAdmin({ language, onChanged }: { language?: string; onCh
   const monthName = (m: number) => new Date(2000, m - 1, 1).toLocaleString(localeFor(language), { month: 'long' });
   return (
     <div style={{ display: 'grid', gap: 2 }}>
-      <div style={{ fontSize: 11, color: 'var(--warm-text-light)', fontWeight: 600, marginBottom: 6 }}>{t('features.desc')}</div>
+      <div style={{ fontSize: 12, color: 'var(--warm-text-light)', fontWeight: 600, marginBottom: 6 }}>{t('features.desc')}</div>
       {ORDER.map((f, i) => (
         <div key={f} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 0', borderBottom: i < ORDER.length - 1 ? '1px solid var(--warm-border)' : 'none' }}>
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ fontSize: 13, fontWeight: 800, color: 'var(--warm-text)' }}>{t(`features.${f}`)}</div>
-            <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--warm-text-light)' }}>{t(`features.${f}Desc`)}</div>
+            <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--warm-text-light)' }}>{t(`features.${f}Desc`)}</div>
             {f === 'rescue' && flags.rescue && (
-              <label style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 6, fontSize: 11, fontWeight: 700, color: 'var(--warm-text-muted)' }}>
+              <label style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 6, fontSize: 12, fontWeight: 700, color: 'var(--warm-text-muted)' }}>
                 {t('features.multiplier')}
                 <select className="tq-input-compact" value={multiplier} onChange={(e) => void save({ rescueMultiplier: Number(e.target.value) })}>
                   {MULTIPLIERS.map((m) => <option key={m} value={m}>{m}×</option>)}
@@ -57,7 +57,7 @@ export function FeaturesAdmin({ language, onChanged }: { language?: string; onCh
               </label>
             )}
             {f === 'shields' && flags.shields && (
-              <label style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 6, fontSize: 11, fontWeight: 700, color: 'var(--warm-text-muted)' }}>
+              <label style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 6, fontSize: 12, fontWeight: 700, color: 'var(--warm-text-muted)' }}>
                 {t('features.shieldPrice')}
                 <select className="tq-input-compact" value={shieldPrice} onChange={(e) => void save({ shieldPrice: Number(e.target.value) })}>
                   {[...new Set([...SHIELD_PRICES, shieldPrice])].sort((a, b) => a - b).map((p) => <option key={p} value={p}>{p} 🪙</option>)}
@@ -65,7 +65,7 @@ export function FeaturesAdmin({ language, onChanged }: { language?: string; onCh
               </label>
             )}
             {f === 'teamups' && flags.teamups && (
-              <label style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 6, fontSize: 11, fontWeight: 700, color: 'var(--warm-text-muted)' }}>
+              <label style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 6, fontSize: 12, fontWeight: 700, color: 'var(--warm-text-muted)' }}>
                 {t('features.teamBonus')}
                 <select className="tq-input-compact" value={teamBonus} onChange={(e) => void save({ teamBonus: Number(e.target.value) })}>
                   {[10, 20, 30].map((b) => <option key={b} value={b}>+{b}%</option>)}
@@ -86,18 +86,18 @@ export function FeaturesAdmin({ language, onChanged }: { language?: string; onCh
                     return (
                     <button key={c} type="button" aria-pressed={mascot.creature === c} title={CREATURES[c].label} onClick={pick} style={{
                       display: 'flex', flexDirection: 'column', alignItems: 'center', padding: 4, borderRadius: 12, cursor: 'pointer', background: 'none',
-                      border: `2px solid ${mascot.creature === c ? 'var(--warm-accent)' : 'var(--warm-border)'}`, fontFamily: 'Nunito', fontSize: 10, fontWeight: 800, color: 'var(--warm-text-muted)',
+                      border: `2px solid ${mascot.creature === c ? 'var(--warm-accent)' : 'var(--warm-border)'}`, fontFamily: 'Nunito', fontSize: 12, fontWeight: 800, color: 'var(--warm-text-muted)',
                     }}>
                       <MascotPicture m={{ creature: c, stage: 'grown', mood: 'happy', event: null }} size={44} />
                       {t(`mascot.creature_${c}`)}
-                      <span style={{ fontSize: 9, fontWeight: 700, color: r?.status === 'active' ? 'var(--warm-accent)' : 'var(--warm-text-light)' }}>
+                      <span style={{ fontSize: 12, fontWeight: 700, color: r?.status === 'active' ? 'var(--warm-accent)' : 'var(--warm-text-light)' }}>
                         {!r || r.status === 'new' ? `🥚 ${t('mascot.newEgg')}` : `${r.status === 'active' ? '✓ ' : ''}${r.name} · ${t(`mascot.stage_${r.stage}`)}`}
                       </span>
                     </button>
                     );
                   })}
                 </div>
-                <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, fontWeight: 700, color: 'var(--warm-text-muted)', flexWrap: 'wrap' }}>
+                <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 700, color: 'var(--warm-text-muted)', flexWrap: 'wrap' }}>
                   😴 {t('mascot.bedtime')}
                   <input type="time" className="tq-input-compact" value={mascot.bedtimeFrom} aria-label={t('mascot.bedtimeFrom')}
                     onChange={(e) => e.target.value && void save({ mascot: { bedtimeFrom: e.target.value } })} />
@@ -105,7 +105,7 @@ export function FeaturesAdmin({ language, onChanged }: { language?: string; onCh
                   <input type="time" className="tq-input-compact" value={mascot.bedtimeTo} aria-label={t('mascot.bedtimeTo')}
                     onChange={(e) => e.target.value && void save({ mascot: { bedtimeTo: e.target.value } })} />
                 </label>
-                <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, fontWeight: 700, color: 'var(--warm-text-muted)' }}>
+                <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 700, color: 'var(--warm-text-muted)' }}>
                   {t('mascot.name')}
                   <input className="tq-input-compact" value={mascotName} maxLength={20} onChange={(e) => setMascotName(e.target.value)}
                     onBlur={() => { if (mascotName.trim() && mascotName.trim() !== mascot.name) void save({ mascot: { name: mascotName.trim() } }); }}

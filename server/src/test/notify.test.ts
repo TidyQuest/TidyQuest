@@ -3,7 +3,7 @@ import { createTestApp, createAdmin, createUser, HOSTED_RUN } from './setup';
 import type supertest from 'supertest';
 import type Database from 'better-sqlite3';
 import { flushNotificationQueue, notifyPeople, setNotifyTransport, type Delivery } from '../utils/notify';
-import { notifyBadge, notifyChoreApproved } from '../utils/notifyMessages';
+import { notifyBadge, notifyChoreApproved, notifyTaskDue } from '../utils/notifyMessages';
 import { runScheduledNotifications } from '../utils/notifySchedule';
 import { at as homeAt } from '../utils/clock';
 
@@ -248,5 +248,50 @@ describe('Rejecting with a reason', () => {
     id = await tap();
     await agent.delete(`/api/completions/${id}/reject`).set(auth(admin.token)).expect(200);
     expect(toKid().at(-1)).toMatch(/Ask Admin what's missing\.$/);
+  });
+});
+
+describe("Chores anyone can do (BUG-52)", () => {
+  async function openChore() {
+    const { admin, kid, room } = await family();
+    const member = await createUser(agent, admin.token, { username: 'teen', displayName: 'Teen', password: 'pass123', role: 'member' });
+    channel('kid-topic', kid.user.id);
+    channel('teen-topic', member.user.id);
+    channel('dad-topic', admin.user.id);
+    const id = (await agent.post(`/api/rooms/${room}/tasks`).set(auth(admin.token)).send({ name: 'Sweep', effort: 1, frequencyDays: 1, reminderTime: '17:00' })).body.id as number;
+    const task = { id, roomId: room, roomName: 'Garage', name: 'Sweep' };
+    return { admin, kid, member, task };
+  }
+  const targets = () => sent.map((d) => d.target).sort();
+
+  it("go to parents and members but not kids, at first", async () => {
+    const { task } = await openChore();
+    await notifyTaskDue(task, '2026-10-14', at(9));
+    expect(targets()).toEqual(['dad-topic', 'teen-topic']);
+    sent = [];
+    await runScheduledNotifications(at(17, 0));
+    expect(targets()).toEqual(['dad-topic', 'teen-topic']);
+  });
+
+  it("go to a kid who turns them on, and stop for a parent who turns them off", async () => {
+    const { admin, kid, task } = await openChore();
+    const kidPrefs = (await agent.get(`/api/notify/people/${kid.user.id}`).set(auth(admin.token))).body.prefs;
+    expect(kidPrefs.openChores).toBe(false);
+    expect(kidPrefs.taskDue).toBe(true);
+    await agent.put(`/api/notify/people/${kid.user.id}`).set(auth(admin.token)).send({ prefs: { ...kidPrefs, openChores: true } }).expect(200);
+    const adminPrefs = (await agent.get(`/api/notify/people/${admin.user.id}`).set(auth(admin.token))).body.prefs;
+    await agent.put(`/api/notify/people/${admin.user.id}`).set(auth(admin.token)).send({ prefs: { ...adminPrefs, openChores: false } }).expect(200);
+    expect((await agent.get(`/api/notify/people/${kid.user.id}`).set(auth(admin.token))).body.prefs.openChores).toBe(true);
+    await notifyTaskDue(task, '2026-10-14', at(9));
+    expect(targets()).toEqual(['kid-topic', 'teen-topic']);
+  });
+
+  it("still tell a kid about chores that are theirs", async () => {
+    const { admin, kid } = await family();
+    channel('kid-topic', kid.user.id);
+    const room = (await agent.post('/api/rooms').set(auth(admin.token)).send({ name: 'Shed', roomType: 'other' })).body.id as number;
+    const id = (await agent.post(`/api/rooms/${room}/tasks`).set(auth(admin.token)).send({ name: 'Oil', effort: 1, frequencyDays: 1, assignedUserIds: [kid.user.id] })).body.id as number;
+    await notifyTaskDue({ id, roomId: room, roomName: 'Shed', name: 'Oil' }, '2026-10-14', at(9));
+    expect(targets()).toEqual(['kid-topic']);
   });
 });

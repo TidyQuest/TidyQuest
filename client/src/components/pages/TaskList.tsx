@@ -1,12 +1,12 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { TaskIcon } from '../icons/TaskIcons';
-import { CoinIcon } from '../icons/UIIcons';
 import { api } from '../../hooks/useApi';
 import { useTranslation } from '../../hooks/useTranslation';
 import { BulkTaskBar } from '../shared/BulkTaskBar';
+import { ChoreCoins, ChoreLate, ChoreRow } from '../shared/ChoreRow';
+import { choreDue } from '../../utils/choreText';
 import { UndoToast, type UndoState } from '../shared/UndoToast';
-import { formatNextDue, isTaskDue, isTaskForUser, matchesQuery, taskCoins, taskNextDue } from '../../utils/tasks';
+import { isTaskDue, isTaskForUser, matchesQuery, taskCoins, taskNextDue } from '../../utils/tasks';
 
 export interface ListTask {
   id: number;
@@ -24,6 +24,7 @@ export interface ListTask {
   nextDueAt?: string | null;
   outOfSeason?: boolean;
   oneTime?: number | boolean;
+  doBy?: string | null;
   timerMinutes?: number | null;
   assignedToChildren?: boolean;
   effectiveAssignedUserIds?: number[];
@@ -230,56 +231,23 @@ export function TaskList({ rooms, users, currentUserId, coinsByEffort, language,
         {notice && <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--health-green)' }}>{notice}</div>}
       </div>
 
-      <div className="tq-card tq-card-padded" style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+      <div className="tq-card tq-card-padded chore-list">
         {rows.length === 0 && (
           <div className="tq-empty-state" style={{ padding: '16px 4px' }}>{loading ? t('common.loading') : t('taskList.noMatches')}</div>
         )}
         {rows.map(({ task, room, name, roomName }) => {
           const ids = task.effectiveAssignedUserIds || [];
           const who = ids.length ? ids.map((id) => nameById.get(id) || '?').join(' + ') : t('taskList.openToAnyone');
-          const due = task.onDemand
-            ? { text: t('roomDetail.onDemand'), color: 'var(--warm-accent)' }
-            : task.outOfSeason ? { text: t('schedule.offSeason'), color: 'var(--warm-text-light)' }
-            : formatNextDue(task.lastCompletedAt, task.frequencyDays, t, language, task.health, task.nextDueAt);
+          const due = choreDue(task, t, language);
           const isSelected = selecting && selected.has(task.id);
+          // The same row as Home and the room page (ENH-25), without a tick: a tap opens the chore in its room
           return (
-            <button
-              key={task.id}
-              onClick={() => (selecting ? toggle(task.id) : onOpenTask(room.id, task.id))}
-              aria-pressed={selecting ? isSelected : undefined}
-              style={{
-                display: 'flex', alignItems: 'center', gap: 12, padding: '12px 14px', width: '100%', textAlign: 'left',
-                borderRadius: 16, backgroundColor: isSelected ? 'var(--warm-accent-light)' : 'var(--warm-bg-subtle)',
-                border: `1.5px solid ${isSelected ? 'var(--warm-accent)' : 'var(--warm-border)'}`,
-                cursor: 'pointer', fontFamily: 'Nunito', color: 'inherit',
-              }}
-            >
-              {selecting && (
-                <span aria-hidden style={{
-                  width: 22, height: 22, borderRadius: 7, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  border: `2px solid ${isSelected ? 'var(--warm-accent)' : 'var(--warm-border)'}`,
-                  backgroundColor: isSelected ? 'var(--warm-accent)' : 'transparent', color: '#fff', fontSize: 13, fontWeight: 900,
-                }}>{isSelected ? '✓' : ''}</span>
-              )}
-              <span style={{ width: 40, height: 40, borderRadius: 14, backgroundColor: room.color, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, border: `1.5px solid ${room.accentColor}44` }}>
-                <TaskIcon iconKey={task.iconKey} size={24} />
-              </span>
-              <span style={{ flex: 1, minWidth: 0 }}>
-                <span style={{ display: 'block', fontSize: 13, fontWeight: 700, color: 'var(--warm-text)' }}>{name}</span>
-                <span style={{ display: 'block', fontSize: 11, color: 'var(--warm-text-light)', fontWeight: 600 }}>{roomName} · {who}{task.timerMinutes ? ` · ⏱️ ${task.timerMinutes} ${t('timer.min')}` : ''}</span>
-                {task.notes && (
-                  <span style={{ display: '-webkit-box', WebkitLineClamp: 1, WebkitBoxOrient: 'vertical', overflow: 'hidden', fontSize: 11, color: 'var(--warm-text-muted)', fontWeight: 600, overflowWrap: 'anywhere' }}>{task.notes}</span>
-                )}
-              </span>
-              <span style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4, flexShrink: 0 }}>
-                <span style={{ fontSize: 11, fontWeight: 700, color: due.color }}>{due.text}</span>
-                {gamificationEnabled && (
-                  <span style={{ fontSize: 12, fontWeight: 800, color: 'var(--warm-accent)', display: 'inline-flex', alignItems: 'center', gap: 3 }}>
-                    <CoinIcon />{taskCoins(task, coinsByEffort)}
-                  </span>
-                )}
-              </span>
-            </button>
+            <ChoreRow key={task.id} taskId={task.id} iconKey={task.iconKey} tileColor={room.color} tileBorder={`${room.accentColor}44`} name={name}
+              sub={[roomName, due.late ? <ChoreLate>{due.text}</ChoreLate> : due.text, who]} wrapSub
+              coins={gamificationEnabled ? <ChoreCoins coins={taskCoins(task, coinsByEffort)} /> : null}
+              leading={selecting ? <span aria-hidden className={`chore-select-box${isSelected ? ' on' : ''}`}>{isSelected ? '✓' : ''}</span> : undefined}
+              className={isSelected ? 'selected' : ''} pressed={selecting ? isSelected : undefined}
+              onToggle={() => (selecting ? toggle(task.id) : onOpenTask(room.id, task.id))} />
           );
         })}
       </div>

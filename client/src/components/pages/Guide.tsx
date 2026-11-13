@@ -44,7 +44,7 @@ function Block({ b, query }: { b: GuideBlock; query: string }) {
   return (
     <div style={{ display: 'grid', gap: 8 }}>
       {items.map((x) => (
-        <details key={x.q} open={!!q} style={{ borderRadius: 12, border: '1.5px solid var(--warm-border)', background: 'var(--warm-bg-subtle)', padding: '10px 12px' }}>
+        <details key={x.q} open={!!q} style={{ borderRadius: 12, border: 'var(--shape-border-w) solid var(--warm-border)', background: 'var(--warm-bg-subtle)', padding: '10px 12px' }}>
           <summary style={{ cursor: 'pointer', fontSize: 14, fontWeight: 800, color: 'var(--warm-text)' }}>{x.q}</summary>
           <ul style={{ ...text, fontSize: 13, paddingLeft: 18, margin: '8px 0 0', display: 'grid', gap: 6 }}>{x.a.map((a, i) => <li key={i}>{a}</li>)}</ul>
         </details>
@@ -54,12 +54,12 @@ function Block({ b, query }: { b: GuideBlock; query: string }) {
 }
 
 /** The guide (Settings → Guide & help): setup, how it all connects, and troubleshooting. */
-export function Guide({ language }: { language?: string }) {
+export function Guide({ language, onWhatsNew }: { language?: string; onWhatsNew?: () => void }) {
   // English shows straight away; another language loads its guide the first time
-  return <Suspense fallback={null}><GuideBody language={language} /></Suspense>;
+  return <Suspense fallback={null}><GuideBody language={language} onWhatsNew={onWhatsNew} /></Suspense>;
 }
 
-function GuideBody({ language }: { language?: string }) {
+function GuideBody({ language, onWhatsNew }: { language?: string; onWhatsNew?: () => void }) {
   const { t } = useTranslation(language);
   const navigate = useNavigate();
   const location = useLocation();
@@ -97,6 +97,7 @@ function GuideBody({ language }: { language?: string }) {
       <button type="button" className="tq-btn tq-btn-secondary tq-btn-sm" style={{ justifySelf: 'start' }} onClick={() => navigate('/settings')}>← {t('nav.settings')}</button>
       <div className="tq-card tq-card-padded" style={{ display: 'grid', gap: 10 }}>
         <p style={text}>{t('guide.intro')}</p>
+        {onWhatsNew && <button type="button" className="tq-btn tq-btn-secondary tq-btn-sm" style={{ justifySelf: 'start' }} onClick={onWhatsNew}>📣 {t('whatsNew.replay')}</button>}
         <input className="tq-input" type="search" value={query} onChange={(e) => setQuery(e.target.value)} placeholder={t('guide.search')} aria-label={t('guide.search')} />
         {!q && (
           <nav aria-label={t('guide.contents')} style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
@@ -112,7 +113,7 @@ function GuideBody({ language }: { language?: string }) {
           onToggle={(e) => { if (!q) toggle(s.id, (e.target as HTMLDetailsElement).open); }} style={{ padding: '14px 16px', scrollMarginTop: 80 }}>
           <summary style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', fontSize: 16, fontWeight: 900, color: 'var(--warm-text)' }}>
             <span aria-hidden="true">{s.icon}</span> {s.title}
-            {s.parents && <span style={{ fontSize: 10, fontWeight: 800, color: 'var(--warm-text-light)', border: '1px solid var(--warm-border)', borderRadius: 99, padding: '2px 8px' }}>{t('guide.forParents')}</span>}
+            {s.parents && <span style={{ fontSize: 12, fontWeight: 800, color: 'var(--warm-text-light)', border: '1px solid var(--warm-border)', borderRadius: 99, padding: '2px 8px' }}>{t('guide.forParents')}</span>}
           </summary>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 12 }}>
             {s.blocks.map((b, i) => <Block key={i} b={b} query={query} />)}

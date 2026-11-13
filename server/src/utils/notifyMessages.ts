@@ -1,7 +1,7 @@
 import db, { prepared } from '../database';
 import { endOfDay } from './clock';
 import { taskName, tr, type TaskLabel } from './i18n';
-import { notifyPeople, type Audience } from './notify';
+import { getPeople, notificationsOn, notifyPeople, wants, type Audience } from './notify';
 import { rotationTurnFor } from './schedule';
 import { awayNow } from './vacation';
 
@@ -40,11 +40,23 @@ export function atHome(audience: Audience, now: Date = new Date()): Audience | n
   return home.length > 0 ? home : null;
 }
 
+/**
+ * Who hears "due today" and reminders for a task, home from vacation. A chore nobody's assigned to only
+ * goes to the people who want "Chores anyone can do" (BUG-52; off for kids at first). Null: nobody.
+ */
+export function choreAudience(task: Parameters<typeof taskAudience>[0], now: Date = new Date()): Audience | null {
+  const audience = taskAudience(task);
+  if (audience !== 'everyone') return atHome(audience, now);
+  if (!notificationsOn('openChores')) return null;
+  const ids = getPeople().filter((p) => wants(p, 'openChores')).map((p) => p.id);
+  return ids.length > 0 ? atHome(ids, now) : null;
+}
+
 const room = (name: string | null | undefined) => (name ? ` (${name})` : '');
 
 /** "Due today", to the task's people who are home. Held past quiet hours only while it's still today and not done. */
 export function notifyTaskDue(task: TaskLabel & { id: number; roomId: number; roomName: string | null; assignmentMode?: string | null; rotationPeriod?: string | null; rotationCurrentUserId?: number | null }, day: string, now: Date = new Date()) {
-  const audience = atHome(taskAudience(task), now);
+  const audience = choreAudience(task, now);
   if (!audience) return Promise.resolve();
   const by = endOfDay(now);
   return notifyPeople(audience, 'taskDue', (lang) => tr(lang, 'notify.taskDue', { task: taskName(lang, task) }) + room(task.roomName),

@@ -1,4 +1,4 @@
-import db from '../database';
+import db, { prepared } from '../database';
 import { isSeasonalNow, nextDueAt, taskHealth, type ScheduledTask } from './schedule';
 import { localDateStr } from './dateHelpers';
 import { dayAt, daySql } from './clock';
@@ -26,13 +26,13 @@ const DEFAULT_PRICE = 25;
 
 /** What a shield costs (Settings → Features; 25 coins by default). */
 export function shieldPrice(): number {
-  const v = Number((db.prepare("SELECT value FROM app_settings WHERE key = 'shieldPrice'").get() as { value: string } | undefined)?.value);
+  const v = Number((prepared("SELECT value FROM app_settings WHERE key = 'shieldPrice'").get() as { value: string } | undefined)?.value);
   return Number.isInteger(v) && v >= 1 && v <= 500 ? v : DEFAULT_PRICE;
 }
 
 /** Shields need coins and streaks (gamification) and their own switch. */
 export function shieldsOn(): boolean {
-  const g = db.prepare("SELECT value FROM app_settings WHERE key = 'gamificationEnabled'").get() as { value: string } | undefined;
+  const g = prepared("SELECT value FROM app_settings WHERE key = 'gamificationEnabled'").get() as { value: string } | undefined;
   return (g ? g.value !== '0' : true) && isFeatureOn('shields');
 }
 
@@ -42,7 +42,7 @@ const addDays = (day: string, n: number) =>
 
 export function hadDueTaskOnDate(dateIsoDay: string): boolean {
   const endOfDay = dayAt(dateIsoDay, 23, 59, 59, 999).getTime();
-  const tasks = db.prepare('SELECT * FROM tasks WHERE archivedAt IS NULL AND deletedAt IS NULL AND pausedAt IS NULL AND oneTime = 0 AND onDemand = 0').all() as Array<ScheduledTask & {
+  const tasks = prepared('SELECT * FROM tasks WHERE archivedAt IS NULL AND deletedAt IS NULL AND pausedAt IS NULL AND oneTime = 0 AND onDemand = 0').all() as Array<ScheduledTask & {
     id: number; isSeasonal: number;
   }>;
 
@@ -81,7 +81,7 @@ export function nextStreak(userId: number, current: number, lastActiveDate: stri
 
 /** A streak just broke (restarted at 1 on `restartedOn`): remember it, so a late log for a missed day can bring it back. */
 export function noteBrokenStreak(userId: number, streak: number, lastCounted: string, restartedOn: string): void {
-  db.prepare('UPDATE users SET brokenStreak = ?, brokenStreakAfter = ?, brokenStreakOn = ? WHERE id = ?').run(streak, lastCounted, restartedOn, userId);
+  prepared('UPDATE users SET brokenStreak = ?, brokenStreakAfter = ?, brokenStreakOn = ? WHERE id = ?').run(streak, lastCounted, restartedOn, userId);
 }
 
 /**
@@ -95,14 +95,14 @@ export function noteBrokenStreak(userId: number, streak: number, lastCounted: st
 export function lateStreak(userId: number, day: string): void {
   if (resolveVacation(getGlobalVacation(), getUserVacation(userId)).isVacation) return;
   settleStreak(userId);
-  const u = db.prepare('SELECT currentStreak, lastActiveDate, brokenStreak, brokenStreakAfter, brokenStreakOn FROM users WHERE id = ?').get(userId) as {
+  const u = prepared('SELECT currentStreak, lastActiveDate, brokenStreak, brokenStreakAfter, brokenStreakOn FROM users WHERE id = ?').get(userId) as {
     currentStreak: number; lastActiveDate: string | null; brokenStreak: number | null; brokenStreakAfter: string | null; brokenStreakOn: string | null;
   } | undefined;
   if (!u) return;
   if (!u.lastActiveDate || day > u.lastActiveDate) {
     const streak = nextStreak(userId, u.currentStreak, u.lastActiveDate, day);
     if (streak === 1 && u.currentStreak > 0 && u.lastActiveDate) noteBrokenStreak(userId, u.currentStreak, u.lastActiveDate, day);
-    db.prepare('UPDATE users SET currentStreak = ?, lastActiveDate = ? WHERE id = ?').run(streak, day, userId);
+    prepared('UPDATE users SET currentStreak = ?, lastActiveDate = ? WHERE id = ?').run(streak, day, userId);
     earnShieldAt(userId, streak);
     return;
   }
@@ -115,7 +115,7 @@ export function lateStreak(userId: number, day: string): void {
     const thatDay = (db.prepare(`SELECT COUNT(*) AS n FROM task_completions WHERE userId = ? AND status = 'approved' AND ${doneDay} = ?`)
       .get(userId, day) as { n: number }).n;
     if (thatDay !== 1 || missedStreakDays(userId, day, addDays(u.lastActiveDate, -1), 1).length > 0) return;
-    db.prepare('UPDATE users SET currentStreak = currentStreak + 1 WHERE id = ?').run(userId);
+    prepared('UPDATE users SET currentStreak = currentStreak + 1 WHERE id = ?').run(userId);
     earnShieldAt(userId, u.currentStreak + 1);
     return;
   }
@@ -125,19 +125,64 @@ export function lateStreak(userId: number, day: string): void {
      WHERE userId = ? AND status = 'approved' AND ${doneDay} > ? AND ${doneDay} < ?`
   ).get(userId, after, restarted) as { n: number }).n;
   const streak = old + filled + u.currentStreak;
-  db.prepare('UPDATE users SET currentStreak = ?, brokenStreak = NULL, brokenStreakAfter = NULL, brokenStreakOn = NULL WHERE id = ?').run(streak, userId);
+  prepared('UPDATE users SET currentStreak = ?, brokenStreak = NULL, brokenStreakAfter = NULL, brokenStreakOn = NULL WHERE id = ?').run(streak, userId);
   earnShieldAt(userId, streak);
 }
 
+/** The parts of a person's streak a Done can change (BUG-50). */
+type StreakState = {
+  currentStreak: number; lastActiveDate: string | null; streakShields: number;
+  brokenStreak: number | null; brokenStreakAfter: string | null; brokenStreakOn: string | null;
+};
+export function streakState(userId: number): StreakState | undefined {
+  return prepared('SELECT currentStreak, lastActiveDate, streakShields, brokenStreak, brokenStreakAfter, brokenStreakOn FROM users WHERE id = ?')
+    .get(userId) as StreakState | undefined;
+}
+const sameStreak = (a: StreakState, b: StreakState) =>
+  a.currentStreak === b.currentStreak && a.lastActiveDate === b.lastActiveDate && a.brokenStreak === b.brokenStreak
+  && a.brokenStreakAfter === b.brokenStreakAfter && a.brokenStreakOn === b.brokenStreakOn;
+
+/** A Done just moved the streak (or the shields): keep the before and after on the completion, for a take-back. */
+export function keepStreakBefore(completionId: number, userId: number, before: StreakState | undefined): void {
+  const after = streakState(userId);
+  if (!before || !after || (sameStreak(before, after) && before.streakShields === after.streakShields)) return;
+  prepared('UPDATE task_completions SET streakBefore = ? WHERE id = ?').run(JSON.stringify({ before, after }), completionId);
+}
+
+/**
+ * A Done that moved the streak was taken back (its row is already deleted): put the streak back as it
+ * was before it, with any shield it used or earned. Not when the streak has moved on since, and not
+ * while another Done still counts for that day; that one takes over the before, so taking it back
+ * later restores the streak instead.
+ */
+export function restoreStreak(userId: number, completedAt: string, saved: string | null): void {
+  if (!saved) return;
+  let kept: { before: StreakState; after: StreakState };
+  try { kept = JSON.parse(saved); } catch { return; }
+  const now = streakState(userId);
+  if (!now || !kept?.before || !kept?.after || !sameStreak(now, kept.after)) return;
+  const other = db.prepare(
+    `SELECT id FROM task_completions WHERE userId = ? AND status = 'approved' AND ${daySql('completedAt')} = ? ORDER BY completedAt, id LIMIT 1`
+  ).get(userId, localDateStr(new Date(completedAt))) as { id: number } | undefined;
+  if (other) {
+    prepared('UPDATE task_completions SET streakBefore = COALESCE(streakBefore, ?) WHERE id = ?').run(saved, other.id);
+    return;
+  }
+  const { before, after } = kept;
+  const shields = Math.max(0, Math.min(MAX_SHIELDS, now.streakShields + before.streakShields - after.streakShields));
+  prepared('UPDATE users SET currentStreak = ?, lastActiveDate = ?, streakShields = ?, brokenStreak = ?, brokenStreakAfter = ?, brokenStreakOn = ? WHERE id = ?')
+    .run(before.currentStreak, before.lastActiveDate, shields, before.brokenStreak, before.brokenStreakAfter, before.brokenStreakOn, userId);
+}
+
 function logShield(userId: number, kind: 'earned' | 'bought' | 'given' | 'used', fields: { count?: number; coins?: number; streak?: number; byUserId?: number } = {}) {
-  db.prepare('INSERT INTO streak_shield_events (userId, kind, count, coins, streak, byUserId) VALUES (?, ?, ?, ?, ?, ?)')
+  prepared('INSERT INTO streak_shield_events (userId, kind, count, coins, streak, byUserId) VALUES (?, ?, ?, ?, ?, ?)')
     .run(userId, kind, fields.count ?? 1, fields.coins ?? 0, fields.streak ?? 0, fields.byUserId ?? null);
 }
 
 /** A streak that just reached 7, 14, 21… days earns a shield, unless 2 are held already. */
 export function earnShieldAt(userId: number, streak: number): boolean {
   if (streak < SHIELD_EVERY || streak % SHIELD_EVERY !== 0 || !shieldsOn()) return false;
-  const r = db.prepare('UPDATE users SET streakShields = streakShields + 1 WHERE id = ? AND streakShields < ?').run(userId, MAX_SHIELDS);
+  const r = prepared('UPDATE users SET streakShields = streakShields + 1 WHERE id = ? AND streakShields < ?').run(userId, MAX_SHIELDS);
   if (r.changes === 0) return false;
   logShield(userId, 'earned', { streak });
   return true;
@@ -151,7 +196,7 @@ export function settleStreak(userId: number, now: Date = new Date()): number {
   if (!shieldsOn()) return 0;
   // First: a vacation that has just ended moves the last counted day past the days away
   if (resolveVacation(getGlobalVacation(), getUserVacation(userId)).isVacation) return 0;
-  const user = db.prepare('SELECT currentStreak, lastActiveDate, streakShields FROM users WHERE id = ?').get(userId) as
+  const user = prepared('SELECT currentStreak, lastActiveDate, streakShields FROM users WHERE id = ?').get(userId) as
     { currentStreak: number; lastActiveDate: string | null; streakShields: number } | undefined;
   if (!user || user.streakShields < 1 || user.currentStreak < 1 || !user.lastActiveDate) return 0;
   const yesterday = addDays(localDateStr(now), -1);
@@ -159,7 +204,7 @@ export function settleStreak(userId: number, now: Date = new Date()): number {
   const missed = missedStreakDays(userId, user.lastActiveDate, yesterday, user.streakShields + 1);
   if (missed.length === 0 || missed.length > user.streakShields) return 0;
 
-  db.prepare('UPDATE users SET streakShields = streakShields - ?, lastActiveDate = ? WHERE id = ?').run(missed.length, yesterday, userId);
+  prepared('UPDATE users SET streakShields = streakShields - ?, lastActiveDate = ? WHERE id = ?').run(missed.length, yesterday, userId);
   logShield(userId, 'used', { count: missed.length, streak: user.currentStreak });
   void notifyPeople([userId], 'nudge', (lang) => tr(lang, missed.length > 1 ? 'notify.shieldsSaved' : 'notify.shieldSaved', { n: user.currentStreak, count: missed.length }),
     { now, dedupeKey: `shield:${yesterday}` });
@@ -174,24 +219,24 @@ export function settleAllStreaks(now: Date = new Date()): void {
   if (day === settledDay.get()) return;
   settledDay.set(day);
   if (!shieldsOn()) return;
-  const people = db.prepare('SELECT id FROM users WHERE streakShields > 0 AND currentStreak > 0 AND lastActiveDate < ?').all(addDays(day, -1)) as { id: number }[];
+  const people = prepared('SELECT id FROM users WHERE streakShields > 0 AND currentStreak > 0 AND lastActiveDate < ?').all(addDays(day, -1)) as { id: number }[];
   for (const p of people) settleStreak(p.id, now);
 }
 
 type ShieldResult = { error: string } | { shields: number; coins: number };
-const stateOf = (userId: number) => db.prepare('SELECT streakShields AS shields, coins FROM users WHERE id = ?').get(userId) as { shields: number; coins: number };
+const stateOf = (userId: number) => prepared('SELECT streakShields AS shields, coins FROM users WHERE id = ?').get(userId) as { shields: number; coins: number };
 
 /** Buy a shield with coins (up to 2 held). It covers a day missed already, too. */
 export function buyShield(userId: number): ShieldResult {
   if (!shieldsOn()) return { error: 'shields_off' };
-  const user = db.prepare('SELECT coins, currentStreak, streakShields FROM users WHERE id = ?').get(userId) as
+  const user = prepared('SELECT coins, currentStreak, streakShields FROM users WHERE id = ?').get(userId) as
     { coins: number; currentStreak: number; streakShields: number } | undefined;
   if (!user) return { error: 'not_found' };
   if (user.streakShields >= MAX_SHIELDS) return { error: 'shields_full' };
   const price = shieldPrice();
   if (user.coins < price) return { error: 'not_enough_coins' };
   db.transaction(() => {
-    db.prepare('UPDATE users SET coins = coins - ?, streakShields = streakShields + 1 WHERE id = ?').run(price, userId);
+    prepared('UPDATE users SET coins = coins - ?, streakShields = streakShields + 1 WHERE id = ?').run(price, userId);
     logShield(userId, 'bought', { coins: price, streak: user.currentStreak });
   })();
   settleStreak(userId);
@@ -201,13 +246,13 @@ export function buyShield(userId: number): ShieldResult {
 /** A parent gives a shield (a sick day, a busy weekend), up to 2 held. */
 export function giveShield(byUserId: number, userId: number): ShieldResult {
   if (!shieldsOn()) return { error: 'shields_off' };
-  const user = db.prepare('SELECT currentStreak, streakShields FROM users WHERE id = ?').get(userId) as { currentStreak: number; streakShields: number } | undefined;
+  const user = prepared('SELECT currentStreak, streakShields FROM users WHERE id = ?').get(userId) as { currentStreak: number; streakShields: number } | undefined;
   if (!user) return { error: 'not_found' };
   if (user.streakShields >= MAX_SHIELDS) return { error: 'shields_full' };
-  db.prepare('UPDATE users SET streakShields = streakShields + 1 WHERE id = ?').run(userId);
+  prepared('UPDATE users SET streakShields = streakShields + 1 WHERE id = ?').run(userId);
   logShield(userId, 'given', { streak: user.currentStreak, byUserId });
   if (byUserId !== userId) {
-    const by = (db.prepare('SELECT displayName FROM users WHERE id = ?').get(byUserId) as { displayName: string } | undefined)?.displayName ?? '';
+    const by = (prepared('SELECT displayName FROM users WHERE id = ?').get(byUserId) as { displayName: string } | undefined)?.displayName ?? '';
     void notifyPeople([userId], 'outcome', (lang) => tr(lang, 'notify.shieldGiven', { name: by }));
   }
   settleStreak(userId);

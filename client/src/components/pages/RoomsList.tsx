@@ -1,18 +1,18 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { useHeaderAdd } from '../layout/headerAdd';
 import { useLocation, useNavigationType } from 'react-router-dom';
-import HealthBar from '../shared/HealthBar';
 import { getRoomIcon } from '../icons/RoomIcons';
 import { TaskIcon } from '../icons/TaskIcons';
 import { IconPicker } from '../shared/IconPicker';
 import { PlusIcon, TrashIcon } from '../icons/UIIcons';
 import UserAvatar from '../shared/UserAvatar';
-import { getHealthColor, getRoomHealth, notDueYet } from '../../utils/health';
+import { getHealthColor, getRoomHealth } from '../../utils/health';
 import { ROOM_COLORS } from '../../utils/colors';
 import { api } from '../../hooks/useApi';
 import { useTranslation } from '../../hooks/useTranslation';
 import { useTaskView } from '../../hooks/useTaskView';
-import { AllMineToggle } from '../shared/AllMineToggle';
-import { isTaskForUser } from '../../utils/tasks';
+import { isTaskForUser, taskNextDue } from '../../utils/tasks';
+import { dateStr, startOfDay } from '../../utils/clock';
 
 const ROOM_TYPES = [
   { type: 'kitchen' },
@@ -68,6 +68,13 @@ interface AssignedUser {
   avatarPhotoUrl?: string;
 }
 
+type RoomTask = {
+  id: number; name: string; translationKey?: string; iconKey?: string; health: number; onDemand?: boolean | number;
+  allowEarlyCompletion?: boolean | number; lastCompletedAt?: string | null; effectiveAssignedUserIds?: number[];
+  assignedToChildren?: boolean; frequencyDays?: number; nextDueAt?: string | null; pausedAt?: string | null;
+  outOfSeason?: boolean; oneTime?: boolean | number; doBy?: string | null;
+};
+
 interface RoomsListProps {
   rooms: Array<{
     id: number;
@@ -79,7 +86,7 @@ interface RoomsListProps {
     zoneId?: number | null;
     assignedUserId?: number | null;
     assignedUser?: AssignedUser | null;
-    tasks: Array<{ id: number; name: string; translationKey?: string; iconKey?: string; health: number; onDemand?: boolean | number; allowEarlyCompletion?: boolean | number; lastCompletedAt?: string | null; effectiveAssignedUserIds?: number[]; assignedToChildren?: boolean }>;
+    tasks: RoomTask[];
     /** The family's To-dos room (ENH-18): a to-do count instead of health */
     isTodoRoom?: boolean;
     todoCount?: number;
@@ -89,8 +96,6 @@ interface RoomsListProps {
   isAdmin: boolean;
   users?: Array<{ id: number; displayName: string; role: string; avatarColor: string; avatarType?: string; avatarPreset?: string; avatarPhotoUrl?: string }>;
   onSelectRoom: (roomId: number) => void;
-  /** Open a room scrolled to one of its chores (tapping a chore chip) */
-  onOpenTask?: (roomId: number, taskId: number) => void;
   onCreateRoom: (data: { name: string; roomType: string; color: string; accentColor: string; tasks: any[]; assignedUserId?: number | null }) => Promise<void>;
   onDeleteRoom: (roomId: number) => Promise<void>;
   onAssignRoom?: (roomId: number, assignedUserId: number | null, force?: boolean) => Promise<void>;
@@ -101,17 +106,23 @@ interface RoomsListProps {
   viewer?: { id: number; role?: string; taskView?: 'all' | 'mine' | 'mineOnly'; kidMode?: number | boolean };
 }
 
+type RoomItem = RoomsListProps['rooms'][number];
 type Zone = { id: number; name: string; sortOrder: number; roomCount: number };
 // Where the page was when a room was opened from it, so coming back lands there again (FIX-28), and the zones from
 // the last visit, so the page has its final layout as soon as it comes back.
 let returnSpot: { roomId: number; y: number } | null = null;
 let zonesCache: Zone[] | null = null;
+let lastZone: number | null = null;
+const rememberZone = (z: number | null) => { lastZone = z; };
 const rememberSpot = (roomId: number) => { returnSpot = { roomId, y: window.scrollY }; };
 const cacheZones = (z: Zone[]) => { zonesCache = z; return z; };
 
-export function RoomsList({ rooms, language, isAdmin, users, onSelectRoom, onOpenTask, onCreateRoom, onDeleteRoom, onAssignRoom, onRenameRoom, onRoomsChanged, viewer }: RoomsListProps) {
+export function RoomsList({ rooms, language, isAdmin, users, onSelectRoom, onCreateRoom, onDeleteRoom, onAssignRoom, onRenameRoom, onRoomsChanged, viewer }: RoomsListProps) {
   const { taskName, t, roomName: translateRoomName, roomDisplayName } = useTranslation(language);
   const [showModal, setShowModal] = useState(false);
+  // On a phone "Add room" is the top bar's + (ENH-24); the button below is for wider screens
+  const openAddRoom = useCallback(() => setShowModal(true), []);
+  useHeaderAdd(isAdmin ? openAddRoom : null);
   const [step, setStep] = useState<1 | 2>(1);
   const [createAssignedUserId, setCreateAssignedUserId] = useState<string>('none');
   const [assigningRoomId, setAssigningRoomId] = useState<number | null>(null);
@@ -135,6 +146,11 @@ export function RoomsList({ rooms, language, isAdmin, users, onSelectRoom, onOpe
   const [renamingZone, setRenamingZone] = useState<number | null>(null);
   const [renameZoneValue, setRenameZoneValue] = useState('');
   const [zoneMenuRoomId, setZoneMenuRoomId] = useState<number | null>(null);
+  // Edit rooms (admin): shows the zones and each tile's rename, zone, assign and delete buttons
+  const [editing, setEditing] = useState(false);
+  // The zone chip picked (null: all rooms); kept for the visit like the scroll spot
+  const [zoneFilter, setZoneFilterState] = useState<number | null>(() => lastZone);
+  const setZoneFilter = (z: number | null) => { rememberZone(z); setZoneFilterState(z); };
 
   useEffect(() => {
     api.getZones().then((z) => { setZones(cacheZones(z)); setZonesReady(true); }).catch(() => setZonesReady(true));
@@ -163,10 +179,8 @@ export function RoomsList({ rooms, language, isAdmin, users, onSelectRoom, onOpe
   const { filter: roomFilter, setFilter: setRoomFilter, locked: roomFilterLocked } = useTaskView(viewer, 'tq-rooms-filter');
   const isMyRoom = (room: RoomsListProps['rooms'][number]) => !viewer || room.assignedUserId === viewer.id
     || room.tasks.some((task) => isTaskForUser(task, viewer.id, viewer.role));
-  // A room page locked to Mine lists only the viewer's chores, so other chips just open the room
+  // Kids and members locked to Mine: tiles count only their own chores
   const onlyMine = !!viewer && (viewer.taskView === 'mineOnly' || !!viewer.kidMode);
-  const canOpenTask = (task: RoomsListProps['rooms'][number]['tasks'][number]) => !!onOpenTask
-    && (!onlyMine || isTaskForUser(task, viewer!.id, viewer!.role));
   // Most urgent first; the To-dos room (no health) last
   const sortedRooms = [...rooms].filter((room) => roomFilter === 'all' || isMyRoom(room)).sort(
     (a, b) => Number(!!a.isTodoRoom) - Number(!!b.isTodoRoom) || getRoomHealth(a.tasks as any) - getRoomHealth(b.tasks as any)
@@ -304,52 +318,142 @@ export function RoomsList({ rooms, language, isAdmin, users, onSelectRoom, onOpe
 
   const saveAssignment = () => doAssign(false);
 
-  const healthLabel = (h: number): string =>
-    h >= 70 ? t('rooms.healthHealthy') : h >= 40 ? t('rooms.healthNeedsAttention') : t('rooms.healthCritical');
-
-  // A chore that can't be done yet stays yellow instead of red (the same rule as its bar inside the room)
-  const taskBadgeStyle = (health: number, locked = false): { bg: string; text: string; border: string } => {
-    if (health >= 70) {
-      return { bg: 'var(--task-healthy-bg)', text: 'var(--task-healthy-text)', border: 'var(--task-healthy-border)' };
-    }
-    if (health >= 40 || locked) {
-      return { bg: 'var(--task-warning-bg)', text: 'var(--task-warning-text)', border: 'var(--task-warning-border)' };
-    }
-    return { bg: 'var(--task-critical-bg)', text: 'var(--task-critical-text)', border: 'var(--task-critical-border)' };
+  // A chore counts as due when it's late or due before the end of today (paused, on-demand and out-of-season ones never)
+  const endToday = startOfDay(new Date(), 1).getTime();
+  const today = dateStr();
+  const isDue = (tk: RoomTask) => {
+    if (tk.pausedAt || tk.onDemand || tk.outOfSeason) return false;
+    if (tk.oneTime) return tk.doBy ? tk.doBy <= today : tk.health <= 0;
+    return taskNextDue({ lastCompletedAt: tk.lastCompletedAt ?? null, frequencyDays: tk.frequencyDays ?? 1, nextDueAt: tk.nextDueAt }).getTime() < endToday;
   };
+  // The chores a tile counts: the viewer's own when they only see theirs (kids)
+  const tileTasks = (room: RoomItem) => onlyMine && viewer ? room.tasks.filter((tk) => isTaskForUser(tk, viewer.id, viewer.role)) : room.tasks;
+  const tileLine = (room: RoomItem) => {
+    if (room.isTodoRoom) return todoLine(room);
+    const list = tileTasks(room);
+    if (list.length === 0) return t('rooms.noChores');
+    const due = list.filter(isDue).length;
+    return `${list.length === 1 ? t('rooms.choreOne') : t('rooms.choreMany').replace('{n}', String(list.length))} · ${due ? t('rooms.dueCount').replace('{n}', String(due)) : t('rooms.allDone')}`;
+  };
+  // The chips: All rooms, Mine (unless the person only ever sees theirs) and one per zone that has rooms
+  const knownZone = (room: RoomItem) => !!room.zoneId && zones.some((z) => z.id === room.zoneId);
+  const zoneChips = zones.filter((z) => rooms.some((r) => r.zoneId === z.id));
+  const activeZone = zoneFilter !== null && zoneChips.some((z) => z.id === zoneFilter) ? zoneFilter : null;
+  const shownRooms = activeZone === null ? sortedRooms : sortedRooms.filter((r) => r.zoneId === activeZone);
+  const pickChip = (zone: number | null, mine: boolean) => { setZoneFilter(zone); if (!roomFilterLocked) setRoomFilter(mine ? 'mine' : 'all'); };
+  const chip = (key: string, label: string, on: boolean, onClick: () => void) => (
+    <button key={key} type="button" className={`today-chip${on ? ' on' : ''}`} aria-pressed={on} onClick={onClick}>{label}</button>
+  );
+  const mineOn = roomFilter === 'mine' && !roomFilterLocked;
+  const editBtn = (label: string, onClick: (e: React.MouseEvent) => void, icon: React.ReactNode, extra = '') => (
+    <button type="button" className={`rooms-tile-act${extra}`} onClick={(e) => { e.stopPropagation(); onClick(e); }} title={label} aria-label={label}>{icon}</button>
+  );
+  const saveRename = async (roomId: number) => {
+    if (renameValue.trim()) { if (onRenameRoom) await onRenameRoom(roomId, renameValue.trim()); else await api.updateRoom(roomId, { name: renameValue.trim() }); }
+    setRenamingRoom(null);
+  };
+
+  const renderRoom = (room: RoomItem) => {
+    const rh = room.health;
+    const RoomIcon = getRoomIcon(room.roomType);
+    const name = roomDisplayName(room.name, room.roomType);
+    const open = () => { if (renamingRoom === room.id) return; rememberSpot(room.id); onSelectRoom(room.id); };
+    return (
+      <div key={room.id} data-room-id={room.id} className="rooms-tile" role="link" tabIndex={0} aria-label={name}
+        onClick={open} onKeyDown={(e) => { if (e.key === 'Enter' && e.target === e.currentTarget) open(); }}>
+        <div className="rooms-tile-top">
+          <span className="rooms-tile-icon" style={{ backgroundColor: room.color }}>
+            <RoomIcon />
+            {room.assignedUser && (
+              <span className="rooms-tile-who" title={t('rooms.assignedTo').replace('{name}', room.assignedUser.displayName)}>
+                <UserAvatar name={room.assignedUser.displayName} color={room.assignedUser.avatarColor} size={20} avatarType={room.assignedUser.avatarType as any} avatarPreset={room.assignedUser.avatarPreset} avatarPhotoUrl={room.assignedUser.avatarPhotoUrl} />
+              </span>
+            )}
+          </span>
+          {room.isTodoRoom
+            ? <span className="rooms-tile-pct" aria-hidden="true">📝</span>
+            : <span className="rooms-tile-pct" style={{ color: getHealthColor(rh) }}>{rh}%</span>}
+        </div>
+        {renamingRoom === room.id ? (
+          <div className="rooms-tile-rename" onClick={(e) => e.stopPropagation()}>
+            <input value={renameValue} onChange={(e) => setRenameValue(e.target.value)} aria-label={t('rooms.renameRoom')}
+              onKeyDown={(e) => { if (e.key === 'Enter') void saveRename(room.id); else if (e.key === 'Escape') setRenamingRoom(null); }}
+              autoFocus className="tq-input" />
+            <button type="button" onClick={() => void saveRename(room.id)} title={t('common.save')} aria-label={t('common.save')}>✓</button>
+            <button type="button" onClick={() => setRenamingRoom(null)} title={t('common.cancel')} aria-label={t('common.cancel')}>✕</button>
+          </div>
+        ) : <div className="rooms-tile-name">{name}</div>}
+        <div className={`rooms-tile-sub${room.isTodoRoom && room.todoOverdue ? ' late' : ''}`}>{tileLine(room)}</div>
+        {!room.isTodoRoom && <div className="rooms-tile-bar"><span style={{ width: `${Math.max(0, Math.min(100, rh))}%`, backgroundColor: getHealthColor(rh) }} /></div>}
+        {editing && isAdmin && (
+          <div className="rooms-tile-acts">
+            {editBtn(t('rooms.renameRoom'), () => { setRenamingRoom(room.id); setRenameValue(name); }, '✏️')}
+            {zones.length > 0 && (
+              <span className="rooms-tile-zone">
+                {editBtn(t('rooms.assignToZone'), () => setZoneMenuRoomId(zoneMenuRoomId === room.id ? null : room.id), '🏷️', room.zoneId ? ' on' : '')}
+                {zoneMenuRoomId === room.id && (
+                  <div className="rooms-zone-menu" onClick={(e) => e.stopPropagation()}>
+                    {room.zoneId && (
+                      <button type="button" onClick={async () => { await api.updateRoom(room.id, { zoneId: null }); setZoneMenuRoomId(null); await onRoomsChanged?.(); }}>{t('rooms.removeFromZone')}</button>
+                    )}
+                    {zones.map((z) => (
+                      <button type="button" key={z.id} className={room.zoneId === z.id ? 'on' : ''}
+                        onClick={async () => { await api.updateRoom(room.id, { zoneId: z.id }); setZoneMenuRoomId(null); await onRoomsChanged?.(); }}>🏷️ {z.name}</button>
+                    ))}
+                  </div>
+                )}
+              </span>
+            )}
+            {onAssignRoom && editBtn(t('rooms.assignRoom'), (e) => openAssignModal(e, room), (
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="5" r="3" stroke="currentColor" strokeWidth="1.5"/><path d="M2 14c0-3.314 2.686-6 6-6s6 2.686 6 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
+            ))}
+            {editBtn(`${t('common.delete')} ${name}`, () => void handleDeleteRoom(room.id, name, room.tasks.length), <TrashIcon />, ' danger')}
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  // Zone sections when showing every room and the family uses zones; one grid otherwise
+  const sections = activeZone === null && zones.length > 0
+    ? [...zones.map((z) => ({ id: z.id as number | null, label: z.name })), { id: null, label: t('rooms.noZone') }]
+      .map((s) => ({ ...s, rooms: shownRooms.filter((r) => (s.id === null ? !knownZone(r) : r.zoneId === s.id)) }))
+      .filter((s) => s.rooms.length > 0)
+    : [{ id: activeZone, label: '', rooms: shownRooms }];
+
+  // Edit rooms (admin): a link on the first section's heading
+  const editToggle = isAdmin && (
+    <button type="button" className={`today-link${editing ? '' : ' quiet'}`} aria-pressed={editing}
+      onClick={() => { setEditing((v) => !v); setZoneMenuRoomId(null); setRenamingRoom(null); }}>
+      {editing ? `✓ ${t('rooms.doneEditing')}` : `✏️ ${t('rooms.editRooms')}`}
+    </button>
+  );
 
   return (
     <>
-      {viewer && !roomFilterLocked && (
-        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 12 }}>
-          <AllMineToggle value={roomFilter} onChange={setRoomFilter} allLabel={t('dashboard.allTasks')} mineLabel={t('dashboard.myTasks')} />
-        </div>
-      )}
-      {isAdmin && (
-        <div style={{ marginBottom: 20 }}>
-          <button className="tq-btn tq-btn-primary tq-btn-md"
-            onClick={() => setShowModal(true)}
-            style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
-            <span style={{ display: 'flex', flexShrink: 0 }}>
-              <svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden>
-                <path d="M10 4V16M4 10H16" stroke="#FFFFFF" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </span>
-            <span>{t('rooms.addRoom')}</span>
-          </button>
-        </div>
-      )}
+      <div className="rooms-tools">
+        {(zoneChips.length > 0 || !roomFilterLocked) && viewer && (
+          <div className="today-chips rooms-chips" role="group" aria-label={t('rooms.zoneChips')}>
+            {chip('all', t('rooms.allRooms'), activeZone === null && !mineOn, () => pickChip(null, false))}
+            {!roomFilterLocked && chip('mine', t('rooms.mineChip'), activeZone === null && mineOn, () => pickChip(null, true))}
+            {zoneChips.map((z) => chip(`z${z.id}`, z.name, activeZone === z.id, () => pickChip(z.id, false)))}
+          </div>
+        )}
+        {isAdmin && <button type="button" className="tq-btn tq-btn-primary tq-btn-sm ph-desktop rooms-add" onClick={() => setShowModal(true)}>+ {t('rooms.addRoom')}</button>}
+      </div>
 
-      {/* Zone management (admin only) */}
-      {isAdmin && (
-        <div style={{ marginBottom: 18, display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+      {/* Zone management (admin, in Edit rooms) */}
+      {isAdmin && editing && (
+        <div className="rooms-zones">
+          <span className="rooms-zones-label">{t('rooms.zones')}</span>
           {zones.map(zone => (
-            <div key={zone.id} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '4px 10px', borderRadius: 20, background: 'var(--warm-bg-subtle)', border: '1.5px solid var(--warm-border)', fontSize: 12, fontWeight: 700, color: 'var(--warm-text)' }}>
+            <span key={zone.id} className="rooms-zone">
               {renamingZone === zone.id ? (
                 <>
                   <input
                     value={renameZoneValue}
                     onChange={e => setRenameZoneValue(e.target.value)}
+                    aria-label={t('rooms.zoneName')}
                     onKeyDown={async e => {
                       if (e.key === 'Enter' && renameZoneValue.trim()) {
                         await api.updateZone(zone.id, { name: renameZoneValue.trim() });
@@ -358,25 +462,25 @@ export function RoomsList({ rooms, language, isAdmin, users, onSelectRoom, onOpe
                       } else if (e.key === 'Escape') setRenamingZone(null);
                     }}
                     autoFocus
-                    style={{ fontSize: 12, fontWeight: 700, padding: '2px 6px', borderRadius: 8, border: '1px solid var(--warm-accent)', outline: 'none', width: 100 }}
                   />
-                  <button onClick={async () => { if (renameZoneValue.trim()) { await api.updateZone(zone.id, { name: renameZoneValue.trim() }); await refreshZones(); } setRenamingZone(null); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--warm-accent)', fontWeight: 900, fontSize: 14, padding: 0 }}>✓</button>
-                  <button onClick={() => setRenamingZone(null)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--warm-text-muted)', fontSize: 14, padding: 0 }}>✕</button>
+                  <button type="button" onClick={async () => { if (renameZoneValue.trim()) { await api.updateZone(zone.id, { name: renameZoneValue.trim() }); await refreshZones(); } setRenamingZone(null); }} aria-label={t('common.save')}>✓</button>
+                  <button type="button" onClick={() => setRenamingZone(null)} aria-label={t('common.cancel')}>✕</button>
                 </>
               ) : (
                 <>
-                  <span onClick={() => { setRenamingZone(zone.id); setRenameZoneValue(zone.name); }} style={{ cursor: 'pointer' }}>🏷️ {zone.name}</span>
-                  <button onClick={async () => { if (confirm(`${t('rooms.deleteZone')} "${zone.name}"?`)) { await api.deleteZone(zone.id); await refreshZones(); } }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--warm-text-muted)', fontSize: 11, padding: '0 0 0 2px', lineHeight: 1 }} title={t('rooms.deleteZone')}>✕</button>
+                  <button type="button" className="rooms-zone-name" onClick={() => { setRenamingZone(zone.id); setRenameZoneValue(zone.name); }}>🏷️ {zone.name}</button>
+                  <button type="button" onClick={async () => { if (confirm(`${t('rooms.deleteZone')} "${zone.name}"?`)) { await api.deleteZone(zone.id); await refreshZones(); } }} title={t('rooms.deleteZone')} aria-label={`${t('rooms.deleteZone')} ${zone.name}`}>✕</button>
                 </>
               )}
-            </div>
+            </span>
           ))}
           {creatingZone ? (
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+            <span className="rooms-zone new">
               <input
                 value={newZoneName}
                 onChange={e => setNewZoneName(e.target.value)}
                 placeholder={t('rooms.zoneName')}
+                aria-label={t('rooms.zoneName')}
                 autoFocus
                 onKeyDown={async e => {
                   if (e.key === 'Enter' && newZoneName.trim()) {
@@ -386,184 +490,39 @@ export function RoomsList({ rooms, language, isAdmin, users, onSelectRoom, onOpe
                     setCreatingZone(false);
                   } else if (e.key === 'Escape') { setCreatingZone(false); setNewZoneName(''); }
                 }}
-                style={{ fontSize: 12, fontWeight: 700, padding: '4px 10px', borderRadius: 20, border: '1.5px solid var(--warm-accent)', outline: 'none', width: 120 }}
               />
-              <button onClick={async () => { if (newZoneName.trim()) { await api.createZone(newZoneName.trim()); await refreshZones(); setNewZoneName(''); setCreatingZone(false); } }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--warm-accent)', fontWeight: 900, fontSize: 16, padding: 0 }}>✓</button>
-              <button onClick={() => { setCreatingZone(false); setNewZoneName(''); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--warm-text-muted)', fontSize: 16, padding: 0 }}>✕</button>
-            </div>
+              <button type="button" onClick={async () => { if (newZoneName.trim()) { await api.createZone(newZoneName.trim()); await refreshZones(); setNewZoneName(''); setCreatingZone(false); } }} aria-label={t('common.save')}>✓</button>
+              <button type="button" onClick={() => { setCreatingZone(false); setNewZoneName(''); }} aria-label={t('common.cancel')}>✕</button>
+            </span>
           ) : (
-            <button onClick={() => setCreatingZone(true)} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '4px 10px', borderRadius: 20, background: 'none', border: '1.5px dashed var(--warm-border)', fontSize: 12, fontWeight: 700, color: 'var(--warm-text-muted)', cursor: 'pointer' }}>
-              + {t('rooms.createZone')}
-            </button>
+            <button type="button" className="rooms-zone add" onClick={() => setCreatingZone(true)}>+ {t('rooms.createZone')}</button>
           )}
         </div>
       )}
 
-      <div className="page-enter" style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
-        {(() => {
-          const GRID = { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: 16 } as const;
-          const renderRoom = (room: typeof sortedRooms[0]) => {
-            const rh = room.health;
-            const RoomIcon = getRoomIcon(room.roomType);
-            return (
-              <div key={room.id} data-room-id={room.id} className="tq-card tq-card-hover tq-card-padded"
-                onClick={() => { rememberSpot(room.id); onSelectRoom(room.id); }}
-                style={{ cursor: 'pointer' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 16 }}>
-                  <div style={{
-                    width: 56, height: 56, borderRadius: 18, flexShrink: 0,
-                    backgroundColor: room.color, display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    border: `2px solid ${room.accentColor}33`,
-                  }}><RoomIcon /></div>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    {renamingRoom === room.id ? (
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }} onClick={(e) => e.stopPropagation()}>
-                        <input
-                          value={renameValue}
-                          onChange={(e) => setRenameValue(e.target.value)}
-                          onKeyDown={async (e) => {
-                            if (e.key === 'Enter') {
-                              if (renameValue.trim()) { if (onRenameRoom) await onRenameRoom(room.id, renameValue.trim()); else await api.updateRoom(room.id, { name: renameValue.trim() }); }
-                              setRenamingRoom(null);
-                            } else if (e.key === 'Escape') { setRenamingRoom(null); }
-                          }}
-                          autoFocus className="tq-input" style={{ fontSize: 15, fontWeight: 800, padding: '4px 8px' }}
-                        />
-                        <button onClick={async (e) => { e.stopPropagation(); if (renameValue.trim()) { if (onRenameRoom) await onRenameRoom(room.id, renameValue.trim()); else await api.updateRoom(room.id, { name: renameValue.trim() }); } setRenamingRoom(null); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--warm-accent)', fontSize: 16, fontWeight: 700 }} title={t('common.save')}>✓</button>
-                        <button onClick={(e) => { e.stopPropagation(); setRenamingRoom(null); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--warm-text-muted)', fontSize: 16, fontWeight: 700 }} title={t('common.cancel')}>✕</button>
-                      </div>
-                    ) : (
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                        <div style={{ fontSize: 18, fontWeight: 800, color: 'var(--warm-text)' }}>{roomDisplayName(room.name, room.roomType)}</div>
-                        {isAdmin && (
-                          <button onClick={(e) => { e.stopPropagation(); setRenamingRoom(room.id); setRenameValue(roomDisplayName(room.name, room.roomType)); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--warm-text-light)', fontSize: 12, padding: '2px 4px', lineHeight: 1 }} title={t('rooms.renameRoom')}>✏️</button>
-                        )}
-                      </div>
-                    )}
-                    {room.isTodoRoom ? (
-                      <div style={{ fontSize: 12, color: room.todoOverdue ? 'var(--health-red)' : 'var(--warm-text-light)', fontWeight: 700 }}>{todoLine(room)}</div>
-                    ) : (
-                      <div style={{ fontSize: 12, color: 'var(--warm-text-light)', fontWeight: 600 }}>
-                        {room.tasks.length} {t('rooms.tasks')} &middot; {healthLabel(rh)}
-                      </div>
-                    )}
-                    {room.assignedUser && (
-                      <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, marginTop: 6, padding: '3px 8px 3px 4px', borderRadius: 20, backgroundColor: 'var(--warm-bg-subtle)', border: '1px solid var(--warm-border)' }}>
-                        <UserAvatar name={room.assignedUser.displayName} color={room.assignedUser.avatarColor} size={18} avatarType={room.assignedUser.avatarType as any} avatarPreset={room.assignedUser.avatarPreset} avatarPhotoUrl={room.assignedUser.avatarPhotoUrl} />
-                        <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--warm-text-secondary)' }}>{room.assignedUser.displayName}</span>
-                      </div>
-                    )}
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
-                    {room.isTodoRoom
-                      ? <div aria-hidden="true" style={{ fontSize: 26 }}>📝</div>
-                      : <div style={{ fontSize: 26, fontWeight: 900, color: getHealthColor(rh) }}>{rh}%</div>}
-                    {isAdmin && (
-                      <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
-                        {zones.length > 0 && (
-                          <div style={{ position: 'relative' }} onClick={e => e.stopPropagation()}>
-                            <button
-                              className="tq-btn"
-                              onClick={(e) => { e.stopPropagation(); setZoneMenuRoomId(zoneMenuRoomId === room.id ? null : room.id); }}
-                              title={t('rooms.assignToZone')}
-                              style={{ width: 26, height: 26, borderRadius: 9, border: `1.5px solid ${room.zoneId ? 'var(--warm-accent)' : 'var(--warm-border)'}`, backgroundColor: room.zoneId ? 'var(--warm-accent-light)' : 'var(--warm-bg-subtle)', color: room.zoneId ? 'var(--warm-accent)' : 'var(--warm-text-muted)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', padding: 0, fontSize: 12 }}
-                            >🏷️</button>
-                            {zoneMenuRoomId === room.id && (
-                              <div style={{ position: 'absolute', right: 0, top: '100%', zIndex: 100, background: 'var(--warm-card)', border: '1.5px solid var(--warm-border)', borderRadius: 12, boxShadow: '0 4px 16px rgba(0,0,0,0.14)', minWidth: 150, overflow: 'hidden' }}>
-                                {room.zoneId && (
-                                  <button onClick={async () => { await api.updateRoom(room.id, { zoneId: null }); setZoneMenuRoomId(null); await onRoomsChanged?.(); }} style={{ width: '100%', textAlign: 'left', padding: '9px 14px', fontSize: 12, fontWeight: 600, color: 'var(--warm-text-muted)', background: 'none', border: 'none', borderBottom: '1px solid var(--warm-border-subtle)', cursor: 'pointer', fontFamily: 'Nunito' }}>{t('rooms.removeFromZone')}</button>
-                                )}
-                                {zones.map(z => (
-                                  <button key={z.id} onClick={async () => { await api.updateRoom(room.id, { zoneId: z.id }); setZoneMenuRoomId(null); await onRoomsChanged?.(); }} style={{ width: '100%', textAlign: 'left', padding: '9px 14px', fontSize: 12, fontWeight: room.zoneId === z.id ? 800 : 600, color: room.zoneId === z.id ? 'var(--warm-accent)' : 'var(--warm-text)', background: 'none', border: 'none', borderBottom: '1px solid var(--warm-border-subtle)', cursor: 'pointer', fontFamily: 'Nunito' }}>🏷️ {z.name}</button>
-                                ))}
-                              </div>
-                            )}
-                          </div>
-                        )}
-                        {onAssignRoom && (
-                          <button className="tq-btn" onClick={(e) => openAssignModal(e, room)} title={t('rooms.assignRoom')} style={{ width: 26, height: 26, borderRadius: 9, border: '1.5px solid var(--warm-border)', backgroundColor: 'var(--warm-bg-subtle)', color: 'var(--warm-text-muted)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}>
-                            <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="5" r="3" stroke="currentColor" strokeWidth="1.5"/><path d="M2 14c0-3.314 2.686-6 6-6s6 2.686 6 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
-                          </button>
-                        )}
-                        <button className="tq-btn" onClick={(e) => { e.stopPropagation(); handleDeleteRoom(room.id, roomDisplayName(room.name, room.roomType), room.tasks.length); }} aria-label={`${t('common.delete')} ${roomDisplayName(room.name, room.roomType)}`} title={`${t('common.delete')} ${roomDisplayName(room.name, room.roomType)}`} style={{ width: 26, height: 26, borderRadius: 9, border: '1.5px solid var(--warm-danger-border)', backgroundColor: 'var(--warm-danger-bg)', color: 'var(--warm-danger)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}>
-                          <TrashIcon />
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                </div>
-                {!room.isTodoRoom && <HealthBar value={rh} height={10} showLabel={false} />}
-                <div style={{ display: 'flex', gap: 6, marginTop: room.isTodoRoom ? 0 : 14, flexWrap: 'wrap' }}>
-                  {room.tasks.map((tk) => {
-                    const badge = taskBadgeStyle(tk.health, notDueYet(tk));
-                    const chipStyle = { fontSize: 11, fontWeight: 700, padding: '4px 10px 4px 6px', borderRadius: 10, backgroundColor: badge.bg, color: badge.text, border: `1px solid ${badge.border}`, display: 'inline-flex', alignItems: 'center', gap: 8 };
-                    const chip = (
-                      <>
-                        <span style={{ width: 30, height: 30, borderRadius: 10, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(255,255,255,0.45)', border: '1px solid rgba(255,255,255,0.6)', flexShrink: 0, marginLeft: -5 }}>
-                          <TaskIcon iconKey={tk.iconKey} size={21} />
-                        </span>
-                        <span>{taskName(tk.name, tk.translationKey)}</span>
-                      </>
-                    );
-                    return canOpenTask(tk) ? (
-                      <button key={tk.id} type="button" onClick={(e) => { e.stopPropagation(); rememberSpot(room.id); onOpenTask!(room.id, tk.id); }}
-                        style={{ ...chipStyle, fontFamily: 'inherit', textAlign: 'left', cursor: 'pointer' }}>
-                        {chip}
-                      </button>
-                    ) : (
-                      <div key={tk.id} style={chipStyle}>{chip}</div>
-                    );
-                  })}
-                </div>
+      <div className="page-enter rooms-page">
+        {sections.map((section, i) => (
+          <section key={section.id ?? 'all'} className="rooms-section">
+            {(section.label || i === 0) && (
+              <div className="rooms-sec">
+                <span className="rooms-sec-title">
+                  {section.label && <h3>{section.label}</h3>}
+                  {i === 0 && shownRooms.length > 1 && <span className="rooms-sec-note">{t('rooms.neediestFirst')}</span>}
+                </span>
+                {i === 0 && editToggle}
               </div>
-            );
-          };
-
-          if (zones.length === 0) {
-            return (
-              <div style={GRID}>
-                {sortedRooms.map(renderRoom)}
-                {rooms.length === 0 && (
-                  <div className="tq-empty-state" style={{ gridColumn: '1 / -1' }}>
-                    <div className="tq-empty-state-title">{t('rooms.noRoomsYet')}</div>
-                    <div>{t('rooms.clickAddRoom')}</div>
-                  </div>
-                )}
-              </div>
-            );
-          }
-
-          const sections = [
-            ...zones.map(z => ({ id: z.id as number | null, label: `🏷️ ${z.name}` })),
-            { id: null, label: t('rooms.noZone') },
-          ];
-          return (
-            <>
-              {sections.map(section => {
-                const sectionRooms = section.id === null
-                  ? sortedRooms.filter(r => !r.zoneId || !zones.find(z => z.id === r.zoneId))
-                  : sortedRooms.filter(r => r.zoneId === section.id);
-                if (sectionRooms.length === 0) return null;
-                return (
-                  <div key={section.id ?? 'unzoned'} style={{ marginBottom: 28 }}>
-                    <div style={{ fontSize: 11, fontWeight: 800, color: 'var(--warm-text-muted)', textTransform: 'uppercase', letterSpacing: 1.2, marginBottom: 10, paddingLeft: 2 }}>
-                      {section.label}
-                    </div>
-                    <div style={GRID}>{sectionRooms.map(renderRoom)}</div>
-                  </div>
-                );
-              })}
-              {rooms.length === 0 && (
-                <div className="tq-empty-state">
-                  <div className="tq-empty-state-title">{t('rooms.noRoomsYet')}</div>
-                  <div>{t('rooms.clickAddRoom')}</div>
-                </div>
-              )}
-            </>
-          );
-        })()}
+            )}
+            <div className="rooms-grid">{section.rooms.map(renderRoom)}</div>
+          </section>
+        ))}
+        {sections.length === 0 && editToggle}
+        {rooms.length === 0 && (
+          <div className="tq-empty-state">
+            <div className="tq-empty-state-title">{t('rooms.noRoomsYet')}</div>
+            <div>{t('rooms.clickAddRoom')}</div>
+          </div>
+        )}
       </div>
-
       {/* Assign Room Modal */}
       {assigningRoomId && (
         <div className="tq-modal-overlay" onClick={() => setAssigningRoomId(null)}>
@@ -638,16 +597,16 @@ export function RoomsList({ rooms, language, isAdmin, users, onSelectRoom, onOpe
                       <div key={rt.type}
                         onClick={() => setSelectedType(rt.type)}
                         style={{
-                          padding: '14px 8px', borderRadius: 16, textAlign: 'center', cursor: 'pointer',
+                          padding: '14px 8px', borderRadius: 'var(--shape-radius-card)', textAlign: 'center', cursor: 'pointer',
                           backgroundColor: isSelected ? colors.bg : 'var(--warm-bg-subtle)',
-                          border: isSelected ? `2px solid ${colors.accent}` : '2px solid var(--warm-border)',
+                          border: isSelected ? `2px solid ${colors.accent}` : 'var(--shape-border-w) solid var(--warm-border)',
                           transition: 'all 0.15s ease',
                         }}>
                         <div style={{
                           width: 40, height: 40, borderRadius: 12, margin: '0 auto 8px',
                           backgroundColor: colors.bg, display: 'flex', alignItems: 'center', justifyContent: 'center',
                         }}><Icon /></div>
-                        <div style={{ fontSize: 11, fontWeight: 700, color: isSelected ? colors.accent : 'var(--warm-text-muted)' }}>
+                        <div style={{ fontSize: 12, fontWeight: 700, color: isSelected ? colors.accent : 'var(--warm-text-muted)' }}>
                           {translateRoomName(rt.type)}
                         </div>
                       </div>
@@ -712,7 +671,7 @@ export function RoomsList({ rooms, language, isAdmin, users, onSelectRoom, onOpe
                         <div key={idx} style={{
                           padding: '14px 16px', borderRadius: 14,
                           backgroundColor: task.selected ? 'var(--warm-bg-subtle)' : 'var(--warm-bg-warm)',
-                          border: task.selected ? '1.5px solid var(--warm-border)' : '1.5px solid var(--warm-border-subtle)',
+                          border: task.selected ? 'var(--shape-border-w) solid var(--warm-border)' : 'var(--shape-border-w) solid var(--warm-border-subtle)',
                           opacity: task.selected ? 1 : 0.6,
                           transition: 'all 0.15s ease',
                         }}>
@@ -742,7 +701,7 @@ export function RoomsList({ rooms, language, isAdmin, users, onSelectRoom, onOpe
                             <div className="task-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: 12, paddingLeft: 28 }}>
                               {/* Current State */}
                               <div>
-                                <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--warm-text-light)', textTransform: 'uppercase', marginBottom: 6 }}>
+                                <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--warm-text-light)', marginBottom: 6 }}>
                                   {t('rooms.currentState')}
                                 </div>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -754,14 +713,14 @@ export function RoomsList({ rooms, language, isAdmin, users, onSelectRoom, onOpe
                                     {task.initialHealth}%
                                   </span>
                                 </div>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 9, color: 'var(--warm-text-light)', fontWeight: 600, marginTop: 2 }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, color: 'var(--warm-text-light)', fontWeight: 600, marginTop: 2 }}>
                                   <span>{t('rooms.dirty')}</span><span>{t('rooms.clean')}</span>
                                 </div>
                               </div>
 
                               {/* Effort */}
                               <div>
-                                <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--warm-text-light)', textTransform: 'uppercase', marginBottom: 6 }}>
+                                <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--warm-text-light)', marginBottom: 6 }}>
                                   {t('roomDetail.effort')}
                                 </div>
                                 <div style={{ display: 'flex', gap: 2 }}>
@@ -786,7 +745,7 @@ export function RoomsList({ rooms, language, isAdmin, users, onSelectRoom, onOpe
 
                               {/* Frequency */}
                               <div>
-                                <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--warm-text-light)', textTransform: 'uppercase', marginBottom: 6 }}>
+                                <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--warm-text-light)', marginBottom: 6 }}>
                                   {t('roomDetail.frequency')}
                                 </div>
                                 <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
@@ -795,7 +754,7 @@ export function RoomsList({ rooms, language, isAdmin, users, onSelectRoom, onOpe
                                     className="tq-input-compact" style={{ width: 48, textAlign: 'center' }} />
                                   <select value={task.freqUnit}
                                     onChange={(e) => updateTask(idx, { freqUnit: e.target.value })}
-                                    className="tq-input-compact" style={{ cursor: 'pointer', fontSize: 11 }}>
+                                    className="tq-input-compact" style={{ cursor: 'pointer', fontSize: 12 }}>
                                     {FREQ_UNITS.map((f) => (
                                       <option key={f.label} value={f.label}>{t(`units.${f.label}`)}</option>
                                     ))}
@@ -805,7 +764,7 @@ export function RoomsList({ rooms, language, isAdmin, users, onSelectRoom, onOpe
 
                               {/* Icon */}
                               <div>
-                                <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--warm-text-light)', textTransform: 'uppercase', marginBottom: 6 }}>
+                                <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--warm-text-light)', marginBottom: 6 }}>
                                   {t('rooms.icon')}
                                 </div>
                                 <IconPicker value={task.iconKey || 'sparkle'} onChange={(k) => updateTask(idx, { iconKey: k })} language={language}
@@ -817,13 +776,13 @@ export function RoomsList({ rooms, language, isAdmin, users, onSelectRoom, onOpe
                             {/* Assign — separate row below the grid */}
                             {assignableUsers.length > 0 && (
                               <div style={{ paddingLeft: 28, marginTop: 8 }}>
-                                <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--warm-text-light)', textTransform: 'uppercase', marginBottom: 6 }}>
+                                <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--warm-text-light)', marginBottom: 6 }}>
                                   {t('rooms.assignTask')}
                                 </div>
                                 <select
                                   value={task.assignedUserId || 'none'}
                                   onChange={(e) => updateTask(idx, { assignedUserId: e.target.value })}
-                                  className="tq-input-compact" style={{ maxWidth: 200, cursor: 'pointer', fontSize: 11 }}
+                                  className="tq-input-compact" style={{ maxWidth: 200, cursor: 'pointer', fontSize: 12 }}
                                 >
                                   <option value="none">—</option>
                                   {assignableUsers.map(u => (

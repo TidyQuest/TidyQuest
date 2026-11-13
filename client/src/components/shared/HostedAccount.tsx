@@ -151,7 +151,7 @@ export function SignInEmailCard({ account, language, onChanged }: { account: Hos
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
             <span style={{ fontSize: 14, fontWeight: 800, color: 'var(--warm-text)', overflowWrap: 'anywhere' }}>{account.email}</span>
             <span style={{
-              fontSize: 11, fontWeight: 800, padding: '2px 8px', borderRadius: 999,
+              fontSize: 12, fontWeight: 800, padding: '2px 8px', borderRadius: 999,
               background: account.emailConfirmed ? 'var(--warm-bg-subtle)' : 'var(--warm-streak-bg)',
               color: 'var(--warm-text-secondary)',
             }}>
@@ -219,7 +219,7 @@ export function DeleteFamily({ account, language, onDeleted }: { account: Hosted
         <span aria-hidden style={{ fontSize: 18, width: 20, textAlign: 'center' }}>🗑️</span>
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--warm-text)' }}>{t('hosted.deleteFamilyTitle')}</div>
-          <div style={{ fontSize: 11, color: 'var(--warm-text-light)', fontWeight: 600 }}>{t('hosted.deleteFamilyDesc')}</div>
+          <div style={{ fontSize: 12, color: 'var(--warm-text-light)', fontWeight: 600 }}>{t('hosted.deleteFamilyDesc')}</div>
         </div>
         {!open && (
           <button type="button" className="tq-btn tq-btn-sm" onClick={() => setOpen(true)}

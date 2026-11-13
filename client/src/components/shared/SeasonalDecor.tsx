@@ -64,7 +64,7 @@ export function SeasonGreeting({ season, language }: { season: Season; language?
       {days > 0 && (
         <div style={{ textAlign: 'center', flexShrink: 0 }}>
           <div style={{ fontSize: 24, fontWeight: 900, color: 'var(--warm-accent)', lineHeight: 1 }}>{days}</div>
-          <div style={{ fontSize: 10, fontWeight: 800, color: 'var(--warm-text-light)', textTransform: 'uppercase' }}>{t(days === 1 ? 'seasons.day' : 'seasons.days')}</div>
+          <div style={{ fontSize: 12, fontWeight: 800, color: 'var(--warm-text-light)' }}>{t(days === 1 ? 'seasons.day' : 'seasons.days')}</div>
         </div>
       )}
     </div>

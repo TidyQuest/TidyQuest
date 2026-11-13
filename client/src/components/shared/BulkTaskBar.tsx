@@ -62,7 +62,7 @@ export function BulkTaskBar({ ids, people, rooms, language, onApplied, onDeleted
   };
 
   const chip = (on: boolean) => ({
-    padding: '5px 10px', borderRadius: 20, fontSize: 12, fontWeight: 700, fontFamily: 'Nunito', cursor: 'pointer',
+    padding: '5px 10px', borderRadius: 'var(--shape-radius-control)', fontSize: 12, fontWeight: 700, fontFamily: 'Nunito', cursor: 'pointer',
     border: `1.5px solid ${on ? 'var(--warm-accent)' : 'var(--warm-border)'}`,
     backgroundColor: on ? 'var(--warm-accent-light)' : 'var(--warm-bg-input)', color: on ? 'var(--warm-accent)' : 'var(--warm-text)',
   });
@@ -75,7 +75,7 @@ export function BulkTaskBar({ ids, people, rooms, language, onApplied, onDeleted
 
   return (
     <div className="tq-card" style={{
-      position: 'sticky', bottom: 'calc(12px + env(safe-area-inset-bottom))', zIndex: 5, padding: 12,
+      position: 'sticky', bottom: 'calc(12px + var(--tabbar-h) + env(safe-area-inset-bottom))', zIndex: 5, padding: 12,
       display: 'flex', flexDirection: 'column', gap: 10, boxShadow: '0 6px 24px rgba(0,0,0,0.18)', border: '1.5px solid var(--warm-accent)',
     }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>

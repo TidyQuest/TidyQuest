@@ -66,3 +66,39 @@ describe("Other people's private rooms", () => {
     expect((await agent.put('/api/users/kids-config').set(auth(kidA.token)).send({ hidePrivateRooms: true })).status).toBe(403);
   });
 });
+
+describe("Other people's private rooms through the API (BUG-51)", () => {
+  const taskIn = async (token: string, room: number) =>
+    ((await agent.get(`/api/rooms/${room}/tasks`).set(auth(token))).body as Array<{ id: number }>)[0].id;
+
+  it("refuse a kid the room's chores, its overdue chores, Activity and chore actions", async () => {
+    const { admin, kidA, shared, momRoom } = await family();
+    const momTask = await taskIn(admin.token, momRoom);
+    const sharedTask = await taskIn(admin.token, shared);
+    // An overdue scheduled chore in Mom's room, done once by Mom
+    const late = (await agent.post(`/api/rooms/${momRoom}/tasks`).set(auth(admin.token)).send({ name: 'Mom chore', effort: 1, frequencyDays: 1 })).body.id as number;
+    await agent.post(`/api/tasks/${momTask}/complete`).set(auth(admin.token)).expect(200);
+
+    expect((await agent.get(`/api/rooms/${momRoom}/tasks`).set(auth(kidA.token))).status).toBe(404);
+    expect((await agent.get(`/api/rooms/${shared}/tasks`).set(auth(kidA.token))).status).toBe(200);
+    const overdue = (await agent.get('/api/tasks/overdue').set(auth(kidA.token))).body as Array<{ id: number }>;
+    expect(overdue.map((t) => t.id)).not.toContain(late);
+    for (const path of ['complete', 'pin', 'snooze']) {
+      expect((await agent.post(`/api/tasks/${momTask}/${path}`).set(auth(kidA.token)).send({})).status).toBe(404);
+    }
+    expect((await agent.post(`/api/tasks/${sharedTask}/pin`).set(auth(kidA.token))).status).toBeLessThan(300);
+    const activity = (await agent.get('/api/history').set(auth(kidA.token))).body;
+    expect(JSON.stringify(activity)).not.toContain(`Task in ${momRoom}`);
+    // Parents still get everything
+    expect((await agent.get(`/api/rooms/${momRoom}/tasks`).set(auth(admin.token))).status).toBe(200);
+    expect(((await agent.get('/api/tasks/overdue').set(auth(admin.token))).body as Array<{ id: number }>).map((t) => t.id)).toContain(late);
+  });
+
+  it('change nothing with the setting off', async () => {
+    const { admin, kidA, momRoom } = await family();
+    await agent.put('/api/users/kids-config').set(auth(admin.token)).send({ hidePrivateRooms: false }).expect(200);
+    const momTask = await taskIn(admin.token, momRoom);
+    expect((await agent.get(`/api/rooms/${momRoom}/tasks`).set(auth(kidA.token))).status).toBe(200);
+    expect((await agent.post(`/api/tasks/${momTask}/pin`).set(auth(kidA.token))).status).toBeLessThan(300);
+  });
+});

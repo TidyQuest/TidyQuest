@@ -130,7 +130,7 @@ export function PendingApprovals({ items, language, onChanged, gamificationEnabl
       {photoOpen && <PhotoViewer url={photoOpen} alt={t('approvals.proofPhoto')} closeLabel={t('common.close')} onClose={() => setPhotoOpen(null)} />}
       {held && createPortal(
         <div role="status" style={{
-          position: 'fixed', left: '50%', bottom: 'calc(20px + env(safe-area-inset-bottom))', transform: 'translateX(-50%)',
+          position: 'fixed', left: '50%', bottom: 'calc(20px + var(--tabbar-h) + env(safe-area-inset-bottom))', transform: 'translateX(-50%)',
           zIndex: 9998, width: 'max-content', maxWidth: 'calc(100vw - 32px)', boxSizing: 'border-box',
           display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', padding: '10px 12px 10px 16px', borderRadius: 14,
           backgroundColor: 'var(--warm-text)', color: 'var(--warm-card)', boxShadow: '0 6px 20px rgba(0,0,0,0.25)',
@@ -189,7 +189,7 @@ export function PendingApprovals({ items, language, onChanged, gamificationEnabl
             <div style={{ fontSize: 13, fontWeight: 800, color: 'var(--warm-text)' }}>
               {p.displayName} · {taskName(p.taskName, p.translationKey)}
             </div>
-            <div style={{ fontSize: 11, color: 'var(--warm-text-light)', fontWeight: 600, display: 'flex', gap: 6, alignItems: 'center', flexWrap: 'wrap' }}>
+            <div style={{ fontSize: 12, color: 'var(--warm-text-light)', fontWeight: 600, display: 'flex', gap: 6, alignItems: 'center', flexWrap: 'wrap' }}>
               {p.roomName && <span>{roomDisplayName(p.roomName, p.roomType || '')}</span>}
               <span>{timeAgo(p.loggedAt ?? p.completedAt)}</span>
               {p.loggedAt && <span style={{ color: 'var(--warm-text)', fontWeight: 800 }}>🕘 {t('late.tagFor').replace('{date}', lateDayLabel(p.completedAt, language))}</span>}
@@ -208,11 +208,11 @@ export function PendingApprovals({ items, language, onChanged, gamificationEnabl
               <div style={{ display: 'grid', gap: 6, marginTop: 8 }}>
                 <input className="tq-input-compact" value={note} maxLength={200} onChange={(e) => setNote(e.target.value)} placeholder={t('cheers.notePlaceholder')} style={{ minWidth: 0 }} />
                 {gamificationEnabled && (
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, alignItems: 'center', fontSize: 11, fontWeight: 800, color: 'var(--warm-text-muted)' }}>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, alignItems: 'center', fontSize: 12, fontWeight: 800, color: 'var(--warm-text-muted)' }}>
                     {t('cheers.bonus')}
                     {BONUSES.map((b) => (
                       <button key={b} type="button" onClick={() => setBonus(b)} style={{
-                        padding: '3px 9px', borderRadius: 99, fontSize: 11, fontWeight: 800, fontFamily: 'Nunito', cursor: 'pointer',
+                        padding: '3px 9px', borderRadius: 99, fontSize: 12, fontWeight: 800, fontFamily: 'Nunito', cursor: 'pointer',
                         border: `1.5px solid ${bonus === b ? 'var(--warm-accent)' : 'var(--warm-border)'}`,
                         backgroundColor: bonus === b ? 'var(--warm-accent-light)' : 'var(--warm-card)', color: bonus === b ? 'var(--warm-accent)' : 'var(--warm-text)',
                       }}>{b === 0 ? t('cheers.none') : `+${b}`}</button>
@@ -245,5 +245,5 @@ export function PendingApprovals({ items, language, onChanged, gamificationEnabl
 
 const toastLink: React.CSSProperties = {
   border: 'none', background: 'none', color: 'var(--warm-accent-light)', fontFamily: 'Nunito', fontWeight: 900,
-  fontSize: 14, cursor: 'pointer', padding: '4px 6px', textTransform: 'uppercase', letterSpacing: '0.03em',
+  fontSize: 14, cursor: 'pointer', padding: '4px 6px',
 };

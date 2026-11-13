@@ -95,12 +95,12 @@ export function AdminCompleteModal({ task, allUsers, language, onConfirm, onClos
         onClick={e => e.stopPropagation()}
         style={{
           backgroundColor: 'var(--warm-card)',
-          borderRadius: 20,
+          borderRadius: 'var(--shape-radius-card)',
           padding: 28,
           width: 380,
           maxWidth: '92vw',
           boxShadow: '0 20px 60px rgba(0,0,0,0.2)',
-          border: '1.5px solid var(--warm-border)',
+          border: 'var(--shape-border-w) solid var(--warm-border)',
         }}
       >
         <div style={{ fontSize: 16, fontWeight: 800, color: 'var(--warm-text)', marginBottom: 6 }}>
@@ -113,7 +113,7 @@ export function AdminCompleteModal({ task, allUsers, language, onConfirm, onClos
         {firstModeCompleted ? (
           <div style={{
             padding: '12px 16px', borderRadius: 12,
-            backgroundColor: 'var(--warm-bg-subtle)', border: '1.5px solid var(--warm-border)',
+            backgroundColor: 'var(--warm-bg-subtle)', border: 'var(--shape-border-w) solid var(--warm-border)',
             fontSize: 13, color: 'var(--warm-text-muted)', fontWeight: 600,
           }}>
             {t('admin.alreadyCompletedBy').replace('{name}', task.completedTodayBy!.displayName)}
@@ -182,7 +182,7 @@ export function AdminCompleteModal({ task, allUsers, language, onConfirm, onClos
                       {user.displayName}
                       {task.assignmentMode === 'custom' && percentageByUser.has(user.id) && (
                         <span style={{
-                          fontSize: 11, fontWeight: 700, color: 'var(--warm-accent)',
+                          fontSize: 12, fontWeight: 700, color: 'var(--warm-accent)',
                           backgroundColor: 'var(--warm-accent-light)', borderRadius: 8,
                           padding: '1px 6px',
                         }}>
@@ -191,7 +191,7 @@ export function AdminCompleteModal({ task, allUsers, language, onConfirm, onClos
                       )}
                     </div>
                     {alreadyDone && (
-                      <div style={{ fontSize: 11, color: 'var(--warm-text-muted)', fontWeight: 600 }}>
+                      <div style={{ fontSize: 12, color: 'var(--warm-text-muted)', fontWeight: 600 }}>
                         ✓ {t('admin.alreadyDone')}
                       </div>
                     )}

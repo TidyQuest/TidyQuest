@@ -150,7 +150,7 @@ export function SignUp({ onSignedIn }: { onSignedIn: (token: string, user: User)
               <input className="tq-input" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={8}
                 autoComplete="new-password" />
             </AuthField>
-            <p style={{ fontSize: 11, fontWeight: 600, color: 'var(--warm-text-light)', margin: '0 0 14px' }}>
+            <p style={{ fontSize: 12, fontWeight: 600, color: 'var(--warm-text-light)', margin: '0 0 14px' }}>
               {t('hosted.timeZoneNote').replace('{zone}', zone.replace(/_/g, ' '))}
             </p>
           </>

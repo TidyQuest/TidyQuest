@@ -66,7 +66,7 @@ export function CoinBoostsAdmin({ rooms, language }: { rooms: BoostRoom[]; langu
     return names.length ? names.join(', ') : t('boosts.allRooms');
   };
   const chip = (on: boolean) => ({
-    padding: '4px 9px', borderRadius: 20, fontSize: 11, fontWeight: 700, fontFamily: 'Nunito', cursor: 'pointer',
+    padding: '4px 9px', borderRadius: 'var(--shape-radius-control)', fontSize: 12, fontWeight: 700, fontFamily: 'Nunito', cursor: 'pointer',
     border: `1.5px solid ${on ? 'var(--warm-accent)' : 'var(--warm-border)'}`,
     backgroundColor: on ? 'var(--warm-accent-light)' : 'var(--warm-bg-input)', color: on ? 'var(--warm-accent)' : 'var(--warm-text)',
   });
@@ -80,7 +80,7 @@ export function CoinBoostsAdmin({ rooms, language }: { rooms: BoostRoom[]; langu
             <span style={{ fontSize: 14, fontWeight: 900, color: 'var(--warm-accent)' }}>{b.multiplier}×</span>
             <span style={{ flex: '1 1 160px', minWidth: 0 }}>
               <span style={{ display: 'block', fontSize: 13, fontWeight: 800, color: 'var(--warm-text)' }}>{b.title}{live ? ` · ${t('boosts.live')}` : ''}</span>
-              <span style={{ display: 'block', fontSize: 11, fontWeight: 600, color: 'var(--warm-text-light)' }}>
+              <span style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--warm-text-light)' }}>
                 {when(b.startAt)} – {when(b.endAt)} · {targets(b)}
               </span>
             </span>
@@ -111,7 +111,7 @@ export function CoinBoostsAdmin({ rooms, language }: { rooms: BoostRoom[]; langu
           </label>
         </div>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, alignItems: 'center' }}>
-          <span style={{ fontSize: 11, fontWeight: 800, color: 'var(--warm-text-light)' }}>{t('boosts.rooms')}</span>
+          <span style={{ fontSize: 12, fontWeight: 800, color: 'var(--warm-text-light)' }}>{t('boosts.rooms')}</span>
           <button type="button" style={chip(roomIds.length === 0 && taskIds.length === 0)} onClick={() => { setRoomIds([]); setTaskIds([]); }}>{t('boosts.allRooms')}</button>
           {rooms.map((r) => (
             <button type="button" key={r.id} style={chip(roomIds.includes(r.id))}
@@ -119,7 +119,7 @@ export function CoinBoostsAdmin({ rooms, language }: { rooms: BoostRoom[]; langu
           ))}
         </div>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, alignItems: 'center' }}>
-          <span style={{ fontSize: 11, fontWeight: 800, color: 'var(--warm-text-light)' }}>{t('boosts.chores')}</span>
+          <span style={{ fontSize: 12, fontWeight: 800, color: 'var(--warm-text-light)' }}>{t('boosts.chores')}</span>
           {taskIds.map((id) => (
             <button type="button" key={id} style={chip(true)} onClick={() => setTaskIds((p) => p.filter((x) => x !== id))}>{choreName(id)} ✕</button>
           ))}

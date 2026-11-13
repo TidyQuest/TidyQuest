@@ -1,3 +1,4 @@
+import compression from 'compression';
 import express from 'express';
 import cors from 'cors';
 import path from 'path';
@@ -28,6 +29,7 @@ import cheersRoutes from './routes/cheers';
 import unlocksRoutes from './routes/unlocks';
 import teamupsRoutes from './routes/teamups';
 import mascotRoutes from './routes/mascot';
+import whatsNewRoutes from './routes/whatsNew';
 import boostsRoutes from './routes/boosts';
 import csvRoutes from './routes/csv';
 import trashRoutes from './routes/trash';
@@ -62,6 +64,10 @@ export function createApp() {
   // CORS: allow only in dev or via explicit env var (in production, frontend is served from same origin)
   const corsOrigin = isHosted() ? hostedCorsOrigin() : process.env.CORS_ORIGIN || (process.env.NODE_ENV !== 'production' ? true : false);
   app.use(cors({ origin: corsOrigin }));
+
+  // Squeeze text answers (JSON, the script, the styles) for browsers that accept it (ENH-22). Photos and fonts
+  // are left alone: compression skips types that are already compressed.
+  app.use(compression());
 
   // The biggest body is an import: 50 MB self-hosted, 5 MB in hosted mode (MAX_IMPORT_MB)
   const bodyMb = isHosted() ? limits().importMb : 50;
@@ -126,6 +132,7 @@ export function createApp() {
   app.use('/api/unlocks', unlocksRoutes);
   app.use('/api/teamups', teamupsRoutes);
   app.use('/api/mascot', mascotRoutes);
+  app.use('/api/whats-new', whatsNewRoutes);
 
   // 404 handler for unknown API routes (after every API router, so whatever reaches it is unknown)
   app.use('/api', (_req, res) => {
@@ -160,12 +167,21 @@ export const backgroundJobs: Job[] = [
  * reloads itself when it gets that instead of trying to run the home page as a script.
  */
 export function serveClient(app: express.Express, clientDist: string): void {
-  app.use(express.static(clientDist));
+  // Files under /assets/ are named after their contents, so a new version always has new names: browsers keep
+  // them for a year without asking (ENH-22). Everything else (index.html, sw.js, the manifest, the icons) is
+  // checked on every open, which is how an update gets picked up.
+  app.use(express.static(clientDist, {
+    setHeaders: (res, file) => {
+      const inAssets = path.relative(clientDist, file).split(path.sep)[0] === 'assets';
+      res.setHeader('Cache-Control', inAssets ? 'public, max-age=31536000, immutable' : 'no-cache');
+    },
+  }));
   app.use('/assets', (_req, res) => {
     res.status(404).type('text/plain').send('Not found');
   });
   // Any other page is the app's (Express 5 names the wildcard; {…} makes it match "/" too)
   app.get('/{*page}', (_req, res) => {
+    res.setHeader('Cache-Control', 'no-cache');
     res.sendFile(path.join(clientDist, 'index.html'));
   });
 }

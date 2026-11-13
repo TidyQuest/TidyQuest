@@ -1,50 +1,44 @@
-// Each person's Home layout (ENH-6): the card order and hidden cards, saved on the server
-// (users.homeLayout via the profile route) so it follows them to every device.
+// Each person's Today page settings (ENH-6, ENH-26): the parts they hide and the order of the big blocks, saved on the
+// server (users.homeLayout via the profile route) so it follows them to every device.
 
 export interface HomeLayout { order: string[]; hidden: string[] }
 
-/** Home's cards in their default order (Dashboard.tsx renders them from this list) */
-export const HOME_CARDS = [
-  'focus', 'mascot', 'teamups', 'houseHealth', 'pendingApprovals', 'rescue', 'usual', 'forgot', 'todaysQuests',
-  'todo', 'scheduled', 'completedToday', 'rooms', 'streak', 'coins', 'myGoal', 'childrenGoals', 'rewardRequests',
-  'leaderboard', 'recentActivity',
+/**
+ * The parts of Today someone can hide, in the order Customise lists them. They reuse the old Home card ids, so what
+ * someone hid there stays hidden; old ids with no part on Today any more are ignored.
+ */
+export const TODAY_BLOCKS = [
+  'mascot', 'rescue', 'houseHealth', 'holiday', 'level', 'streak', 'myGoal', 'childrenGoals', 'pendingApprovals',
+  'teamups', 'focus', 'usual', 'todo', 'leaderboard',
 ] as const;
-export type HomeCardId = typeof HOME_CARDS[number];
+export type TodayBlockId = typeof TODAY_BLOCKS[number];
 
-/** Kid mode keeps Home to the essentials; kids arrange and hide within these */
-export const KID_CARDS: ReadonlySet<string> = new Set(['focus', 'mascot', 'teamups', 'rescue', 'usual', 'forgot', 'todaysQuests', 'todo', 'completedToday']);
+/** Kid mode keeps Today to the essentials: kids can hide these (the rest isn't shown to them) */
+export const KID_BLOCKS: ReadonlySet<string> = new Set(['mascot', 'rescue', 'holiday', 'level', 'streak', 'myGoal', 'teamups', 'focus', 'usual', 'todo', 'leaderboard']);
 
 /**
- * The saved order with unknown ids dropped and any card it doesn't mention (added in a later version)
- * slotted in after the card it follows by default.
+ * The full-width blocks under the summary, in their default order. Customise can move these (the summary stays on top
+ * and the chips stay in one row). 'lists' (Overdue / Today / Any time) can be moved but not hidden.
  */
-export function resolveOrder(saved: readonly string[], defaults: readonly string[] = HOME_CARDS): string[] {
-  const known = new Set(defaults);
-  const order = [...new Set(saved.filter((id) => known.has(id)))];
-  defaults.forEach((id, i) => {
-    if (order.includes(id)) return;
-    const before = defaults.slice(0, i).reverse().find((d) => order.includes(d));
-    order.splice(before ? order.indexOf(before) + 1 : 0, 0, id);
-  });
-  return order;
+export const TODAY_ORDER = ['pendingApprovals', 'teamups', 'focus', 'lists', 'todo', 'leaderboard'] as const;
+export type TodayOrderId = typeof TODAY_ORDER[number];
+
+/**
+ * The blocks in this person's order: the ids they saved swap places among themselves, and any id they never placed
+ * (a block added later) keeps its default spot. Unknown saved ids (old Home cards) are ignored.
+ */
+export function orderBlocks<T extends string>(defaults: readonly T[], saved: readonly string[]): T[] {
+  const placed = defaults.filter((id) => saved.includes(id)).sort((a, b) => saved.indexOf(a) - saved.indexOf(b));
+  let next = 0;
+  return defaults.map((id) => (saved.includes(id) ? placed[next++] : id));
 }
 
-/** Move one card up or down among the cards in `among` (the ones in the Customise list) */
-export function moveCard(order: readonly string[], id: string, dir: -1 | 1, among: readonly string[]): string[] {
-  const listed = order.filter((c) => among.includes(c));
-  const i = listed.indexOf(id);
-  const j = i + dir;
-  if (i < 0 || j < 0 || j >= listed.length) return [...order];
-  return placeCard(order, id, listed[j], dir > 0 ? 'after' : 'before');
-}
-
-/** Put a card right before or after another one */
-export function placeCard(order: readonly string[], id: string, target: string, where: 'before' | 'after'): string[] {
-  if (id === target) return [...order];
-  const rest = order.filter((c) => c !== id);
+/** Moves one id before or after another (Customise's drag) */
+export function placeBlock<T extends string>(order: readonly T[], id: T, target: T, where: 'before' | 'after'): T[] {
+  const rest = order.filter((x) => x !== id);
   const at = rest.indexOf(target);
   if (at < 0) return [...order];
-  rest.splice(where === 'after' ? at + 1 : at, 0, id);
+  rest.splice(where === 'before' ? at : at + 1, 0, id);
   return rest;
 }
 

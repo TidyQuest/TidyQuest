@@ -9,6 +9,185 @@ What changed in each release, in plain language, newest first. Releases up to v0
 
 ## Unreleased
 
+### Added
+
+- **Activity shows who approved a chore.** A chore a parent approved now says "✅ Approved by" and that parent's name,
+  so everyone can see which parent signed off on a kid's chore. Chores that needed no approval don't show it.
+- **A "turn on notifications" card on Today** (ENH-31). Anyone who doesn't have notifications of their own yet (no
+  phone notifications on any device, ntfy topic, Telegram chat or Home Assistant service) sees a card after their
+  first chore of the day: kids read "Get a ping when your chore is approved or someone cheers you", parents "…when a
+  chore is waiting for you to approve". Turn on does the same as Profile → My notifications on that phone, then says
+  what they'll get; Not now hides it for a week, and it comes back at most three times, on every device. It also
+  shows in Kid mode and on One thing at a time's "All done" screen. On an iPhone outside the Home Screen app, or with
+  notifications blocked, it gives the same hint as Profile; on an http:// address it stays hidden. Settings →
+  Notifications → Who gets what now says "Gets nothing yet" for someone with no channel of their own when the
+  family channel is off (it used to say "family channel").
+- **"What's new" after a big update** (NEW-38). The first time each person opens the app after the new look, a few
+  click-through slides show what moved: the tabs along the bottom, Today, the short chore rows (tap ✓ for Done, tap
+  the name for the rest) and the top line with 🔍 and +. Parents also get a slide about the Settings list and Look;
+  kids in Kid mode get three slides with bigger pictures. Next / Back / Skip, and every button name matches the app
+  in all six languages. Each person sees it once, on whichever device they open first (skipping counts as seen). It
+  doesn't open over a running chore timer, One thing at a time or the setup wizard, and people who join after the
+  update, or a family that just used the setup wizard, don't get it. Settings → Guide & help → 📣 See what's new
+  again shows it any time, and parents can switch it off in Settings → Features (📣 What's new after updates).
+  Backups keep who has seen it.
+- **Settings → Look: one style for the whole family** (NEW-37, the last step of the new look). Parents pick Fresh
+  (the default: a softly tinted summary card and light cards), Quest (a bold block of colour at the top of the page
+  and in the summary card, gold progress, chunky buttons with a pressed edge, every chore its own tile with a solid
+  green ✓) or Calm (flat, thin outlines, smaller corners, colour only where something needs attention). Each choice has
+  a small drawing in your own colours, and the page lists everyone's colour theme underneath. The look sets the
+  shapes and each person's theme still sets the colours, so every theme works with every look. It changes on your
+  device at once and on everyone else's when their Today next loads, and backups keep it. Kids and members don't see
+  the setting.
+
+### Changed
+
+- **Badges use the same drawn icons as chores.** In Settings → Badges, a new badge's icon is picked from the same
+  sheet as a chore's (Wins & extras first, then every area, with search and a suggestion from the badge's name),
+  and it shows on Achievements, the "Next badge" line and the badge list. Badges made before keep their emoji until
+  you pick a new icon. Where only text fits (a title you wear), a drawn icon shows as 🏅.
+
+- **Rewards in the new look.** The shop is now a list of short rows like the chore rows: the reward's emoji in a tile,
+  its name and a two-line description (tap the row to read the rest), the price, and an outlined Redeem button. A
+  reward you can't afford yet says how many more coins you need instead of showing a wide "Not enough coins" button,
+  and the list shows 20 at a time with "Show {n} more". Your requests (and, for parents, Reward Requests to approve)
+  are now at the top instead of below the whole shop, newest waiting ones first, three at a time. Categories are a
+  row of buttons you can scroll sideways, with search and "I can afford" on one line and the sort box next to the
+  heading. On a computer the rewards are in two columns. Buying, chipping in, approving, rejecting with a note and
+  cancelling work as before.
+
+- **The app loads faster and uses much less data** (ENH-22, ENH-19, ENH-20). The server now compresses what it sends
+  (an open Today's refresh went from about 450 KB to under 30 KB on our family's data, the app itself from 1.7 MB to
+  under 0.5 MB), and phones keep the app's files instead of downloading them again on every open; updates still show
+  up as before. Today is about twice as fast to put together on the server, and so is Achievements. An open Today
+  still checks every 15 seconds, but now only asks "anything new?" and loads again only when something changed (or
+  every 5 minutes, so due times keep up with the clock), so a tablet left on Today no longer downloads everything
+  all day.
+- **The approvals notice on Today is always there for parents** (FIX-34). With nothing waiting it now says "Nothing
+  waiting for your OK" in a calm line, instead of disappearing. Parents can still hide it in Customise (👁️ Waiting for
+  approval).
+- **A calmer, plainer look: "Fresh"** (ENH-30, the last layout step of the new look). Cards have thin borders and
+  smaller corners, buttons are square-cornered with no glow, and filled buttons and links in the seven light colour
+  themes use a deeper shade of their colour, so white text on them is easier to read (the default orange went from
+  #F97316 to #C94A0B). The dark themes keep their colours. On/off settings are tick boxes instead of sliding switches;
+  All / Mine, Insights' periods and the chore form's choices (Every / On / Monthly, Everyone / Specific people, First
+  come / Shared / Rotating / Custom) are rows of joined buttons. Headings are ordinary bold text instead of small
+  capitals, Settings rows no longer end in ›, and no text is smaller than 12px (the bottom tabs' labels, chart labels
+  and many small notes got a little bigger).
+- **Rooms are a grid of small tiles** (ENH-29). Each room is a tile with its icon, its health, how many chores it has
+  and how many are due today ("6 chores · 3 due", or "all done"), and a bar, neediest first. Two tiles fit across a
+  phone, so about six rooms show on the first screen instead of one. A room given to one person shows their picture on
+  the icon. Chips at the top show All rooms, Mine, or one zone. The list of every chore inside each room's card is gone
+  (open the room to see them). For parents, renaming, zones (🏷️), assigning and deleting moved under ✏️ Edit rooms,
+  along with adding, renaming and deleting zones.
+- **Today on a computer** (ENH-29). On wide screens the chore list stops at a comfortable width instead of stretching
+  across the whole screen, and the mascot in the column on the right is a smaller picture beside its message.
+- **The chore form, in groups** (ENH-28, second half). Add Task and ✏️ Edit now open the same form, in groups: the
+  name, notes and icon; When (Every, On, Monthly, One time, or On Demand); Who (Everyone, or tap the people, then First
+  come, Shared, Rotating or Custom, with a line saying what each means); Effort & coins (the Coins box shows the
+  effort's amount when it's left empty); and More options, folded, for steps, the timer, a start date, the season,
+  health and pausing. More options says what's set inside it. Save stays at the bottom of the screen on a phone,
+  however far you scroll, and on a computer the form opens as a panel beside the room's list. Add Task now also offers
+  Allow early completion.
+- **A room page you can take in at a glance** (ENH-28, first half). The big room banner is now a short summary: the
+  room's health ring, "3 overdue · 2 left today · 9 fine for now" and the coins waiting there. Under it, chips filter
+  the chores (All, Mine, Overdue, Paused), and the chores sit under Overdue, Today, This week, When needed and Paused;
+  the ones due after this week are folded under "Show … more". The sort is the last chip ("When it's due" keeps the
+  sections; any other order shows one list). The ← back button moved into the top bar next to the room's name, and
+  Duplicate room is under ⋯ in the summary. On a phone the first chore now starts about 280px down instead of 610px.
+- **Settings is a short index** (ENH-27). Instead of one very long page (about fifteen phone screens), Settings is a
+  list of its sections in five groups (Household, Chores & coins, Game extras, Data, Help), each with a one-line
+  summary such as "Notifications: Off" or "1 waiting for your OK". On a phone each section opens on its own page with
+  a ‹ Settings button to go back; on a computer the list stays on the left with the section beside it. A search box
+  finds a section by name or by a setting inside it ("strict" finds General), and a number shows next to Approvals
+  and the Rewards Catalog when something is waiting. Notifications and Vacation Mode now have their own sections
+  (they used to sit inside General), and the guide, troubleshooting and setup wizard links moved to Help at the bottom.
+  Nothing else was renamed, so "Settings → …" in the guide still points to the right place.
+- **A bar of tabs along the bottom on phones** (ENH-24, the first step of the new look). The ☰ menu button and the
+  slide-out menu are gone from phones. Parents get Home, Rooms, Rewards, Board and More along the bottom of the
+  screen; kids get Home, Rewards, Board, Badges and More. More holds the rest (Tasks, Calendar, Activity, Insights,
+  Achievements, Settings, and Rooms for kids) with your profile at the top. A line over a tab shows where you are,
+  and tapping that tab again jumps back to the top of the page. With Gamification switched off the tabs are Home,
+  Rooms, Tasks, Calendar and More. Computers and wide tablets keep the menu on the left.
+- **The top of each page is one line on phones.** It shows the page's name (on Home: your picture, a hello and the
+  date), your coins, your streak and the search button. Parents also get a + next to it on Rooms (Add Room) and inside a
+  room (Add Task), so the separate Add Room button is gone from phones. The points chip and the small line
+  under the page name are hidden on phones; your points are still on the Board.
+- **The seasonal garland is a thin strip across the top on phones**, so it no longer pushes the page down.
+- Undo, "waiting for approval" and other pop-up notes now sit just above the bottom bar instead of under it.
+- **Chores are short rows, the same everywhere** (ENH-25, the second step of the new look). On Home, on the Tasks
+  page and in a room, a chore is now one row: its icon, its name (up to two lines), a line saying where, when or
+  who (red when it's late), its coins, and a square ✓ button, which is Done. Rooms fit several times as many chores
+  on a screen as the old tall cards did.
+- **Tap a chore to open it.** The opened row shows the notes, how often it's due, the effort, whose turn it is, when
+  it was last done and its health, with the less-used buttons underneath: Edit, Pin, Done earlier…, the timer, Team
+  up, add a note or photo, Take back, Undo and ⋯ (Duplicate, Move to room, Pause). Everything a chore could do before
+  is still there. Tap the row again to close it.
+- **On Home, tapping a chore opens it there** instead of jumping to its room; Go to room in the opened row does
+  that. Snooze for 3 days (Maybe you forgot) and Pin (Your usual) moved into the opened row too.
+- **When ✓ is grey, the line under the chore's name says why** (Waiting for approval, Done by …, Not assigned…).
+  A kid's chore with a timer shows ▶ in place of ✓ until the time is up.
+- **Rooms have a Sort by list** (health, due date, name, how often, effort, coins, who) with a button that reverses
+  the order. It replaces the column headings, and rooms look the same on computers as on phones.
+- **Home is now Today** (ENH-26, the third step of the new look). It starts with one summary card: a ring showing how
+  much of today is done, how many chores are left and overdue, the coins up for grabs, your level and the mascot.
+  Under it, a row of chips (Rescue Mission, house health, the next holiday, double coins events, your streak, goals)
+  that open when tapped (on a phone they scroll sideways; on a computer they wrap onto a second line so every chip
+  can be reached with a mouse), and one note when chores or rewards wait for a parent's OK, with a Review button.
+- **Your chores in three lists:** Overdue, Today (finished ones stay there, ticked and crossed out) and Any time
+  (anytime chores and Your usual). Mine / Everyone above them shows how many are left in each. Chores due in the next
+  30 days are behind "Show N scheduled…", and the week's standings come last, with a link to the Board.
+- **To-dos keep their own To-do list** on Today, overdue ones first, with "+ To-do" at its top. Hide it in Customise
+  and the to-dos join the day's lists by their do-by date instead.
+- **Kids get Next up:** one chore with a big Done! button and Pick another, then Today, Catch up, Already done and
+  Bonus quests.
+- **Snooze all** puts every overdue chore in the list away for 3 days, just for you, with Undo. A snoozed chore waits
+  in the scheduled list with a Bring back now button. "Maybe you forgot" is now part of Overdue, and its switch in
+  Settings → Features is called "Snooze overdue chores".
+- **Customise on Today** moves the big blocks (approvals, team-ups, Next up, the chore lists, the To-do list, the
+  standings) by dragging ≡ or with ▲▼, and shows or hides the smaller parts at the top. The summary stays on top.
+  "Back to the start" resets both. An order saved on the old Home carries over, and anything you hid stays hidden.
+- **Rooms, Recent Activity, the coin status card and the big holiday greeting left Home**: they have their own pages,
+  and the holiday countdown is a chip. On computers, approvals, the mascot, house health and the standings sit in a
+  column on the right.
+- The first tab and the menu say Today, and "Show in Dashboard" on anytime chores is now "Show on Today".
+
+### Fixed
+
+- **Taking back a Done puts the streak back** (BUG-50). Taking back a Done used to return the coins but leave the
+  streak as that Done set it, so a mistaken tap could reset a long streak to 1 or count an extra day. Now the streak,
+  its last day, and any shield the Done used or earned go back to how they were, unless another chore still counts for
+  that day or the streak has moved on since. Only Dones from this version on can be put back.
+- **Activity on tablets and small laptops** (BUG-56). Between 769 and 1024 pixels wide, the table's fixed columns
+  squeezed the chore names to one word per line and the page scrolled sideways. Those widths now use the phone layout
+  (room and time under the name).
+- **Signing in on a phone with a password manager** (BUG-17). On the operator sign-in, the keyboard could close as
+  soon as you tapped Email or Password (seen with Brave and Bitwarden). The sign-in, sign-up and new-password boxes
+  are now built the way password managers expect: the label sits above the box instead of around it, and the
+  operator's email box is a plain text box with an email keyboard.
+- **Settings on a computer:** opening a section lower in the list (like Double coins events) no longer jumps the
+  page to the top. The list scrolls by itself and keeps your place.
+- **Settings → Look:** someone whose avatar has a frame showed their picture in the middle of the row instead of on
+  the left.
+- **Settings → Setup wizard:** it now has a ← back to Settings on a computer too, and Cancel on the first step goes back
+  to Settings instead of Today.
+- **"Show {n} more" shows a number** (BUG-53). In Settings → Notifications (the message log) and Settings → Recently
+  deleted, the button showed "{n}" instead of how many are hidden. The message log now shows 10 more per press, then
+  "Show less".
+
+- Kids no longer get "due today" and reminders for chores nobody is assigned to. These now go to people with the new **Chores anyone can do** notification ticked (in Profile → My notifications, or Who gets what). It starts off for kids, on for everyone else. Parents still get the late reminder for those chores.
+- With **hide private rooms** on, kids can no longer reach other people's private rooms through the app's API: the room's chore list, overdue chores, Activity and chore buttons (Done, pin, snooze and the rest) all treat them as not there, like the screens already did (GitHub #185).
+- **New look, from testing on staging:** pages opened from the More tab now have a ← back button on phones; the
+  chore editor no longer reaches the top of a phone screen, and pulling down inside a pop-up no longer reloads the
+  page; the holiday garland lies over the Quest look's colour block instead of pushing it down; the small health
+  rings (a room's page, House Health on Today) show a smaller, centred number; the helper's picture on a Rooms tile
+  has a solid background.
+- Settings no longer scrolls sideways on narrow phones (360px wide): the family member cards now wrap inside the
+  page.
+- **New look:** a chore's health number stays yellow, not red, while it can't be done yet, as it did before the new
+  look (#183).
+- A very long chore name no longer makes the Activity page scroll sideways; the name wraps inside its row.
+
 ## v0.18.0 (2026-11-11)
 
 ### Added

@@ -226,3 +226,16 @@ export function daySql(column: string, tz: string = familyZone()): string {
 export function hourSql(column: string, tz: string = familyZone()): string {
   return `tz_hour(${column}, ${zoneSql(tz)})`;
 }
+
+/**
+ * SQL for "this timestamp column falls on the family's day of ?" that can use the column's index (ENH-19):
+ * a rough range of whole UTC dates around the day first (works for ISO and SQLite's 'YYYY-MM-DD HH:MM:SS'
+ * alike), then the exact day. Pass onDayArgs(moment) for its three ?s.
+ */
+export function onDaySql(column: string, tz: string = familyZone()): string {
+  return `${column} >= ? AND ${column} < ? AND ${daySql(column, tz)} = ${daySql('?', tz)}`;
+}
+export function onDayArgs(at: Date): [string, string, string] {
+  const DAY = 24 * 60 * 60 * 1000;
+  return [new Date(at.getTime() - 2 * DAY).toISOString().slice(0, 10), new Date(at.getTime() + 2 * DAY).toISOString().slice(0, 10), at.toISOString()];
+}

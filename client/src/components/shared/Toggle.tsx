@@ -7,44 +7,22 @@ interface ToggleProps {
   label?: string;
 }
 
+/** An on/off setting, drawn as a tick box (ENH-30: platform-neutral, not a sliding switch). */
 const Toggle: React.FC<ToggleProps> = ({ checked, onChange, label }) => (
-  <div
-    role="switch"
+  <button
+    type="button"
+    role="checkbox"
     aria-checked={checked}
     aria-label={label}
-    tabIndex={0}
+    className={`tq-tick${checked ? ' on' : ''}`}
     onClick={() => onChange(!checked)}
-    onKeyDown={(e) => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        onChange(!checked);
-      }
-    }}
-    style={{
-      width: 44,
-      height: 26,
-      borderRadius: 13,
-      padding: 3,
-      cursor: 'pointer',
-      backgroundColor: checked ? 'var(--warm-accent)' : 'var(--warm-border)',
-      transition: 'background-color 0.2s ease',
-      display: 'flex',
-      alignItems: 'center',
-      flexShrink: 0,
-    }}
   >
-    <div
-      style={{
-        width: 20,
-        height: 20,
-        borderRadius: '50%',
-        backgroundColor: '#fff',
-        boxShadow: '0 1px 4px rgba(0,0,0,0.1)',
-        transform: checked ? 'translateX(18px)' : 'translateX(0)',
-        transition: 'transform 0.2s ease',
-      }}
-    />
-  </div>
+    {checked && (
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+        <path d="M3 8.5l3.2 3L13 4.5" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    )}
+  </button>
 );
 
 export { Toggle };

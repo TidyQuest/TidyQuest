@@ -97,6 +97,16 @@ let transport: Transport = realTransport;
 /** Tests: capture deliveries instead of sending (call with no argument to restore). */
 export function setNotifyTransport(t?: Transport) { transport = t ?? realTransport; }
 
+/**
+ * Whether a person wants a kind: what they picked, else yes. "Chores anyone can do" starts off for
+ * kids (BUG-52), so they only hear about their own chores unless a parent or they turn it on.
+ */
+export function wants(p: Pick<Person, 'prefs' | 'role'>, kind: NotifyKind): boolean {
+  const picked = p.prefs[kind];
+  if (typeof picked === 'boolean') return picked;
+  return !(kind === 'openChores' && p.role === 'child');
+}
+
 function parsePrefs(raw: unknown): Partial<Record<NotifyKind, boolean>> {
   try { return raw ? JSON.parse(String(raw)) : {}; } catch { return {}; }
 }
@@ -206,7 +216,7 @@ async function sendOrHold(person: Person | null, kind: NotifyKind, message: stri
  */
 function stillWanted(q: { userId: number | null; kind: NotifyKind; expiresAt: string | null; onlyIf: string | null }, now: Date): boolean {
   if (!notificationsOn(q.kind)) return false;
-  if (q.userId !== null && getPeople().find((p) => p.id === q.userId)?.prefs[q.kind] === false) return false;
+  if (q.userId !== null && (() => { const p = getPeople().find((x) => x.id === q.userId); return p && !wants(p, q.kind); })()) return false;
   if (q.expiresAt && new Date(q.expiresAt).getTime() <= now.getTime()) return false;
   if (!q.onlyIf) return true;
   try { return stillTrue(JSON.parse(q.onlyIf), now); } catch { return true; }
@@ -255,7 +265,7 @@ export async function notifyPeople(audience: Audience, kind: NotifyKind, build: 
   const people = getPeople();
   let needFamily = false;
   for (const p of resolve(audience, people)) {
-    if (p.prefs[kind] === false) continue;
+    if (!wants(p, kind)) continue;
     if (personalChannels(p).length > 0) {
       if (dedupeKey && alreadySent(dedupeKey, p.id, now)) continue;
       const text = build(p.language, p);
