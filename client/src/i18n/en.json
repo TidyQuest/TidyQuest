@@ -1607,7 +1607,9 @@
       "proofPhotos": "Proof photos",
       "proofPhotosDesc": "Kids can add a photo to a chore that waits for a parent's approval. Off: a note only.",
       "webPush": "📲 Phone notifications (web push)",
-      "webPushDesc": "Everyone can get their notifications on their own phone or computer, turned on in Profile. Needs an https:// address."
+      "webPushDesc": "Everyone can get their notifications on their own phone or computer, turned on in Profile. Needs an https:// address.",
+      "whatsNew": "📣 What's new after updates",
+      "whatsNewDesc": "After a big update, each person gets a few slides about what moved, the first time they open the app."
     },
     "seasons": {
       "halloween": "Halloween",
@@ -2572,6 +2574,36 @@
       "coloursTitle": "Colours stay personal",
       "coloursNote": "The look sets the shapes. Each person's colour theme, picked in their profile, fills them in, so the drawings above are in your colours.",
       "saveFailed": "Couldn't save the look. Check the connection and try again."
+    },
+    "whatsNew": {
+      "title": "What's new",
+      "gotIt": "Got it",
+      "replay": "See what's new again",
+      "tabsTitle": "Tabs along the bottom",
+      "tabsLead": "On a phone the ☰ menu is gone: your main pages are tabs at the bottom of the screen.",
+      "tabsSteps": "Tap a tab to go there.\nTap {more} for everything else: {moreList}.\nTap the tab you're on again to jump back to the top.\nOn a computer the menu stays on the left.",
+      "todayTitle": "{home}: your day on one page",
+      "todayLead": "The card at the top shows how much of today is done, what's left and the coins up for grabs.",
+      "todaySteps": "Your chores are in three lists: {overdue}, {todayList} and {anytime}.\nTap a chip under the card (your streak, goals, the Rescue Mission…) to open it.\n{mine} / {everyone} switches between your chores and the whole family's.",
+      "rowsTitle": "Chores are short rows",
+      "rowsLead": "Each chore is one line: its name, where or when, its coins and a ✓ button.",
+      "rowsSteps": "Tap ✓ to mark it done.\nTap the chore's name to open it: the notes, and buttons such as {edit} and {pin}. Less-used ones are under ⋯.\nTap it again to close it.",
+      "topTitle": "One line at the top",
+      "topLead": "The top of each page shows its name, your coins and streak, and 🔍 {search}.",
+      "topSteps": "Tap 🔍 to find a chore, room or reward.\nRooms are small tiles now: tap one to see its chores.",
+      "topStepsAdmin": "Tap 🔍 to find a chore, room or reward.\nOn {rooms}, + is {addRoom}; inside a room, + is {addTask}.\nRooms are small tiles now: tap one to see its chores. Renaming, zones and deleting are under ✏️ {editRooms}.",
+      "settingsTitle": "{settings} is a short list",
+      "settingsLead": "Instead of one long page, {settings} lists its sections in groups, each with a one-line summary.",
+      "settingsSteps": "Tap a section to open it; ‹ {settings} goes back.\nThe {searchSettings} box finds a setting by name.\nNew: {look} picks the family's style: {fresh}, {quest} or {calm}.",
+      "kidTabsTitle": "Your pages are at the bottom",
+      "kidTabsLead": "The menu is now a row of tabs along the bottom of the screen.",
+      "kidTabsSteps": "Tap a tab to go there.\nTap {more} for everything else.",
+      "kidNextTitle": "{nextUp}: one chore at a time",
+      "kidNextLead": "{home} shows the next chore to do, nice and big.",
+      "kidNextSteps": "Did it? Tap {doneBig}\nWant a different one? Tap {pickAnother}",
+      "kidRowsTitle": "Tap ✓ when it's done",
+      "kidRowsLead": "Your other chores are short rows.",
+      "kidRowsSteps": "Tap ✓ to mark it done.\nTap the chore's name to see more about it."
     }
   }
 }

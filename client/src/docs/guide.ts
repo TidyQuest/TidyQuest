@@ -58,6 +58,13 @@ export const GUIDE_EN: GuideSection[] = [
         'Finish makes everything at once. A short click-through tutorial then shows how to change a chore, how often it comes back (like every 3 months), timers, anytime chores, sharing and taking turns, Quests rooms, the to-do list, rewards, goals and coins.',
         'Running it again only adds: it uses the rooms you already have, skips chores they already have, starts grown-up chores and rewards unticked, and leaves your rewards alone.',
       ] },
+      { h: 'What’s new after an update' },
+      { ul: [
+        'After a big update (like the new look), each person gets a few slides about what moved the first time they open the app: Next and Back to go through them, Skip to close. Small updates show nothing.',
+        'Each person sees them once, on whichever phone or computer they open first. Skipping counts as seen. Parents also get the parts about Settings; kids in Kid mode get a shorter set with bigger pictures.',
+        'They wait while a chore timer runs, and don’t open over One thing at a time or the setup wizard. Someone who joins after the update, or a family that has just used the setup wizard, doesn’t get them.',
+        'To see them again: Settings → Guide & help (under Help) → 📣 See what’s new again. A parent can switch them off for the family in Settings → Features → 📣 What’s new after updates.',
+      ] },
     ],
   },
   {
@@ -533,6 +540,10 @@ export const GUIDE_EN: GuideSection[] = [
           'They’re under More, the last tab at the bottom of the screen, with Activity, Insights (parents) and Achievements. Your profile is at the top of More.',
           'The ☰ menu button is gone from phones: the bar at the bottom replaces it. On a computer the menu is still on the left.',
           'The points chip isn’t in the phone’s top line any more: your points are on the Board.',
+        ] },
+        { q: 'Everything moved after an update', a: [
+          'Settings → Guide & help → 📣 See what’s new again shows the slides about what moved. The pages you use most are tabs at the bottom; everything else is under More.',
+          'The slides didn’t open by themselves? Someone who joined after the update doesn’t get them, a parent may have switched off 📣 What’s new after updates in Settings → Features, or you already saw them on another device.',
         ] },
         { q: 'The Done button is grey', a: [
           'The line under the chore’s name says why: "Not assigned" (someone else’s chore), "Waiting for approval" (a parent hasn’t approved your last one yet), "Done by …" (someone already did it today), "Done today / this week" (an anytime chore’s repeat limit), or "🤝 names" (a team has claimed it today).',

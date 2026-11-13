@@ -1607,7 +1607,9 @@
       "proofPhotos": "Foto di prova",
       "proofPhotosDesc": "I bambini possono aggiungere una foto a una faccenda che attende l'approvazione di un genitore. Spento: solo una nota.",
       "webPush": "📲 Notifiche sul telefono (web push)",
-      "webPushDesc": "Ognuno può ricevere le sue notifiche sul proprio telefono o computer, attivandole in Profilo. Serve un indirizzo https://."
+      "webPushDesc": "Ognuno può ricevere le sue notifiche sul proprio telefono o computer, attivandole in Profilo. Serve un indirizzo https://.",
+      "whatsNew": "📣 Novità dopo gli aggiornamenti",
+      "whatsNewDesc": "Dopo un aggiornamento importante, ognuno vede alcune schermate su cosa si è spostato la prima volta che apre l'app."
     },
     "seasons": {
       "halloween": "Halloween",
@@ -2572,6 +2574,36 @@
       "coloursTitle": "I colori restano personali",
       "coloursNote": "Lo stile stabilisce le forme. Il tema colore di ciascuno, scelto nel proprio profilo, le riempie: i disegni qui sopra sono quindi nei tuoi colori.",
       "saveFailed": "Impossibile salvare lo stile. Controlla la connessione e riprova."
+    },
+    "whatsNew": {
+      "title": "Novità",
+      "gotIt": "Ho capito",
+      "replay": "Rivedi le novità",
+      "tabsTitle": "Schede in basso",
+      "tabsLead": "Sul telefono il menu ☰ non c'è più: le pagine principali sono schede in fondo allo schermo.",
+      "tabsSteps": "Tocca una scheda per andarci.\nTocca {more} per tutto il resto: {moreList}.\nTocca di nuovo la scheda in cui sei per tornare in cima.\nSul computer il menu resta a sinistra.",
+      "todayTitle": "{home}: la tua giornata in una pagina",
+      "todayLead": "La scheda in alto mostra quanto di oggi è fatto, cosa resta e le monete in palio.",
+      "todaySteps": "Le tue faccende sono in tre liste: {overdue}, {todayList} e {anytime}.\nTocca un'etichetta sotto la scheda (la tua serie, gli obiettivi, la Missione di salvataggio…) per aprirla.\n{mine} / {everyone} passa dalle tue faccende a quelle di tutta la famiglia.",
+      "rowsTitle": "Le faccende sono righe brevi",
+      "rowsLead": "Ogni faccenda è una riga: il nome, dove o quando, le monete e un pulsante ✓.",
+      "rowsSteps": "Tocca ✓ per segnarla come fatta.\nTocca il nome della faccenda per aprirla: le note e pulsanti come {edit} e {pin}. Quelli usati meno sono sotto ⋯.\nToccala di nuovo per chiuderla.",
+      "topTitle": "Una sola riga in alto",
+      "topLead": "In cima a ogni pagina ci sono il suo nome, le tue monete e la tua serie, e 🔍 {search}.",
+      "topSteps": "Tocca 🔍 per trovare una faccenda, una stanza o un premio.\nLe stanze ora sono piccole tessere: toccane una per vedere le sue faccende.",
+      "topStepsAdmin": "Tocca 🔍 per trovare una faccenda, una stanza o un premio.\nIn {rooms}, + è {addRoom}; dentro una stanza, + è {addTask}.\nLe stanze ora sono piccole tessere: toccane una per vedere le sue faccende. Rinominare, le zone ed eliminare sono sotto ✏️ {editRooms}.",
+      "settingsTitle": "{settings} è un breve elenco",
+      "settingsLead": "Invece di una pagina lunga, {settings} elenca le sue sezioni in gruppi, ognuna con un riassunto di una riga.",
+      "settingsSteps": "Tocca una sezione per aprirla; ‹ {settings} torna indietro.\nLa casella {searchSettings} trova un'impostazione per nome.\nNovità: {look} sceglie lo stile della famiglia: {fresh}, {quest} o {calm}.",
+      "kidTabsTitle": "Le tue pagine sono in basso",
+      "kidTabsLead": "Il menu ora è una fila di schede in fondo allo schermo.",
+      "kidTabsSteps": "Tocca una scheda per andarci.\nTocca {more} per tutto il resto.",
+      "kidNextTitle": "{nextUp}: una faccenda alla volta",
+      "kidNextLead": "{home} mostra la prossima faccenda da fare, bella grande.",
+      "kidNextSteps": "Fatto? Tocca {doneBig}\nNe vuoi un'altra? Tocca {pickAnother}",
+      "kidRowsTitle": "Tocca ✓ quando hai finito",
+      "kidRowsLead": "Le tue altre faccende sono righe brevi.",
+      "kidRowsSteps": "Tocca ✓ per segnarla come fatta.\nTocca il nome della faccenda per vedere di più."
     }
   }
 }

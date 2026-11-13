@@ -34,6 +34,13 @@ export const GUIDE_ES: GuideSection[] = [
         'Terminar lo crea todo a la vez. Después, un breve tutorial para ir pasando muestra cómo cambiar una tarea, cada cuánto vuelve (como cada 3 meses), los temporizadores, las tareas para cuando sea, compartir y turnarse, las habitaciones de Misiones, la lista de pendientes, las recompensas, los objetivos y las monedas.',
         'Volver a usarlo solo añade: usa las habitaciones que ya tienes, se salta las tareas que ya tienen, deja sin marcar las tareas de los adultos y las recompensas, y no toca tus recompensas.',
       ] },
+      { h: 'Novedades tras una actualización' },
+      { ul: [
+        'Tras una actualización grande (como el nuevo estilo), cada persona ve unas diapositivas sobre lo que cambió de sitio la primera vez que abre la app: Siguiente y Atrás para pasarlas, Saltar para cerrar. Las actualizaciones pequeñas no muestran nada.',
+        'Cada persona las ve una vez, en el primer móvil u ordenador donde abre la app. Saltar cuenta como visto. Los padres también ven las partes sobre Ajustes; los niños en Modo niño ven una versión más corta con imágenes más grandes.',
+        'Esperan mientras corre un temporizador de tarea y no se abren encima de Una cosa cada vez ni del asistente de configuración. Quien llega después de la actualización, o una familia que acaba de usar el asistente, no las ve.',
+        'Para verlas otra vez: Ajustes → Guía y ayuda (en Ayuda) → 📣 Ver las novedades otra vez. Un padre puede desactivarlas para la familia en Ajustes → Funciones → 📣 Novedades tras las actualizaciones.',
+      ] },
     ],
   },
   {
@@ -509,6 +516,10 @@ export const GUIDE_ES: GuideSection[] = [
           'Están en Más, la última pestaña de abajo, junto con Actividad, Estadísticas (padres) y Logros. Tu perfil está arriba del todo en Más.',
           'El botón de menú ☰ ya no está en el móvil: la barra de abajo lo sustituye. En un ordenador el menú sigue a la izquierda.',
           'Los puntos ya no están en la línea de arriba en el móvil: los encuentras en el Tablero.',
+        ] },
+        { q: 'Todo cambió de sitio tras una actualización', a: [
+          'Ajustes → Guía y ayuda → 📣 Ver las novedades otra vez muestra las diapositivas sobre lo que cambió de sitio. Las páginas más usadas son pestañas abajo; todo lo demás está en Más.',
+          '¿No se abrieron solas? Quien llegó después de la actualización no las ve, puede que un padre desactivara 📣 Novedades tras las actualizaciones en Ajustes → Funciones, o ya las viste en otro dispositivo.',
         ] },
         { q: 'El botón Hecho está gris', a: [
           'La línea bajo el nombre de la tarea dice por qué: "No asignada" (la tarea de otra persona), "Esperando aprobación" (un padre o una madre aún no ha aprobado tu última), "Hecho por …" (alguien ya la hizo hoy), "Hecho hoy / esta semana" (el límite de repeticiones de una tarea a demanda) o "🤝 nombres" (un equipo la ha reclamado hoy).',

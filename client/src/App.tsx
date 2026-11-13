@@ -28,6 +28,8 @@ import { Settings } from './components/pages/Settings';
 import { Profile } from './components/pages/Profile';
 import { Guide } from './components/pages/Guide';
 import { SetupWizard } from './components/pages/SetupWizard';
+import { WhatsNew } from './components/shared/WhatsNew';
+import { latestWhatsNew } from './utils/whatsNew';
 import { Login } from './components/pages/Login';
 import { Register } from './components/pages/Register';
 import { SignUp } from './components/pages/SignUp';
@@ -117,6 +119,9 @@ function AppContent() {
   // Names for the pop-up from the completion itself (parent-made and secret badges aren't in the page data yet)
   const [unlockedInfo, setUnlockedInfo] = useState<Array<{ id: string; titleKey: string | null; title: string | null }>>([]);
   const [searchOpen, setSearchOpen] = useState(false);
+  // "What's new" after a big update (NEW-38): who closed it on this visit, or replayed from the guide
+  const [whatsNewClosedBy, setWhatsNewClosedBy] = useState<number | null>(null);
+  const [whatsNewReplay, setWhatsNewReplay] = useState(false);
   const openSearch = useCallback(() => setSearchOpen(true), []);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
     if (typeof window === 'undefined') return false;
@@ -476,6 +481,15 @@ function AppContent() {
   // One thing at a time: a page of its own, or Home itself when a parent chose that ("?all=1" shows the full Home)
   const focusData: FocusData | null = dashboardData?.focus ?? null;
   const focusIsHome = focusData?.mode === 'home' && !new URLSearchParams(location.search).has('all');
+  // Shown by itself on opening the app, but not over Focus, the setup wizard or the guide
+  const unseenWhatsNew = whatsNewClosedBy === user.id ? null : latestWhatsNew(dashboardData?.whatsNew);
+  const autoWhatsNew = !!unseenWhatsNew && !focusIsHome && !['/focus', '/setup', '/guide'].includes(location.pathname);
+  const closeWhatsNew = () => {
+    setWhatsNewReplay(false);
+    setWhatsNewClosedBy(user.id);
+    // Skipping counts as seen, and so does watching it from the guide
+    if (unseenWhatsNew) api.whatsNewSeen([unseenWhatsNew]).catch(() => {});
+  };
   const focusPage = (onLeave: () => void, leaveLabel: string) => focusData && (
     <Focus focus={focusData} userId={user.id} language={user.language} coinsByEffort={coinsByEffort}
       gamificationEnabled={gamificationEnabled} mission={gamificationEnabled ? dashboardData?.rescueMission : null}
@@ -490,6 +504,11 @@ function AppContent() {
     <ChoreTimerProvider key={user.id} userId={user.id} role={user.role} language={user.language} onComplete={(id) => handleCompleteTask(id)}>
     <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: 'var(--warm-bg)' }}>
       <ConfettiEffect show={confetti} season={season} celebration={dashboardData?.cosmetics?.[user.id]?.celebration} />
+      {(autoWhatsNew || whatsNewReplay) && (
+        <WhatsNew user={user} gamificationEnabled={gamificationEnabled} auto={!whatsNewReplay} onClose={closeWhatsNew}
+          onOpenGuide={() => { closeWhatsNew(); navigate('/guide'); }}
+          onOpenLook={() => { closeWhatsNew(); navigate('/settings/look'); }} />
+      )}
       {season && <SeasonParticles season={season} />}
 
       {searchOpen && (
@@ -697,7 +716,7 @@ function AppContent() {
           <Route path="/guide" element={
             <>
               <PageHeader title={t('guide.title')} subtitle={t('guide.subtitle')} user={user} onCoinsClick={() => navigate('/rewards')} onStreakClick={() => navigate('/achievements')} onPointsClick={handlePointsClick} userPoints={myPoints} pointsPeriodLabel={pointsPeriodLabel} gamificationEnabled={gamificationEnabled} shieldsOn={!!dashboardData?.shields} />
-              <Guide language={user.language} />
+              <Guide language={user.language} onWhatsNew={() => setWhatsNewReplay(true)} />
             </>
           } />
           <Route path="/settings/:section?" element={

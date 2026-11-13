@@ -34,6 +34,13 @@ export const GUIDE_IT: GuideSection[] = [
         'Fine crea tutto in una volta. Poi un breve tutorial da sfogliare mostra come cambiare un’attività, ogni quanto torna (come ogni 3 mesi), i timer, le attività quando vuoi, dividere e fare a turno, le stanze Missioni, la lista delle cose da fare, le ricompense, gli obiettivi e le monete.',
         'Riaprirla aggiunge soltanto: usa le stanze che hai già, salta le attività che ci sono già, lascia senza spunta le attività degli adulti e le ricompense, e non tocca le tue ricompense.',
       ] },
+      { h: 'Le novità dopo un aggiornamento' },
+      { ul: [
+        'Dopo un aggiornamento importante (come il nuovo stile), ognuno vede alcune schermate su cosa si è spostato la prima volta che apre l’app: Avanti e Indietro per scorrerle, Salta per chiudere. Gli aggiornamenti piccoli non mostrano niente.',
+        'Ognuno le vede una volta, sul primo telefono o computer dove apre l’app. Salta conta come visto. I genitori vedono anche le parti sulle Impostazioni; i bambini in Modalità bambino una versione più breve con immagini più grandi.',
+        'Aspettano mentre un timer di una faccenda è in corso e non si aprono sopra Una cosa alla volta o la procedura guidata. Chi arriva dopo l’aggiornamento, o una famiglia che ha appena usato la procedura guidata, non le vede.',
+        'Per rivederle: Impostazioni → Guida e aiuto (sotto Aiuto) → 📣 Rivedi le novità. Un genitore può spegnerle per la famiglia in Impostazioni → Funzioni → 📣 Novità dopo gli aggiornamenti.',
+      ] },
     ],
   },
   {
@@ -509,6 +516,10 @@ export const GUIDE_IT: GuideSection[] = [
           'Sono in Altro, l’ultima scheda in fondo allo schermo, insieme ad Attività, Statistiche (genitori) e Obiettivi. Il tuo profilo è in cima ad Altro.',
           'Il pulsante del menu ☰ non c’è più sul telefono: la barra in basso lo sostituisce. Su un computer il menu è ancora a sinistra.',
           'I punti non sono più nella riga in alto sul telefono: li trovi nella Classifica.',
+        ] },
+        { q: 'Dopo un aggiornamento è tutto spostato', a: [
+          'Impostazioni → Guida e aiuto → 📣 Rivedi le novità mostra le schermate su cosa si è spostato. Le pagine più usate sono schede in basso; tutto il resto è sotto Altro.',
+          'Le schermate non si sono aperte da sole? Chi è arrivato dopo l’aggiornamento non le vede, forse un genitore ha spento 📣 Novità dopo gli aggiornamenti in Impostazioni → Funzioni, oppure le hai già viste su un altro dispositivo.',
         ] },
         { q: 'Il pulsante Fatto è grigio', a: [
           'La riga sotto il nome della faccenda dice perché: "Non assegnata" (la faccenda è di qualcun altro), "In attesa di approvazione" (un genitore non ha ancora approvato la tua ultima), "Fatto da …" (qualcuno l’ha già fatta oggi), "Fatto oggi / questa settimana" (il limite di ripetizioni di una faccenda libera) o "🤝 nomi" (una squadra l’ha presa oggi).',

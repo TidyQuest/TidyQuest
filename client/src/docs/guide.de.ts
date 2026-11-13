@@ -34,6 +34,13 @@ export const GUIDE_DE: GuideSection[] = [
         'Fertig legt alles auf einmal an. Danach zeigt eine kurze Klick-Anleitung, wie du eine Aufgabe änderst, wie oft sie anfällt (zum Beispiel alle 3 Monate), Timer, Aufgaben für jederzeit, Teilen und Abwechseln, Quests-Räume, die To-do-Liste, Belohnungen, Ziele und Münzen.',
         'Ein neuer Durchlauf fügt nur hinzu: Er nutzt deine vorhandenen Räume, überspringt Aufgaben, die dort schon sind, lässt Aufgaben der Erwachsenen und Belohnungen ohne Haken und lässt deine Belohnungen in Ruhe.',
       ] },
+      { h: 'Neuigkeiten nach einem Update' },
+      { ul: [
+        'Nach einem großen Update (wie dem neuen Stil) sieht jeder beim ersten Öffnen der App ein paar Folien dazu, was sich verschoben hat: Weiter und Zurück zum Durchblättern, Überspringen zum Schließen. Kleine Updates zeigen nichts.',
+        'Jeder sieht sie einmal, auf dem Handy oder Computer, auf dem er die App zuerst öffnet. Überspringen zählt als gesehen. Eltern bekommen auch die Teile über die Einstellungen; Kinder im Kindermodus eine kürzere Fassung mit größeren Bildern.',
+        'Sie warten, solange ein Aufgaben-Timer läuft, und öffnen sich nicht über Eins nach dem anderen oder dem Einrichtungsassistenten. Wer nach dem Update dazukommt, oder eine Familie, die gerade den Assistenten benutzt hat, bekommt sie nicht.',
+        'Noch einmal ansehen: Einstellungen → Anleitung & Hilfe (unter Hilfe) → 📣 Neuigkeiten noch einmal ansehen. Ein Elternteil kann sie für die Familie unter Einstellungen → Funktionen → 📣 Neuigkeiten nach Updates ausschalten.',
+      ] },
     ],
   },
   {
@@ -509,6 +516,10 @@ export const GUIDE_DE: GuideSection[] = [
           'Sie sind unter Mehr, dem letzten Tab unten am Bildschirm, zusammen mit Aktivität, Auswertung (Eltern) und Erfolge. Dein Profil steht ganz oben unter Mehr.',
           'Den Menüknopf ☰ gibt es auf dem Handy nicht mehr: die Leiste unten ersetzt ihn. Am Computer ist das Menü weiterhin links.',
           'Die Punkte stehen auf dem Handy nicht mehr in der oberen Zeile: du findest sie auf dem Board.',
+        ] },
+        { q: 'Nach einem Update ist alles woanders', a: [
+          'Einstellungen → Anleitung & Hilfe → 📣 Neuigkeiten noch einmal ansehen zeigt die Folien dazu, was sich verschoben hat. Die meistgenutzten Seiten sind Tabs unten; alles andere ist unter Mehr.',
+          'Die Folien kamen nicht von selbst? Wer nach dem Update dazukam, bekommt sie nicht, ein Elternteil hat vielleicht 📣 Neuigkeiten nach Updates unter Einstellungen → Funktionen ausgeschaltet, oder du hast sie schon auf einem anderen Gerät gesehen.',
         ] },
         { q: 'Der Erledigt-Knopf ist grau', a: [
           'Die Zeile unter dem Namen der Aufgabe sagt, warum: „Nicht zugewiesen“ (die Aufgabe eines anderen), „Wartet auf Freigabe“ (ein Elternteil hat deine letzte noch nicht freigegeben), „Erledigt von …“ (jemand hat sie heute schon gemacht), „Heute erledigt / Diese Woche erledigt“ (das Limit einer jederzeit machbaren Aufgabe) oder „🤝 Namen“ (ein Team hat sie heute übernommen).',

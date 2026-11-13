@@ -54,12 +54,12 @@ function Block({ b, query }: { b: GuideBlock; query: string }) {
 }
 
 /** The guide (Settings → Guide & help): setup, how it all connects, and troubleshooting. */
-export function Guide({ language }: { language?: string }) {
+export function Guide({ language, onWhatsNew }: { language?: string; onWhatsNew?: () => void }) {
   // English shows straight away; another language loads its guide the first time
-  return <Suspense fallback={null}><GuideBody language={language} /></Suspense>;
+  return <Suspense fallback={null}><GuideBody language={language} onWhatsNew={onWhatsNew} /></Suspense>;
 }
 
-function GuideBody({ language }: { language?: string }) {
+function GuideBody({ language, onWhatsNew }: { language?: string; onWhatsNew?: () => void }) {
   const { t } = useTranslation(language);
   const navigate = useNavigate();
   const location = useLocation();
@@ -97,6 +97,7 @@ function GuideBody({ language }: { language?: string }) {
       <button type="button" className="tq-btn tq-btn-secondary tq-btn-sm" style={{ justifySelf: 'start' }} onClick={() => navigate('/settings')}>← {t('nav.settings')}</button>
       <div className="tq-card tq-card-padded" style={{ display: 'grid', gap: 10 }}>
         <p style={text}>{t('guide.intro')}</p>
+        {onWhatsNew && <button type="button" className="tq-btn tq-btn-secondary tq-btn-sm" style={{ justifySelf: 'start' }} onClick={onWhatsNew}>📣 {t('whatsNew.replay')}</button>}
         <input className="tq-input" type="search" value={query} onChange={(e) => setQuery(e.target.value)} placeholder={t('guide.search')} aria-label={t('guide.search')} />
         {!q && (
           <nav aria-label={t('guide.contents')} style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>

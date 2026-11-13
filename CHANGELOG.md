@@ -11,6 +11,15 @@ What changed in each release, in plain language, newest first. Releases up to v0
 
 ### Added
 
+- **"What's new" after a big update** (NEW-38). The first time each person opens the app after the new look, a few
+  click-through slides show what moved: the tabs along the bottom, Today, the short chore rows (tap ✓ for Done, tap
+  the name for the rest) and the top line with 🔍 and +. Parents also get a slide about the Settings list and Look;
+  kids in Kid mode get three slides with bigger pictures. Next / Back / Skip, and every button name matches the app
+  in all six languages. Each person sees it once, on whichever device they open first (skipping counts as seen). It
+  doesn't open over a running chore timer, One thing at a time or the setup wizard, and people who join after the
+  update, or a family that just used the setup wizard, don't get it. Settings → Guide & help → 📣 See what's new
+  again shows it any time, and parents can switch it off in Settings → Features (📣 What's new after updates).
+  Backups keep who has seen it.
 - **Settings → Look: one style for the whole family** (NEW-37, the last step of the new look). Parents pick Fresh
   (the default: a softly tinted summary card and light cards), Quest (a bold block of colour at the top of the page
   and in the summary card, gold progress, chunky buttons with a pressed edge, every chore its own tile with a solid

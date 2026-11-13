@@ -1730,6 +1730,13 @@ html[data-theme='lava'] input[type='date'], html[data-season-dark] input[type='d
 .setup-tour-nav { position: static; padding: 0; background: none; align-items: center; }
 @keyframes setup-pulse { 50% { box-shadow: 0 0 0 6px var(--warm-accent-light); } }
 @media (prefers-reduced-motion: reduce) { .setup-mock-btn.hl { animation: none; } }
+/* "What's new" slides after a big update (NEW-38): the wizard tour's cards in a pop-up above the tab bar */
+.whats-new-overlay { z-index: 120; padding: 16px; box-sizing: border-box; }
+.whats-new { display: grid; gap: 12px; overflow-y: auto; width: 100%; }
+.whats-new-more { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+.whats-new-kid .setup-mock-name { font-size: 18px; }
+.whats-new-kid .setup-mock-btn { font-size: 16px; padding: 8px 14px; }
+.whats-new-kid .setup-tour-steps { font-size: 17px; }
 @media (max-width: 480px) {
   .setup-login { grid-template-columns: 1fr; }
 }

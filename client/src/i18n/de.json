@@ -1607,7 +1607,9 @@
       "proofPhotos": "Beweisfotos",
       "proofPhotosDesc": "Kinder können ein Foto zu einer Aufgabe hinzufügen, die auf die Freigabe eines Elternteils wartet. Aus: nur eine Notiz.",
       "webPush": "📲 Benachrichtigungen aufs Handy (Web-Push)",
-      "webPushDesc": "Jeder kann seine Benachrichtigungen auf dem eigenen Handy oder Computer bekommen, eingeschaltet im Profil. Braucht eine https://-Adresse."
+      "webPushDesc": "Jeder kann seine Benachrichtigungen auf dem eigenen Handy oder Computer bekommen, eingeschaltet im Profil. Braucht eine https://-Adresse.",
+      "whatsNew": "📣 Neuigkeiten nach Updates",
+      "whatsNewDesc": "Nach einem großen Update sieht jeder beim ersten Öffnen der App ein paar Folien dazu, was sich verschoben hat."
     },
     "seasons": {
       "halloween": "Halloween",
@@ -2572,6 +2574,36 @@
       "coloursTitle": "Farben bleiben persönlich",
       "coloursNote": "Der Stil legt die Formen fest. Das Farbthema jeder Person, im eigenen Profil gewählt, füllt sie aus. Die Zeichnungen oben sind daher in deinen Farben.",
       "saveFailed": "Der Stil konnte nicht gespeichert werden. Prüfe die Verbindung und versuche es erneut."
+    },
+    "whatsNew": {
+      "title": "Neuigkeiten",
+      "gotIt": "Verstanden",
+      "replay": "Neuigkeiten noch einmal ansehen",
+      "tabsTitle": "Tabs am unteren Rand",
+      "tabsLead": "Auf dem Handy ist das ☰-Menü weg: Deine wichtigsten Seiten sind Tabs unten am Bildschirm.",
+      "tabsSteps": "Tippe auf einen Tab, um dorthin zu gehen.\nTippe auf {more} für alles andere: {moreList}.\nTippe noch einmal auf den Tab, auf dem du bist, um nach oben zu springen.\nAuf dem Computer bleibt das Menü links.",
+      "todayTitle": "{home}: dein Tag auf einer Seite",
+      "todayLead": "Die Karte oben zeigt, wie viel heute erledigt ist, was noch fehlt und welche Münzen zu holen sind.",
+      "todaySteps": "Deine Aufgaben stehen in drei Listen: {overdue}, {todayList} und {anytime}.\nTippe auf einen Chip unter der Karte (deine Serie, Ziele, die Rettungsmission…), um ihn zu öffnen.\n{mine} / {everyone} wechselt zwischen deinen Aufgaben und denen der ganzen Familie.",
+      "rowsTitle": "Aufgaben sind kurze Zeilen",
+      "rowsLead": "Jede Aufgabe ist eine Zeile: ihr Name, wo oder wann, ihre Münzen und ein ✓-Knopf.",
+      "rowsSteps": "Tippe auf ✓, um sie als erledigt zu markieren.\nTippe auf den Namen der Aufgabe, um sie zu öffnen: die Notizen und Knöpfe wie {edit} und {pin}. Seltener gebrauchte sind unter ⋯.\nTippe noch einmal, um sie zu schließen.",
+      "topTitle": "Eine Zeile oben",
+      "topLead": "Oben auf jeder Seite stehen ihr Name, deine Münzen und deine Serie und 🔍 {search}.",
+      "topSteps": "Tippe auf 🔍, um eine Aufgabe, einen Raum oder eine Belohnung zu finden.\nRäume sind jetzt kleine Kacheln: Tippe auf einen, um seine Aufgaben zu sehen.",
+      "topStepsAdmin": "Tippe auf 🔍, um eine Aufgabe, einen Raum oder eine Belohnung zu finden.\nAuf {rooms} ist + {addRoom}; in einem Raum ist + {addTask}.\nRäume sind jetzt kleine Kacheln: Tippe auf einen, um seine Aufgaben zu sehen. Umbenennen, Zonen und Löschen sind unter ✏️ {editRooms}.",
+      "settingsTitle": "{settings} ist eine kurze Liste",
+      "settingsLead": "Statt einer langen Seite listet {settings} seine Bereiche in Gruppen auf, jeden mit einer Zusammenfassung in einer Zeile.",
+      "settingsSteps": "Tippe auf einen Bereich, um ihn zu öffnen; ‹ {settings} geht zurück.\nDas Feld {searchSettings} findet eine Einstellung über ihren Namen.\nNeu: {look} wählt den Stil der Familie: {fresh}, {quest} oder {calm}.",
+      "kidTabsTitle": "Deine Seiten sind unten",
+      "kidTabsLead": "Das Menü ist jetzt eine Reihe Tabs unten am Bildschirm.",
+      "kidTabsSteps": "Tippe auf einen Tab, um dorthin zu gehen.\nTippe auf {more} für alles andere.",
+      "kidNextTitle": "{nextUp}: eine Aufgabe nach der anderen",
+      "kidNextLead": "{home} zeigt die nächste Aufgabe, schön groß.",
+      "kidNextSteps": "Geschafft? Tippe auf {doneBig}\nLieber eine andere? Tippe auf {pickAnother}",
+      "kidRowsTitle": "Tippe auf ✓, wenn du fertig bist",
+      "kidRowsLead": "Deine anderen Aufgaben sind kurze Zeilen.",
+      "kidRowsSteps": "Tippe auf ✓, um sie als erledigt zu markieren.\nTippe auf den Namen der Aufgabe, um mehr zu sehen."
     }
   }
 }

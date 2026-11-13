@@ -213,6 +213,8 @@ export interface FeatureFlags {
   shields: boolean;
   proofPhotos: boolean;
   webPush: boolean;
+  /** "What's new" slides after a big update (NEW-38) */
+  whatsNew: boolean;
 }
 
 /** Team-ups on a chore in a list: can you start one, and has a team claimed it today? */
@@ -469,6 +471,8 @@ export const api = {
   saveSetup: (data: unknown) =>
     apiFetch<{ people: number; rooms: number; chores: number; rewards: number; goals: number; removedRewards: number }>('/setup', { method: 'POST', body: JSON.stringify(data) }),
   skipSetup: () => apiFetch<{ success: boolean }>('/setup/skip', { method: 'POST' }),
+  // "What's new" seen or skipped (NEW-38); no ids marks every one
+  whatsNewSeen: (ids?: string[]) => apiFetch<{ success: boolean }>('/whats-new/seen', { method: 'POST', body: JSON.stringify({ ids }) }),
   getDefaultTasks: (roomType: string) =>
     apiFetch<Array<{ name: string; frequencyDays: number; effort: number; isSeasonal?: boolean }>>(`/rooms/defaults/${roomType}`),
   createRoom: (data: { name: string; roomType: string; color?: string; accentColor?: string; tasks?: any[]; assignedUserId?: number | null }) =>

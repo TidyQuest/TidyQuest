@@ -28,6 +28,7 @@ import cheersRoutes from './routes/cheers';
 import unlocksRoutes from './routes/unlocks';
 import teamupsRoutes from './routes/teamups';
 import mascotRoutes from './routes/mascot';
+import whatsNewRoutes from './routes/whatsNew';
 import boostsRoutes from './routes/boosts';
 import csvRoutes from './routes/csv';
 import trashRoutes from './routes/trash';
@@ -126,6 +127,7 @@ export function createApp() {
   app.use('/api/unlocks', unlocksRoutes);
   app.use('/api/teamups', teamupsRoutes);
   app.use('/api/mascot', mascotRoutes);
+  app.use('/api/whats-new', whatsNewRoutes);
 
   // 404 handler for unknown API routes (after every API router, so whatever reaches it is unknown)
   app.use('/api', (_req, res) => {

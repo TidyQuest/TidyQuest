@@ -1607,7 +1607,9 @@
       "proofPhotos": "Bewijsfoto's",
       "proofPhotosDesc": "Kinderen kunnen een foto toevoegen aan een klusje dat wacht op goedkeuring van een ouder. Uit: alleen een notitie.",
       "webPush": "📲 Meldingen op je telefoon (web push)",
-      "webPushDesc": "Iedereen kan zijn meldingen op zijn eigen telefoon of computer krijgen, aan te zetten in Profiel. Werkt alleen via een https://-adres."
+      "webPushDesc": "Iedereen kan zijn meldingen op zijn eigen telefoon of computer krijgen, aan te zetten in Profiel. Werkt alleen via een https://-adres.",
+      "whatsNew": "📣 Wat is er nieuw na updates",
+      "whatsNewDesc": "Na een grote update ziet iedereen de eerste keer dat de app opent een paar dia's over wat er verplaatst is."
     },
     "seasons": {
       "halloween": "Halloween",
@@ -2572,6 +2574,36 @@
       "coloursTitle": "Kleuren blijven persoonlijk",
       "coloursNote": "De stijl bepaalt de vormen. Ieders kleurthema, gekozen in het eigen profiel, vult ze in, dus de tekeningen hierboven zijn in jouw kleuren.",
       "saveFailed": "De stijl kon niet worden opgeslagen. Controleer de verbinding en probeer het opnieuw."
+    },
+    "whatsNew": {
+      "title": "Wat is er nieuw",
+      "gotIt": "Begrepen",
+      "replay": "Nog eens zien wat er nieuw is",
+      "tabsTitle": "Tabbladen onderaan",
+      "tabsLead": "Op een telefoon is het ☰-menu weg: je belangrijkste pagina's zijn tabbladen onderaan het scherm.",
+      "tabsSteps": "Tik op een tabblad om erheen te gaan.\nTik op {more} voor al het andere: {moreList}.\nTik nog eens op het tabblad waar je bent om terug naar boven te springen.\nOp een computer blijft het menu links.",
+      "todayTitle": "{home}: je dag op één pagina",
+      "todayLead": "De kaart bovenaan laat zien hoeveel van vandaag klaar is, wat er nog over is en de munten die je kunt verdienen.",
+      "todaySteps": "Je klusjes staan in drie lijsten: {overdue}, {todayList} en {anytime}.\nTik op een label onder de kaart (je reeks, doelen, de Reddingsmissie…) om het te openen.\n{mine} / {everyone} wisselt tussen jouw klusjes en die van het hele gezin.",
+      "rowsTitle": "Klusjes zijn korte regels",
+      "rowsLead": "Elk klusje is één regel: de naam, waar of wanneer, de munten en een ✓-knop.",
+      "rowsSteps": "Tik op ✓ om het af te vinken.\nTik op de naam van het klusje om het te openen: de notities en knoppen zoals {edit} en {pin}. Minder gebruikte staan onder ⋯.\nTik er nog eens op om het te sluiten.",
+      "topTitle": "Eén regel bovenaan",
+      "topLead": "Bovenaan elke pagina staan de naam, je munten en je reeks, en 🔍 {search}.",
+      "topSteps": "Tik op 🔍 om een klusje, kamer of beloning te vinden.\nKamers zijn nu kleine tegels: tik op een kamer om de klusjes te zien.",
+      "topStepsAdmin": "Tik op 🔍 om een klusje, kamer of beloning te vinden.\nOp {rooms} is + {addRoom}; in een kamer is + {addTask}.\nKamers zijn nu kleine tegels: tik op een kamer om de klusjes te zien. Hernoemen, zones en verwijderen staan onder ✏️ {editRooms}.",
+      "settingsTitle": "{settings} is een korte lijst",
+      "settingsLead": "In plaats van één lange pagina toont {settings} de onderdelen in groepen, elk met een samenvatting van één regel.",
+      "settingsSteps": "Tik op een onderdeel om het te openen; ‹ {settings} gaat terug.\nHet vak {searchSettings} vindt een instelling op naam.\nNieuw: {look} kiest de stijl van het gezin: {fresh}, {quest} of {calm}.",
+      "kidTabsTitle": "Je pagina's staan onderaan",
+      "kidTabsLead": "Het menu is nu een rij tabbladen onderaan het scherm.",
+      "kidTabsSteps": "Tik op een tabblad om erheen te gaan.\nTik op {more} voor al het andere.",
+      "kidNextTitle": "{nextUp}: één klusje tegelijk",
+      "kidNextLead": "{home} laat het volgende klusje zien, lekker groot.",
+      "kidNextSteps": "Gedaan? Tik op {doneBig}\nLiever een ander? Tik op {pickAnother}",
+      "kidRowsTitle": "Tik op ✓ als het klaar is",
+      "kidRowsLead": "Je andere klusjes zijn korte regels.",
+      "kidRowsSteps": "Tik op ✓ om het af te vinken.\nTik op de naam van het klusje om meer te zien."
     }
   }
 }

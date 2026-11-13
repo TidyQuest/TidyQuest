@@ -1607,7 +1607,9 @@
       "proofPhotos": "Fotos de prueba",
       "proofPhotosDesc": "Los niños pueden añadir una foto a una tarea que espera la aprobación de un padre o una madre. Desactivado: solo una nota.",
       "webPush": "📲 Notificaciones en el móvil (web push)",
-      "webPushDesc": "Cada uno puede recibir sus notificaciones en su propio móvil u ordenador, activándolas en Perfil. Necesita una dirección https://."
+      "webPushDesc": "Cada uno puede recibir sus notificaciones en su propio móvil u ordenador, activándolas en Perfil. Necesita una dirección https://.",
+      "whatsNew": "📣 Novedades tras las actualizaciones",
+      "whatsNewDesc": "Tras una actualización grande, cada persona ve unas diapositivas sobre lo que cambió de sitio la primera vez que abre la app."
     },
     "seasons": {
       "halloween": "Halloween",
@@ -2572,6 +2574,36 @@
       "coloursTitle": "Los colores siguen siendo personales",
       "coloursNote": "El estilo fija las formas. El tema de color de cada persona, elegido en su perfil, las rellena, así que los dibujos de arriba están en tus colores.",
       "saveFailed": "No se pudo guardar el estilo. Revisa la conexión e inténtalo de nuevo."
+    },
+    "whatsNew": {
+      "title": "Novedades",
+      "gotIt": "Entendido",
+      "replay": "Ver las novedades otra vez",
+      "tabsTitle": "Pestañas en la parte de abajo",
+      "tabsLead": "En el móvil ya no está el menú ☰: tus páginas principales son pestañas en la parte de abajo de la pantalla.",
+      "tabsSteps": "Toca una pestaña para ir allí.\nToca {more} para todo lo demás: {moreList}.\nToca otra vez la pestaña en la que estás para volver arriba.\nEn el ordenador el menú sigue a la izquierda.",
+      "todayTitle": "{home}: tu día en una página",
+      "todayLead": "La tarjeta de arriba muestra cuánto de hoy está hecho, lo que falta y las monedas en juego.",
+      "todaySteps": "Tus tareas están en tres listas: {overdue}, {todayList} y {anytime}.\nToca una etiqueta bajo la tarjeta (tu racha, las metas, la Misión de rescate…) para abrirla.\n{mine} / {everyone} cambia entre tus tareas y las de toda la familia.",
+      "rowsTitle": "Las tareas son filas cortas",
+      "rowsLead": "Cada tarea es una línea: su nombre, dónde o cuándo, sus monedas y un botón ✓.",
+      "rowsSteps": "Toca ✓ para marcarla como hecha.\nToca el nombre de la tarea para abrirla: las notas y botones como {edit} y {pin}. Los menos usados están en ⋯.\nTócala otra vez para cerrarla.",
+      "topTitle": "Una sola línea arriba",
+      "topLead": "Arriba de cada página está su nombre, tus monedas y tu racha, y 🔍 {search}.",
+      "topSteps": "Toca 🔍 para encontrar una tarea, una habitación o un premio.\nLas habitaciones ahora son mosaicos pequeños: toca una para ver sus tareas.",
+      "topStepsAdmin": "Toca 🔍 para encontrar una tarea, una habitación o un premio.\nEn {rooms}, + es {addRoom}; dentro de una habitación, + es {addTask}.\nLas habitaciones ahora son mosaicos pequeños: toca una para ver sus tareas. Cambiar el nombre, las zonas y borrar están en ✏️ {editRooms}.",
+      "settingsTitle": "{settings} es una lista corta",
+      "settingsLead": "En vez de una página larga, {settings} muestra sus secciones en grupos, cada una con un resumen de una línea.",
+      "settingsSteps": "Toca una sección para abrirla; ‹ {settings} vuelve atrás.\nLa casilla {searchSettings} encuentra un ajuste por su nombre.\nNuevo: {look} elige el estilo de la familia: {fresh}, {quest} o {calm}.",
+      "kidTabsTitle": "Tus páginas están abajo",
+      "kidTabsLead": "El menú ahora es una fila de pestañas en la parte de abajo de la pantalla.",
+      "kidTabsSteps": "Toca una pestaña para ir allí.\nToca {more} para todo lo demás.",
+      "kidNextTitle": "{nextUp}: una tarea cada vez",
+      "kidNextLead": "{home} muestra la siguiente tarea que hacer, bien grande.",
+      "kidNextSteps": "¿La hiciste? Toca {doneBig}\n¿Quieres otra? Toca {pickAnother}",
+      "kidRowsTitle": "Toca ✓ cuando termines",
+      "kidRowsLead": "Tus otras tareas son filas cortas.",
+      "kidRowsSteps": "Toca ✓ para marcarla como hecha.\nToca el nombre de la tarea para ver más."
     }
   }
 }

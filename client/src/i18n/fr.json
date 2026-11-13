@@ -1607,7 +1607,9 @@
       "proofPhotos": "Photos de preuve",
       "proofPhotosDesc": "Les enfants peuvent ajouter une photo à une tâche qui attend la validation d'un parent. Désactivé : une note seulement.",
       "webPush": "📲 Notifications sur le téléphone (web push)",
-      "webPushDesc": "Chacun peut recevoir ses notifications sur son propre téléphone ou ordinateur, à activer dans Profil. Nécessite une adresse https://."
+      "webPushDesc": "Chacun peut recevoir ses notifications sur son propre téléphone ou ordinateur, à activer dans Profil. Nécessite une adresse https://.",
+      "whatsNew": "📣 Nouveautés après les mises à jour",
+      "whatsNewDesc": "Après une grosse mise à jour, chacun voit quelques diapositives sur ce qui a changé de place, la première fois qu'il ouvre l'appli."
     },
     "seasons": {
       "halloween": "Halloween",
@@ -2572,6 +2574,36 @@
       "coloursTitle": "Les couleurs restent personnelles",
       "coloursNote": "Le style fixe les formes. Le thème de couleur de chacun, choisi dans son profil, les remplit : les dessins ci-dessus sont donc dans vos couleurs.",
       "saveFailed": "Impossible d'enregistrer le style. Vérifiez la connexion et réessayez."
+    },
+    "whatsNew": {
+      "title": "Nouveautés",
+      "gotIt": "Compris",
+      "replay": "Revoir les nouveautés",
+      "tabsTitle": "Des onglets en bas",
+      "tabsLead": "Sur un téléphone, le menu ☰ a disparu : vos pages principales sont des onglets en bas de l'écran.",
+      "tabsSteps": "Touchez un onglet pour y aller.\nTouchez {more} pour tout le reste : {moreList}.\nTouchez à nouveau l'onglet où vous êtes pour remonter en haut.\nSur un ordinateur, le menu reste à gauche.",
+      "todayTitle": "{home} : votre journée sur une page",
+      "todayLead": "La carte du haut montre ce qui est fait aujourd'hui, ce qui reste et les pièces à gagner.",
+      "todaySteps": "Vos tâches sont dans trois listes : {overdue}, {todayList} et {anytime}.\nTouchez une pastille sous la carte (votre série, les objectifs, la Mission sauvetage…) pour l'ouvrir.\n{mine} / {everyone} passe de vos tâches à celles de toute la famille.",
+      "rowsTitle": "Les tâches tiennent sur une ligne",
+      "rowsLead": "Chaque tâche est une ligne : son nom, où ou quand, ses pièces et un bouton ✓.",
+      "rowsSteps": "Touchez ✓ pour la marquer faite.\nTouchez le nom de la tâche pour l'ouvrir : les notes et des boutons comme {edit} et {pin}. Les moins utilisés sont sous ⋯.\nTouchez-la à nouveau pour la refermer.",
+      "topTitle": "Une seule ligne en haut",
+      "topLead": "Le haut de chaque page montre son nom, vos pièces et votre série, et 🔍 {search}.",
+      "topSteps": "Touchez 🔍 pour trouver une tâche, une pièce ou une récompense.\nLes pièces sont maintenant de petites tuiles : touchez-en une pour voir ses tâches.",
+      "topStepsAdmin": "Touchez 🔍 pour trouver une tâche, une pièce ou une récompense.\nSur {rooms}, + correspond à {addRoom} ; dans une pièce, + correspond à {addTask}.\nLes pièces sont maintenant de petites tuiles : touchez-en une pour voir ses tâches. Renommer, les zones et la suppression sont sous ✏️ {editRooms}.",
+      "settingsTitle": "{settings} est une courte liste",
+      "settingsLead": "Au lieu d'une longue page, {settings} liste ses sections par groupes, chacune avec un résumé d'une ligne.",
+      "settingsSteps": "Touchez une section pour l'ouvrir ; ‹ {settings} revient en arrière.\nLa case {searchSettings} trouve un réglage par son nom.\nNouveau : {look} choisit le style de la famille : {fresh}, {quest} ou {calm}.",
+      "kidTabsTitle": "Tes pages sont en bas",
+      "kidTabsLead": "Le menu est maintenant une rangée d'onglets en bas de l'écran.",
+      "kidTabsSteps": "Touche un onglet pour y aller.\nTouche {more} pour tout le reste.",
+      "kidNextTitle": "{nextUp} : une tâche à la fois",
+      "kidNextLead": "{home} montre la prochaine tâche à faire, en grand.",
+      "kidNextSteps": "C'est fait ? Touche {doneBig}\nTu en veux une autre ? Touche {pickAnother}",
+      "kidRowsTitle": "Touche ✓ quand c'est fait",
+      "kidRowsLead": "Tes autres tâches sont des lignes courtes.",
+      "kidRowsSteps": "Touche ✓ pour la marquer faite.\nTouche le nom de la tâche pour en voir plus."
     }
   }
 }

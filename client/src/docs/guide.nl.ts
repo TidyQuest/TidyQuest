@@ -34,6 +34,13 @@ export const GUIDE_NL: GuideSection[] = [
         'Klaar maakt alles in één keer. Daarna laat een korte klik-uitleg zien hoe je een klusje aanpast, hoe vaak het terugkomt (zoals elke 3 maanden), timers, klusjes voor wanneer je wilt, delen en om de beurt, Quests-kamers, de to-dolijst, beloningen, doelen en munten.',
         'Opnieuw gebruiken voegt alleen toe: hij gebruikt de kamers die je al hebt, slaat klusjes over die er al zijn, laat klusjes van volwassenen en beloningen uitgevinkt en laat je beloningen met rust.',
       ] },
+      { h: 'Wat is er nieuw na een update' },
+      { ul: [
+        'Na een grote update (zoals de nieuwe stijl) ziet iedereen de eerste keer dat de app opent een paar dia’s over wat er verplaatst is: Volgende en Terug om erdoor te gaan, Overslaan om te sluiten. Kleine updates laten niets zien.',
+        'Iedereen ziet ze één keer, op de eerste telefoon of computer waar de app opent. Overslaan telt als gezien. Ouders krijgen ook de delen over Instellingen; kinderen in Kindermodus een kortere versie met grotere plaatjes.',
+        'Ze wachten zolang er een klusjestimer loopt en openen niet over Eén ding tegelijk of de installatiewizard heen. Wie na de update erbij komt, of een gezin dat net de wizard heeft gebruikt, krijgt ze niet.',
+        'Nog eens zien: Instellingen → Handleiding & hulp (onder Hulp) → 📣 Nog eens zien wat er nieuw is. Een ouder kan ze voor het gezin uitzetten in Instellingen → Functies → 📣 Wat is er nieuw na updates.',
+      ] },
     ],
   },
   {
@@ -509,6 +516,10 @@ export const GUIDE_NL: GuideSection[] = [
           'Ze staan onder Meer, de laatste tab onderaan het scherm, samen met Activiteit, Inzichten (ouders) en Medailles. Je profiel staat bovenaan Meer.',
           'De menuknop ☰ is weg op telefoons: de balk onderaan vervangt hem. Op een computer staat het menu nog steeds links.',
           'Je punten staan op een telefoon niet meer in de bovenste regel: je vindt ze op het Scorebord.',
+        ] },
+        { q: 'Na een update staat alles ergens anders', a: [
+          'Instellingen → Handleiding & hulp → 📣 Nog eens zien wat er nieuw is toont de dia’s over wat er verplaatst is. De meest gebruikte pagina’s zijn tabbladen onderaan; de rest staat onder Meer.',
+          'Kwamen de dia’s niet vanzelf? Wie na de update erbij kwam krijgt ze niet, misschien heeft een ouder 📣 Wat is er nieuw na updates uitgezet in Instellingen → Functies, of je hebt ze al op een ander apparaat gezien.',
         ] },
         { q: 'De knop Klaar! is grijs', a: [
           'De regel onder de naam van het klusje zegt waarom: "Niet toegewezen" (klusje van iemand anders), "Wacht op goedkeuring" (een ouder heeft je vorige nog niet goedgekeurd), "Gedaan door …" (iemand heeft het vandaag al gedaan), "Vandaag gedaan / Deze week gedaan" (de herhaallimiet van een klusje voor op elk moment) of "🤝 namen" (een team heeft het vandaag opgeëist).',

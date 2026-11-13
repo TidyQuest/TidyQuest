@@ -34,6 +34,13 @@ export const GUIDE_FR: GuideSection[] = [
         'Terminer crée tout d’un coup. Un court tutoriel à cliquer montre ensuite comment changer une tâche, sa fréquence (comme tous les 3 mois), les minuteurs, les tâches à tout moment, le partage et le tour de rôle, les pièces Quêtes, la liste à faire, les récompenses, les objectifs et les pièces.',
         'Le relancer ne fait qu’ajouter : il utilise les pièces que tu as déjà, saute les tâches qu’elles ont déjà, laisse les tâches des adultes et les récompenses décochées, et ne touche pas à tes récompenses.',
       ] },
+      { h: 'Les nouveautés après une mise à jour' },
+      { ul: [
+        'Après une grosse mise à jour (comme le nouveau style), chacun voit quelques diapositives sur ce qui a changé de place, la première fois qu’il ouvre l’appli : Suivant et Retour pour les parcourir, Passer pour fermer. Les petites mises à jour n’affichent rien.',
+        'Chacun les voit une fois, sur le premier téléphone ou ordinateur où il ouvre l’appli. Passer compte comme vu. Les parents ont aussi les parties sur les Paramètres ; les enfants en Mode enfant ont une version plus courte avec de plus grandes images.',
+        'Elles attendent pendant qu’un minuteur de tâche tourne et ne s’ouvrent pas par-dessus Une chose à la fois ou l’assistant de configuration. Une personne arrivée après la mise à jour, ou une famille qui vient d’utiliser l’assistant, ne les voit pas.',
+        'Pour les revoir : Paramètres → Guide et aide (sous Aide) → 📣 Revoir les nouveautés. Un parent peut les désactiver pour la famille dans Paramètres → Fonctionnalités → 📣 Nouveautés après les mises à jour.',
+      ] },
     ],
   },
   {
@@ -509,6 +516,10 @@ export const GUIDE_FR: GuideSection[] = [
           'Ils sont dans Plus, le dernier onglet en bas de l’écran, avec Activité, Statistiques (parents) et Succès. Ton profil est tout en haut de Plus.',
           'Le bouton de menu ☰ a disparu des téléphones : la barre du bas le remplace. Sur un ordinateur, le menu est toujours à gauche.',
           'Les points ne sont plus dans la ligne du haut sur téléphone : tu les trouves sur le Tableau.',
+        ] },
+        { q: 'Tout a bougé après une mise à jour', a: [
+          'Paramètres → Guide et aide → 📣 Revoir les nouveautés montre les diapositives sur ce qui a changé de place. Les pages les plus utilisées sont des onglets en bas ; tout le reste est sous Plus.',
+          'Les diapositives ne se sont pas ouvertes toutes seules ? Une personne arrivée après la mise à jour ne les voit pas, un parent a peut-être désactivé 📣 Nouveautés après les mises à jour dans Paramètres → Fonctionnalités, ou tu les as déjà vues sur un autre appareil.',
         ] },
         { q: 'Le bouton Fait est grisé', a: [
           'La ligne sous le nom de la tâche dit pourquoi : « Non attribuée » (la tâche de quelqu’un d’autre), « En attente de validation » (un parent n’a pas encore validé ta dernière), « Fait par … » (quelqu’un l’a déjà faite aujourd’hui), « Fait aujourd’hui / Fait cette semaine » (la limite de répétition d’une tâche à tout moment), ou « 🤝 noms » (une équipe l’a prise aujourd’hui).',

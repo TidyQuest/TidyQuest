@@ -102,6 +102,9 @@ async function seed(familyId: string, db: Db, m: string): Promise<Family> {
     keys: { p256dh: Buffer.alloc(65, 4).toString('base64url'), auth: Buffer.alloc(16, 7).toString('base64url') },
   })).id;
 
+  // "What's new" seen (NEW-38)
+  await step('post', '/api/whats-new/seen', kid.token, {});
+
   // Team-ups: one for anyone, declined; one with an invite, joined
   const teamupId = (body: any): number => body.id ?? body.teamup?.id;
   const declined = teamupId(await step('post', '/api/teamups', kid.token, { taskId: team1 }));
