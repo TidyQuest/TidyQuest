@@ -12,6 +12,11 @@ export function notDueYet(task: { onDemand?: boolean | number | null; allowEarly
   return !task.onDemand && !task.allowEarlyCompletion && task.health > 0 && !!task.lastCompletedAt;
 }
 
+/** One chore's colour: like getHealthColor, but a chore that can't be done yet stops at yellow (#153, #172, #183) */
+export function choreHealthColor(task: Parameters<typeof notDueYet>[0]): string {
+  return notDueYet(task) && task.health < 40 ? 'var(--health-yellow)' : getHealthColor(task.health);
+}
+
 export function getHealthLabel(h: number): string {
   return h >= 70 ? 'Healthy' : h >= 40 ? 'Needs attention' : 'Critical';
 }

@@ -4,7 +4,7 @@ import { CoinIcon } from '../icons/UIIcons';
 import { EffortDots } from './EffortDots';
 import { useTranslation } from '../../hooks/useTranslation';
 import { useWeekStart } from '../../utils/week';
-import { getHealthColor } from '../../utils/health';
+import { choreHealthColor } from '../../utils/health';
 import { localeFor } from '../../utils/locale';
 import { seasonLabel, startsLater } from '../../utils/schedule';
 import { choreSchedule, type ChoreTextTask } from '../../utils/choreText';
@@ -115,6 +115,7 @@ export interface ChoreFactsTask extends ChoreTextTask {
   repeatPeriod?: 'day' | 'week' | null;
   myRepeatCount?: number;
   myPendingCount?: number;
+  allowEarlyCompletion?: boolean | number | null;
 }
 
 /** The small labels in an opened row: schedule, effort, whose turn, last done, health and the rest */
@@ -135,7 +136,7 @@ export function ChoreFacts({ task, language, showHealth = true }: { task: ChoreF
       {perPerson && <span className="chore-tag">{task.assignmentMode === 'shared' ? t('rooms.modeShared') : t('rooms.modeCustom')} · {task.sharedCompletions?.length ?? 0}/{people.length} {t('rooms.done')}</span>}
       <span className="chore-tag">{t('chore.lastDone').replace('{when}', timeAgo(task.lastCompletedAt))}</span>
       {showHealth && !task.onDemand && !task.oneTime && !task.outOfSeason && (
-        <span className="chore-tag">{t('rooms.health')} <b style={{ color: getHealthColor(health) }}>{health}%</b></span>
+        <span className="chore-tag">{t('rooms.health')} <b style={{ color: choreHealthColor({ ...task, health }) }}>{health}%</b></span>
       )}
       {!!task.timerMinutes && <span className="chore-tag">⏱️ {task.timerMinutes} {t('timer.min')}</span>}
       {startsLater(task) && task.startsOn && <span className="chore-tag">📅 {t('schedule.startsLabel').replace('{date}', day(task.startsOn))}</span>}

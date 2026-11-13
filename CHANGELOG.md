@@ -150,6 +150,8 @@ What changed in each release, in plain language, newest first. Releases up to v0
   has a solid background.
 - Settings no longer scrolls sideways on narrow phones (360px wide): the family member cards now wrap inside the
   page.
+- **New look:** a chore's health number stays yellow, not red, while it can't be done yet, as it did before the new
+  look (#183).
 
 ## v0.18.0 (2026-11-11)
 
