@@ -478,7 +478,9 @@
       "priceChanged": "Der Preis hat sich gerade auf {coins} Münzen geändert. Tippe auf Bestätigen, um so viel zu zahlen, oder auf Abbrechen.",
       "alreadyDecided": "Über diese Anfrage wurde schon entschieden. Die Liste ist jetzt aktuell.",
       "rejectNotePlaceholder": "Warum nicht? (optional)",
-      "rejectNoteLabel": "Eine Notiz für {name}"
+      "rejectNoteLabel": "Eine Notiz für {name}",
+      "needMore": "Noch {n} Münzen",
+      "sortLabel": "Sortieren"
     },
     "rewardsPreset": {
       "movie_night": {

@@ -478,7 +478,9 @@
       "priceChanged": "El precio acaba de cambiar a {coins} monedas. Toca Confirmar para pagarlo, o Cancelar.",
       "alreadyDecided": "Esa solicitud ya estaba decidida. La lista ya está al día.",
       "rejectNotePlaceholder": "¿Por qué no? (opcional)",
-      "rejectNoteLabel": "Una nota para {name}"
+      "rejectNoteLabel": "Una nota para {name}",
+      "needMore": "Faltan {n} monedas",
+      "sortLabel": "Ordenar"
     },
     "rewardsPreset": {
       "movie_night": {

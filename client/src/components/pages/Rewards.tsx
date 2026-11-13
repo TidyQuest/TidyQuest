@@ -10,6 +10,19 @@ import { RewardRejectNote } from '../shared/RewardRejectNote';
 import { localeFor } from '../../utils/locale';
 import { byFeatured } from '../../utils/rewardRules';
 import { rewardDescText, rewardTitleText } from '../../utils/presetRewards';
+import { RewardsIcon } from '../icons/NavIcons';
+import Toggle from '../shared/Toggle';
+
+/** A title's leading emoji goes in the row's tile: "🍦 Ice Cream Treat" → { emoji: "🍦", name: "Ice Cream Treat" } */
+const LEAD_EMOJI = /^((?:\p{Extended_Pictographic}|\p{Regional_Indicator})(?:\uFE0F|\u20E3|\p{Emoji_Modifier}|\p{Regional_Indicator}|\u200D\p{Extended_Pictographic}\uFE0F?)*)\s*/u;
+function splitEmoji(title: string): { emoji: string; name: string } {
+  const m = LEAD_EMOJI.exec(title);
+  return m && m[0].length < title.length ? { emoji: m[1], name: title.slice(m[0].length) } : { emoji: '', name: title };
+}
+
+/** The shop shows this many rewards before "Show {n} more"; requests show this many */
+const SHOP_LIMIT = 20;
+const MINE_LIMIT = 3;
 
 interface Reward {
   category?: string | null;
@@ -158,7 +171,8 @@ export function Rewards({ language, rewards: ownRewards, mine: ownMine, userCoin
 
   const rewardTitleByName = (title: string): string => rewardTitleText(title, t);
   const rewardTitle = (r: Reward): string => rewardTitleText(r.title, t);
-  const rewardDesc = (r: Reward): string => rewardDescText(r, t) || t('rewards.noDescription');
+  // For search only: the rows leave out a missing description
+  const rewardDesc = (r: Reward): string => rewardDescText(r, t);
 
   const hasFeatured = rewards.some((r) => (r.sortOrder ?? 0) > 0);
   const sort = sortChoice || (hasFeatured ? 'featured' : 'priceLow');
@@ -170,11 +184,63 @@ export function Rewards({ language, rewards: ownRewards, mine: ownMine, userCoin
     .sort((a, b) => sort === 'featured' ? byFeatured(a, b)
       : sort === 'name' ? rewardTitle(a).localeCompare(rewardTitle(b))
       : (sort === 'priceHigh' ? b.costCoins - a.costCoins : a.costCoins - b.costCoins));
-  const chipStyle = (on: boolean): CSSProperties => ({
-    padding: '5px 12px', borderRadius: 'var(--shape-radius-control)', fontSize: 12, fontWeight: 800, fontFamily: 'Nunito', cursor: 'pointer',
-    border: `1.5px solid ${on ? 'var(--warm-accent)' : 'var(--warm-border)'}`,
-    backgroundColor: on ? 'var(--warm-accent-light)' : 'var(--warm-bg-input)', color: on ? 'var(--warm-accent)' : 'var(--warm-text-muted)',
-  });
+  const chip = (label: string, on: boolean, onClick: () => void, key: string) => (
+    <button type="button" key={key} className={`today-chip${on ? ' on' : ''}`} aria-pressed={on} onClick={onClick}>{label}</button>
+  );
+  const [showAllShop, setShowAllShop] = useState(false);
+  const [showAllMine, setShowAllMine] = useState(false);
+  // The reward whose description is shown in full (tap the row)
+  const [openId, setOpenId] = useState<number | null>(null);
+  const shortDate = (iso: string) => new Date(iso).toLocaleString(locale, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+  const waitingForParent = (pendingRequests ?? []).filter((r) => r.status === 'requested');
+  // Still waiting first, then the newest
+  const mineSorted = [...mine].sort((a, b) => Number(b.status === 'requested') - Number(a.status === 'requested')
+    || b.redeemedAt.localeCompare(a.redeemedAt));
+
+  const rewardRow = (r: Reward) => {
+    const usedUp = !!r.availability && r.availability.remaining <= 0;
+    const short = r.costCoins - userCoins;
+    const canBuy = short <= 0 && !usedUp;
+    const { emoji, name } = splitEmoji(rewardTitle(r));
+    const desc = rewardDescText(r, t);
+    const limits = [
+      r.availability && (usedUp
+        ? t(`rewardRules.usedUp_${r.availability.period}`).replace('{day}', r.availability.resetsAt ? new Date(r.availability.resetsAt).toLocaleDateString(locale, { weekday: 'long' }) : '')
+        : t(`rewardRules.left_${r.availability.period}`).replace('{n}', String(r.availability.remaining))),
+      r.availableUntil && t('rewardRules.untilDate').replace('{date}', new Date(`${r.availableUntil}T12:00:00`).toLocaleDateString(locale, { month: 'short', day: 'numeric' })),
+    ].filter(Boolean).join(' · ');
+    const open = openId === r.id;
+    return (
+      <div key={r.id} className={`chore-row rw-row${open ? ' open' : ''}`}>
+        <div className="chore-row-top">
+          <button type="button" className="chore-row-main" aria-expanded={open} onClick={() => setOpenId(open ? null : r.id)}>
+            <span className="chore-tile rw-tile" aria-hidden="true">{emoji || <RewardsIcon active={false} />}</span>
+            <span className="chore-text">
+              <span className="chore-name">{name}</span>
+              {desc && <span className="chore-sub">{desc}</span>}
+              {limits && <span className={`chore-sub${usedUp ? ' rw-used' : ''}`}>{limits}</span>}
+              {!r.isShared && !usedUp && short > 0 && (
+                <span className="chore-sub rw-need">{t('rewards.needMore').replace('{n}', formatCoins(short, locale))}</span>
+              )}
+            </span>
+          </button>
+          <span className="rw-side">
+            <span className="chore-coins"><span className="chore-coins-amount"><CoinIcon />{formatCoins(r.costCoins, locale)}</span></span>
+            {!r.isShared && (
+              <button type="button" className="rw-buy" disabled={!canBuy} onClick={() => { setRedeemError(''); setPendingRewardId(r.id); }}>
+                {usedUp ? t('rewardRules.usedUp') : t('rewards.redeem')}
+              </button>
+            )}
+          </span>
+        </div>
+        {r.isShared && r.pot && (
+          <div className="rw-under">
+            <SharedPot pot={r.pot} userCoins={userCoins} language={language} onContribute={onContribute && !buyingFor ? (n) => onContribute(r.id, n) : undefined} />
+          </div>
+        )}
+      </div>
+    );
+  };
 
   // One purchase at a time: a double tap on Buy spent the coins twice (BUG-35)
   const [buying, runBuy] = useBusy();
@@ -261,7 +327,7 @@ export function Rewards({ language, rewards: ownRewards, mine: ownMine, userCoin
   };
 
   return (
-    <div className="page-enter" style={{ display: 'grid', gap: 16 }}>
+    <div className="page-enter rw-page">
       <style>{`
         @keyframes coinSpendFloat {
           0% { opacity: 0; transform: translateY(12px) scale(0.9); }
@@ -274,168 +340,141 @@ export function Rewards({ language, rewards: ownRewards, mine: ownMine, userCoin
           100% { opacity: 0; transform: translateY(-24px) scale(1.04); }
         }
       `}</style>
-      <div className="tq-card tq-card-padded">
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+      <div className="rw-head">
+        <span className="rw-balance">
           <CoinIcon />
-          <div style={{ fontSize: 14, fontWeight: 800, color: 'var(--warm-text)' }}>
-            {buyingFor && `${forName}: `}{formatCoins(userCoins, localeFor(language))} {t('settings.coins')}
-          </div>
-        </div>
-        <div style={{ fontSize: 12, color: 'var(--warm-text-light)', fontWeight: 600, marginTop: 4 }}>
-          {buyingFor ? t('rewards.buyingForHint').replace('{name}', forName) : t('rewards.balanceHint')}
-        </div>
+          {buyingFor && `${forName}: `}{formatCoins(userCoins, locale)} {t('settings.coins')}
+        </span>
         {isAdmin && people && people.length > 0 && (
-          <label style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 10, flexWrap: 'wrap', fontSize: 12, fontWeight: 700, color: 'var(--warm-text-muted)' }}>
+          <label className="rw-for">
             🛒 {t('rewards.buyingFor')}
-            <select className="tq-input-compact" value={forId ?? ''} onChange={(e) => pickPerson(e.target.value ? Number(e.target.value) : null)}
-              style={{ padding: '6px 10px', fontSize: 13, cursor: 'pointer', minWidth: 0, maxWidth: '100%' }}>
+            <select className="tq-input-compact" value={forId ?? ''} onChange={(e) => pickPerson(e.target.value ? Number(e.target.value) : null)}>
               <option value="">{t('rewards.buyingForMe')}</option>
               {people.map((p) => <option key={p.id} value={p.id}>{p.displayName}</option>)}
             </select>
           </label>
         )}
-        {forFailed && <div role="alert" style={{ fontSize: 12, fontWeight: 700, color: 'var(--warm-danger)', marginTop: 6 }}>{t('common.actionFailed')}</div>}
       </div>
+      {buyingFor && <div className="rw-hint">{t('rewards.buyingForHint').replace('{name}', forName)}</div>}
+      {forFailed && <div role="alert" className="rw-alert">{t('common.actionFailed')}</div>}
 
-      {isAdmin && pendingRequests && (pendingRequests.filter(r => r.status === 'requested').length > 0 || decideFailed) && (
-        <div className="tq-card tq-card-padded">
-          <h3 className="tq-card-title">{t('dashboard.rewardRequestsTitle')}</h3>
-          {decideFailed && <div role="alert" style={{ fontSize: 12, fontWeight: 700, color: 'var(--warm-danger)', marginBottom: 8 }}>{decideFailed}</div>}
-          <div style={{ display: 'grid', gap: 8 }}>
-            {pendingRequests.filter(r => r.status === 'requested').map((r) => (
-              <div key={r.id} style={{ border: 'var(--shape-border-w) solid var(--warm-border)', borderRadius: 12, padding: 10, display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', columnGap: 10 }}>
-                <div style={{ minWidth: 0, flex: '1 1 0' }}>
-                  <div style={{ fontSize: 13, fontWeight: 800, color: 'var(--warm-text)', overflowWrap: 'anywhere' }}>{r.displayName} — {rewardTitleByName(r.title)}</div>
-                  <div style={{ fontSize: 12, color: 'var(--warm-text-light)', fontWeight: 700 }}>{new Date(r.redeemedAt).toLocaleString(locale)} · {formatCoins(r.costCoins, locale)} {t('settings.coins')}</div>
-                </div>
-                {rejecting === r.id ? (
-                  <RewardRejectNote language={language} name={r.displayName} busy={deciding}
-                    onReject={(note) => void decide(r.id, 'rejected', note)} onCancel={() => setRejecting(null)} />
-                ) : (
-                  <div style={{ display: 'flex', gap: 6 }}>
-                    <button className="tq-btn tq-btn-primary tq-btn-sm" disabled={deciding} onClick={() => void decide(r.id, 'approved')}>{t('dashboard.approve')}</button>
-                    <button className="tq-btn tq-btn-secondary tq-btn-sm" disabled={deciding} onClick={() => setRejecting(r.id)}>{t('dashboard.reject')}</button>
+      {isAdmin && (waitingForParent.length > 0 || decideFailed) && (
+        <section className="today-section">
+          <div className="today-sec"><h3>{t('dashboard.rewardRequestsTitle')} · {waitingForParent.length}</h3></div>
+          {decideFailed && <div role="alert" className="rw-alert">{decideFailed}</div>}
+          {waitingForParent.length > 0 && (
+            <div className="tq-card today-list chore-list">
+              {waitingForParent.map((r) => {
+                const { emoji, name } = splitEmoji(rewardTitleByName(r.title));
+                return (
+                  <div key={r.id} className="chore-row rw-row">
+                    <div className="chore-row-top">
+                      <span className="chore-tile rw-tile" aria-hidden="true">{emoji || <RewardsIcon active={false} />}</span>
+                      <span className="chore-text">
+                        <span className="chore-name">{name}</span>
+                        <span className="chore-sub">{r.displayName} · {shortDate(r.redeemedAt)}</span>
+                      </span>
+                      <span className="chore-coins"><span className="chore-coins-amount"><CoinIcon />{formatCoins(r.costCoins, locale)}</span></span>
+                    </div>
+                    <div className="rw-under">
+                      {rejecting === r.id ? (
+                        <RewardRejectNote language={language} name={r.displayName} busy={deciding}
+                          onReject={(note) => void decide(r.id, 'rejected', note)} onCancel={() => setRejecting(null)} />
+                      ) : (
+                        <div className="rw-actions">
+                          <button className="tq-btn tq-btn-secondary tq-btn-sm" disabled={deciding} onClick={() => setRejecting(r.id)}>{t('dashboard.reject')}</button>
+                          <button className="tq-btn tq-btn-primary tq-btn-sm" disabled={deciding} onClick={() => void decide(r.id, 'approved')}>{t('dashboard.approve')}</button>
+                        </div>
+                      )}
+                    </div>
                   </div>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
+                );
+              })}
+            </div>
+          )}
+        </section>
       )}
 
-      <div className="tq-card rewards-catalog-card tq-card-padded">
-        <h3 className="tq-card-title">{t('rewards.catalog')}</h3>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 12, alignItems: 'center' }}>
-          <input
-            type="search"
-            className="tq-input"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder={t('rewards.searchPlaceholder')}
-            aria-label={t('rewards.searchPlaceholder')}
-            style={{ flex: '2 1 220px', minWidth: 0 }}
-          />
-          <select className="tq-input-compact" value={sort} onChange={(e) => setSortChoice(e.target.value as typeof sortChoice)}
-            style={{ flex: '1 1 150px', padding: '8px 10px', fontSize: 13, cursor: 'pointer', minWidth: 0 }}>
+      {mine.length > 0 && (
+        <section className="today-section rw-mine">
+          <div className="today-sec"><h3>{buyingFor ? t('rewards.theirRequests').replace('{name}', forName) : t('rewards.myRequests')} · {mine.length}</h3></div>
+          <div className="tq-card today-list chore-list">
+            {(showAllMine ? mineSorted : mineSorted.slice(0, MINE_LIMIT)).map((m) => {
+              const { emoji, name } = splitEmoji(rewardTitleByName(m.title));
+              return (
+                <div key={m.id} className={`chore-row rw-row rewards-my-row${m.status === 'requested' ? '' : ' rw-past'}`}>
+                  <div className="chore-row-top">
+                    <span className="chore-tile rw-tile" aria-hidden="true">{emoji || <RewardsIcon active={false} />}</span>
+                    <span className="chore-text">
+                      <span className="chore-name">{name}</span>
+                      <span className="chore-sub">
+                        <span className="rw-status" style={statusStyle(m.status)}>{statusLabel(m.status)}</span>
+                        {' '}{shortDate(m.redeemedAt)}
+                        {m.boughtByName && ` · 🛒 ${t('rewards.boughtBy').replace('{name}', m.boughtByName)}`}
+                        {m.status === 'requested' && m.isShared ? ` · ${t('rewards.sharedParentDecides')}` : ''}
+                      </span>
+                      {m.status === 'rejected' && m.rejectNote && <span className="chore-sub wrap">💬 {m.rejectNote}</span>}
+                      {cancelFailed === m.id && <span role="alert" className="chore-sub rw-alert">{t('common.actionFailed')}</span>}
+                    </span>
+                    <span className="rw-side">
+                      <span className="chore-coins"><span className="chore-coins-amount">−{formatCoins(m.costCoins, locale)}<CoinIcon /></span></span>
+                      {m.status === 'requested' && !m.isShared && !buyingFor && (
+                        <button className="tq-btn tq-btn-secondary tq-btn-sm rw-cancel" onClick={() => { setCancelFailed(null); onCancel(m.id).catch(() => setCancelFailed(m.id)); }}>
+                          {t('rewards.cancelRequest')}
+                        </button>
+                      )}
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+          {mineSorted.length > MINE_LIMIT && (
+            <button type="button" className="today-more" onClick={() => setShowAllMine((v) => !v)}>
+              {showAllMine ? t('common.showLess') : t('common.showMore').replace('{n}', `${mineSorted.length - MINE_LIMIT}`)}
+            </button>
+          )}
+        </section>
+      )}
+
+      <section className="today-section rw-shop">
+        {categories.length > 0 && (
+          <div className="today-chips rw-chips" role="group" aria-label={t('rewardOrder.category')}>
+            {chip(t('rewardOrder.all'), category === null, () => setCategory(null), 'all')}
+            {categories.map((c) => chip(c, category === c, () => setCategory(c), `c-${c}`))}
+            {hasUncategorized && chip(t('rewardOrder.other'), category === '', () => setCategory(''), 'other')}
+          </div>
+        )}
+        <div className="rw-tools">
+          <input type="search" className="tq-input" value={query} onChange={(e) => setQuery(e.target.value)}
+            placeholder={t('rewards.searchPlaceholder')} aria-label={t('rewards.searchPlaceholder')} />
+          <label className="rw-afford">
+            <Toggle checked={affordableOnly} onChange={setAffordableOnly} label={t('rewards.canAfford')} />
+            <span aria-hidden="true">{t('rewards.canAfford')}</span>
+          </label>
+        </div>
+        <div className="today-sec">
+          <h3>{t('rewards.catalog')} · {visibleRewards.length}</h3>
+          <select className="tq-input-compact rw-sort" value={sort} onChange={(e) => setSortChoice(e.target.value as typeof sortChoice)} aria-label={t('rewards.sortLabel')}>
             {hasFeatured && <option value="featured">{t('rewardOrder.featured')}</option>}
             <option value="priceLow">{t('rewards.sortPriceLow')}</option>
             <option value="priceHigh">{t('rewards.sortPriceHigh')}</option>
             <option value="name">{t('rewards.sortName')}</option>
           </select>
-          <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 700, color: 'var(--warm-text-muted)', cursor: 'pointer', whiteSpace: 'nowrap' }}>
-            <input type="checkbox" checked={affordableOnly} onChange={(e) => setAffordableOnly(e.target.checked)}
-              style={{ width: 16, height: 16, accentColor: 'var(--warm-accent)', cursor: 'pointer' }} />
-            {t('rewards.canAfford')}
-          </label>
         </div>
-        {categories.length > 0 && (
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 12 }} role="group" aria-label={t('rewardOrder.category')}>
-            <button type="button" style={chipStyle(category === null)} onClick={() => setCategory(null)}>{t('rewardOrder.all')}</button>
-            {categories.map((c) => <button type="button" key={c} style={chipStyle(category === c)} onClick={() => setCategory(c)}>{c}</button>)}
-            {hasUncategorized && <button type="button" style={chipStyle(category === '')} onClick={() => setCategory('')}>{t('rewardOrder.other')}</button>}
-          </div>
-        )}
-        {visibleRewards.length === 0 && (
-          <div className="tq-empty-state" style={{ padding: '16px 4px' }}>{t('rewards.noMatches')}</div>
-        )}
-        <div className="rewards-catalog-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: 10 }}>
-          {visibleRewards.map((r) => {
-            const usedUp = !!r.availability && r.availability.remaining <= 0;
-            const canBuy = userCoins >= r.costCoins && !usedUp;
-            return (
-              <div key={r.id} style={{ border: 'var(--shape-border-w) solid var(--warm-border)', borderRadius: 14, padding: 12, backgroundColor: 'var(--warm-bg-subtle)' }}>
-                <div style={{ fontSize: 14, fontWeight: 800, color: 'var(--warm-text)', marginBottom: 4 }}>{rewardTitle(r)}</div>
-                <div style={{ fontSize: 12, color: 'var(--warm-text-light)', fontWeight: 600, minHeight: 32 }}>{rewardDesc(r)}</div>
-                {(r.availability || r.availableUntil) && (
-                  <div style={{ fontSize: 12, fontWeight: 700, color: usedUp ? 'var(--warm-danger)' : 'var(--warm-text-muted)', marginTop: 4 }}>
-                    {r.availability && (usedUp
-                      ? t(`rewardRules.usedUp_${r.availability.period}`).replace('{day}', r.availability.resetsAt ? new Date(r.availability.resetsAt).toLocaleDateString(localeFor(language), { weekday: 'long' }) : '')
-                      : t(`rewardRules.left_${r.availability.period}`).replace('{n}', String(r.availability.remaining)))}
-                    {r.availability && r.availableUntil ? ' · ' : ''}
-                    {r.availableUntil && t('rewardRules.untilDate').replace('{date}', new Date(`${r.availableUntil}T12:00:00`).toLocaleDateString(localeFor(language), { month: 'short', day: 'numeric' }))}
-                  </div>
-                )}
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 8 }}>
-                  <div style={{ fontSize: 13, fontWeight: 800, color: 'var(--warm-accent)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 4 }}>
-                    <CoinIcon /> {formatCoins(r.costCoins, localeFor(language))}
-                  </div>
-                  {!r.isShared && (
-                    <button
-                      className="tq-btn tq-btn-primary tq-btn-sm"
-                      style={{ opacity: canBuy ? 1 : 0.6 }}
-                      disabled={!canBuy}
-                      onClick={() => { setRedeemError(''); setPendingRewardId(r.id); }}
-                    >
-                      {usedUp ? t('rewardRules.usedUp') : canBuy ? t('rewards.redeem') : t('rewards.notEnough')}
-                    </button>
-                  )}
-                </div>
-                {r.isShared && r.pot && (
-                  <SharedPot pot={r.pot} userCoins={userCoins} language={language} onContribute={onContribute && !buyingFor ? (n) => onContribute(r.id, n) : undefined} />
-                )}
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
-      <div className="tq-card tq-card-padded">
-        <h3 className="tq-card-title">{buyingFor ? t('rewards.theirRequests').replace('{name}', forName) : t('rewards.myRequests')}</h3>
-        {mine.length === 0 ? (
-          <div className="tq-empty-state" style={{ padding: '16px 0' }}>{t('rewards.noRequests')}</div>
+        {visibleRewards.length === 0 ? (
+          <div className="tq-card tq-empty-state" style={{ padding: '16px' }}>{t('rewards.noMatches')}</div>
         ) : (
-          <div style={{ display: 'grid', gap: 8 }}>
-            {mine.map((m) => (
-              <div key={m.id} className="rewards-my-row" style={{ border: 'var(--shape-border-w) solid var(--warm-border)', borderRadius: 12, padding: 10, display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 10 }}>
-                <div style={{ minWidth: 0 }}>
-                  <div style={{ fontSize: 13, fontWeight: 800, color: 'var(--warm-text)' }}>{rewardTitleByName(m.title)}</div>
-                  <div style={{ fontSize: 12, color: 'var(--warm-text-light)', fontWeight: 700 }}>
-                    {new Date(m.redeemedAt).toLocaleString(locale)}
-                    {m.boughtByName && ` · 🛒 ${t('rewards.boughtBy').replace('{name}', m.boughtByName)}`}
-                  </div>
-                  {m.status === 'rejected' && m.rejectNote && (
-                    <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--warm-text-muted)', marginTop: 2, overflowWrap: 'anywhere' }}>💬 {m.rejectNote}</div>
-                  )}
-                  {cancelFailed === m.id && <div role="alert" style={{ fontSize: 12, fontWeight: 700, color: 'var(--warm-danger)' }}>{t('common.actionFailed')}</div>}
-                </div>
-                <div className="rewards-my-row-meta" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <div style={{ fontSize: 12, fontWeight: 800, color: 'var(--warm-accent)', display: 'inline-flex', alignItems: 'center', gap: 4 }}>- {m.costCoins} <CoinIcon /></div>
-                  <span style={{ ...statusStyle(m.status), fontSize: 12, fontWeight: 800, borderRadius: 999, padding: '2px 8px' }}>
-                    {statusLabel(m.status)}
-                  </span>
-                  {m.status === 'requested' && m.isShared ? (
-                    <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--warm-text-muted)' }}>{t('rewards.sharedParentDecides')}</span>
-                  ) : m.status === 'requested' && !buyingFor && (
-                    <button className="tq-btn tq-btn-secondary" onClick={() => { setCancelFailed(null); onCancel(m.id).catch(() => setCancelFailed(m.id)); }} style={{ padding: '4px 8px', fontSize: 12 }}>
-                      {t('rewards.cancelRequest')}
-                    </button>
-                  )}
-                </div>
-              </div>
-            ))}
+          <div className="tq-card today-list chore-list rw-list">
+            {(showAllShop ? visibleRewards : visibleRewards.slice(0, SHOP_LIMIT)).map(rewardRow)}
           </div>
         )}
-      </div>
+        {visibleRewards.length > SHOP_LIMIT && (
+          <button type="button" className="today-more" onClick={() => setShowAllShop((v) => !v)}>
+            {showAllShop ? t('common.showLess') : t('common.showMore').replace('{n}', `${visibleRewards.length - SHOP_LIMIT}`)}
+          </button>
+        )}
+      </section>
       {pendingReward && (
         <div className="tq-modal-overlay" style={{ zIndex: 120 }}>
           <div className="tq-card rewards-confirm-modal tq-modal tq-modal-narrow tq-card-padded">

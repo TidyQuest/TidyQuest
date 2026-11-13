@@ -40,6 +40,15 @@ What changed in each release, in plain language, newest first. Releases up to v0
 
 ### Changed
 
+- **Rewards in the new look.** The shop is now a list of short rows like the chore rows: the reward's emoji in a tile,
+  its name and a two-line description (tap the row to read the rest), the price, and an outlined Redeem button. A
+  reward you can't afford yet says how many more coins you need instead of showing a wide "Not enough coins" button,
+  and the list shows 20 at a time with "Show {n} more". Your requests (and, for parents, Reward Requests to approve)
+  are now at the top instead of below the whole shop, newest waiting ones first, three at a time. Categories are a
+  row of buttons you can scroll sideways, with search and "I can afford" on one line and the sort box next to the
+  heading. On a computer the rewards are in two columns. Buying, chipping in, approving, rejecting with a note and
+  cancelling work as before.
+
 - **The app loads faster and uses much less data** (ENH-22, ENH-19, ENH-20). The server now compresses what it sends
   (an open Today's refresh went from about 450 KB to under 30 KB on our family's data, the app itself from 1.7 MB to
   under 0.5 MB), and phones keep the app's files instead of downloading them again on every open; updates still show

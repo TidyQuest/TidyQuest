@@ -1390,21 +1390,6 @@ html[data-theme='lava'] option {
     overflow-wrap: anywhere;
   }
 
-  .rewards-catalog-grid {
-    grid-template-columns: 1fr !important;
-  }
-
-  .rewards-my-row {
-    flex-direction: column !important;
-    align-items: stretch !important;
-  }
-
-  .rewards-my-row-meta {
-    justify-content: space-between !important;
-    width: 100%;
-    flex-wrap: wrap;
-  }
-
   .rewards-confirm-modal {
     width: calc(100vw - 24px) !important;
     max-width: calc(100vw - 24px) !important;
@@ -2298,3 +2283,50 @@ html[data-look='calm'] .today-tabs button.on { background: var(--warm-card); }
 .look-mini-calm .look-mini-head { background: var(--warm-card); border-radius: 4px; }
 .look-mini-calm .look-mini-list { border-radius: 4px; }
 .look-mini-calm .look-mini-row em { border-color: var(--warm-border); border-radius: 3px; }
+
+/* ========================================
+   REWARDS: the shop as compact rows, requests first, categories as chips
+   ======================================== */
+.rw-page { display: grid; gap: 16px; min-width: 0; }
+.rw-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 12px; padding: 0 4px; }
+.rw-balance { display: inline-flex; align-items: center; gap: 8px; font-size: var(--fs-md); font-weight: 800; color: var(--warm-text); }
+.rw-for { display: flex; align-items: center; gap: 8px; min-width: 0; font-size: 13px; font-weight: 700; color: var(--warm-text-muted); }
+.rw-for select { padding: 6px 10px; font-size: 13px; cursor: pointer; min-width: 0; max-width: 160px; }
+.rw-hint { margin-top: -8px; padding: 0 4px; font-size: var(--fs-xs); font-weight: 600; color: var(--warm-text-muted); }
+.rw-alert { font-size: var(--fs-xs); font-weight: 700; color: var(--warm-danger); padding: 0 4px; }
+.rw-shop { gap: 10px; }
+.rw-shop .today-sec { padding-bottom: 0; }
+.rw-tools { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.rw-tools .tq-input { flex: 1; min-width: 0; }
+.rw-afford { flex: none; display: inline-flex; align-items: center; gap: 8px; cursor: pointer; white-space: nowrap; font-size: 13px; font-weight: 700; color: var(--warm-text-muted); }
+.rw-sort { flex: 0 1 auto; min-width: 0; max-width: 55%; padding: 6px 10px; font-size: 13px; cursor: pointer; }
+.rw-tile { font-size: 22px; line-height: 1; }
+.rw-tile svg { width: 22px; height: 22px; }
+.rw-row .chore-coins svg { flex: none; }
+.rw-need { color: var(--warm-text-light); font-weight: 700; }
+.rw-used { color: var(--warm-danger); font-weight: 700; }
+.rw-side { flex: none; display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+.rw-shop .today-sec h3 { white-space: nowrap; }
+.rw-buy {
+  flex: none; min-width: 76px; height: 34px; padding: 0 12px; cursor: pointer; white-space: nowrap;
+  border-radius: var(--shape-radius-control); border: 2px solid var(--warm-accent); background: var(--warm-card);
+  font-family: inherit; font-size: 13px; font-weight: 800; color: var(--warm-accent);
+}
+.rw-buy:hover:not(:disabled) { background: var(--warm-accent-light); }
+.rw-buy:focus-visible { outline: 2px solid var(--warm-accent); outline-offset: 2px; }
+.rw-buy:disabled { border-color: var(--warm-border); color: var(--warm-text-light); opacity: 0.6; cursor: default; }
+.rw-under { padding: 0 6px 10px 60px; min-width: 0; }
+.rw-actions { display: flex; justify-content: flex-end; gap: 8px; }
+.rw-status { display: inline-block; padding: 0 6px; border-radius: 6px; font-size: var(--fs-xs); font-weight: 800; }
+.rw-past .chore-name { color: var(--warm-text-muted); }
+.rw-cancel { flex: none; }
+@media (max-width: 420px) {
+  .rw-buy { min-width: 0; padding: 0 10px; }
+  .rw-under { padding-left: 6px; }
+  .rw-shop .today-sec h3 { font-size: 14px; }
+}
+/* Two columns of rewards on a wide screen */
+@media (min-width: 1100px) {
+  .rw-list { display: grid; grid-template-columns: 1fr 1fr; column-gap: 20px; }
+  .rw-list > .chore-row:nth-child(2) { border-top: 0; border-top-left-radius: 12px; border-top-right-radius: 12px; }
+}

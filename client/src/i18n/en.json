@@ -478,7 +478,9 @@
       "priceChanged": "The price just changed to {coins} coins. Tap Confirm to pay that, or Cancel.",
       "alreadyDecided": "That request was already decided. The list is up to date now.",
       "rejectNotePlaceholder": "Why not? (optional)",
-      "rejectNoteLabel": "A note for {name}"
+      "rejectNoteLabel": "A note for {name}",
+      "needMore": "{n} more coins",
+      "sortLabel": "Sort"
     },
     "rewardsPreset": {
       "movie_night": {

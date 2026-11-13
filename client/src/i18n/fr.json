@@ -478,7 +478,9 @@
       "priceChanged": "Le prix vient de passer à {coins} pièces. Touche Confirmer pour payer ce prix, ou Annuler.",
       "alreadyDecided": "Cette demande a déjà été traitée. La liste est maintenant à jour.",
       "rejectNotePlaceholder": "Pourquoi pas ? (facultatif)",
-      "rejectNoteLabel": "Un mot pour {name}"
+      "rejectNoteLabel": "Un mot pour {name}",
+      "needMore": "Encore {n} pièces",
+      "sortLabel": "Trier"
     },
     "rewardsPreset": {
       "movie_night": {

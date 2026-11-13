@@ -478,7 +478,9 @@
       "priceChanged": "De prijs is net veranderd naar {coins} munten. Tik op Ja, kopen! om dat te betalen, of op Annuleren.",
       "alreadyDecided": "Over dat verzoek was al beslist. De lijst is nu bijgewerkt.",
       "rejectNotePlaceholder": "Waarom niet? (optioneel)",
-      "rejectNoteLabel": "Een berichtje voor {name}"
+      "rejectNoteLabel": "Een berichtje voor {name}",
+      "needMore": "Nog {n} munten",
+      "sortLabel": "Sorteren"
     },
     "rewardsPreset": {
       "movie_night": {
