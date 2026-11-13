@@ -531,7 +531,7 @@ export const GUIDE_DE: GuideSection[] = [
           'Der Bildschirm kann während des Timers ausgehen (über eine einfache http-Adresse lassen Handys Apps ihn nicht anlassen). Der Timer zählt weiter und zeigt „Zeit um! Fertig?“, wenn du wieder hinschaust.',
         ] },
         { q: 'Ich habe auf Erledigt getippt, aber keine Münzen bekommen', a: [
-          'Bei eingeschaltetem Strengen Modus wartet die Aufgabe eines Kindes auf ein Elternteil. Sie wird unter Aktivität und auf Heute beim Elternteil als „1 wartet auf dein OK“ angezeigt: Tippe auf Ansehen.',
+          'Bei eingeschaltetem Strengen Modus wartet die Aufgabe eines Kindes auf ein Elternteil. Sie wird unter Aktivität und auf Heute beim Elternteil als „1 wartet auf dein OK“ angezeigt: Tippe auf Ansehen. Wartet nichts, steht an derselben Stelle „Nichts wartet auf dein OK“ (mit 👁️ unter Anpassen ausblendbar).',
           'Aus Versehen auf Erledigt getippt? Solange sie wartet, macht ↩ Zurücknehmen (neben dem Knopf) es rückgängig; bei einem Teamwork wird es für das ganze Team zurückgenommen.',
           'Wenn Gamification aus ist (Einstellungen → Allgemein), gibt es überhaupt keine Münzen.',
           'Wenn ein Elternteil es abgelehnt hat, ist die Aufgabe wieder offen; bei Teamwork geht sie zurück an das Team.',

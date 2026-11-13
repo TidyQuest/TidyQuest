@@ -531,7 +531,7 @@ export const GUIDE_ES: GuideSection[] = [
           'La pantalla puede apagarse mientras corre el temporizador (con una dirección http simple, los móviles no dejan que las apps la mantengan encendida). El temporizador sigue contando y muestra «¡Se acabó el tiempo! ¿Hecho?» cuando vuelves a mirar.',
         ] },
         { q: 'Pulsé Hecho pero no recibí monedas', a: [
-          'Con el Modo estricto activado, la tarea de un niño espera a un padre o una madre. Aparece como en espera en Actividad y en Hoy del padre o la madre, como "1 espera tu visto bueno": toca Revisar.',
+          'Con el Modo estricto activado, la tarea de un niño espera a un padre o una madre. Aparece como en espera en Actividad y en Hoy del padre o la madre, como "1 espera tu visto bueno": toca Revisar. Si no hay nada pendiente, en el mismo sitio pone "Nada espera tu visto bueno" (se oculta con 👁️ en Personalizar).',
           '¿Pulsaste Hecho por error? Mientras espera, ↩ Deshacer (junto al botón) lo anula; en una tarea En equipo se deshace para todo el equipo.',
           'Si la Gamificación está desactivada (Ajustes → General), no hay monedas en absoluto.',
           'Si un padre o una madre la rechazó, la tarea vuelve a estar abierta; en En equipo vuelve al equipo.',

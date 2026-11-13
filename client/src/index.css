@@ -1896,6 +1896,9 @@ button.today-chip { cursor: pointer; }
   contain: inline-size;
 }
 .today-notice-icon { flex: none; font-size: 22px; }
+.today-notice-calm { background: var(--warm-card); border-color: var(--warm-border); color: var(--warm-text-light); padding: 8px 14px; }
+.today-notice-calm .today-notice-icon { font-size: 18px; }
+.today-notice-calm b { font-weight: 700; }
 .today-notice > div { flex: 1; min-width: 0; }
 .today-notice b { display: block; font-size: 14px; font-weight: 800; }
 .today-notice > div span { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12.5px; font-weight: 600; color: var(--warm-streak-subtext); }

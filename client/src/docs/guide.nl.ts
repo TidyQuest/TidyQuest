@@ -531,7 +531,7 @@ export const GUIDE_NL: GuideSection[] = [
           'Het scherm kan uitgaan terwijl de timer loopt (via een gewoon http-adres laten telefoons apps het niet aan houden). De timer telt door en toont ‘De tijd is om! Klaar?’ als je weer kijkt.',
         ] },
         { q: 'Ik tikte op Klaar! maar kreeg geen munten', a: [
-          'Met Oudercontrole aan wacht het klusje van een kind op een ouder. Het staat als wachtend in Activiteit en op Vandaag van de ouder als "1 wacht op jouw OK": tik op Bekijken.',
+          'Met Oudercontrole aan wacht het klusje van een kind op een ouder. Het staat als wachtend in Activiteit en op Vandaag van de ouder als "1 wacht op jouw OK": tik op Bekijken. Wacht er niets, dan staat daar "Niets wacht op jouw OK" (verberg het met 👁️ bij Aanpassen).',
           'Per ongeluk op Klaar! getikt? Zolang het wacht maakt ↩ Terugnemen (naast de knop) het ongedaan; bij Samen doen wordt het voor het hele team teruggenomen.',
           'Als Spelmodus (Gamification) uit staat (Instellingen → Algemeen), zijn er helemaal geen munten.',
           'Als een ouder het heeft afgewezen, staat het klusje weer open; bij Samen doen gaat het terug naar het team.',

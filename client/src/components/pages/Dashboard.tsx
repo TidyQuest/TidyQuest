@@ -882,7 +882,16 @@ const Dashboard: React.FC<DashboardProps> = ({
   const firstWaiting = pendingCompletions[0]
     ? `${pendingCompletions[0].displayName} · ${taskName(pendingCompletions[0].taskName, pendingCompletions[0].translationKey)}`
     : rewardsWaiting[0] ? `${rewardsWaiting[0].displayName} · ${rewardsWaiting[0].title}` : '';
-  const approvals = isParent && shows('pendingApprovals') && waitingTotal > 0 && (
+  /* Parents always see it (FIX-34): a calm line when nothing waits, so an empty queue doesn't look like a missing card. */
+  const showApprovals = isParent && shows('pendingApprovals');
+  const approvals = showApprovals && waitingTotal === 0 ? (
+    <section className="today-notice-wrap">
+      <div className="today-notice today-notice-calm" role="status">
+        <span className="today-notice-icon" aria-hidden="true">✅</span>
+        <div><b>{t('today.nothingWaiting')}</b></div>
+      </div>
+    </section>
+  ) : showApprovals && (
     <section className="today-notice-wrap">
       <div className="today-notice">
         <span className="today-notice-icon" aria-hidden="true">✋</span>

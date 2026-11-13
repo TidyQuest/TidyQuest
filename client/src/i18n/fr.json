@@ -2485,7 +2485,8 @@
       "streakChip": "série de {n} jours",
       "holiday": "Compte à rebours des fêtes",
       "levelBlock": "Niveau",
-      "choreLists": "Listes de tâches (En retard, Aujourd'hui, À tout moment)"
+      "choreLists": "Listes de tâches (En retard, Aujourd'hui, À tout moment)",
+      "nothingWaiting": "Rien n'attend votre accord"
     },
     "settingsIndex": {
       "search": "Rechercher un réglage",

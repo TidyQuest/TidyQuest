@@ -531,7 +531,7 @@ export const GUIDE_FR: GuideSection[] = [
           'L’écran peut s’éteindre pendant le minuteur (avec une adresse http simple, les téléphones ne laissent pas les applis le garder allumé). Le minuteur continue de compter et affiche « C’est l’heure ! Fini ? » quand vous revenez.',
         ] },
         { q: 'J’ai appuyé sur Fait mais je n’ai pas reçu de pièces', a: [
-          'Avec le Mode strict, la tâche d’un enfant attend un parent. Elle apparaît en attente dans Activité et dans Aujourd\'hui du parent, sous « 1 attend votre accord » : touche Voir.',
+          'Avec le Mode strict, la tâche d’un enfant attend un parent. Elle apparaît en attente dans Activité et dans Aujourd\'hui du parent, sous « 1 attend votre accord » : touche Voir. Quand rien n’attend, le même endroit indique « Rien n\'attend votre accord » (masque-le avec 👁️ dans Personnaliser).',
           'Appuyé sur Fait par erreur ? Pendant l’attente, ↩ Annuler (à côté du bouton) l’annule ; pour une tâche en équipe, elle est annulée pour toute l’équipe.',
           'Si la Gamification est désactivée (Paramètres → Général), il n’y a aucune pièce.',
           'Si un parent l’a refusée, la tâche est de nouveau ouverte ; pour une tâche en équipe, elle retourne à l’équipe.',

@@ -38,6 +38,9 @@ What changed in each release, in plain language, newest first. Releases up to v0
   still checks every 15 seconds, but now only asks "anything new?" and loads again only when something changed (or
   every 5 minutes, so due times keep up with the clock), so a tablet left on Today no longer downloads everything
   all day.
+- **The approvals notice on Today is always there for parents** (FIX-34). With nothing waiting it now says "Nothing
+  waiting for your OK" in a calm line, instead of disappearing. Parents can still hide it in Customise (👁️ Waiting for
+  approval).
 - **A calmer, plainer look: "Fresh"** (ENH-30, the last layout step of the new look). Cards have thin borders and
   smaller corners, buttons are square-cornered with no glow, and filled buttons and links in the seven light colour
   themes use a deeper shade of their colour, so white text on them is easier to read (the default orange went from
@@ -124,6 +127,10 @@ What changed in each release, in plain language, newest first. Releases up to v0
 - The first tab and the menu say Today, and "Show in Dashboard" on anytime chores is now "Show on Today".
 
 ### Fixed
+
+- **"Show {n} more" shows a number** (BUG-53). In Settings → Notifications (the message log) and Settings → Recently
+  deleted, the button showed "{n}" instead of how many are hidden. The message log now shows 10 more per press, then
+  "Show less".
 
 - Kids no longer get "due today" and reminders for chores nobody is assigned to. These now go to people with the new **Chores anyone can do** notification ticked (in Profile → My notifications, or Who gets what). It starts off for kids, on for everyone else. Parents still get the late reminder for those chores.
 - With **hide private rooms** on, kids can no longer reach other people's private rooms through the app's API: the room's chore list, overdue chores, Activity and chore buttons (Done, pin, snooze and the rest) all treat them as not there, like the screens already did (GitHub #185).

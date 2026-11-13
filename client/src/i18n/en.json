@@ -2485,7 +2485,8 @@
       "streakChip": "{n}-day streak",
       "holiday": "Holiday countdown",
       "levelBlock": "Level",
-      "choreLists": "Chore lists (Overdue, Today, Any time)"
+      "choreLists": "Chore lists (Overdue, Today, Any time)",
+      "nothingWaiting": "Nothing waiting for your OK"
     },
     "settingsIndex": {
       "search": "Search settings",

@@ -2485,7 +2485,8 @@
       "streakChip": "racha de {n} días",
       "holiday": "Cuenta atrás de fiestas",
       "levelBlock": "Nivel",
-      "choreLists": "Listas de tareas (Atrasadas, Hoy, Cuando quieras)"
+      "choreLists": "Listas de tareas (Atrasadas, Hoy, Cuando quieras)",
+      "nothingWaiting": "Nada espera tu visto bueno"
     },
     "settingsIndex": {
       "search": "Buscar ajustes",

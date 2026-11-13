@@ -531,7 +531,7 @@ export const GUIDE_IT: GuideSection[] = [
           'Lo schermo può spegnersi mentre il timer corre (con un indirizzo http semplice, i telefoni non lasciano che le app lo tengano acceso). Il timer continua a contare e mostra «Tempo scaduto! Fatto?» quando guardi di nuovo.',
         ] },
         { q: 'Ho toccato Fatto ma non ho ricevuto monete', a: [
-          'Con la Modalità rigorosa attiva, la faccenda di un bambino aspetta un genitore. Risulta in attesa in Attività e in Oggi del genitore come "1 aspetta il tuo OK": tocca Controlla.',
+          'Con la Modalità rigorosa attiva, la faccenda di un bambino aspetta un genitore. Risulta in attesa in Attività e in Oggi del genitore come "1 aspetta il tuo OK": tocca Controlla. Se non aspetta niente, nello stesso punto c’è "Niente aspetta il tuo OK" (si nasconde con 👁️ in Personalizza).',
           'Hai toccato Fatto per sbaglio? Finché aspetta, ↩ Annulla (accanto al pulsante) la annulla; in una squadra viene ritirata per tutta la squadra.',
           'Se Gamification è disattivata (Impostazioni → Generale), non ci sono monete per niente.',
           'Se un genitore l’ha rifiutata, la faccenda è di nuovo aperta; nelle squadre torna alla squadra.',

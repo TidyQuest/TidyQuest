@@ -185,11 +185,13 @@ export function PeopleNotifyAdmin({ language }: { language?: string }) {
 export function NotificationLog({ language }: { language?: string }) {
   const { t } = useTranslation(language);
   const [rows, setRows] = useState<Awaited<ReturnType<typeof api.getNotifyLog>>>([]);
-  const [showAll, setShowAll] = useState(false);
+  const STEP = 10;
+  const [limit, setLimit] = useState(STEP);
   const load = () => api.getNotifyLog().then(setRows).catch(() => setRows([]));
   useEffect(() => { void load(); }, []);
   const when = (iso: string) => new Date(iso).toLocaleString(localeFor(language), { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
-  const shown = showAll ? rows : rows.slice(0, 10);
+  const shown = rows.slice(0, limit);
+  const hidden = rows.length - shown.length;
   return (
     <div style={{ display: 'grid', gap: 6 }}>
       {rows.length === 0 && <div style={{ fontSize: 12, color: 'var(--warm-text-light)', fontWeight: 600 }}>{t('notifyAdmin.logEmpty')}</div>}
@@ -202,7 +204,8 @@ export function NotificationLog({ language }: { language?: string }) {
         </div>
       ))}
       <div style={row}>
-        {rows.length > 10 && <button className="tq-btn tq-btn-sm tq-btn-secondary" onClick={() => setShowAll((v) => !v)}>{showAll ? t('common.showLess') : t('common.showMore')}</button>}
+        {hidden > 0 && <button className="tq-btn tq-btn-sm tq-btn-secondary" onClick={() => setLimit((l) => l + STEP)}>{t('common.showMore').replace('{n}', String(Math.min(STEP, hidden)))}</button>}
+        {hidden === 0 && rows.length > STEP && <button className="tq-btn tq-btn-sm tq-btn-secondary" onClick={() => setLimit(STEP)}>{t('common.showLess')}</button>}
         <button className="tq-btn tq-btn-sm tq-btn-secondary" onClick={() => void load()}>{t('notifyAdmin.refresh')}</button>
       </div>
     </div>

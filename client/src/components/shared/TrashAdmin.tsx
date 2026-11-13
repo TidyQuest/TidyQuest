@@ -78,7 +78,7 @@ export function TrashAdmin({ rooms, language, reloadKey, onRestored }: {
       })}
       {items.length > 8 && (
         <button className="tq-btn tq-btn-sm tq-btn-secondary" onClick={() => setShowAll((v) => !v)} style={{ justifySelf: 'start' }}>
-          {showAll ? t('common.showLess') : t('common.showMore')}
+          {showAll ? t('common.showLess') : t('common.showMore').replace('{n}', String(items.length - 8))}
         </button>
       )}
       {error && <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--warm-danger)' }}>{error}</div>}

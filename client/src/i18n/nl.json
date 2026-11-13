@@ -2485,7 +2485,8 @@
       "streakChip": "{n} dagen op rij",
       "holiday": "Aftellen naar de feestdag",
       "levelBlock": "Level",
-      "choreLists": "Klusjeslijsten (Te laat, Vandaag, Wanneer je wilt)"
+      "choreLists": "Klusjeslijsten (Te laat, Vandaag, Wanneer je wilt)",
+      "nothingWaiting": "Niets wacht op jouw OK"
     },
     "settingsIndex": {
       "search": "Instellingen zoeken",

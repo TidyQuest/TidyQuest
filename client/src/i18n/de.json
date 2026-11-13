@@ -2485,7 +2485,8 @@
       "streakChip": "{n} Tage in Folge",
       "holiday": "Feiertags-Countdown",
       "levelBlock": "Level",
-      "choreLists": "Aufgabenlisten (Überfällig, Heute, Jederzeit)"
+      "choreLists": "Aufgabenlisten (Überfällig, Heute, Jederzeit)",
+      "nothingWaiting": "Nichts wartet auf dein OK"
     },
     "settingsIndex": {
       "search": "Einstellungen durchsuchen",

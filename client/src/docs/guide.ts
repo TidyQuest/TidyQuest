@@ -555,7 +555,7 @@ export const GUIDE_EN: GuideSection[] = [
           'The screen may turn off while the timer runs (over a plain http address, phones don’t let apps keep it on). The timer keeps counting and shows “Time’s up! Done?” when you look again.',
         ] },
         { q: 'I tapped Done but got no coins', a: [
-          'With Strict Mode on, a kid’s chore waits for a parent. It shows as waiting in Activity and on the parent’s Today as "1 waiting for your OK": tap Review.',
+          'With Strict Mode on, a kid’s chore waits for a parent. It shows as waiting in Activity and on the parent’s Today as "1 waiting for your OK": tap Review. With nothing waiting, the same place says "Nothing waiting for your OK" (hide it with 👁️ Waiting for approval in Customise).',
           'Tapped Done by mistake? While it waits, ↩ Take back (next to the button) undoes it; on a team-up it’s taken back for the whole team.',
           'If Gamification is off (Settings → General), there are no coins at all.',
           'If a parent turned it down, the chore is open again; under team-ups it goes back to the team.',

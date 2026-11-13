@@ -2485,7 +2485,8 @@
       "streakChip": "serie di {n} giorni",
       "holiday": "Conto alla rovescia delle feste",
       "levelBlock": "Livello",
-      "choreLists": "Elenchi delle faccende (In ritardo, Oggi, Quando vuoi)"
+      "choreLists": "Elenchi delle faccende (In ritardo, Oggi, Quando vuoi)",
+      "nothingWaiting": "Niente aspetta il tuo OK"
     },
     "settingsIndex": {
       "search": "Cerca nelle impostazioni",
