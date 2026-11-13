@@ -432,6 +432,7 @@ export const GUIDE_DE: GuideSection[] = [
         'Die Nachrichten laufen über den Push-Dienst des Browser-Herstellers (Google, Apple, Mozilla oder Microsoft), verschlüsselt, sodass nur das Gerät sie lesen kann.',
         'Einstellungen → Funktionen → Benachrichtigungen aufs Handy (Web-Push) schaltet es für die ganze Familie aus.',
       ] },
+      { p: 'Wer keinen eigenen Kanal hat, sieht nach der ersten Aufgabe des Tages eine Karte auf Heute: Einschalten macht dasselbe wie Profil → Meine Benachrichtigungen auf diesem Handy. Nicht jetzt blendet sie eine Woche aus, und sie kommt höchstens dreimal wieder. Wer bekommt was markiert alle, die noch nichts bekommen (kein eigener Kanal und kein Familienkanal), damit ein Elternteil ihnen das Handy geben kann.' },
       { h: 'Home Assistant' },
       { p: 'Wenn deine Familie die Home-Assistant-App auf dem Handy hat, kann TidyQuest Nachrichten darüber schicken. Das geht nur auf einem Server zu Hause, nicht auf tidyquest.org.' },
       { ol: [
@@ -601,6 +602,10 @@ export const GUIDE_DE: GuideSection[] = [
           '„Dieser Browser kann sich hier nicht für Benachrichtigungen anmelden“: Das ist ein privates (Inkognito-)Fenster oder ein Browser auf Chromium-Basis ohne Push-Dienst. Nimm ein normales Fenster in Chrome, Edge, Firefox oder Safari.',
           '„Benachrichtigungen wurden nicht erlaubt“: Die Frage wurde geschlossen, oder Chrome bzw. Edge haben statt der Frage eine Glocke in der Adressleiste gezeigt. Tippe noch einmal auf Für dieses Gerät einschalten und wähle Zulassen.',
           'Private Fenster bekommen keine Benachrichtigungen: Öffne TidyQuest in einem normalen Fenster.',
+        ] },
+        { q: 'Ich habe die Karte „Benachrichtigungen einschalten“ nie gesehen', a: [
+          'Sie erscheint nur bei Personen ohne eigenen Kanal (keine Benachrichtigungen aufs Handy auf irgendeinem Gerät, kein ntfy-Thema, kein Telegram-Chat, kein Home-Assistant-Dienst), wenn Benachrichtigungen und Einstellungen → Funktionen → Benachrichtigungen aufs Handy (Web-Push) an sind, und erst nach ihrer ersten Aufgabe des Tages.',
+          'Auf einer http://-Adresse und in Browsern, die keine Benachrichtigungen zeigen können, bleibt sie verborgen. Nach Einschalten ist sie für immer weg; nach Nicht jetzt wartet sie eine Woche, höchstens dreimal. Profil → Meine Benachrichtigungen funktioniert immer.',
         ] },
         { q: 'Benachrichtigungen aufs Handy kommen nicht mehr', a: [
           'Abmelden auf diesem Gerät, Auf allen Geräten abmelden oder ein neues Passwort von einem Elternteil stoppt sie. Melde dich an und tippe wieder auf Für dieses Gerät einschalten.',

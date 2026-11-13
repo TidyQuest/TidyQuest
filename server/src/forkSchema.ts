@@ -347,6 +347,8 @@ const NEW_COLUMNS: string[] = [
   `ALTER TABLE notification_queue ADD COLUMN onlyIf TEXT`,
   // The optional one-line note a parent gave when rejecting this reward request (ENH-23)
   `ALTER TABLE reward_redemptions ADD COLUMN rejectNote TEXT`,
+  // The "turn on notifications" card on Today (ENH-31, utils/notifyCard.ts): JSON {done, snoozes, until}
+  `ALTER TABLE users ADD COLUMN notifyCard TEXT`,
 ];
 
 /** Fork tables included in backup export/import: key in the backup file -> table. */

@@ -432,6 +432,7 @@ export const GUIDE_NL: GuideSection[] = [
         'Berichten gaan via de pushdienst van de browsermaker (Google, Apple, Mozilla of Microsoft), versleuteld zodat alleen het apparaat ze kan lezen.',
         'Instellingen → Functies → Meldingen op je telefoon (web push) zet het uit voor het hele gezin.',
       ] },
+      { p: 'Wie geen eigen kanaal heeft, ziet na de eerste klus van de dag een kaart op Vandaag: Aanzetten doet hetzelfde als Profiel → Mijn meldingen op die telefoon. Niet nu verbergt hem een week, en hij komt hoogstens drie keer terug. Wie krijgt wat markeert wie nog niets krijgt (geen eigen kanaal en geen gezinskanaal), zodat een ouder hun de telefoon kan geven.' },
       { h: 'Home Assistant' },
       { p: 'Heeft je gezin de Home Assistant-app op de telefoon, dan kan TidyQuest daar berichten via sturen. Dit werkt alleen op een server thuis, niet op tidyquest.org.' },
       { ol: [
@@ -601,6 +602,10 @@ export const GUIDE_NL: GuideSection[] = [
           '"Deze browser kan zich hier niet aanmelden voor meldingen": dit is een privévenster (incognito), of een browser op basis van Chromium zonder pushdienst. Gebruik een gewoon venster in Chrome, Edge, Firefox of Safari.',
           '"Meldingen zijn niet toegestaan": de vraag is gesloten, of Chrome of Edge toonde een belletje in de adresbalk in plaats van het te vragen. Tik nog eens op Aanzetten op dit apparaat en kies Toestaan.',
           'Privévensters krijgen geen meldingen: open TidyQuest in een gewoon venster.',
+        ] },
+        { q: 'Ik heb de kaart „meldingen aanzetten” nooit gezien', a: [
+          'Hij verschijnt alleen bij wie geen eigen kanaal heeft (geen meldingen op je telefoon op welk apparaat ook, geen ntfy-onderwerp, Telegram-chat of Home Assistant-dienst), terwijl meldingen en Instellingen → Functies → Meldingen op je telefoon (web push) aan staan, en pas na hun eerste klus van de dag.',
+          'Op een http://-adres en in browsers die geen meldingen kunnen tonen blijft hij verborgen. Na Aanzetten is hij voorgoed weg; na Niet nu wacht hij een week, hoogstens drie keer. Profiel → Mijn meldingen werkt altijd.',
         ] },
         { q: 'Meldingen op je telefoon komen niet meer', a: [
           'Uitloggen op dat apparaat, Uitloggen op alle apparaten of een nieuw wachtwoord van een ouder stopt ze. Log in en tik opnieuw op Aanzetten op dit apparaat.',

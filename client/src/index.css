@@ -1903,6 +1903,17 @@ button.today-chip { cursor: pointer; }
 .today-notice b { display: block; font-size: 14px; font-weight: 800; }
 .today-notice > div span { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12.5px; font-weight: 600; color: var(--warm-streak-subtext); }
 .today-notice .tq-btn { flex: none; }
+/* "Turn on notifications" (ENH-31, NotifyCard.tsx) */
+.notify-card {
+  display: flex; gap: 12px; padding: 14px; border-radius: var(--shape-radius-card); min-width: 0;
+  background: var(--warm-card); border: 1.5px solid var(--warm-accent); color: var(--warm-text);
+}
+.notify-card-icon { flex: none; font-size: 24px; line-height: 1.2; }
+.notify-card-body { flex: 1; min-width: 0; display: grid; gap: 6px; }
+.notify-card-body b { font-size: 15px; font-weight: 800; overflow-wrap: anywhere; }
+.notify-card-body p { margin: 0; font-size: 13px; font-weight: 600; color: var(--warm-text-muted); overflow-wrap: anywhere; }
+.notify-card-body .notify-card-error { color: var(--warm-accent); font-weight: 700; }
+.notify-card-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
 .today-tabs-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
 .today-tabs { display: inline-flex; max-width: 100%; border: var(--shape-border-w) solid var(--warm-border); border-radius: var(--shape-radius-control); overflow: hidden; background: var(--warm-card); }
 .today-tabs button {

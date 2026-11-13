@@ -46,6 +46,7 @@ import { CosmeticsContext, type Cosmetic } from './utils/unlocks';
 import { WeekStartContext } from './utils/week';
 import { familyZone, setFamilyZone } from './utils/clock';
 import { syncPush } from './utils/pushSync';
+import { NotifyCard, type NotifyCardKind } from './components/shared/NotifyCard';
 
 const NO_COSMETICS: Record<number, Cosmetic> = {};
 import { SeasonGreeting, SeasonParticles, SeasonStrip } from './components/shared/SeasonalDecor';
@@ -125,6 +126,10 @@ function AppContent() {
   const [searchOpen, setSearchOpen] = useState(false);
   // "What's new" after a big update (NEW-38): who closed it on this visit, or replayed from the guide
   const [whatsNewClosedBy, setWhatsNewClosedBy] = useState<number | null>(null);
+  // The "turn on notifications" card (ENH-31): kept after Turn on, so it can say what they'll get even once the
+  // server stops sending it, and gone for this sign-in after Not now or Got it
+  const [notifyCardHeld, setNotifyCardHeld] = useState<{ userId: number; kind: NotifyCardKind } | null>(null);
+  const [notifyCardGoneFor, setNotifyCardGoneFor] = useState<number | null>(null);
   const [whatsNewReplay, setWhatsNewReplay] = useState(false);
   const openSearch = useCallback(() => setSearchOpen(true), []);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
@@ -503,11 +508,18 @@ function AppContent() {
     // Skipping counts as seen, and so does watching it from the guide
     if (unseenWhatsNew) api.whatsNewSeen([unseenWhatsNew]).catch(() => {});
   };
+  const notifyCardKind: NotifyCardKind | null = !user || notifyCardGoneFor === user.id ? null
+    : notifyCardHeld?.userId === user.id ? notifyCardHeld.kind : dashboardData?.notifyCard ?? null;
+  const notifyCard = notifyCardKind && (
+    <NotifyCard key={user.id} kind={notifyCardKind} userId={user.id} language={user.language}
+      onTurnedOn={() => setNotifyCardHeld({ userId: user.id, kind: notifyCardKind })} onGone={() => setNotifyCardGoneFor(user.id)} />
+  );
   const focusPage = (onLeave: () => void, leaveLabel: string) => focusData && (
     <Focus focus={focusData} userId={user.id} language={user.language} coinsByEffort={coinsByEffort}
       gamificationEnabled={gamificationEnabled} mission={gamificationEnabled ? dashboardData?.rescueMission : null}
       roomName={(name, roomId) => roomDisplayName(name, rooms.find((r: { id: number; roomType?: string }) => r.id === roomId)?.roomType || '')}
-      onComplete={(id) => handleCompleteTask(id)} onSeeAll={() => navigate('/tasks')} onLeave={onLeave} leaveLabel={leaveLabel} />
+      onComplete={(id) => handleCompleteTask(id)} onSeeAll={() => navigate('/tasks')} onLeave={onLeave} leaveLabel={leaveLabel}
+      doneExtra={notifyCard} />
   );
 
   return (
@@ -602,6 +614,7 @@ function AppContent() {
                   onCoinsChanged={refreshUser}
                   onNavigateToRoom={(id) => navigate(`/rooms/${id}`)}
                   onOpenTask={(roomId, taskId) => navigate(`/rooms/${roomId}?task=${taskId}`)}
+                  notifyCard={notifyCard}
                   coinsByEffort={coinsByEffort}
                   onNavigateToActivity={() => navigate('/activity')}
                   onNavigateToRewards={() => navigate('/rewards')}

@@ -233,6 +233,8 @@ interface DashboardProps {
   onNavigateToRoom: (roomId: number) => void;
   /** Open a task in its room, scrolled to and highlighted */
   onOpenTask?: (roomId: number, taskId: number) => void;
+  /** The "turn on notifications" card (ENH-31), when this person should see it */
+  notifyCard?: React.ReactNode;
   coinsByEffort?: Record<number, number>;
   onNavigateToActivity: () => void;
   onNavigateToRewards?: () => void;
@@ -287,6 +289,7 @@ const Dashboard: React.FC<DashboardProps> = ({
   allRooms = [],
   onNavigateToRoom,
   onOpenTask,
+  notifyCard,
   coinsByEffort,
   onNavigateToRewards,
   onNavigateToRooms,
@@ -1126,6 +1129,8 @@ const Dashboard: React.FC<DashboardProps> = ({
           {panel === 'mascot' && panelBody}
           {chips.length > 0 && <div className="today-chips">{chips}</div>}
           {panel !== 'mascot' && panelBody}
+          {/* A one-time prompt that removes itself, so not a part Customise can hide (ENH-31) */}
+          {notifyCard}
           {/* The big blocks, in this person's order (Customise) */}
           {blockOrder.map((id) => <React.Fragment key={id}>{mainBlocks[id]}</React.Fragment>)}
           {/* Always here, so a hidden part can come back */}

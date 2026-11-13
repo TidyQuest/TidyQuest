@@ -11,6 +11,15 @@ What changed in each release, in plain language, newest first. Releases up to v0
 
 ### Added
 
+- **A "turn on notifications" card on Today** (ENH-31). Anyone who doesn't have notifications of their own yet (no
+  phone notifications on any device, ntfy topic, Telegram chat or Home Assistant service) sees a card after their
+  first chore of the day: kids read "Get a ping when your chore is approved or someone cheers you", parents "…when a
+  chore is waiting for you to approve". Turn on does the same as Profile → My notifications on that phone, then says
+  what they'll get; Not now hides it for a week, and it comes back at most three times, on every device. It also
+  shows in Kid mode and on One thing at a time's "All done" screen. On an iPhone outside the Home Screen app, or with
+  notifications blocked, it gives the same hint as Profile; on an http:// address it stays hidden. Settings →
+  Notifications → Who gets what now says "Gets nothing yet" for someone with no channel of their own when the
+  family channel is off (it used to say "family channel").
 - **"What's new" after a big update** (NEW-38). The first time each person opens the app after the new look, a few
   click-through slides show what moved: the tabs along the bottom, Today, the short chore rows (tap ✓ for Done, tap
   the name for the rest) and the top line with 🔍 and +. Parents also get a slide about the Settings list and Look;

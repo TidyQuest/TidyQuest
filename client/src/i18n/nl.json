@@ -1531,7 +1531,9 @@
       "mineDescPush": "Krijg TidyQuest-berichten op deze telefoon of computer: zet meldingen op je telefoon aan. Of gebruik de ntfy-app: abonneer je op een onderwerp dat alleen jij kent en vul het hieronder in.",
       "peopleDescPush": "Geef iedereen een eigen kanaal: meldingen op de telefoon die ze in Profiel aanzetten, een ntfy-onderwerp op de telefoon, een Telegram-chat of de Home Assistant-telefoon. Zonder eigen kanaal delen ze het gezinskanaal; privéberichten (resultaten, samenvattingen, duwtjes) gaan alleen naar het eigen kanaal.",
       "peopleDescHostedPush": "Geef iedereen een eigen kanaal: meldingen op de telefoon die ze in Profiel aanzetten, een ntfy-onderwerp op de telefoon of een Telegram-chat. Zonder eigen kanaal delen ze het gezinskanaal; privéberichten (resultaten, samenvattingen, duwtjes) gaan alleen naar het eigen kanaal.",
-      "kind_openChores": "Klusjes voor iedereen"
+      "kind_openChores": "Klusjes voor iedereen",
+      "getsNothing": "Krijgt nog niets",
+      "familyOnly": "alleen gezinskanaal"
     },
     "todos": {
       "roomName": "To-do's",
@@ -2606,6 +2608,16 @@
       "kidRowsTitle": "Tik op ✓ als het klaar is",
       "kidRowsLead": "Je andere klusjes zijn korte regels.",
       "kidRowsSteps": "Tik op ✓ om het af te vinken.\nTik op de naam van het klusje om meer te zien."
+    },
+    "notifyCard": {
+      "titleKid": "Krijg een seintje als je klus is goedgekeurd of iemand je aanmoedigt",
+      "titleParent": "Krijg een seintje als een klus op je goedkeuring wacht",
+      "text": "Zet meldingen aan op deze telefoon. Wat je krijgt kies je in Profiel → Mijn meldingen.",
+      "turnOn": "Aanzetten",
+      "notNow": "Niet nu",
+      "gotIt": "Begrepen",
+      "onKid": "Klaar! Deze telefoon laat je nu weten wanneer een klus is goedgekeurd, wanneer iemand je aanmoedigt en wat er vandaag moet.",
+      "onParent": "Klaar! Deze telefoon laat je nu weten wanneer een klus of beloning op je wacht, wat er vandaag moet, en geeft het weekoverzicht."
     }
   }
 }

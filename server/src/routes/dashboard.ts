@@ -15,6 +15,7 @@ import { forgottenTasks, todaySections, usualTasks } from '../utils/homeSections
 import { rescueCandidates, todaysMission } from '../utils/rescue';
 import { getFeatures, getLook, holidaysOff, isFeatureOn } from '../utils/features';
 import { unseenWhatsNew } from '../utils/whatsNew';
+import { notifyCardFor } from '../utils/notifyCard';
 import { setupNeeded } from '../setup/apply';
 import { weekStartDay } from '../utils/periods';
 import { familyZone, onDayArgs, onDaySql, savedZone } from '../utils/clock';
@@ -353,6 +354,8 @@ router.get('/', (req: AuthRequest, res: Response) => {
     look: getLook(),
     // "What's new" slides this person hasn't seen yet (NEW-38)
     whatsNew: unseenWhatsNew(req.userId!),
+    // The "turn on notifications" card: 'kid' or 'parent' wording, or null (ENH-31)
+    notifyCard: notifyCardFor(req.userId!),
     // The week's first day, like Date.getDay(): 1 = Monday, 0 = Sunday (Settings → General)
     weekStart: weekStartDay(),
     // The family's time zone (Settings → General); timeZoneSet is false while the server's own (TZ) is used

@@ -432,6 +432,7 @@ export const GUIDE_ES: GuideSection[] = [
         'Los mensajes pasan por el servicio push del fabricante del navegador (Google, Apple, Mozilla o Microsoft), cifrados para que solo el dispositivo pueda leerlos.',
         'Ajustes → Funciones → Notificaciones en el móvil (web push) las desactiva para toda la familia.',
       ] },
+      { p: 'Quien no tiene canal propio ve una tarjeta en Hoy tras su primera tarea del día: Activar hace lo mismo que Perfil → Mis notificaciones en ese teléfono. Ahora no la oculta una semana, y vuelve como mucho tres veces. Quién recibe qué marca a quienes aún no reciben nada (sin canal propio ni canal familiar), para que un padre o una madre les pase el teléfono.' },
       { h: 'Home Assistant' },
       { p: 'Si tu familia tiene la app de Home Assistant en el móvil, TidyQuest puede enviar los mensajes por ahí. Solo funciona en un servidor en casa, no en tidyquest.org.' },
       { ol: [
@@ -601,6 +602,10 @@ export const GUIDE_ES: GuideSection[] = [
           '"Este navegador no puede registrarse para notificaciones aquí": es una ventana privada (de incógnito), o un navegador basado en Chromium sin servicio push. Usa una ventana normal de Chrome, Edge, Firefox o Safari.',
           '"No se permitieron las notificaciones": se cerró la pregunta, o Chrome o Edge mostraron una campana en la barra de direcciones en vez de preguntar. Toca otra vez Activar en este dispositivo y elige Permitir.',
           'Las ventanas privadas no reciben notificaciones: abre TidyQuest en una ventana normal.',
+        ] },
+        { q: 'Nunca vi la tarjeta «activar notificaciones»', a: [
+          'Solo aparece a quien no tiene canal propio (sin notificaciones en el móvil en ningún dispositivo, tema de ntfy, chat de Telegram ni servicio de Home Assistant), con las notificaciones y Ajustes → Funciones → Notificaciones en el móvil (web push) activadas, y solo después de su primera tarea del día.',
+          'Se queda oculta en una dirección http:// y en navegadores que no pueden mostrar notificaciones. Tras Activar desaparece para siempre; tras Ahora no espera una semana, como mucho tres veces. Perfil → Mis notificaciones siempre funciona.',
         ] },
         { q: 'Las notificaciones en el móvil dejaron de llegar', a: [
           'Cerrar sesión en ese dispositivo, Cerrar sesión en todos los dispositivos o una contraseña nueva puesta por un padre o una madre las detiene. Inicia sesión y toca otra vez Activar en este dispositivo.',

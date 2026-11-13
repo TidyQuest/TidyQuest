@@ -1531,7 +1531,9 @@
       "mineDescPush": "Hol dir TidyQuest-Nachrichten auf dieses Handy oder diesen Computer: Schalte Benachrichtigungen aufs Handy ein. Oder nutze die ntfy-App: Abonniere ein Thema, das nur du kennst, und trag es unten ein.",
       "peopleDescPush": "Gib jeder Person einen eigenen Kanal: Benachrichtigungen aufs Handy, die sie im Profil einschaltet, ein ntfy-Thema auf dem Handy, einen Telegram-Chat oder ihr Home-Assistant-Handy. Ohne eigenen Kanal teilen sie den Familienkanal; private Nachrichten (Ergebnisse, Zusammenfassungen, Erinnerungen) gehen nur an den eigenen Kanal.",
       "peopleDescHostedPush": "Gib jeder Person einen eigenen Kanal: Benachrichtigungen aufs Handy, die sie im Profil einschaltet, ein ntfy-Thema auf dem Handy oder einen Telegram-Chat. Ohne eigenen Kanal teilen sie den Familienkanal; private Nachrichten (Ergebnisse, Zusammenfassungen, Erinnerungen) gehen nur an den eigenen Kanal.",
-      "kind_openChores": "Aufgaben für alle"
+      "kind_openChores": "Aufgaben für alle",
+      "getsNothing": "Bekommt noch nichts",
+      "familyOnly": "nur Familienkanal"
     },
     "todos": {
       "roomName": "Erledigen",
@@ -2606,6 +2608,16 @@
       "kidRowsTitle": "Tippe auf ✓, wenn du fertig bist",
       "kidRowsLead": "Deine anderen Aufgaben sind kurze Zeilen.",
       "kidRowsSteps": "Tippe auf ✓, um sie als erledigt zu markieren.\nTippe auf den Namen der Aufgabe, um mehr zu sehen."
+    },
+    "notifyCard": {
+      "titleKid": "Bekomm Bescheid, wenn deine Aufgabe genehmigt ist oder dich jemand anfeuert",
+      "titleParent": "Bekomm Bescheid, wenn eine Aufgabe auf deine Genehmigung wartet",
+      "text": "Schalte Benachrichtigungen auf diesem Handy ein. Was du bekommst, wählst du unter Profil → Meine Benachrichtigungen.",
+      "turnOn": "Einschalten",
+      "notNow": "Nicht jetzt",
+      "gotIt": "Verstanden",
+      "onKid": "Fertig! Dieses Handy sagt dir jetzt, wenn eine Aufgabe genehmigt ist, wenn dich jemand anfeuert und was heute fällig ist.",
+      "onParent": "Fertig! Dieses Handy sagt dir jetzt, wenn eine Aufgabe oder Belohnung auf dich wartet, was heute fällig ist, und bringt den Wochenrückblick."
     }
   }
 }

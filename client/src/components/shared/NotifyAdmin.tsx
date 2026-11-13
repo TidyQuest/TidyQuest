@@ -170,8 +170,9 @@ export function PeopleNotifyAdmin({ language }: { language?: string }) {
         <div key={p.id} style={box}>
           <button onClick={() => setOpen(open === p.id ? null : p.id)} style={{ ...row, justifyContent: 'space-between', background: 'none', border: 'none', padding: 0, cursor: 'pointer', fontFamily: 'Nunito', color: 'inherit', width: '100%' }}>
             <span style={{ fontSize: 13, fontWeight: 800, color: 'var(--warm-text)' }}>{p.displayName}</span>
-            <span style={{ fontSize: 12, fontWeight: 700, color: p.channels.length ? 'var(--health-green)' : 'var(--warm-text-light)' }}>
-              {p.channels.length ? p.channels.join(' · ') : t('notifyAdmin.familyChannel')} {open === p.id ? '▲' : '▼'}
+            {/* No channel of their own and no family channel: nothing reaches them (ENH-31) */}
+            <span style={{ fontSize: 12, fontWeight: 700, color: p.channels.length ? 'var(--health-green)' : p.familyChannel ? 'var(--warm-text-light)' : 'var(--warm-accent)' }}>
+              {p.channels.length ? p.channels.join(' · ') : p.familyChannel ? t('notifyAdmin.familyOnly') : `⚠️ ${t('notifyAdmin.getsNothing')}`} {open === p.id ? '▲' : '▼'}
             </span>
           </button>
           {open === p.id && <PersonNotify person={p} language={language} onSaved={(next) => setPeople((all) => all.map((x) => (x.id === next.id ? next : x)))} />}

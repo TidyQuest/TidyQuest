@@ -1531,7 +1531,9 @@
       "mineDescPush": "Reçois les messages TidyQuest sur ce téléphone ou cet ordinateur : active les notifications sur le téléphone. Ou utilise l'app ntfy : abonne-toi à un sujet que toi seul connais et saisis-le ci-dessous.",
       "peopleDescPush": "Donne à chacun son propre canal : les notifications sur le téléphone qu'il active dans Profil, un sujet ntfy sur son téléphone, un chat Telegram ou son téléphone Home Assistant. Sans canal, il partage le canal familial ; les messages privés (résultats, résumés, rappels) ne vont que sur son propre canal.",
       "peopleDescHostedPush": "Donne à chacun son propre canal : les notifications sur le téléphone qu'il active dans Profil, un sujet ntfy sur son téléphone ou un chat Telegram. Sans canal, il partage le canal familial ; les messages privés (résultats, résumés, rappels) ne vont que sur son propre canal.",
-      "kind_openChores": "Tâches pour tout le monde"
+      "kind_openChores": "Tâches pour tout le monde",
+      "getsNothing": "Ne reçoit rien pour l'instant",
+      "familyOnly": "canal familial seulement"
     },
     "todos": {
       "roomName": "À faire",
@@ -2606,6 +2608,16 @@
       "kidRowsTitle": "Touche ✓ quand c'est fait",
       "kidRowsLead": "Tes autres tâches sont des lignes courtes.",
       "kidRowsSteps": "Touche ✓ pour la marquer faite.\nTouche le nom de la tâche pour en voir plus."
+    },
+    "notifyCard": {
+      "titleKid": "Reçois un signal quand ta tâche est approuvée ou que quelqu'un t'encourage",
+      "titleParent": "Recevez un signal quand une tâche attend votre approbation",
+      "text": "Activez les notifications sur ce téléphone. Vous choisissez ce que vous recevez dans Profil → Mes notifications.",
+      "turnOn": "Activer",
+      "notNow": "Pas maintenant",
+      "gotIt": "Compris",
+      "onKid": "C'est fait ! Ce téléphone te prévient quand une tâche est approuvée, quand quelqu'un t'encourage, et de ce qui est à faire aujourd'hui.",
+      "onParent": "C'est fait ! Ce téléphone vous prévient quand une tâche ou une récompense vous attend, de ce qui est à faire aujourd'hui, et du bilan de la semaine."
     }
   }
 }

@@ -3,7 +3,8 @@ import db from '../database';
 import { AuthRequest, authMiddleware } from '../middleware/auth';
 import { ensureAdmin } from '../utils/adminHelpers';
 import { NOTIFICATION_KINDS } from '../utils/notifications';
-import { getPeople, personalChannels, sendPersonTest, wants, type NotifyKind } from '../utils/notify';
+import { familyChannels, getPeople, personalChannels, sendPersonTest, wants, type NotifyKind } from '../utils/notify';
+import { answerNotifyCard } from '../utils/notifyCard';
 import { activeDevices, pushOn, removeDevice, removeDeviceByEndpoint, saveDevice, vapidKeys } from '../utils/push';
 import { SCHEDULE_DEFAULTS } from '../utils/notifySchedule';
 import { tr } from '../utils/i18n';
@@ -86,6 +87,8 @@ function personView(id: number) {
     ntfyTopic: p.ntfyTopic ?? '', telegramChatId: p.telegramChatId ?? '', haNotifyService: p.haNotifyService ?? '',
     prefs: Object.fromEntries(NOTIFICATION_KINDS.map((k) => [k, wants(p, k)])),
     channels: [...new Set(personalChannels(p).map((c) => c.channel))],
+    // Whether a family channel is on: without one, someone with no channel of their own gets nothing (ENH-31)
+    familyChannel: familyChannels().length > 0,
     // Phones and computers where they turned on web push (NEW-5)
     devices: pushOn() ? activeDevices(p.id).map((d) => ({ id: d.id, label: d.label, createdAt: d.createdAt, lastOkAt: d.lastOkAt })) : [],
     // Can't log in (ENH-16): nothing is sent to them until a parent turns it back on
@@ -160,6 +163,14 @@ router.post('/push/devices', (req: AuthRequest, res: Response) => {
   const device = saveDevice(req.userId!, { endpoint: b.endpoint, p256dh: b.keys?.p256dh, auth: b.keys?.auth, label: b.label });
   if (!device) return res.status(400).json({ error: 'invalid_subscription' });
   res.json({ id: device.id });
+});
+
+// The "turn on notifications" card on Today (ENH-31): Turn on worked, or Not now
+router.post('/card', (req: AuthRequest, res: Response) => {
+  const answer = req.body?.answer;
+  if (answer !== 'done' && answer !== 'snooze') return res.status(400).json({ error: 'invalid_answer' });
+  answerNotifyCard(req.userId!, answer);
+  res.json({ success: true });
 });
 
 // This device turns it off, or signs out

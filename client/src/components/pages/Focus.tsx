@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useRef, useState, type ReactNode } from 'react';
 import { useTranslation } from '../../hooks/useTranslation';
 import { useChoreTimer } from '../../hooks/useChoreTimer';
 import { taskCoins } from '../../utils/tasks';
@@ -37,7 +37,7 @@ export interface FocusData {
   openPerDay: number;
 }
 
-export function Focus({ focus, userId, language, coinsByEffort, gamificationEnabled, mission, roomName, onComplete, onSeeAll, onLeave, leaveLabel }: {
+export function Focus({ focus, userId, language, coinsByEffort, gamificationEnabled, mission, roomName, onComplete, onSeeAll, onLeave, leaveLabel, doneExtra }: {
   focus: FocusData;
   userId: number;
   language?: string;
@@ -51,6 +51,8 @@ export function Focus({ focus, userId, language, coinsByEffort, gamificationEnab
   onSeeAll: () => void;
   onLeave: () => void;
   leaveLabel: string;
+  /** Shown under "All done" (the "turn on notifications" card, ENH-31) */
+  doneExtra?: ReactNode;
 }) {
   const { t, taskName } = useTranslation(language || 'en');
   const timer = useChoreTimer();
@@ -120,6 +122,7 @@ export function Focus({ focus, userId, language, coinsByEffort, gamificationEnab
             <button type="button" className="tq-btn tq-btn-secondary" onClick={onLeave}>{leaveLabel}</button>
           </div>
         </div>
+        {doneCount > 0 && doneExtra && <div style={{ marginTop: 14 }}>{doneExtra}</div>}
       </div>
     );
   }

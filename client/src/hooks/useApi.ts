@@ -276,6 +276,8 @@ export interface NotifyPerson {
   canLogIn?: boolean;
   /** Phones and computers where they turned on web push (NEW-5) */
   devices: PushDeviceInfo[];
+  /** A family channel is on: without one (and none of their own) they get nothing (ENH-31) */
+  familyChannel?: boolean;
 }
 
 export interface PushDeviceInfo { id: number; label: string; createdAt: string; lastOkAt: string | null }
@@ -559,6 +561,8 @@ export const api = {
     apiFetch<NotifyPerson>(`/notify/people/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
   testNotifyPerson: (id: number) => apiFetch<{ results: Array<{ channel: string; ok: boolean; error?: string }> }>(`/notify/people/${id}/test`, { method: 'POST' }),
   // Web push on this device (NEW-5, utils/pushSync.ts)
+  // The "turn on notifications" card on Today (ENH-31): Turn on worked, or Not now
+  notifyCard: (answer: 'done' | 'snooze') => apiFetch<{ success: boolean }>('/notify/card', { method: 'POST', body: JSON.stringify({ answer }) }),
   pushInfo: () => apiFetch<{ publicKey: string; on: boolean; notificationsOn: boolean }>('/notify/push'),
   pushSignUp: (body: { endpoint: string; keys: { p256dh: string; auth: string }; label: string }) =>
     apiFetch<{ id: number }>('/notify/push/devices', { method: 'POST', body: JSON.stringify(body) }),

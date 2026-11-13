@@ -432,6 +432,7 @@ export const GUIDE_IT: GuideSection[] = [
         'I messaggi passano dal servizio push del produttore del browser (Google, Apple, Mozilla o Microsoft), cifrati in modo che solo il dispositivo possa leggerli.',
         'Impostazioni → Funzioni → Notifiche sul telefono (web push) le disattiva per tutta la famiglia.',
       ] },
+      { p: 'Chi non ha un canale suo vede una scheda in Oggi dopo la prima faccenda della giornata: Attiva fa lo stesso di Profilo → Le mie notifiche su quel telefono. Non ora la nasconde per una settimana, e torna al massimo tre volte. Chi riceve cosa segnala chi non riceve ancora nulla (nessun canale suo né canale di famiglia), così un genitore può passargli il telefono.' },
       { h: 'Home Assistant' },
       { p: 'Se la tua famiglia ha l’app Home Assistant sul telefono, TidyQuest può mandare i messaggi da lì. Funziona solo su un server di casa, non su tidyquest.org.' },
       { ol: [
@@ -601,6 +602,10 @@ export const GUIDE_IT: GuideSection[] = [
           '"Questo browser non può registrarsi per le notifiche qui": è una finestra privata (in incognito), oppure un browser basato su Chromium senza servizio push. Usa una finestra normale di Chrome, Edge, Firefox o Safari.',
           '"Le notifiche non sono state consentite": la domanda è stata chiusa, oppure Chrome o Edge hanno mostrato una campanella nella barra degli indirizzi invece di chiedere. Tocca di nuovo Attiva su questo dispositivo e scegli Consenti.',
           'Le finestre private non ricevono notifiche: apri TidyQuest in una finestra normale.',
+        ] },
+        { q: 'Non ho mai visto la scheda «attiva le notifiche»', a: [
+          'Compare solo a chi non ha un canale suo (nessuna notifica sul telefono su nessun dispositivo, argomento ntfy, chat Telegram o servizio Home Assistant), con le notifiche e Impostazioni → Funzioni → Notifiche sul telefono (web push) attive, e solo dopo la sua prima faccenda della giornata.',
+          'Resta nascosta su un indirizzo http:// e nei browser che non sanno mostrare notifiche. Dopo Attiva sparisce per sempre; dopo Non ora aspetta una settimana, al massimo tre volte. Profilo → Le mie notifiche funziona sempre.',
         ] },
         { q: 'Le notifiche sul telefono non arrivano più', a: [
           'Esci su quel dispositivo, Esci da tutti i dispositivi o una nuova password messa da un genitore le ferma. Accedi e tocca di nuovo Attiva su questo dispositivo.',

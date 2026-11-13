@@ -432,6 +432,7 @@ export const GUIDE_FR: GuideSection[] = [
         'Les messages passent par le service push du fabricant du navigateur (Google, Apple, Mozilla ou Microsoft), chiffrés pour que seul l’appareil puisse les lire.',
         'Paramètres → Fonctionnalités → Notifications sur le téléphone (web push) le désactive pour toute la famille.',
       ] },
+      { p: 'Quelqu’un sans canal à lui voit une carte sur Aujourd’hui après sa première tâche de la journée : Activer fait la même chose que Profil → Mes notifications sur ce téléphone. Pas maintenant la cache une semaine, et elle revient au plus trois fois. Qui reçoit quoi signale les personnes qui ne reçoivent rien pour l’instant (pas de canal à elles ni de canal familial), pour qu’un parent leur tende le téléphone.' },
       { h: 'Home Assistant' },
       { p: 'Si ta famille a l’appli Home Assistant sur son téléphone, TidyQuest peut envoyer les messages par là. Ça ne marche que sur un serveur à la maison, pas sur tidyquest.org.' },
       { ol: [
@@ -601,6 +602,10 @@ export const GUIDE_FR: GuideSection[] = [
           '« Ce navigateur ne peut pas s’inscrire aux notifications ici » : c’est une fenêtre privée, ou un navigateur basé sur Chromium sans service push. Utilise une fenêtre normale de Chrome, Edge, Firefox ou Safari.',
           '« Les notifications n’ont pas été autorisées » : la question a été fermée, ou Chrome ou Edge ont affiché une cloche dans la barre d’adresse au lieu de demander. Appuie de nouveau sur Activer sur cet appareil et choisis Autoriser.',
           'Les fenêtres privées ne reçoivent pas de notifications : ouvre TidyQuest dans une fenêtre normale.',
+        ] },
+        { q: 'Je n’ai jamais vu la carte « activer les notifications »', a: [
+          'Elle ne s’affiche que pour les personnes sans canal à elles (pas de notifications sur le téléphone sur aucun appareil, ni sujet ntfy, ni chat Telegram, ni service Home Assistant), quand les notifications et Paramètres → Fonctionnalités → Notifications sur le téléphone (web push) sont activées, et seulement après leur première tâche de la journée.',
+          'Elle reste cachée sur une adresse http:// et dans les navigateurs qui ne savent pas afficher les notifications. Après Activer, elle disparaît pour de bon ; après Pas maintenant, elle attend une semaine, au plus trois fois. Profil → Mes notifications marche toujours.',
         ] },
         { q: 'Les notifications sur le téléphone n’arrivent plus', a: [
           'Se déconnecter sur cet appareil, Déconnecter de tous les appareils ou un nouveau mot de passe choisi par un parent les arrête. Reconnecte-toi et appuie de nouveau sur Activer sur cet appareil.',

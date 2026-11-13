@@ -456,6 +456,7 @@ export const GUIDE_EN: GuideSection[] = [
         'Messages travel through the browser maker’s push service (Google, Apple, Mozilla or Microsoft), encrypted so only the device can read them.',
         'Settings → Features → Phone notifications (web push) switches it off for the whole family.',
       ] },
+      { p: 'Someone with no channel of their own sees a card on Today after their first chore of the day: Turn on does the same as Profile → My notifications on that phone. Not now hides it for a week, and it comes back at most three times. Who gets what marks people who get nothing yet (no channel of their own and no family channel), so a parent can hand them the phone.' },
       { h: 'Home Assistant' },
       { p: 'If your family has the Home Assistant app on their phones, TidyQuest can send messages through it. This only works on a home server, not on tidyquest.org.' },
       { ol: [
@@ -625,6 +626,10 @@ export const GUIDE_EN: GuideSection[] = [
           '“This browser can’t sign up for notifications here”: it’s a private (incognito) window, or a browser built on Chromium without a push service. Use a normal window in Chrome, Edge, Firefox or Safari.',
           '“Notifications weren’t allowed”: the question was closed, or Chrome or Edge showed a bell in the address bar instead of asking. Tap Turn on for this device again and choose Allow.',
           'Private windows can’t get notifications: open TidyQuest in a normal window.',
+        ] },
+        { q: 'I never got the “turn on notifications” card', a: [
+          'It only shows to people with no channel of their own (no phone notifications on any device, ntfy topic, Telegram chat or Home Assistant service), while notifications and Settings → Features → Phone notifications (web push) are on, and only after their first chore of the day.',
+          'It stays hidden on an http:// address and in browsers that can’t show notifications. After Turn on it’s gone for good; after Not now it waits a week, at most three times. Profile → My notifications always works.',
         ] },
         { q: 'Phone notifications stopped coming', a: [
           'Log out on that device, Log out of all devices or a new password set by a parent stops them. Sign in and tap Turn on for this device again.',

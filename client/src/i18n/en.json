@@ -1531,7 +1531,9 @@
       "mineDescPush": "Get TidyQuest messages on this phone or computer: turn on phone notifications. Or use the ntfy app: subscribe to a topic only you know and enter it below.",
       "peopleDescPush": "Give each person their own channel: phone notifications they turn on in Profile, an ntfy topic on their phone, a Telegram chat, or their Home Assistant phone. Without one, they share the family channel; private messages (their results, summaries, nudges) only go to their own channel.",
       "peopleDescHostedPush": "Give each person their own channel: phone notifications they turn on in Profile, an ntfy topic on their phone, or a Telegram chat. Without one, they share the family channel; private messages (their results, summaries, nudges) only go to their own channel.",
-      "kind_openChores": "Chores anyone can do"
+      "kind_openChores": "Chores anyone can do",
+      "getsNothing": "Gets nothing yet",
+      "familyOnly": "family channel only"
     },
     "todos": {
       "roomName": "To-dos",
@@ -2606,6 +2608,16 @@
       "kidRowsTitle": "Tap ✓ when it's done",
       "kidRowsLead": "Your other chores are short rows.",
       "kidRowsSteps": "Tap ✓ to mark it done.\nTap the chore's name to see more about it."
+    },
+    "notifyCard": {
+      "titleKid": "Get a ping when your chore is approved or someone cheers you",
+      "titleParent": "Get a ping when a chore is waiting for you to approve",
+      "text": "Turn on notifications on this phone. You can pick what you get in Profile → My notifications.",
+      "turnOn": "Turn on",
+      "notNow": "Not now",
+      "gotIt": "Got it",
+      "onKid": "All set! This phone now tells you when a chore is approved, when someone cheers you, and what's due today.",
+      "onParent": "All set! This phone now tells you when a chore or reward is waiting for you, what's due today, and the weekly recap."
     }
   }
 }

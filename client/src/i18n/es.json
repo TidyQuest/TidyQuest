@@ -1531,7 +1531,9 @@
       "mineDescPush": "Recibe los mensajes de TidyQuest en este móvil u ordenador: activa las notificaciones en el móvil. O usa la app ntfy: suscríbete a un tema que solo tú conozcas y escríbelo abajo.",
       "peopleDescPush": "Da a cada persona su propio canal: las notificaciones en el móvil que activa en Perfil, un tema de ntfy en su teléfono, un chat de Telegram o su teléfono de Home Assistant. Sin canal, comparten el canal familiar; los mensajes privados (resultados, resúmenes, avisos) solo van a su propio canal.",
       "peopleDescHostedPush": "Da a cada persona su propio canal: las notificaciones en el móvil que activa en Perfil, un tema de ntfy en su teléfono o un chat de Telegram. Sin canal, comparten el canal familiar; los mensajes privados (resultados, resúmenes, avisos) solo van a su propio canal.",
-      "kind_openChores": "Tareas para cualquiera"
+      "kind_openChores": "Tareas para cualquiera",
+      "getsNothing": "Aún no recibe nada",
+      "familyOnly": "solo canal familiar"
     },
     "todos": {
       "roomName": "Pendientes",
@@ -2606,6 +2608,16 @@
       "kidRowsTitle": "Toca ✓ cuando termines",
       "kidRowsLead": "Tus otras tareas son filas cortas.",
       "kidRowsSteps": "Toca ✓ para marcarla como hecha.\nToca el nombre de la tarea para ver más."
+    },
+    "notifyCard": {
+      "titleKid": "Recibe un aviso cuando aprueben tu tarea o alguien te anime",
+      "titleParent": "Recibe un aviso cuando una tarea espere tu aprobación",
+      "text": "Activa las notificaciones en este teléfono. Puedes elegir qué recibes en Perfil → Mis notificaciones.",
+      "turnOn": "Activar",
+      "notNow": "Ahora no",
+      "gotIt": "Entendido",
+      "onKid": "¡Listo! Este teléfono te avisa cuando aprueban una tarea, cuando alguien te anima y de lo que toca hoy.",
+      "onParent": "¡Listo! Este teléfono te avisa cuando una tarea o recompensa te espera, de lo que toca hoy y del resumen semanal."
     }
   }
 }

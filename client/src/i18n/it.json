@@ -1531,7 +1531,9 @@
       "mineDescPush": "Ricevi i messaggi di TidyQuest su questo telefono o computer: attiva le notifiche sul telefono. Oppure usa l'app ntfy: iscriviti a un argomento che conosci solo tu e inseriscilo qui sotto.",
       "peopleDescPush": "Dai a ognuno il proprio canale: le notifiche sul telefono che attiva in Profilo, un argomento ntfy sul telefono, una chat Telegram o il telefono di Home Assistant. Senza canale, condividono quello di famiglia; i messaggi privati (esiti, riepiloghi, promemoria) vanno solo al proprio canale.",
       "peopleDescHostedPush": "Dai a ognuno il proprio canale: le notifiche sul telefono che attiva in Profilo, un argomento ntfy sul telefono o una chat Telegram. Senza canale, condividono quello di famiglia; i messaggi privati (esiti, riepiloghi, promemoria) vanno solo al proprio canale.",
-      "kind_openChores": "Faccende per chiunque"
+      "kind_openChores": "Faccende per chiunque",
+      "getsNothing": "Non riceve ancora nulla",
+      "familyOnly": "solo canale di famiglia"
     },
     "todos": {
       "roomName": "Da fare",
@@ -2606,6 +2608,16 @@
       "kidRowsTitle": "Tocca ✓ quando hai finito",
       "kidRowsLead": "Le tue altre faccende sono righe brevi.",
       "kidRowsSteps": "Tocca ✓ per segnarla come fatta.\nTocca il nome della faccenda per vedere di più."
+    },
+    "notifyCard": {
+      "titleKid": "Ricevi un avviso quando la tua faccenda è approvata o qualcuno ti fa il tifo",
+      "titleParent": "Ricevi un avviso quando una faccenda aspetta la tua approvazione",
+      "text": "Attiva le notifiche su questo telefono. Scegli cosa ricevere in Profilo → Le mie notifiche.",
+      "turnOn": "Attiva",
+      "notNow": "Non ora",
+      "gotIt": "Capito",
+      "onKid": "Fatto! Questo telefono ti avvisa quando una faccenda è approvata, quando qualcuno ti fa il tifo e di cosa c'è da fare oggi.",
+      "onParent": "Fatto! Questo telefono ti avvisa quando una faccenda o un premio ti aspetta, di cosa c'è da fare oggi e del riepilogo settimanale."
     }
   }
 }
