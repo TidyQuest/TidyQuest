@@ -251,6 +251,7 @@ export function History({ language, isAdmin, users = [], rooms = [], userId, mas
                     <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--warm-text)' }}>{taskName(h.taskName, h.translationKey)}</div>
                     <div style={{ fontSize: 12, color: 'var(--warm-text-light)', fontWeight: 600 }}>{t('history.by')} {byName}{!isDuo && <> <UserTitle userId={h.userId} language={language} style={{ fontSize: 12 }} /></>}</div>
                     <div className="history-mobile-meta">{roomDisplayName(h.roomName, h.roomType || '')} · {timeAgo(h.completedAt)}</div>
+                    {h.approvedByName && <div style={{ fontSize: 12, color: 'var(--warm-text-muted)', fontWeight: 700, marginTop: 2, overflowWrap: 'anywhere' }}>✅ {t('history.approvedBy').replace('{name}', h.approvedByName)}</div>}
                     {h.loggedAt && <div style={{ fontSize: 12, color: 'var(--warm-text-muted)', fontWeight: 700, marginTop: 2 }}>🕘 {t('late.tag')}</div>}
                     <Proof note={h.note} photoUrl={h.photoUrl} label={t('approvals.proofPhoto')} closeLabel={t('common.close')} />
                     {h.approvalNote && <div style={{ fontSize: 12, color: 'var(--warm-text-secondary)', fontWeight: 600, marginTop: 2, overflowWrap: 'anywhere' }}>💬 “{h.approvalNote}”</div>}

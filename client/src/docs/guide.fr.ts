@@ -356,7 +356,7 @@ export const GUIDE_FR: GuideSection[] = [
       { h: 'Pièces d’un parent' },
       { ul: [
         'Ajuster les pièces (voir plus haut) donne ou retire des pièces à la main, avec une raison.',
-        'En validant une tâche, ⭐💬 ajoute une note et un bonus « au-delà des attentes » (+1, +2 ou +5).',
+        'En validant une tâche, ⭐💬 ajoute une note et un bonus « au-delà des attentes » (+1, +2 ou +5). Activité indique ensuite qui l’a approuvée : ✅ Approuvé par et le nom du parent.',
         'Refuser une tâche affiche « Refusée · Annuler » pendant 5 secondes avant que ce soit pris en compte. 💬 Ajouter une raison met cela en pause et envoie à l’enfant une ligne sur ce qui manque (avec sa notification de résultat).',
         'Événements pièces doublées (Paramètres → Événements pièces doublées) : un multiplicateur pour une période, pour tout, pour certaines pièces ou pour certaines tâches. Dans Aujourd\'hui, appuie sur la pastille ⚡ de l’événement pour voir toutes les tâches qu’il couvre et que tu peux faire, avec leurs pièces et si elles sont prêtes maintenant ; appuie sur l’une d’elles pour l’ouvrir.',
       ] },

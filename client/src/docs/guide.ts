@@ -380,7 +380,7 @@ export const GUIDE_EN: GuideSection[] = [
       { h: 'Coins from a parent' },
       { ul: [
         'Adjust coins (see above) gives or takes away coins by hand, with a reason.',
-        'When approving a chore, ⭐💬 adds a note and an "above and beyond" bonus (+1, +2 or +5).',
+        'When approving a chore, ⭐💬 adds a note and an "above and beyond" bonus (+1, +2 or +5). Activity then shows who approved it: ✅ Approved by and the parent’s name.',
         'Rejecting a chore shows "Rejected · Undo" for 5 seconds before it goes through. 💬 Add a reason pauses that and sends the kid one line on what’s missing (with their outcome notification).',
         'Double coins events (Settings → Double coins events): a multiplier for a time window, for everything, chosen rooms, or chosen chores. On Today, tap the event’s ⚡ chip to see every chore it covers that you can do, with its coins and whether it’s ready now; tap one to open it.',
       ] },

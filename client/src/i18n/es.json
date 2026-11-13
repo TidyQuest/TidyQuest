@@ -547,7 +547,8 @@
       "shield_given": "Recibió un escudo de racha",
       "shield_used": "Un escudo salvó una racha de {n} días",
       "shield_usedMany": "{count} escudos salvaron una racha de {n} días",
-      "boughtReward": "Compró {reward}"
+      "boughtReward": "Compró {reward}",
+      "approvedBy": "Aprobado por {name}"
     },
     "roomDetail": {
       "name": "Nombre",

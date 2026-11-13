@@ -356,7 +356,7 @@ export const GUIDE_ES: GuideSection[] = [
       { h: 'Monedas de un padre o una madre' },
       { ul: [
         'Ajustar monedas (mira arriba) da o quita monedas a mano, con un motivo.',
-        'Al aprobar una tarea, ⭐💬 añade una nota y un bonus de "mucho más de lo esperado" (+1, +2 o +5).',
+        'Al aprobar una tarea, ⭐💬 añade una nota y un bonus de "mucho más de lo esperado" (+1, +2 o +5). Actividad muestra después quién la aprobó: ✅ Aprobado por y el nombre del padre o la madre.',
         'Al rechazar una tarea aparece "Rechazada · Deshacer" durante 5 segundos antes de que se aplique. 💬 Añadir un motivo lo pausa y envía al niño una línea sobre lo que falta (con su notificación del resultado).',
         'Eventos de monedas dobles (Ajustes → Eventos de monedas dobles): un multiplicador durante un periodo, para todo, para habitaciones elegidas o para tareas elegidas. En Hoy, pulsa la etiqueta ⚡ del evento para ver todas las tareas que cubre y que puedes hacer, con sus monedas y si están listas ahora; pulsa una para abrirla.',
       ] },

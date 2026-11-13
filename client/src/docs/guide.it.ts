@@ -356,7 +356,7 @@ export const GUIDE_IT: GuideSection[] = [
       { h: 'Monete da un genitore' },
       { ul: [
         'Regola monete (vedi sopra) dà o toglie monete a mano, con un motivo.',
-        'Quando approva una faccenda, ⭐💬 aggiunge una nota e un bonus "oltre le aspettative" (+1, +2 o +5).',
+        'Quando approva una faccenda, ⭐💬 aggiunge una nota e un bonus "oltre le aspettative" (+1, +2 o +5). Attività mostra poi chi l’ha approvata: ✅ Approvato da e il nome del genitore.',
         'Rifiutare una faccenda mostra "Rifiutata · Annulla" per 5 secondi prima di diventare definitivo. 💬 Aggiungi un motivo sospende il rifiuto e manda al bambino una riga su cosa manca (insieme alla notifica dell’esito).',
         'Eventi monete doppie (Impostazioni → Eventi monete doppie): un moltiplicatore per un intervallo di tempo, per tutto, per stanze scelte o per faccende scelte. In Oggi, tocca l’etichetta ⚡ dell’evento per vedere ogni faccenda che copre e che puoi fare, con le sue monete e se è pronta adesso; toccane una per aprirla.',
       ] },

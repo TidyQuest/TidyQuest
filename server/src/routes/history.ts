@@ -35,7 +35,7 @@ router.get('/', (req: AuthRequest, res: Response) => {
   if (q) { where.push("t.name LIKE ? ESCAPE '\\'"); params.push(`%${q.replace(/[\\%_]/g, (c) => `\\${c}`)}%`); }
 
   const rawHistory = db.prepare(`
-    SELECT tc.id, tc.completedAt, tc.coinsEarned, tc.taskId, tc.approvalNote, tc.teamupId, tc.loggedAt, tc.note, tc.photoUrl,
+    SELECT tc.id, tc.completedAt, tc.coinsEarned, tc.taskId, tc.approvalNote, tc.approvedByUserId, ab.displayName as approvedByName, tc.teamupId, tc.loggedAt, tc.note, tc.photoUrl,
            t.name as taskName, t.translationKey, t.roomId, t.assignmentMode, (t.effort >= ${TREAT_EFFORT}) AS mascotCheers,
            r.name as roomName, r.roomType,
            u.id as userId, u.displayName, u.avatarColor, u.avatarType, u.avatarPreset, u.avatarPhotoUrl
@@ -43,6 +43,7 @@ router.get('/', (req: AuthRequest, res: Response) => {
     JOIN tasks t ON tc.taskId = t.id
     JOIN rooms r ON t.roomId = r.id
     JOIN users u ON tc.userId = u.id
+    LEFT JOIN users ab ON tc.approvedByUserId = ab.id
     WHERE ${where.join(' AND ')}
     ORDER BY tc.completedAt DESC
   `).all(...params) as any[];
@@ -89,6 +90,12 @@ router.get('/', (req: AuthRequest, res: Response) => {
   const filtered = filterUserId
     ? grouped.filter((h) => h.userId === filterUserId || h.participants?.some((p: any) => p.id === filterUserId))
     : grouped;
+
+  // "Approved by": only when someone else approved it (a parent's own chores approve themselves)
+  for (const h of filtered) {
+    if (!h.approvedByUserId || h.approvedByUserId === h.userId || h.participants?.some((p: any) => p.id === h.approvedByUserId)) h.approvedByName = null;
+    delete h.approvedByUserId;
+  }
 
   // Proof photos and notes: parents see everyone's; others only their own (photos of kids aren't for
   // the whole family)

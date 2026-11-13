@@ -356,7 +356,7 @@ export const GUIDE_DE: GuideSection[] = [
       { h: 'Münzen von einem Elternteil' },
       { ul: [
         'Münzen anpassen (siehe oben) gibt oder nimmt Münzen von Hand, mit einem Grund.',
-        'Beim Freigeben einer Aufgabe fügt ⭐💬 eine Notiz und einen Bonus für „mehr als erwartet“ hinzu (+1, +2 oder +5).',
+        'Beim Freigeben einer Aufgabe fügt ⭐💬 eine Notiz und einen Bonus für „mehr als erwartet“ hinzu (+1, +2 oder +5). Aktivität zeigt danach, wer sie freigegeben hat: ✅ Freigegeben von und den Namen des Elternteils.',
         'Beim Ablehnen einer Aufgabe steht 5 Sekunden lang „Abgelehnt · Rückgängig“, bevor es durchgeht. 💬 Grund angeben hält das an und schickt dem Kind eine Zeile dazu, was fehlt (mit seiner Benachrichtigung über das Ergebnis).',
         'Doppelte-Münzen-Aktionen (Einstellungen → Doppelte-Münzen-Aktionen): ein Multiplikator für ein Zeitfenster, für alles, ausgewählte Räume oder ausgewählte Aufgaben. Tippe auf Heute auf den ⚡-Chip der Aktion, um alle Aufgaben zu sehen, die sie umfasst und die du machen kannst, mit ihren Münzen und ob sie jetzt bereit sind; tippe auf eine, um sie zu öffnen.',
       ] },

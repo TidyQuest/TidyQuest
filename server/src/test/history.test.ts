@@ -132,3 +132,23 @@ describe("Shared chores group by the family's day (BUG-31)", () => {
     expect(list.map((e) => e.participants.length)).toEqual([1, 1]);
   });
 });
+
+describe('Activity: who approved a chore', () => {
+  it("names the parent who approved a kid's chore, but not on a chore someone approved themselves", async () => {
+    const admin = await createAdmin(agent);
+    const kid = await createUser(agent, admin.token, { username: 'kid', displayName: 'Kid', password: 'kid123', role: 'child' });
+    const auth = (token: string) => ({ Authorization: `Bearer ${token}` });
+    const room = (await agent.post('/api/rooms').set(auth(admin.token)).send({ name: 'Kitchen', roomType: 'other' })).body.id as number;
+    const chore = (await agent.post(`/api/rooms/${room}/tasks`).set(auth(admin.token)).send({ name: 'Dishes', effort: 1, onDemand: true })).body.id as number;
+    await agent.put('/api/users/strict-mode-config').set(auth(admin.token)).send({ strictMode: true });
+    const kidDone = (await agent.post(`/api/tasks/${chore}/complete`).set(auth(kid.token))).body.completionId as number;
+    await agent.post(`/api/completions/${kidDone}/approve`).set(auth(admin.token)).send({}).expect(200);
+    const ownDone = (await agent.post(`/api/tasks/${chore}/complete`).set(auth(admin.token))).body.completionId as number;
+    for (const token of [admin.token, kid.token]) {
+      const rows = (await agent.get('/api/history').set(auth(token))).body.history.filter((h: any) => h.type === 'completion');
+      expect(rows.find((h: any) => h.id === kidDone)?.approvedByName).toBe('Admin');
+      expect(rows.find((h: any) => h.id === ownDone)?.approvedByName ?? null).toBeNull();
+      expect(rows[0]).not.toHaveProperty('approvedByUserId');
+    }
+  });
+});

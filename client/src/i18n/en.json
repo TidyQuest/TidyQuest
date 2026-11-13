@@ -547,7 +547,8 @@
       "shield_given": "Got a streak shield",
       "shield_used": "A shield saved a {n}-day streak",
       "shield_usedMany": "{count} shields saved a {n}-day streak",
-      "boughtReward": "Bought {reward}"
+      "boughtReward": "Bought {reward}",
+      "approvedBy": "Approved by {name}"
     },
     "roomDetail": {
       "name": "Name",

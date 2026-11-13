@@ -356,7 +356,7 @@ export const GUIDE_NL: GuideSection[] = [
       { h: 'Munten van een ouder' },
       { ul: [
         'Munten aanpassen (zie hierboven) geeft munten of haalt ze met de hand weg, met een reden.',
-        'Bij het goedkeuren van een klusje voegt ⭐💬 een notitie en een bonus "Meer dan verwacht" toe (+1, +2 of +5).',
+        'Bij het goedkeuren van een klusje voegt ⭐💬 een notitie en een bonus "Meer dan verwacht" toe (+1, +2 of +5). Activiteit laat daarna zien wie het goedkeurde: ✅ Goedgekeurd door en de naam van de ouder.',
         'Een klusje afkeuren toont 5 seconden "Afgekeurd · Ongedaan maken" voordat het doorgaat. Met 💬 Reden toevoegen stop je dat en stuur je het kind één regel over wat er ontbreekt (bij de melding over de uitkomst).',
         'Dubbele-muntenacties (Instellingen → Dubbele-muntenacties): een vermenigvuldiger voor een tijdvak, voor alles, gekozen kamers of gekozen klusjes. Tik op Vandaag op het ⚡-label van de actie om alle klusjes te zien die eronder vallen en die jij kunt doen, met hun munten en of ze nu klaar staan; tik op een klusje om het te openen.',
       ] },

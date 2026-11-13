@@ -547,7 +547,8 @@
       "shield_given": "A reçu un bouclier de série",
       "shield_used": "Un bouclier a sauvé une série de {n} jours",
       "shield_usedMany": "{count} boucliers ont sauvé une série de {n} jours",
-      "boughtReward": "A acheté {reward}"
+      "boughtReward": "A acheté {reward}",
+      "approvedBy": "Approuvé par {name}"
     },
     "roomDetail": {
       "name": "Nom",

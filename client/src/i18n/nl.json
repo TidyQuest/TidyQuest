@@ -547,7 +547,8 @@
       "shield_given": "Kreeg een reeksschild",
       "shield_used": "Een schild redde een reeks van {n} dagen",
       "shield_usedMany": "{count} schilden redden een reeks van {n} dagen",
-      "boughtReward": "Kocht {reward}"
+      "boughtReward": "Kocht {reward}",
+      "approvedBy": "Goedgekeurd door {name}"
     },
     "roomDetail": {
       "name": "Naam",

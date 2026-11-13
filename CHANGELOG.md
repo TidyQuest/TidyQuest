@@ -11,6 +11,8 @@ What changed in each release, in plain language, newest first. Releases up to v0
 
 ### Added
 
+- **Activity shows who approved a chore.** A chore a parent approved now says "✅ Approved by" and that parent's name,
+  so everyone can see which parent signed off on a kid's chore. Chores that needed no approval don't show it.
 - **A "turn on notifications" card on Today** (ENH-31). Anyone who doesn't have notifications of their own yet (no
   phone notifications on any device, ntfy topic, Telegram chat or Home Assistant service) sees a card after their
   first chore of the day: kids read "Get a ping when your chore is approved or someone cheers you", parents "…when a

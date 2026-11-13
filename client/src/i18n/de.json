@@ -547,7 +547,8 @@
       "shield_given": "Hat einen Serienschild bekommen",
       "shield_used": "Ein Schild hat eine {n}-Tage-Serie gerettet",
       "shield_usedMany": "{count} Schilde haben eine {n}-Tage-Serie gerettet",
-      "boughtReward": "Hat {reward} gekauft"
+      "boughtReward": "Hat {reward} gekauft",
+      "approvedBy": "Freigegeben von {name}"
     },
     "roomDetail": {
       "name": "Name",
