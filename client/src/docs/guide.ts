@@ -421,7 +421,7 @@ export const GUIDE_EN: GuideSection[] = [
         'Titles (5): your level’s title or any badge you’ve earned, shown on Today, the Board, the menu (on a phone, More) and Activity.',
       ] },
       { h: 'Badges' },
-      { p: 'Built-in badges unlock by themselves. Parents can make their own in Settings → Badges (for example "Homework 4 weeks in a row"), with optional bonus coins, and set coins for every built-in badge.' },
+      { p: 'Built-in badges unlock by themselves. Parents can make their own in Settings → Badges (for example "Homework 4 weeks in a row"), with optional bonus coins, and set coins for every built-in badge. Its icon is picked like a chore\'s: tap the button next to Icon to open Choose an icon (Wins & extras is at the top, and Search icons… finds the rest).' },
     ],
   },
   {

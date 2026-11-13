@@ -73,7 +73,9 @@ export function readCustomBadgeInput(body: any): { error: string } | { values: O
   const bonusCoins = Math.round(Number(body?.bonusCoins ?? 0));
   if (!(bonusCoins >= 0 && bonusCoins <= 100000)) return { error: 'invalid_bonus' };
   const userIds = parseIds(body?.userIds);
-  const icon = typeof body?.icon === 'string' && body.icon.trim() ? [...body.icon.trim()].slice(0, 4).join('') : '🏅';
+  // One of the chore icons ("icon:<key>") or an emoji (older badges)
+  const raw = typeof body?.icon === 'string' ? body.icon.trim() : '';
+  const icon = /^icon:[a-z0-9_]{1,40}$/.test(raw) ? raw : raw && !raw.startsWith('icon:') ? [...raw].slice(0, 4).join('') : '🏅';
   const description = typeof body?.description === 'string' && body.description.trim() ? body.description.trim().slice(0, 140) : null;
   return {
     values: {
@@ -152,4 +154,9 @@ export function levelFor(coinsEarned: number) {
     nextLevelAt: to,
     progress: Math.round(((coinsEarned - from) / (to - from)) * 100),
   };
+}
+
+/** A badge's icon where only text fits (titles): a drawn chore icon shows as 🏅 */
+export function badgeIconText(icon: string | null | undefined): string {
+  return !icon ? '🏅' : icon.startsWith('icon:') ? '🏅' : icon;
 }

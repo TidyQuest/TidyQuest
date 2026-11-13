@@ -1,11 +1,13 @@
 import { useEffect, useState, type CSSProperties } from 'react';
 import { api, type CustomBadge, type CustomBadgeInput } from '../../hooks/useApi';
 import { useTranslation } from '../../hooks/useTranslation';
-import { badgeRule } from '../../utils/badges';
+import { badgeRule, drawnBadgeIcon } from '../../utils/badges';
+import { BadgeIcon } from './BadgeIcon';
+import { IconPicker } from './IconPicker';
 
 type Metric = CustomBadge['metric'];
 const METRICS: Metric[] = ['task_count', 'task_weeks', 'room_count', 'goal_weeks', 'completions', 'streak', 'coins_earned'];
-const EMPTY: CustomBadgeInput = { title: '', icon: '🏅', description: '', metric: 'task_count', taskIds: [], roomId: null, threshold: 10, bonusCoins: 0, userIds: null, secret: false };
+const EMPTY: CustomBadgeInput = { title: '', icon: 'icon:medal', description: '', metric: 'task_count', taskIds: [], roomId: null, threshold: 10, bonusCoins: 0, userIds: null, secret: false };
 
 /**
  * Settings → Badges: badges parents make for the family (what counts, how many, for whom, a coin
@@ -95,7 +97,7 @@ export function CustomBadgesAdmin({ rooms, family, language }: {
 
       {badges.map((b) => (
         <div key={b.id} style={{ display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center', padding: '8px 10px', borderRadius: 10, border: '1px solid var(--warm-border)', backgroundColor: 'var(--warm-bg-subtle)' }}>
-          <span style={{ fontSize: 22 }}>{b.icon}</span>
+          <BadgeIcon icon={b.icon} size={22} />
           <div style={{ flex: '1 1 180px', minWidth: 0 }}>
             <div style={{ fontSize: 13, fontWeight: 800, color: 'var(--warm-text)', overflowWrap: 'anywhere' }}>{b.title}{b.secret ? ' 🤫' : ''}</div>
             <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--warm-text-muted)', overflowWrap: 'anywhere' }}>{ruleText(b)}</div>
@@ -116,9 +118,13 @@ export function CustomBadgesAdmin({ rooms, family, language }: {
 
       {form && (
         <div style={{ display: 'grid', gap: 10, padding: 12, borderRadius: 12, border: '1.5px dashed var(--warm-border)' }}>
+          <input className="tq-input" value={form.title} maxLength={60} placeholder={t('badges.titlePlaceholder')} onChange={(e) => set({ title: e.target.value })} aria-label={t('badges.titlePlaceholder')} />
           <div style={row}>
-            <input className="tq-input-compact" value={form.icon} onChange={(e) => set({ icon: e.target.value })} aria-label={t('badges.icon')} style={{ width: 56, textAlign: 'center', fontSize: 18 }} />
-            <input className="tq-input" value={form.title} maxLength={60} placeholder={t('badges.titlePlaceholder')} onChange={(e) => set({ title: e.target.value })} style={{ flex: '1 1 180px', minWidth: 0 }} />
+            <span style={label}>{t('badges.icon')}</span>
+            {/* An older badge's emoji stays until another icon is picked */}
+            {!drawnBadgeIcon(form.icon) && <BadgeIcon icon={form.icon} size={22} />}
+            <IconPicker value={drawnBadgeIcon(form.icon) ?? 'medal'} onChange={(k) => set({ icon: `icon:${k}` })} language={language}
+              taskName={form.title} previewName={t('badges.yourBadge')} firstGroup="wins" />
           </div>
           <input className="tq-input" value={form.description ?? ''} maxLength={140} placeholder={t('badges.descriptionPlaceholder')} onChange={(e) => set({ description: e.target.value })} />
           <div style={{ display: 'grid', gap: 6 }}>

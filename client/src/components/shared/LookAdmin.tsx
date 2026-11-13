@@ -92,7 +92,7 @@ export function LookAdmin({ language, family, onChanged }: { language?: string; 
               <UserAvatar userId={m.id} name={m.displayName} color={m.avatarColor} size={32}
                 avatarType={m.avatarType as never} avatarPreset={m.avatarPreset} avatarPhotoUrl={m.avatarPhotoUrl} />
               <b>{m.displayName}</b>
-              <span>{t(themeLabelKey(theme))}<i className="look-swatch" style={{ background: `linear-gradient(90deg, ${sw.bg} 0 50%, ${sw.accent} 50% 100%)` }} /></span>
+              <span className="look-person-theme">{t(themeLabelKey(theme))}<i className="look-swatch" style={{ background: `linear-gradient(90deg, ${sw.bg} 0 50%, ${sw.accent} 50% 100%)` }} /></span>
             </div>
           );
         })}

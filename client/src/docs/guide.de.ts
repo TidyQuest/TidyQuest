@@ -397,7 +397,7 @@ export const GUIDE_DE: GuideSection[] = [
         'Titel (5): der Titel deines Levels oder jedes Abzeichen, das du verdient hast, angezeigt auf Heute, dem Board, im Menü (auf dem Handy unter Mehr) und unter Aktivität.',
       ] },
       { h: 'Abzeichen' },
-      { p: 'Eingebaute Abzeichen werden von selbst freigeschaltet. Eltern können unter Einstellungen → Abzeichen eigene erstellen (zum Beispiel „Hausaufgaben 4 Wochen in Folge“), mit optionalen Bonusmünzen, und für jedes eingebaute Abzeichen Münzen festlegen.' },
+      { p: 'Eingebaute Abzeichen werden von selbst freigeschaltet. Eltern können unter Einstellungen → Abzeichen eigene erstellen (zum Beispiel „Hausaufgaben 4 Wochen in Folge“), mit optionalen Bonusmünzen, und für jedes eingebaute Abzeichen Münzen festlegen. Das Symbol wählst du wie bei einer Aufgabe: Tippe auf den Knopf neben Symbol, um Symbol wählen zu öffnen.' },
     ],
   },
   {

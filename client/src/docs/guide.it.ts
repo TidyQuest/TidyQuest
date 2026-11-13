@@ -397,7 +397,7 @@ export const GUIDE_IT: GuideSection[] = [
         'Titoli (5): il titolo del tuo livello o qualsiasi distintivo che hai guadagnato, mostrato in Oggi, nella Classifica, nel menu (sul telefono, in Altro) e in Attività.',
       ] },
       { h: 'Distintivi' },
-      { p: 'I distintivi predefiniti si sbloccano da soli. I genitori possono crearne di propri in Impostazioni → Distintivi (per esempio "Compiti per 4 settimane di fila"), con monete bonus facoltative, e impostare le monete per ogni distintivo predefinito.' },
+      { p: 'I distintivi predefiniti si sbloccano da soli. I genitori possono crearne di propri in Impostazioni → Distintivi (per esempio "Compiti per 4 settimane di fila"), con monete bonus facoltative, e impostare le monete per ogni distintivo predefinito. La sua icona si sceglie come quella di un\'attività: tocca il pulsante accanto a Icona per aprire Scegli un\'icona.' },
     ],
   },
   {

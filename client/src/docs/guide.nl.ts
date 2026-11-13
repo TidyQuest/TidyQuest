@@ -397,7 +397,7 @@ export const GUIDE_NL: GuideSection[] = [
         'Titels (5): de titel van je level of een badge die je hebt verdiend, te zien op Vandaag, het Scorebord, het menu (op een telefoon Meer) en Activiteit.',
       ] },
       { h: 'Badges' },
-      { p: 'Ingebouwde badges ontgrendelen vanzelf. Ouders kunnen er zelf maken in Instellingen → Badges (bijvoorbeeld "4 weken op rij huiswerk"), met optionele bonusmunten, en munten instellen voor elke ingebouwde badge.' },
+      { p: 'Ingebouwde badges ontgrendelen vanzelf. Ouders kunnen er zelf maken in Instellingen → Badges (bijvoorbeeld "4 weken op rij huiswerk"), met optionele bonusmunten, en munten instellen voor elke ingebouwde badge. Het icoon kies je zoals bij een taak: tik op de knop naast Pictogram om Kies een icoon te openen.' },
     ],
   },
   {

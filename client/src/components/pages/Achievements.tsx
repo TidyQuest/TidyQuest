@@ -2,11 +2,12 @@ import { SparkleIcon, FireIcon, CoinIcon, StarIcon } from '../icons/UIIcons';
 import { useTranslation } from '../../hooks/useTranslation';
 import { LevelStrip } from '../shared/LevelStrip';
 import { localeFor } from '../../utils/locale';
+import { BadgeIcon } from '../shared/BadgeIcon';
 import { badgeDescription, badgeTitle, BUILTIN_ICONS, TIER_COLORS, TIER_KEYS, tierIndex, type BadgeItem, type LevelInfo } from '../../utils/badges';
 
 function AchievementIcon({ type }: { type: string }) {
-  // Parent-made badges use an emoji
-  if (!BUILTIN_ICONS.has(type)) return <span style={{ fontSize: 18, lineHeight: 1 }}>{type}</span>;
+  // Parent-made badges use a chore icon (or, older ones, an emoji)
+  if (!BUILTIN_ICONS.has(type)) return <BadgeIcon icon={type} size={18} />;
   if (type === 'fire') return <FireIcon />;
   if (type === 'coin') return <CoinIcon />;
   if (type === 'star') return <StarIcon />;

@@ -397,7 +397,7 @@ export const GUIDE_FR: GuideSection[] = [
         'Titres (5) : le titre de ton niveau ou n’importe quel badge gagné, affiché dans Aujourd\'hui, le Tableau, le menu (sur téléphone, Plus) et Activité.',
       ] },
       { h: 'Badges' },
-      { p: 'Les badges intégrés se débloquent tout seuls. Les parents peuvent créer les leurs dans Paramètres → Badges (par exemple « Devoirs 4 semaines de suite »), avec des pièces bonus facultatives, et fixer des pièces pour chaque badge intégré.' },
+      { p: 'Les badges intégrés se débloquent tout seuls. Les parents peuvent créer les leurs dans Paramètres → Badges (par exemple « Devoirs 4 semaines de suite »), avec des pièces bonus facultatives, et fixer des pièces pour chaque badge intégré. Son icône se choisit comme celle d\'une tâche : touchez le bouton à côté d\'Icône pour ouvrir Choisir une icône.' },
     ],
   },
   {

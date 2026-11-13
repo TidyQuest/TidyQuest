@@ -1433,7 +1433,8 @@
       "more_task_weeks_one": "nog 1 week op rij",
       "ladder_team_ups": "Taken als team",
       "more_team_ups": "nog {n} taken als team",
-      "more_team_ups_one": "nog 1 taak als team"
+      "more_team_ups_one": "nog 1 taak als team",
+      "yourBadge": "Je badge"
     },
     "notify": {
       "taskDue": "📋 Vandaag te doen: {task}",

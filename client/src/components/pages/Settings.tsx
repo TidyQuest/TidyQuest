@@ -746,18 +746,27 @@ export function Settings({
     { title: t('settingsGroups.help'), rows: [
       { id: 'guide', icon: '📖', title: t('guide.title'), summary: t('settingsIndex.guideSum'), onOpen: () => navigate('/guide') },
       { id: 'troubleshooting', icon: '🧰', title: t('guide.troubleshooting'), summary: t('settingsIndex.troubleSum'), onOpen: () => navigate('/guide#troubleshooting') },
-      ...(isAdmin ? [{ id: 'setup', icon: '🧙', title: t('setup.open'), summary: t('settingsIndex.setupSum'), onOpen: () => navigate('/setup') }] : []),
+      ...(isAdmin ? [{ id: 'setup', icon: '🧙', title: t('setup.open'), summary: t('settingsIndex.setupSum'), onOpen: () => navigate('/setup', { state: { from: 'settings' } }) }] : []),
     ] },
   ].filter((g) => g.rows.length > 0);
   const sectionIds = indexGroups.flatMap((g) => g.rows.map((r) => r.id));
   // A section this person can't open (or not loaded yet) shows the index on a phone and General on a desktop
   const section = sectionParam && sectionIds.includes(sectionParam) ? sectionParam : undefined;
   const cur = section ?? 'general';
-  useEffect(() => { window.scrollTo(0, 0); }, [section]);
+  // A phone opens each section at the top. On a computer the list stays put (it scrolls by itself) and the page
+  // only moves up when the new section's top would be out of sight.
+  const layoutRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!window.matchMedia('(min-width: 900px)').matches) { window.scrollTo(0, 0); return; }
+    const el = layoutRef.current;
+    if (!el) return;
+    const top = Math.max(0, el.getBoundingClientRect().top + window.scrollY - 16);
+    if (window.scrollY > top) window.scrollTo(0, top);
+  }, [section]);
 
   return (
     <div className="page-enter settings-page">
-      <div className={`settings-layout${section ? ' has-section' : ''}`}>
+      <div ref={layoutRef} className={`settings-layout${section ? ' has-section' : ''}`}>
         <SettingsIndex groups={indexGroups} selected={cur} language={user.language} />
         <div className="settings-pane" key={cur}>
           <button type="button" className="settings-back" onClick={() => navigate('/settings')}>‹ {t('nav.settings')}</button>

@@ -1,6 +1,6 @@
 import db, { prepared } from '../database';
 import { ACHIEVEMENTS } from './achievements';
-import { customBadgeKey, levelFor } from './badges';
+import { badgeIconText, customBadgeKey, levelFor } from './badges';
 
 /**
  * Unlockables (round 3): each level unlocks something to show off. All 8 original themes stay free;
@@ -44,7 +44,7 @@ export function badgeFrames(userId: number, earned = earnedBadges(userId)) {
 export function titleOptions(userId: number, earned = earnedBadges(userId)): Array<{ id: string; titleKey?: string; text?: string }> {
   const builtIn = ACHIEVEMENTS.filter((a) => earned.has(a.id)).map((a) => ({ id: `badge:${a.id}`, titleKey: a.titleKey }));
   const custom = (prepared('SELECT id, title, icon FROM custom_badges').all() as Array<{ id: number; title: string; icon: string }>)
-    .filter((b) => earned.has(customBadgeKey(b.id))).map((b) => ({ id: `badge:${customBadgeKey(b.id)}`, text: `${b.icon} ${b.title}` }));
+    .filter((b) => earned.has(customBadgeKey(b.id))).map((b) => ({ id: `badge:${customBadgeKey(b.id)}`, text: `${badgeIconText(b.icon)} ${b.title}` }));
   return [{ id: 'level' }, ...builtIn, ...custom];
 }
 
@@ -78,7 +78,7 @@ export function unlocksFor(userId: number) {
 /** Everyone's frame, title, celebration and level, for avatars and names across the app */
 export function cosmetics(): Record<number, { level: number; frame: string | null; frameIcon?: string; celebration: string; titleKey?: string; titleText?: string }> {
   const users = prepared('SELECT id, avatarFrame, celebration, title FROM users').all() as Array<{ id: number; avatarFrame: string | null; celebration: string | null; title: string | null }>;
-  const custom = new Map((prepared('SELECT id, title, icon FROM custom_badges').all() as Array<{ id: number; title: string; icon: string }>).map((b) => [customBadgeKey(b.id), `${b.icon} ${b.title}`]));
+  const custom = new Map((prepared('SELECT id, title, icon FROM custom_badges').all() as Array<{ id: number; title: string; icon: string }>).map((b) => [customBadgeKey(b.id), `${badgeIconText(b.icon)} ${b.title}`]));
   const out: ReturnType<typeof cosmetics> = {};
   for (const u of users) {
     const level = levelFor(lifetimeCoins(u.id));

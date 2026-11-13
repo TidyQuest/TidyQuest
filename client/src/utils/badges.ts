@@ -66,3 +66,8 @@ export const tierIndex = (step: number) => Math.min(step, TIER_KEYS.length - 1);
 
 /** Built-in icon names the page draws itself; anything else is an emoji from a parent-made badge. */
 export const BUILTIN_ICONS = new Set(['spark', 'fire', 'coin', 'star', 'crown', 'broom', 'heart', 'shield', 'rocket', 'diamond']);
+
+/** A parent-made badge drawn with a chore icon is stored as "icon:<key>"; this gives the key (null for an emoji) */
+export function drawnBadgeIcon(icon: string | null | undefined): string | null {
+  return icon && icon.startsWith('icon:') ? icon.slice(5) : null;
+}

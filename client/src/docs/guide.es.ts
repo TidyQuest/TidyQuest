@@ -397,7 +397,7 @@ export const GUIDE_ES: GuideSection[] = [
         'Títulos (5): el título de tu nivel o cualquier insignia que hayas ganado, que se muestra en Hoy, el Tablero, el menú (en el móvil, Más) y Actividad.',
       ] },
       { h: 'Insignias' },
-      { p: 'Las insignias integradas se desbloquean solas. Los padres pueden crear las suyas en Ajustes → Insignias (por ejemplo "Deberes 4 semanas seguidas"), con monedas de bonus opcionales, y fijar monedas para cada insignia integrada.' },
+      { p: 'Las insignias integradas se desbloquean solas. Los padres pueden crear las suyas en Ajustes → Insignias (por ejemplo "Deberes 4 semanas seguidas"), con monedas de bonus opcionales, y fijar monedas para cada insignia integrada. Su icono se elige como el de una tarea: toca el botón junto a Icono para abrir Elige un icono.' },
     ],
   },
   {

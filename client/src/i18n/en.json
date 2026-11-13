@@ -1433,7 +1433,8 @@
       "more_task_weeks_one": "1 more week in a row",
       "ladder_team_ups": "Team chores",
       "more_team_ups": "{n} more team chores",
-      "more_team_ups_one": "1 more team chore"
+      "more_team_ups_one": "1 more team chore",
+      "yourBadge": "Your badge"
     },
     "notify": {
       "taskDue": "📋 Due today: {task}",

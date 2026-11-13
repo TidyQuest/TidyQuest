@@ -10,7 +10,7 @@ import { CoinIcon } from '../icons/UIIcons';
  * A chore's icon: shows the current one, and opens a sheet with a live preview of the chore card,
  * the icon its name suggests, a search box and every icon grouped by area.
  */
-export function IconPicker({ value, onChange, taskName = '', roomName = '', roomColor, coins, language, compact = false }: {
+export function IconPicker({ value, onChange, taskName = '', roomName = '', roomColor, coins, language, compact = false, previewName, firstGroup }: {
   value: string;
   onChange: (iconKey: string) => void;
   /** For the preview and the suggestion */
@@ -21,6 +21,10 @@ export function IconPicker({ value, onChange, taskName = '', roomName = '', room
   language?: string;
   /** Smaller button (the room-setup list) */
   compact?: boolean;
+  /** The preview's name when taskName is empty (a badge: "Your badge"); default "Your chore" */
+  previewName?: string;
+  /** A group listed first (badges: wins) */
+  firstGroup?: string;
 }) {
   const { t } = useTranslation(language);
   const [open, setOpen] = useState(false);
@@ -33,15 +37,16 @@ export function IconPicker({ value, onChange, taskName = '', roomName = '', room
         <span style={{ fontSize: 12, fontWeight: 700, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{label(value)}</span>
       </button>
       {open && (
-        <IconSheet value={value} taskName={taskName} roomName={roomName} roomColor={roomColor} coins={coins} language={language}
+        <IconSheet value={value} taskName={taskName} roomName={roomName} roomColor={roomColor} coins={coins} language={language} previewName={previewName} firstGroup={firstGroup}
           onPick={(k) => onChange(k)} onClose={() => setOpen(false)} />
       )}
     </>
   );
 }
 
-function IconSheet({ value, onPick, onClose, taskName, roomName, roomColor, coins, language }: {
+function IconSheet({ value, onPick, onClose, taskName, roomName, roomColor, coins, language, previewName, firstGroup }: {
   value: string; onPick: (k: string) => void; onClose: () => void; taskName: string; roomName: string; roomColor?: string; coins?: number | null; language?: string;
+  previewName?: string; firstGroup?: string;
 }) {
   const { t } = useTranslation(language);
   const [query, setQuery] = useState('');
@@ -59,9 +64,10 @@ function IconSheet({ value, onPick, onClose, taskName, roomName, roomColor, coin
 
   // Search matches icon names (and keys); a group's name only when no icon matches ("pets" → the Pets group)
   const q = query.trim().toLowerCase();
-  const byIcon = ICON_GROUPS.map((g) => ({ ...g, keys: q ? g.keys.filter((k) => `${label(k)} ${k}`.toLowerCase().includes(q)) : g.keys }))
+  const ordered = firstGroup ? [...ICON_GROUPS].sort((a, b) => Number(b.id === firstGroup) - Number(a.id === firstGroup)) : ICON_GROUPS;
+  const byIcon = ordered.map((g) => ({ ...g, keys: q ? g.keys.filter((k) => `${label(k)} ${k}`.toLowerCase().includes(q)) : g.keys }))
     .filter((g) => g.keys.length > 0);
-  const groups = byIcon.length > 0 ? byIcon : ICON_GROUPS.filter((g) => t(`iconGroups.${g.id}`).toLowerCase().includes(q));
+  const groups = byIcon.length > 0 ? byIcon : ordered.filter((g) => t(`iconGroups.${g.id}`).toLowerCase().includes(q));
 
   const cell = (k: string) => (
     <button key={k} type="button" onClick={() => onPick(k)} aria-pressed={value === k} title={label(k)} aria-label={label(k)} style={{
@@ -83,7 +89,7 @@ function IconSheet({ value, onPick, onClose, taskName, roomName, roomColor, coin
             <TaskIcon iconKey={value} size={28} />
           </div>
           <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ fontSize: 14, fontWeight: 800, color: 'var(--warm-text)', overflowWrap: 'anywhere' }}>{taskName.trim() || t('iconPicker.yourChore')}</div>
+            <div style={{ fontSize: 14, fontWeight: 800, color: 'var(--warm-text)', overflowWrap: 'anywhere' }}>{taskName.trim() || previewName || t('iconPicker.yourChore')}</div>
             <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--warm-text-light)' }}>{roomName}{roomName ? ' · ' : ''}{label(value)}</div>
           </div>
           {coins != null && coins > 0 && (

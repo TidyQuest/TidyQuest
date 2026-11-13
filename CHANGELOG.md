@@ -40,6 +40,11 @@ What changed in each release, in plain language, newest first. Releases up to v0
 
 ### Changed
 
+- **Badges use the same drawn icons as chores.** In Settings → Badges, a new badge's icon is picked from the same
+  sheet as a chore's (Wins & extras first, then every area, with search and a suggestion from the badge's name),
+  and it shows on Achievements, the "Next badge" line and the badge list. Badges made before keep their emoji until
+  you pick a new icon. Where only text fits (a title you wear), a drawn icon shows as 🏅.
+
 - **Rewards in the new look.** The shop is now a list of short rows like the chore rows: the reward's emoji in a tile,
   its name and a two-line description (tap the row to read the rest), the price, and an outlined Redeem button. A
   reward you can't afford yet says how many more coins you need instead of showing a wide "Not enough coins" button,
@@ -146,6 +151,12 @@ What changed in each release, in plain language, newest first. Releases up to v0
 
 ### Fixed
 
+- **Settings on a computer:** opening a section lower in the list (like Double coins events) no longer jumps the
+  page to the top. The list scrolls by itself and keeps your place.
+- **Settings → Look:** someone whose avatar has a frame showed their picture in the middle of the row instead of on
+  the left.
+- **Settings → Setup wizard:** it now has a ← back to Settings on a computer too, and Cancel on the first step goes back
+  to Settings instead of Today.
 - **"Show {n} more" shows a number** (BUG-53). In Settings → Notifications (the message log) and Settings → Recently
   deleted, the button showed "{n}" instead of how many are hidden. The message log now shows 10 more per press, then
   "Show less".

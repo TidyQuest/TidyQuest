@@ -1433,7 +1433,8 @@
       "more_task_weeks_one": "encore 1 semaine de suite",
       "ladder_team_ups": "Tâches en équipe",
       "more_team_ups": "encore {n} tâches en équipe",
-      "more_team_ups_one": "encore 1 tâche en équipe"
+      "more_team_ups_one": "encore 1 tâche en équipe",
+      "yourBadge": "Votre badge"
     },
     "notify": {
       "taskDue": "📋 À faire aujourd'hui : {task}",

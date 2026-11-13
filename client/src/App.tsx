@@ -268,8 +268,15 @@ function AppContent() {
   // back from a room returns to where it was (RoomsList); parent effects run after child effects,
   // so skip those here or it would undo them.
   const navType = useNavigationType();
+  // The setup wizard opened from Settings: its ← and Cancel go back there (to the same section)
+  const setupFromSettings = (location.state as { from?: string } | null)?.from === 'settings';
+  const prevPath = useRef(location.pathname);
   useEffect(() => {
+    const from = prevPath.current;
+    prevPath.current = location.pathname;
     if (new URLSearchParams(location.search).has('task') || location.hash) return;
+    // Between Settings sections, Settings decides (on a computer the list keeps its place)
+    if (from.startsWith('/settings') && location.pathname.startsWith('/settings')) return;
     if (location.pathname === '/rooms' && (navType === 'POP' || (location.state as { fromRoom?: number } | null)?.fromRoom)) return;
     window.scrollTo(0, 0);
   }, [location.pathname]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -824,8 +831,9 @@ function AppContent() {
           } />
           <Route path="/setup" element={user.role !== 'admin' ? <Navigate to="/" replace /> : (
             <>
-              <PageHeader title={t('setup.title')} subtitle={t('setup.subtitle')} user={user} onCoinsClick={() => navigate('/rewards')} onStreakClick={() => navigate('/achievements')} onPointsClick={handlePointsClick} userPoints={myPoints} pointsPeriodLabel={pointsPeriodLabel} gamificationEnabled={gamificationEnabled} shieldsOn={!!dashboardData?.shields} />
-              <SetupWizard user={user} onSaved={() => Promise.all([loadDashboard(), loadRewards()])} onExit={() => { loadDashboard(); navigate('/', { replace: true }); }} onOpenGuide={() => navigate('/guide', { replace: true })} />
+              <PageHeader title={t('setup.title')} subtitle={t('setup.subtitle')} onBack={() => (setupFromSettings ? navigate(-1) : navigate('/settings'))} backLabel={t('nav.settings')} user={user} onCoinsClick={() => navigate('/rewards')} onStreakClick={() => navigate('/achievements')} onPointsClick={handlePointsClick} userPoints={myPoints} pointsPeriodLabel={pointsPeriodLabel} gamificationEnabled={gamificationEnabled} shieldsOn={!!dashboardData?.shields} />
+              <SetupWizard user={user} onSaved={() => Promise.all([loadDashboard(), loadRewards()])} onExit={() => { loadDashboard(); navigate('/', { replace: true }); }}
+                onCancel={setupFromSettings ? () => navigate(-1) : undefined} onOpenGuide={() => navigate('/guide', { replace: true })} />
             </>
           )} />
           <Route path="/achievements" element={

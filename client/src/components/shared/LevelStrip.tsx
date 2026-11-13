@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from '../../hooks/useTranslation';
+import { BadgeIcon } from './BadgeIcon';
 import { badgeRemaining, badgeTitle, BUILTIN_ICONS, type BadgeItem, type LevelInfo } from '../../utils/badges';
 import { unlockLabelKey, useCosmetic } from '../../utils/unlocks';
 import { formatCoins } from '../../utils/format';
@@ -47,7 +48,7 @@ export function LevelStrip({ level, nextBadge, language, big = false, userId, ne
       {nextBadge && (
         <span style={{ fontSize: big ? 14 : 12, fontWeight: 700, color: 'var(--warm-text-muted)' }}>
           {t('badges.nextUp')}{' '}
-          <strong style={{ color: 'var(--warm-text)' }}>{BUILTIN_ICONS.has(nextBadge.icon) ? '🏅' : nextBadge.icon} {badgeTitle(nextBadge, t)}</strong>
+          <strong style={{ color: 'var(--warm-text)' }}>{BUILTIN_ICONS.has(nextBadge.icon) ? '🏅' : <BadgeIcon icon={nextBadge.icon} size={16} />} {badgeTitle(nextBadge, t)}</strong>
           {' · '}{badgeRemaining(nextBadge, t)}
         </span>
       )}
