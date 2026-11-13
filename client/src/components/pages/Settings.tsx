@@ -727,7 +727,9 @@ export function Settings({
       ...(gamificationEnabled ? [
         { id: 'coins', icon: '🪙', title: t('settings.coinsPerEffort'), summary: t('settingsIndex.coinsSum'), onOpen: go('coins') },
         { id: 'goals', icon: '🎯', title: t('settings.goalsSection'), summary: t('settingsIndex.goalsSum'), onOpen: go('goals') },
-        { id: 'rewards', icon: '🎁', title: t('settings.rewardsSection'), summary: t('settingsIndex.rewardsSum'), onOpen: go('rewards'), badge: rewardRequests.length },
+        { id: 'rewards', icon: '🎁', title: t('settings.rewardsSection'), summary: t('settingsIndex.rewardsSum'), onOpen: go('rewards'),
+          // Only requests still waiting for a parent's OK; the list below also keeps answered ones
+          badge: rewardRequests.filter((rr) => rr.status === 'requested').length },
       ] : []),
     ] },
     { title: t('settingsGroups.gameExtras'), rows: !isAdmin ? [] : [
