@@ -244,7 +244,7 @@ export interface FeaturesView { features: FeatureFlags; rescueMultiplier: number
   /** Every creature: the active one, resting ones (with their name and stage) and new eggs */
   mascotRoster?: Array<{ creature: string; status: 'active' | 'resting' | 'new'; name: string; stage: string }> }
 
-export type NotifyKind = 'taskDue' | 'rewardRequest' | 'achievementUnlocked' | 'choreApproval' | 'coinBoost' | 'rescue' | 'outcome' | 'summary' | 'nudge' | 'reminder' | 'cheer' | 'teamup';
+export type NotifyKind = 'taskDue' | 'rewardRequest' | 'achievementUnlocked' | 'choreApproval' | 'coinBoost' | 'rescue' | 'outcome' | 'summary' | 'nudge' | 'reminder' | 'cheer' | 'teamup' | 'openChores';
 
 export interface NotifySettings {
   morningTime: string;

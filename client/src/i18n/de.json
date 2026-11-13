@@ -1530,7 +1530,8 @@
       "peopleDescHosted": "Gib jeder Person einen eigenen Kanal (ein ntfy-Thema auf dem Handy oder einen Telegram-Chat). Ohne eigenen Kanal teilen sie den Familienkanal; private Nachrichten (Ergebnisse, Zusammenfassungen, Erinnerungen) gehen nur an den eigenen Kanal.",
       "mineDescPush": "Hol dir TidyQuest-Nachrichten auf dieses Handy oder diesen Computer: Schalte Benachrichtigungen aufs Handy ein. Oder nutze die ntfy-App: Abonniere ein Thema, das nur du kennst, und trag es unten ein.",
       "peopleDescPush": "Gib jeder Person einen eigenen Kanal: Benachrichtigungen aufs Handy, die sie im Profil einschaltet, ein ntfy-Thema auf dem Handy, einen Telegram-Chat oder ihr Home-Assistant-Handy. Ohne eigenen Kanal teilen sie den Familienkanal; private Nachrichten (Ergebnisse, Zusammenfassungen, Erinnerungen) gehen nur an den eigenen Kanal.",
-      "peopleDescHostedPush": "Gib jeder Person einen eigenen Kanal: Benachrichtigungen aufs Handy, die sie im Profil einschaltet, ein ntfy-Thema auf dem Handy oder einen Telegram-Chat. Ohne eigenen Kanal teilen sie den Familienkanal; private Nachrichten (Ergebnisse, Zusammenfassungen, Erinnerungen) gehen nur an den eigenen Kanal."
+      "peopleDescHostedPush": "Gib jeder Person einen eigenen Kanal: Benachrichtigungen aufs Handy, die sie im Profil einschaltet, ein ntfy-Thema auf dem Handy oder einen Telegram-Chat. Ohne eigenen Kanal teilen sie den Familienkanal; private Nachrichten (Ergebnisse, Zusammenfassungen, Erinnerungen) gehen nur an den eigenen Kanal.",
+      "kind_openChores": "Aufgaben für alle"
     },
     "todos": {
       "roomName": "Erledigen",

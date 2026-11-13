@@ -1530,7 +1530,8 @@
       "peopleDescHosted": "Give each person their own channel (an ntfy topic on their phone, or a Telegram chat). Without one, they share the family channel; private messages (their results, summaries, nudges) only go to their own channel.",
       "mineDescPush": "Get TidyQuest messages on this phone or computer: turn on phone notifications. Or use the ntfy app: subscribe to a topic only you know and enter it below.",
       "peopleDescPush": "Give each person their own channel: phone notifications they turn on in Profile, an ntfy topic on their phone, a Telegram chat, or their Home Assistant phone. Without one, they share the family channel; private messages (their results, summaries, nudges) only go to their own channel.",
-      "peopleDescHostedPush": "Give each person their own channel: phone notifications they turn on in Profile, an ntfy topic on their phone, or a Telegram chat. Without one, they share the family channel; private messages (their results, summaries, nudges) only go to their own channel."
+      "peopleDescHostedPush": "Give each person their own channel: phone notifications they turn on in Profile, an ntfy topic on their phone, or a Telegram chat. Without one, they share the family channel; private messages (their results, summaries, nudges) only go to their own channel.",
+      "kind_openChores": "Chores anyone can do"
     },
     "todos": {
       "roomName": "To-dos",

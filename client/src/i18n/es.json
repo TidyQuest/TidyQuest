@@ -1530,7 +1530,8 @@
       "peopleDescHosted": "Da a cada persona su propio canal (un tema de ntfy en su teléfono o un chat de Telegram). Sin canal, comparten el canal familiar; los mensajes privados (resultados, resúmenes, avisos) solo van a su propio canal.",
       "mineDescPush": "Recibe los mensajes de TidyQuest en este móvil u ordenador: activa las notificaciones en el móvil. O usa la app ntfy: suscríbete a un tema que solo tú conozcas y escríbelo abajo.",
       "peopleDescPush": "Da a cada persona su propio canal: las notificaciones en el móvil que activa en Perfil, un tema de ntfy en su teléfono, un chat de Telegram o su teléfono de Home Assistant. Sin canal, comparten el canal familiar; los mensajes privados (resultados, resúmenes, avisos) solo van a su propio canal.",
-      "peopleDescHostedPush": "Da a cada persona su propio canal: las notificaciones en el móvil que activa en Perfil, un tema de ntfy en su teléfono o un chat de Telegram. Sin canal, comparten el canal familiar; los mensajes privados (resultados, resúmenes, avisos) solo van a su propio canal."
+      "peopleDescHostedPush": "Da a cada persona su propio canal: las notificaciones en el móvil que activa en Perfil, un tema de ntfy en su teléfono o un chat de Telegram. Sin canal, comparten el canal familiar; los mensajes privados (resultados, resúmenes, avisos) solo van a su propio canal.",
+      "kind_openChores": "Tareas para cualquiera"
     },
     "todos": {
       "roomName": "Pendientes",

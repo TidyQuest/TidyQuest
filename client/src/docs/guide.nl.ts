@@ -421,7 +421,7 @@ export const GUIDE_NL: GuideSection[] = [
       { ul: [
         'Een bericht dat tijdens de stille uren heeft gewacht, gaat alleen weg als het nog klopt. Het vervalt als het klusje intussen gedaan is, de dag waar het over ging voorbij is, het Samen doen of de actie met dubbele munten afgelopen is, of die soort is uitgezet.',
         'Wie op vakantie is, krijgt geen berichten over klusjes (vandaag te doen, herinneringen, het ochtendlijstje, het duwtje ’s avonds, Reddingsmissie), en tijdens de Vakantiemodus krijgt niemand ze. Goedkeuringen, verzoeken om beloningen en de terugblik op de week komen nog wel aan.',
-        'Een klusje dat op goedkeuring van een ouder wacht, telt als gedaan: geen herinneringen meer.',
+        'Een klusje dat op goedkeuring van een ouder wacht, telt als gedaan: geen herinneringen meer. ‘Vandaag te doen’ en herinneringen voor een klusje dat aan niemand is toegewezen (in een kamer zonder eigenaar) gaan alleen naar wie Klusjes voor iedereen heeft aangevinkt; voor kinderen staat het eerst uit, dus horen ze alleen over hun eigen klusjes. Zet het voor een kind aan via Profiel → Mijn meldingen.',
         'Startklusjes heten in de taal van wie het bericht leest (op het eigen kanaal).',
       ] },
       { h: 'Meldingen op je telefoon (web push)' },
@@ -582,7 +582,7 @@ export const GUIDE_NL: GuideSection[] = [
           'Badgebonussen en ouderbonussen staan als aparte regels in Activiteit.',
         ] },
         { q: 'Meldingen komen niet aan', a: [
-          'Controleer in deze volgorde: meldingen staan aan en de soort is aangevinkt (Instellingen → Algemeen); het kanaal werkt (gebruik de testknop); de persoon heeft die soort niet uitgezet (Profiel).',
+          'Controleer in deze volgorde: meldingen staan aan en de soort is aangevinkt (Instellingen → Algemeen); het kanaal werkt (gebruik de testknop); de persoon heeft die soort niet uitgezet (Profiel). Een kind krijgt meldingen over klusjes die aan niemand zijn toegewezen pas als Klusjes voor iedereen voor hem is aangevinkt.',
           'Privésoorten (uitkomsten, overzichten, duwtjes, aanmoedigingen) hebben het eigen kanaal van de persoon nodig.',
           'Stille uren en schooltijden houden berichten vast tot ze afgelopen zijn.',
           'Het Meldingenlogboek toont elk bericht en eventuele fouten.',

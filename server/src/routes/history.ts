@@ -1,7 +1,7 @@
 import { Router, Response } from 'express';
 import db from '../database';
 import { AuthRequest, authMiddleware } from '../middleware/auth';
-import { ensureAdmin } from '../utils/adminHelpers';
+import { ensureAdmin, hiddenRoomIdsFor } from '../utils/adminHelpers';
 import { cheersFor } from '../utils/cheers';
 import { TREAT_EFFORT } from '../utils/mascot';
 import { isFeatureOn } from '../utils/features';
@@ -27,6 +27,9 @@ router.get('/', (req: AuthRequest, res: Response) => {
   const where: string[] = ["tc.status = 'approved'"];
   const params: (string | number)[] = [];
   if (filterRoomId) { where.push('t.roomId = ?'); params.push(filterRoomId); }
+  // Other people's private rooms (BUG-51): a kid sees only their own chores there
+  const hiddenRooms = [...hiddenRoomIdsFor(req.userId)];
+  if (hiddenRooms.length > 0) { where.push(`(t.roomId NOT IN (${hiddenRooms.map(() => '?').join(',')}) OR tc.userId = ?)`); params.push(...hiddenRooms, req.userId!); }
   if (from) { where.push('tc.completedAt >= ?'); params.push(from); }
   if (to) { where.push('tc.completedAt < ?'); params.push(to); }
   if (q) { where.push("t.name LIKE ? ESCAPE '\\'"); params.push(`%${q.replace(/[\\%_]/g, (c) => `\\${c}`)}%`); }

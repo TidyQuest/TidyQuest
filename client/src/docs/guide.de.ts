@@ -421,7 +421,7 @@ export const GUIDE_DE: GuideSection[] = [
       { ul: [
         'Eine Nachricht, die während der Ruhezeiten gewartet hat, geht nur raus, wenn sie noch stimmt. Sie entfällt, wenn die Aufgabe inzwischen erledigt wurde, ihr Tag vorbei ist, das Teamwork oder die Aktion mit doppelten Münzen beendet ist oder diese Art ausgeschaltet wurde.',
         'Wer im Urlaub ist, bekommt keine Nachrichten zu Aufgaben (heute fällig, Erinnerungen, die Liste am Morgen, der Anstupser am Abend, Rettungsmission), und im Urlaubsmodus bekommt sie niemand. Bestätigungen, Belohnungswünsche und der Wochenrückblick kommen weiterhin an.',
-        'Eine Aufgabe, die auf die Bestätigung eines Elternteils wartet, zählt als erledigt: keine Erinnerungen mehr dazu.',
+        'Eine Aufgabe, die auf die Bestätigung eines Elternteils wartet, zählt als erledigt: keine Erinnerungen mehr dazu. Fällig-heute-Meldungen und Erinnerungen für eine Aufgabe, die niemandem zugewiesen ist (in einem Raum ohne Besitzer), gehen nur an Personen, bei denen Aufgaben für alle angehakt ist; bei Kindern ist es anfangs aus, sie hören also nur von ihren eigenen Aufgaben. Für ein Kind einschalten unter Profil → Meine Benachrichtigungen.',
         'Starter-Aufgaben heißen in der Sprache der Person, die die Nachricht liest (auf ihrem eigenen Kanal).',
       ] },
       { h: 'Benachrichtigungen aufs Handy (Web-Push)' },
@@ -582,7 +582,7 @@ export const GUIDE_DE: GuideSection[] = [
           'Abzeichen-Boni und Boni von Eltern erscheinen unter Aktivität als eigene Zeilen.',
         ] },
         { q: 'Benachrichtigungen kommen nicht an', a: [
-          'Prüfe der Reihe nach: Benachrichtigungen sind eingeschaltet und die Art ist angehakt (Einstellungen → Allgemein); der Kanal funktioniert (nutze den Test-Knopf); die Person hat diese Art nicht ausgeschaltet (Profil).',
+          'Prüfe der Reihe nach: Benachrichtigungen sind eingeschaltet und die Art ist angehakt (Einstellungen → Allgemein); der Kanal funktioniert (nutze den Test-Knopf); die Person hat diese Art nicht ausgeschaltet (Profil). Ein Kind bekommt Meldungen zu Aufgaben, die niemandem zugewiesen sind, erst wenn Aufgaben für alle für es angehakt ist.',
           'Private Arten (Ergebnisse, Zusammenfassungen, Hinweise, Anfeuern) brauchen den eigenen Kanal der Person.',
           'Ruhezeiten und Schulzeiten halten Nachrichten zurück, bis sie enden.',
           'Das Benachrichtigungsprotokoll zeigt jede Nachricht und jeden Fehler.',

@@ -68,6 +68,14 @@ export function hiddenRoomIdsFor(userId: number | undefined): Set<number> {
   return new Set(rows.map((r) => r.id));
 }
 
+/** Whether a task sits in a room hidden from this viewer (BUG-51): the API refuses it as if it didn't exist. */
+export function taskHiddenFor(userId: number | undefined, taskId: unknown): boolean {
+  const hidden = hiddenRoomIdsFor(userId);
+  if (hidden.size === 0) return false;
+  const task = db.prepare('SELECT roomId FROM tasks WHERE id = ?').get(Number(taskId)) as { roomId: number } | undefined;
+  return !!task && hidden.has(task.roomId);
+}
+
 export function isStrictModeEnabled(): boolean {
   const row = db.prepare("SELECT value FROM app_settings WHERE key = 'strictMode'").get() as { value?: string } | undefined;
   return row?.value === '1';

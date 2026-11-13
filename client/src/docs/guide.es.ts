@@ -421,7 +421,7 @@ export const GUIDE_ES: GuideSection[] = [
       { ul: [
         'Un mensaje que esperó durante las horas de silencio solo sale si sigue siendo cierto. Se descarta si la tarea ya se hizo, si su día ya pasó, si el equipo o el evento de monedas dobles terminó, o si ese tipo se desactivó.',
         'Quien está de vacaciones no recibe mensajes sobre tareas (para hoy, recordatorios, la lista de la mañana, el aviso de la tarde, Misión de rescate), y durante el Modo vacaciones no los recibe nadie. Las aprobaciones, las peticiones de recompensa y el resumen semanal siguen llegando.',
-        'Una tarea que espera la aprobación de un padre o una madre cuenta como hecha: no hay más recordatorios sobre ella.',
+        'Una tarea que espera la aprobación de un padre o una madre cuenta como hecha: no hay más recordatorios sobre ella. Los avisos de «para hoy» y los recordatorios de una tarea sin nadie asignado (en una habitación sin dueño) solo llegan a quien tenga marcado Tareas para cualquiera; para los niños empieza desmarcado, así que solo se enteran de sus propias tareas. Actívalo para un niño en Perfil → Mis notificaciones.',
         'Las tareas iniciales llevan su nombre en el idioma de quien lee el mensaje (en su propio canal).',
       ] },
       { h: 'Notificaciones en el móvil (web push)' },
@@ -582,7 +582,7 @@ export const GUIDE_ES: GuideSection[] = [
           'Los bonus de insignias y los bonus de los padres aparecen como líneas aparte en Actividad.',
         ] },
         { q: 'Las notificaciones no llegan', a: [
-          'Revisa por orden: las notificaciones están activadas y el tipo está marcado (Ajustes → General); el canal funciona (usa el botón de prueba); la persona no ha desactivado ese tipo (Perfil).',
+          'Revisa por orden: las notificaciones están activadas y el tipo está marcado (Ajustes → General); el canal funciona (usa el botón de prueba); la persona no ha desactivado ese tipo (Perfil). Un niño solo recibe avisos de tareas sin nadie asignado cuando tiene marcado Tareas para cualquiera.',
           'Los tipos privados (resultados, resúmenes, avisos, ánimos) necesitan el canal propio de la persona.',
           'Las horas de silencio y el horario escolar retienen los mensajes hasta que terminan.',
           'El Registro de notificaciones muestra cada mensaje y cualquier error.',

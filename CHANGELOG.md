@@ -118,6 +118,8 @@ What changed in each release, in plain language, newest first. Releases up to v0
 
 ### Fixed
 
+- Kids no longer get "due today" and reminders for chores nobody is assigned to. These now go to people with the new **Chores anyone can do** notification ticked (in Profile → My notifications, or Who gets what). It starts off for kids, on for everyone else. Parents still get the late reminder for those chores.
+- With **hide private rooms** on, kids can no longer reach other people's private rooms through the app's API: the room's chore list, overdue chores, Activity and chore buttons (Done, pin, snooze and the rest) all treat them as not there, like the screens already did (GitHub #185).
 - **New look, from testing on staging:** pages opened from the More tab now have a ← back button on phones; the
   chore editor no longer reaches the top of a phone screen, and pulling down inside a pop-up no longer reloads the
   page; the holiday garland lies over the Quest look's colour block instead of pushing it down; the small health

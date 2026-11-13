@@ -445,7 +445,7 @@ export const GUIDE_EN: GuideSection[] = [
       { ul: [
         'A message that waited out quiet hours only goes out if it still holds. It’s dropped when the chore got done meanwhile, the day it was about is over, the team-up or double coins event has ended, or that kind was switched off.',
         'Nobody on vacation gets chore messages (due today, reminders, the morning list, the evening nudge, Rescue Mission), and during Vacation Mode nobody does. Approvals, reward requests and the weekly recap still arrive.',
-        'A chore that’s waiting for a parent’s approval counts as done: no more reminders about it.',
+        'A chore that’s waiting for a parent’s approval counts as done: no more reminders about it. Due today and reminders for a chore nobody is assigned to (and whose room has no owner) only go to people with Chores anyone can do ticked; it starts off for kids, so they only hear about their own chores. Turn it on for a kid in Profile → My notifications, or in Who gets what.',
         'Starter chores are named in each reader’s own language (on their own channel).',
       ] },
       { h: 'Phone notifications (web push)' },
@@ -606,7 +606,7 @@ export const GUIDE_EN: GuideSection[] = [
           'Badge bonuses and parent bonuses show as separate lines in Activity.',
         ] },
         { q: 'Notifications don’t arrive', a: [
-          'Check in order: notifications are on and the kind is ticked (Settings → General); the channel works (use the test button); the person hasn’t turned that kind off (Profile).',
+          'Check in order: notifications are on and the kind is ticked (Settings → General); the channel works (use the test button); the person hasn’t turned that kind off (Profile). A kid only gets due today and reminders for chores nobody is assigned to once Chores anyone can do is ticked for them.',
           'Private kinds (outcomes, summaries, nudges, cheers) need the person’s own channel.',
           'Quiet hours and school hours hold messages until they end.',
           'The Notification log shows each message and any error.',

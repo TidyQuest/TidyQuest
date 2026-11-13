@@ -1530,7 +1530,8 @@
       "peopleDescHosted": "Dai a ognuno il proprio canale (un argomento ntfy sul telefono o una chat Telegram). Senza canale, condividono quello di famiglia; i messaggi privati (esiti, riepiloghi, promemoria) vanno solo al proprio canale.",
       "mineDescPush": "Ricevi i messaggi di TidyQuest su questo telefono o computer: attiva le notifiche sul telefono. Oppure usa l'app ntfy: iscriviti a un argomento che conosci solo tu e inseriscilo qui sotto.",
       "peopleDescPush": "Dai a ognuno il proprio canale: le notifiche sul telefono che attiva in Profilo, un argomento ntfy sul telefono, una chat Telegram o il telefono di Home Assistant. Senza canale, condividono quello di famiglia; i messaggi privati (esiti, riepiloghi, promemoria) vanno solo al proprio canale.",
-      "peopleDescHostedPush": "Dai a ognuno il proprio canale: le notifiche sul telefono che attiva in Profilo, un argomento ntfy sul telefono o una chat Telegram. Senza canale, condividono quello di famiglia; i messaggi privati (esiti, riepiloghi, promemoria) vanno solo al proprio canale."
+      "peopleDescHostedPush": "Dai a ognuno il proprio canale: le notifiche sul telefono che attiva in Profilo, un argomento ntfy sul telefono o una chat Telegram. Senza canale, condividono quello di famiglia; i messaggi privati (esiti, riepiloghi, promemoria) vanno solo al proprio canale.",
+      "kind_openChores": "Faccende per chiunque"
     },
     "todos": {
       "roomName": "Da fare",

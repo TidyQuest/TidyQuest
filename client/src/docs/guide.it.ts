@@ -421,7 +421,7 @@ export const GUIDE_IT: GuideSection[] = [
       { ul: [
         'Un messaggio che ha aspettato durante le ore di silenzio parte solo se è ancora vero. Viene scartato se la faccenda è stata fatta nel frattempo, se il suo giorno è passato, se la squadra o l’evento monete doppie è finito, o se quel tipo è stato disattivato.',
         'Chi è in vacanza non riceve messaggi sulle faccende (da fare oggi, promemoria, la lista del mattino, la spintarella della sera, Missione di salvataggio), e durante la Modalità vacanza non li riceve nessuno. Le approvazioni, le richieste di premi e il resoconto settimanale arrivano comunque.',
-        'Una faccenda in attesa dell’approvazione di un genitore conta come fatta: niente più promemoria.',
+        'Una faccenda in attesa dell’approvazione di un genitore conta come fatta: niente più promemoria. Gli avvisi «da fare oggi» e i promemoria di una faccenda non assegnata a nessuno (in una stanza senza proprietario) arrivano solo a chi ha spuntato Faccende per chiunque; per i bambini parte spento, così sentono solo delle proprie faccende. Attivalo per un bambino in Profilo → Le mie notifiche.',
         'Le faccende iniziali hanno il nome nella lingua di chi legge il messaggio (sul suo canale personale).',
       ] },
       { h: 'Notifiche sul telefono (web push)' },
@@ -582,7 +582,7 @@ export const GUIDE_IT: GuideSection[] = [
           'I bonus dei distintivi e quelli dei genitori compaiono come righe separate in Attività.',
         ] },
         { q: 'Le notifiche non arrivano', a: [
-          'Controlla in ordine: le notifiche sono attive e il tipo è spuntato (Impostazioni → Generale); il canale funziona (usa il pulsante di prova); la persona non ha disattivato quel tipo (Profilo).',
+          'Controlla in ordine: le notifiche sono attive e il tipo è spuntato (Impostazioni → Generale); il canale funziona (usa il pulsante di prova); la persona non ha disattivato quel tipo (Profilo). Un bambino riceve gli avvisi delle faccende non assegnate solo se ha spuntato Faccende per chiunque.',
           'I tipi privati (esiti, riepiloghi, promemoria, tifo) hanno bisogno del canale personale della persona.',
           'Le ore di silenzio e l’orario scolastico trattengono i messaggi fino alla fine.',
           'Il Registro notifiche mostra ogni messaggio ed eventuali errori.',

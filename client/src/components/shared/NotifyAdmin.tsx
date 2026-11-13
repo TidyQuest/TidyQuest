@@ -5,7 +5,7 @@ import { localeFor } from '../../utils/locale';
 import { useHosted } from '../../utils/hosted';
 import { PushDevices } from './PushDevices';
 
-const KINDS: NotifyKind[] = ['taskDue', 'reminder', 'outcome', 'summary', 'nudge', 'achievementUnlocked', 'choreApproval', 'rewardRequest', 'coinBoost', 'rescue', 'cheer', 'teamup'];
+const KINDS: NotifyKind[] = ['taskDue', 'reminder', 'openChores', 'outcome', 'summary', 'nudge', 'achievementUnlocked', 'choreApproval', 'rewardRequest', 'coinBoost', 'rescue', 'cheer', 'teamup'];
 const label: CSSProperties = { fontSize: 12, fontWeight: 700, color: 'var(--warm-text-muted)' };
 const row: CSSProperties = { display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center' };
 const box: CSSProperties = { padding: 10, border: '1px solid var(--warm-border)', borderRadius: 10, display: 'grid', gap: 8 };

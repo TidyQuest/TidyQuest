@@ -12,7 +12,7 @@ import { badgeInfo } from '../utils/achievementStats';
 import { pinnedTaskIds } from '../utils/homeSections';
 import { claimRescue, releaseRescue, setRescueCompletion, todaysMission } from '../utils/rescue';
 import { notifyChoreApproved, notifyChoreRejected, notifyChoreWaiting, oneLineReason } from '../utils/notifyMessages';
-import { ensureAdmin, getCoinsByEffortConfig, getGlobalVacation, getUserVacation, resolveVacation, isStrictModeEnabled } from '../utils/adminHelpers';
+import { ensureAdmin, getCoinsByEffortConfig, getGlobalVacation, getUserVacation, resolveVacation, isStrictModeEnabled, hiddenRoomIdsFor, taskHiddenFor } from '../utils/adminHelpers';
 import { localDateStr } from '../utils/dateHelpers';
 import { dayAt, daySql, endOfDay as endOfDayOf, startOfDay } from '../utils/clock';
 import { isTodoRoom } from '../utils/todoRoom';
@@ -240,6 +240,12 @@ function rejectPendingCompletion(completionId: number, adminId?: number, reason:
 
 // List tasks for a room
 // The icon a chore's name suggests (the icon picker shows it while you type)
+// Other people's private rooms, hidden from kids (BUG-51): their chores answer 404, read or write, like the screens
+router.param('roomId', (req: AuthRequest, res, next, roomId) =>
+  (hiddenRoomIdsFor(req.userId).has(Number(roomId)) ? res.status(404).json({ error: 'Room not found' }) : next()));
+router.param('id', (req: AuthRequest, res, next, id) =>
+  (req.path.startsWith('/tasks/') && taskHiddenFor(req.userId, id) ? res.status(404).json({ error: 'Task not found' }) : next()));
+
 router.get('/tasks/icon-suggestion', (req: AuthRequest, res: Response) => {
   res.json({ iconKey: suggestTaskIcon(typeof req.query.name === 'string' ? req.query.name.slice(0, 200) : '') });
 });
@@ -616,7 +622,7 @@ router.post('/tasks/batch-delete', (req: AuthRequest, res: Response) => {
 router.get('/tasks/overdue', (req: AuthRequest, res: Response) => {
   const globalVac = getGlobalVacation();
 
-  const tasks = db.prepare(`
+  let tasks = db.prepare(`
     SELECT t.id, t.name, t.roomId, t.effort, t.frequencyDays, t.lastCompletedAt, t.isSeasonal, t.onDemand,
            t.seasonStartMonth, t.seasonEndMonth, t.scheduleWeekdays, t.scheduleMonthDay, t.scheduleMonthWeek,
            t.scheduleMonthWeekday, t.startsOn, t.createdAt,
@@ -625,6 +631,8 @@ router.get('/tasks/overdue', (req: AuthRequest, res: Response) => {
     JOIN rooms r ON t.roomId = r.id
     WHERE t.isSeasonal = 0 AND t.onDemand = 0 AND t.archivedAt IS NULL AND t.deletedAt IS NULL AND t.pausedAt IS NULL
   `).all() as any[];
+  const hiddenRooms = hiddenRoomIdsFor(req.userId);
+  if (hiddenRooms.size > 0) tasks = tasks.filter((t: any) => !hiddenRooms.has(t.roomId));
 
   const allUsers = db.prepare('SELECT id, displayName, avatarColor, avatarType, avatarPreset, avatarPhotoUrl FROM users').all() as any[];
   const usersById = new Map(allUsers.map((u: any) => [u.id, u]));

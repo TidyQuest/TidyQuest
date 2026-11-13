@@ -421,7 +421,7 @@ export const GUIDE_FR: GuideSection[] = [
       { ul: [
         'Un message retenu pendant les heures calmes ne part que s’il est encore vrai. Il est abandonné si la tâche a été faite entre-temps, si la journée concernée est passée, si l’équipe ou l’événement pièces doublées est terminé, ou si ce type a été désactivé.',
         'Une personne en vacances ne reçoit aucun message sur les tâches (à faire aujourd’hui, rappels, liste du matin, coup de pouce du soir, Mission sauvetage), et personne n’en reçoit pendant le Mode vacances. Les validations, les demandes de récompense et le bilan de la semaine arrivent toujours.',
-        'Une tâche qui attend la validation d’un parent compte comme faite : plus de rappels à son sujet.',
+        'Une tâche qui attend la validation d’un parent compte comme faite : plus de rappels à son sujet. « À faire aujourd\'hui » et les rappels d’une tâche assignée à personne (dans une pièce sans propriétaire) ne vont qu’aux personnes qui ont coché Tâches pour tout le monde ; c’est décoché au départ pour les enfants, qui n’entendent donc parler que de leurs propres tâches. Coche-le pour un enfant dans Profil → Mes notifications.',
         'Les tâches de départ portent leur nom dans la langue de chaque lecteur (sur son propre canal).',
       ] },
       { h: 'Notifications sur le téléphone (web push)' },
@@ -582,7 +582,7 @@ export const GUIDE_FR: GuideSection[] = [
           'Les bonus de badges et les bonus des parents apparaissent sur des lignes séparées dans Activité.',
         ] },
         { q: 'Les notifications n’arrivent pas', a: [
-          'Vérifie dans l’ordre : les notifications sont activées et le type est coché (Paramètres → Général) ; le canal fonctionne (utilise le bouton de test) ; la personne n’a pas désactivé ce type (Profil).',
+          'Vérifie dans l’ordre : les notifications sont activées et le type est coché (Paramètres → Général) ; le canal fonctionne (utilise le bouton de test) ; la personne n’a pas désactivé ce type (Profil). Un enfant ne reçoit les avis des tâches assignées à personne qu’une fois Tâches pour tout le monde coché pour lui.',
           'Les types privés (résultats, résumés, rappels, encouragements) demandent le canal personnel de la personne.',
           'Les heures calmes et les heures d’école retiennent les messages jusqu’à leur fin.',
           'Le Journal des notifications montre chaque message et toute erreur.',
