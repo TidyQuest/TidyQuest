@@ -187,7 +187,7 @@ function OperatorLogin({ onSignedIn }: { onSignedIn: (token: string) => void }) 
     setError('');
     setBusy(true);
     try {
-      onSignedIn((await call<{ token: string }>('/login', null, { email, password })).token);
+      onSignedIn((await call<{ token: string }>('/login', null, { email: email.trim(), password })).token);
     } catch (err) {
       setError(message(err));
       setBusy(false);
@@ -198,7 +198,8 @@ function OperatorLogin({ onSignedIn }: { onSignedIn: (token: string) => void }) 
     <AuthCard title="Operator sign-in" subtitle="For the people running this server">
       <form onSubmit={submit}>
         <AuthField label="Email">
-          <input className="tq-input" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="username" />
+          <input className="tq-input" type="text" inputMode="email" value={email} onChange={(e) => setEmail(e.target.value)} required
+            autoComplete="username" autoCapitalize="none" autoCorrect="off" spellCheck={false} />
         </AuthField>
         <AuthField label="Password">
           <input className="tq-input" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required autoComplete="current-password" />

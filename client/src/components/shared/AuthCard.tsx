@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import { cloneElement, isValidElement, useId, type ReactElement, type ReactNode } from 'react';
 import { SparkleIcon } from '../icons/UIIcons';
 
 /** The centered card of the pages shown before sign-in (sign-up, password reset, confirming an email). */
@@ -26,13 +26,21 @@ export function AuthCard({ title, subtitle, children }: { title: string; subtitl
   );
 }
 
-/** A labelled field on those pages. */
+/** A labelled field on those pages. The label sits beside the box (linked by id), not around it: a box
+ *  inside its <label> confused a password manager on a phone into closing the keyboard (BUG-17). */
 export function AuthField({ label, hint, children }: { label: string; hint?: string; children: ReactNode }) {
+  const id = useId();
+  const hintId = `${id}-hint`;
+  const field = isValidElement(children)
+    ? cloneElement(children as ReactElement<{ id?: string; 'aria-describedby'?: string }>, {
+      id, ...(hint ? { 'aria-describedby': hintId } : {}),
+    })
+    : children;
   return (
-    <label style={{ display: 'block', marginBottom: 14 }}>
-      <span className="tq-label" style={{ textTransform: 'none', display: 'block' }}>{label}</span>
-      {children}
-      {hint && <span style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--warm-text-light)', marginTop: 4 }}>{hint}</span>}
-    </label>
+    <div style={{ marginBottom: 14 }}>
+      <label htmlFor={id} className="tq-label" style={{ textTransform: 'none', display: 'block' }}>{label}</label>
+      {field}
+      {hint && <span id={hintId} style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--warm-text-light)', marginTop: 4 }}>{hint}</span>}
+    </div>
   );
 }

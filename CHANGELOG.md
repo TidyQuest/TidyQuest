@@ -161,6 +161,10 @@ What changed in each release, in plain language, newest first. Releases up to v0
 - **Activity on tablets and small laptops** (BUG-56). Between 769 and 1024 pixels wide, the table's fixed columns
   squeezed the chore names to one word per line and the page scrolled sideways. Those widths now use the phone layout
   (room and time under the name).
+- **Signing in on a phone with a password manager** (BUG-17). On the operator sign-in, the keyboard could close as
+  soon as you tapped Email or Password (seen with Brave and Bitwarden). The sign-in, sign-up and new-password boxes
+  are now built the way password managers expect: the label sits above the box instead of around it, and the
+  operator's email box is a plain text box with an email keyboard.
 - **Settings on a computer:** opening a section lower in the list (like Double coins events) no longer jumps the
   page to the top. The list scrolls by itself and keeps your place.
 - **Settings → Look:** someone whose avatar has a frame showed their picture in the middle of the row instead of on
