@@ -368,7 +368,8 @@
       "more": "Meer",
       "badges": "Medailles",
       "hi": "Hoi, {name}",
-      "tabs": "Hoofdpagina's"
+      "tabs": "Hoofdpagina's",
+      "back": "Terug"
     },
     "app": {
       "roomsConfigured": "kamers ingesteld",
@@ -1889,7 +1890,11 @@
       "reset": "Alles tonen",
       "done": "Klaar",
       "saveFailed": "Je indeling kon niet worden opgeslagen. Controleer de verbinding en probeer het opnieuw.",
-      "hintToday": "👁️ toont of verbergt een deel van Vandaag. Bewaard voor jou op elk apparaat."
+      "hintToday": "👁️ toont of verbergt een deel van Vandaag. Bewaard voor jou op elk apparaat.",
+      "hintOrder": "Sleep ≡ of gebruik ▲▼ om de volgorde te veranderen. 👁️ toont of verbergt een onderdeel. Voor jou bewaard op elk apparaat.",
+      "orderHead": "Volgorde op de pagina",
+      "partsHead": "Knoppen bovenaan",
+      "resetAll": "Terug naar het begin"
     },
     "shields": {
       "held": "{n} reeksschilden",
@@ -2476,7 +2481,8 @@
       "levelChip": "nog {n}",
       "streakChip": "{n} dagen op rij",
       "holiday": "Aftellen naar de feestdag",
-      "levelBlock": "Level"
+      "levelBlock": "Level",
+      "choreLists": "Klusjeslijsten (Te laat, Vandaag, Wanneer je wilt)"
     },
     "settingsIndex": {
       "search": "Instellingen zoeken",

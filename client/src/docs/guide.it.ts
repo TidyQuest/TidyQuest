@@ -205,7 +205,7 @@ export const GUIDE_IT: GuideSection[] = [
         'Inizia il (📅): per qualsiasi faccenda che si ripete. Niente scade prima di quel giorno, e la prima scadenza è quel giorno (con giorni fissi o Ogni mese: il primo giorno previsto da quella data). Fino ad allora conta come pulita, e la stanza mostra «Inizia il …». Una volta fatta quel giorno o dopo, la data non conta più.',
         'Solo in stagione: scade solo tra due mesi (fuori da quel periodo non conta per la salute della casa).',
         'Su richiesta (quando si vuole): nessuna pianificazione; si può fare in qualsiasi momento. Attiva "Mostra in Oggi" per elencarla in Oggi, sotto Quando vuoi, e imposta un limite di ripetizioni (al giorno o alla settimana) se qualcuno potrebbe approfittarne.',
-        'Una volta (da fare): si fa una volta sola, poi sparisce dalle liste (resta in Attività). "Da fare entro" è una data facoltativa: quel giorno compare sotto Oggi, dopo sotto In ritardo; senza data, sotto Quando vuoi. Aggiungine una al volo con "+ Da fare" in Oggi.',
+        'Una volta (da fare): si fa una volta sola, poi sparisce dalle liste (resta in Attività). "Da fare entro" è una data facoltativa. Le cose da fare hanno la loro Lista delle cose da fare in Oggi, prima quelle in ritardo; se nascondi quella lista in Personalizza, finiscono nelle liste del giorno (sotto Oggi nella loro data, poi sotto In ritardo; senza data, sotto Quando vuoi). Aggiungine una al volo con "+ Da fare" in Oggi.',
         'Completamento anticipato: permette di rifare una faccenda in qualsiasi nuovo giorno del calendario, anche prima che scada (utile per le routine quotidiane).',
         'Ricorda alle: un promemoria a un’ora precisa del giorno (o la sera prima).',
       ] },
@@ -293,10 +293,10 @@ export const GUIDE_IT: GuideSection[] = [
       ] },
       { h: 'Scegli cosa mostra Oggi' },
       { ul: [
-        'Personalizza (in fondo a Oggi) elenca le parti che puoi nascondere: la mascotte, le etichette, le squadre, La prossima, I tuoi soliti, la classifica e altro. 👁️ mostra una parte, 🚫 la nasconde. Mostra tutto le riporta tutte.',
+        'Personalizza (in fondo a Oggi) ha due parti. Ordine nella pagina: i blocchi grandi (In attesa di approvazione, In squadra, La prossima, gli elenchi delle faccende, la Lista delle cose da fare, la Classifica); trascina ≡ o usa ▲▼ per spostarne uno. Pulsanti in alto: la mascotte, le etichette, I tuoi soliti e altro. 👁️ mostra una parte, 🚫 la nasconde (gli elenchi delle faccende non si possono nascondere). Torna all\'inizio rimette l’ordine e mostra tutto.',
         'Quello che nascondi è salvato per te: è uguale su ogni telefono e computer dove accedi, e un’altra persona sullo stesso dispositivo ha le sue scelte.',
         'In modalità bambino, anche i bambini nascondono parti della propria pagina Oggi (quelle che la modalità bambino mostra).',
-        'L’ordine di Oggi è fisso. Un ordine delle schede salvato nella vecchia Home viene conservato ma non è più usato; quello che avevi nascosto lì resta nascosto.',
+        'Il riepilogo resta in alto e le etichette restano su una riga; si spostano solo i blocchi grandi. Un ordine salvato nella vecchia Home vale ancora per i blocchi che esistono; quello che avevi nascosto lì resta nascosto.',
       ] },
       { h: 'Una cosa alla volta' },
       { ul: [
@@ -529,7 +529,7 @@ export const GUIDE_IT: GuideSection[] = [
           'Apri la faccenda nella sua stanza (toccala), tocca 📅 Fatto prima… e scegli il giorno. Conta per quel giorno (serie compresa) appena un genitore la approva. Vedi Faccende → Segnarla in ritardo.',
         ] },
         { q: 'Manca qualcosa in Oggi', a: [
-          'Potrebbe essere nascosto: apri Personalizza (il pulsante in fondo a Oggi) e tocca il suo 🚫 per mostrarlo di nuovo, oppure tocca Mostra tutto.',
+          'Potrebbe essere nascosto: apri Personalizza (il pulsante in fondo a Oggi) e tocca il suo 🚫 per mostrarlo di nuovo, oppure tocca Torna all\'inizio.',
           'Alcune parti compaiono solo quando contengono qualcosa (approvazioni, squadre, La prossima, Quando vuoi, l’etichetta della Missione di salvataggio), e alcune sono solo per i genitori. Stanze, il Calendario e l’Attività recente ora stanno solo nelle loro pagine.',
         ] },
         { q: 'Un genitore non compare nella Classifica', a: [

@@ -1,11 +1,12 @@
 import { useContext } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { FireIcon, CoinIcon, PointsIcon } from '../icons/UIIcons';
 import { ShieldIcons } from '../shared/StreakShields';
 import { SearchContext } from '../shared/searchContext';
 import { SearchIcon } from '../shared/SearchOverlay';
 import { UserAvatar } from '../shared/UserAvatar';
 import { fireHeaderAdd } from './headerAdd';
+import { activeTab, phoneNav } from './navItems';
 import { useTranslation } from '../../hooks/useTranslation';
 import { formatCoins } from '../../utils/format';
 import type { User } from '../../hooks/useAuth';
@@ -37,11 +38,20 @@ interface PageHeaderProps {
 export function PageHeader({ title, subtitle, user, onCoinsClick, onStreakClick, onPointsClick, userPoints, pointsPeriodLabel, gamificationEnabled = true, shieldsOn = false, homeDate, addLabel, onBack, backLabel }: PageHeaderProps) {
   const openSearch = useContext(SearchContext);
   const { t } = useTranslation(user.language);
+  const { pathname } = useLocation();
+  const navigate = useNavigate();
+  // Phones: a page off the tab bar (the More tab's pages) gets a ← back: to where you came from, or More (pages with their own back keep it)
+  const fromMore = !onBack && pathname !== '/more' && activeTab(phoneNav(user, gamificationEnabled).tabs, pathname) === 'more';
   return (
     <div className={`page-header${homeDate ? ' page-header-home' : ''}`} style={{ display: 'flex', flexWrap: 'wrap', gap: '12px 16px', alignItems: 'center', justifyContent: 'space-between', marginBottom: 28 }}>
       <div className="page-header-title">
         {onBack && (
           <button type="button" onClick={onBack} className="ph-back" aria-label={backLabel} title={backLabel}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6" /></svg>
+          </button>
+        )}
+        {fromMore && (
+          <button type="button" onClick={() => { if ((window.history.state?.idx ?? 0) > 0) navigate(-1); else navigate('/more'); }} className="ph-back ph-phone" aria-label={t('nav.back')} title={t('nav.back')}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6" /></svg>
           </button>
         )}

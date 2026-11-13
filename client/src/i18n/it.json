@@ -368,7 +368,8 @@
       "more": "Altro",
       "badges": "Obiettivi",
       "hi": "Ciao, {name}",
-      "tabs": "Pagine principali"
+      "tabs": "Pagine principali",
+      "back": "Indietro"
     },
     "app": {
       "roomsConfigured": "stanze configurate",
@@ -1889,7 +1890,11 @@
       "reset": "Mostra tutto",
       "done": "Fatto",
       "saveFailed": "Impossibile salvare la disposizione. Controlla la connessione e riprova.",
-      "hintToday": "👁️ mostra o nasconde una parte di Oggi. Salvato per te su ogni dispositivo."
+      "hintToday": "👁️ mostra o nasconde una parte di Oggi. Salvato per te su ogni dispositivo.",
+      "hintOrder": "Trascina ≡ o usa ▲▼ per cambiare l'ordine. 👁️ mostra o nasconde una parte. Salvato per te su ogni dispositivo.",
+      "orderHead": "Ordine nella pagina",
+      "partsHead": "Pulsanti in alto",
+      "resetAll": "Torna all'inizio"
     },
     "shields": {
       "held": "{n} scudi della serie",
@@ -2476,7 +2481,8 @@
       "levelChip": "mancano {n}",
       "streakChip": "serie di {n} giorni",
       "holiday": "Conto alla rovescia delle feste",
-      "levelBlock": "Livello"
+      "levelBlock": "Livello",
+      "choreLists": "Elenchi delle faccende (In ritardo, Oggi, Quando vuoi)"
     },
     "settingsIndex": {
       "search": "Cerca nelle impostazioni",

@@ -205,7 +205,7 @@ export const GUIDE_FR: GuideSection[] = [
         'Commence le (📅) : pour toute tâche qui se répète. Rien n’est à faire avant ce jour, et la première échéance est ce jour-là (avec des jours de la semaine ou Chaque mois : le premier jour prévu à partir de cette date). D’ici là elle compte comme propre, et la pièce affiche « Commence le … ». Une fois faite ce jour-là ou après, la date ne compte plus.',
         'Seulement en saison : à faire seulement entre deux mois (en dehors, elle ne compte pas dans la santé de la maison).',
         'À la demande (à tout moment) : pas de calendrier ; elle peut être faite quand on veut. Active « Afficher dans Aujourd\'hui » pour la lister sous À tout moment dans Aujourd\'hui, et fixe une limite de répétition (par jour ou par semaine) si on pourrait en abuser.',
-        'Une seule fois (à faire) : faite une fois, puis elle disparaît des listes (elle reste dans Activité). « À faire avant » est une date facultative : elle apparaît sous Aujourd\'hui ce jour-là, puis sous En retard ; sans date, sous À tout moment. Ajoute-en une vite avec « + À faire » dans Aujourd\'hui.',
+        'Une seule fois (à faire) : faite une fois, puis elle disparaît des listes (elle reste dans Activité). « À faire avant » est une date facultative. Les tâches à faire ont leur propre Liste à faire dans Aujourd\'hui, les retards en premier ; si tu masques cette liste dans Personnaliser, elles vont dans les listes du jour (sous Aujourd\'hui à leur date, puis sous En retard ; sans date, sous À tout moment). Ajoute-en une vite avec « + À faire » dans Aujourd\'hui.',
         'Complétion anticipée : permet de refaire une tâche chaque nouveau jour du calendrier, même avant son échéance (pratique pour les routines quotidiennes).',
         'Rappeler à : un rappel à une heure précise dans la journée (ou la veille au soir).',
       ] },
@@ -293,10 +293,10 @@ export const GUIDE_FR: GuideSection[] = [
       ] },
       { h: 'Choisir ce que montre Aujourd\'hui' },
       { ul: [
-        'Personnaliser (en bas d’Aujourd\'hui) liste les parties que tu peux masquer : la mascotte, les pastilles, les équipes, À suivre, Tes habitudes, le classement et plus. 👁️ affiche une partie, 🚫 la masque. Tout afficher les remet toutes.',
+        'Personnaliser (en bas d’Aujourd\'hui) a deux parties. Ordre sur la page : les grands blocs (En attente de validation, En équipe, À suivre, les listes de tâches, la Liste à faire, le Classement) ; fais glisser ≡ ou utilise ▲▼ pour en déplacer un. Boutons en haut : la mascotte, les pastilles, Tes habitudes et plus. 👁️ affiche une partie, 🚫 la masque (les listes de tâches ne peuvent pas être masquées). Revenir au départ remet l’ordre et affiche tout.',
         'Ce que tu masques est enregistré pour toi : c’est pareil sur chaque téléphone et ordinateur où tu te connectes, et quelqu’un d’autre sur le même appareil a ses propres choix.',
         'En mode enfant, les enfants masquent aussi des parties de leur propre page Aujourd\'hui (celles que le mode enfant montre).',
-        'L’ordre d’Aujourd\'hui est fixe. Un ordre de cartes enregistré sur l’ancien Accueil est gardé mais n’est plus utilisé ; ce que tu y avais masqué reste masqué.',
+        'Le résumé reste en haut et les pastilles restent sur une ligne ; seuls les grands blocs bougent. Un ordre enregistré sur l’ancien Accueil est repris pour les blocs qui existent encore ; ce que tu y avais masqué reste masqué.',
       ] },
       { h: 'Une chose à la fois' },
       { ul: [
@@ -529,7 +529,7 @@ export const GUIDE_FR: GuideSection[] = [
           'Ouvrez la tâche dans sa pièce (touchez-la), appuyez sur 📅 Fait plus tôt… et choisissez le jour. Elle compte pour ce jour-là (série comprise) dès qu’un parent l’approuve. Voir Tâches → Noter en retard.',
         ] },
         { q: 'Il manque quelque chose dans Aujourd\'hui', a: [
-          'C’est peut-être masqué : ouvre Personnaliser (le bouton en bas d’Aujourd\'hui) et touche son 🚫 pour le réafficher, ou touche Tout afficher.',
+          'C’est peut-être masqué : ouvre Personnaliser (le bouton en bas d’Aujourd\'hui) et touche son 🚫 pour le réafficher, ou touche Revenir au départ.',
           'Certaines parties n’apparaissent que si elles contiennent quelque chose (validations, équipes, À suivre, À tout moment, la pastille Mission sauvetage), et certaines sont réservées aux parents. Pièces, le Calendrier et l’Activité récente n’ont plus que leurs propres pages.',
         ] },
         { q: 'Un parent n’apparaît pas sur le Tableau', a: [

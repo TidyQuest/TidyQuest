@@ -368,7 +368,8 @@
       "more": "Más",
       "badges": "Logros",
       "hi": "Hola, {name}",
-      "tabs": "Páginas principales"
+      "tabs": "Páginas principales",
+      "back": "Volver"
     },
     "app": {
       "roomsConfigured": "habitaciones configuradas",
@@ -1889,7 +1890,11 @@
       "reset": "Mostrar todo",
       "done": "Listo",
       "saveFailed": "No se pudo guardar la disposición. Revisa la conexión e inténtalo de nuevo.",
-      "hintToday": "👁️ muestra u oculta una parte de Hoy. Se guarda para ti en todos tus dispositivos."
+      "hintToday": "👁️ muestra u oculta una parte de Hoy. Se guarda para ti en todos tus dispositivos.",
+      "hintOrder": "Arrastra ≡ o usa ▲▼ para cambiar el orden. 👁️ muestra u oculta una parte. Se guarda para ti en todos tus dispositivos.",
+      "orderHead": "Orden en la página",
+      "partsHead": "Botones de arriba",
+      "resetAll": "Volver al inicio"
     },
     "shields": {
       "held": "{n} escudos de racha",
@@ -2476,7 +2481,8 @@
       "levelChip": "faltan {n}",
       "streakChip": "racha de {n} días",
       "holiday": "Cuenta atrás de fiestas",
-      "levelBlock": "Nivel"
+      "levelBlock": "Nivel",
+      "choreLists": "Listas de tareas (Atrasadas, Hoy, Cuando quieras)"
     },
     "settingsIndex": {
       "search": "Buscar ajustes",

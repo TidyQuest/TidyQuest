@@ -368,7 +368,8 @@
       "more": "Mehr",
       "badges": "Erfolge",
       "hi": "Hallo, {name}",
-      "tabs": "Hauptseiten"
+      "tabs": "Hauptseiten",
+      "back": "Zurück"
     },
     "app": {
       "roomsConfigured": "Räume konfiguriert",
@@ -1889,7 +1890,11 @@
       "reset": "Alles einblenden",
       "done": "Fertig",
       "saveFailed": "Die Anordnung konnte nicht gespeichert werden. Prüfe die Verbindung und versuche es noch einmal.",
-      "hintToday": "👁️ blendet einen Teil von Heute ein oder aus. Gilt für dich auf jedem Gerät."
+      "hintToday": "👁️ blendet einen Teil von Heute ein oder aus. Gilt für dich auf jedem Gerät.",
+      "hintOrder": "Zieh ≡ oder nutze ▲▼, um die Reihenfolge zu ändern. 👁️ zeigt oder verbirgt einen Teil. Für dich auf jedem Gerät gespeichert.",
+      "orderHead": "Reihenfolge auf der Seite",
+      "partsHead": "Knöpfe oben",
+      "resetAll": "Zurück zum Anfang"
     },
     "shields": {
       "held": "{n} Serienschilde",
@@ -2476,7 +2481,8 @@
       "levelChip": "noch {n}",
       "streakChip": "{n} Tage in Folge",
       "holiday": "Feiertags-Countdown",
-      "levelBlock": "Level"
+      "levelBlock": "Level",
+      "choreLists": "Aufgabenlisten (Überfällig, Heute, Jederzeit)"
     },
     "settingsIndex": {
       "search": "Einstellungen durchsuchen",

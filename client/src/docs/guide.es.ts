@@ -205,7 +205,7 @@ export const GUIDE_ES: GuideSection[] = [
         'Empieza el (📅): para cualquier tarea que se repite. Nada vence antes de ese día, y vence por primera vez ese día (con días de la semana fijos o Cada mes: el primer día programado desde esa fecha). Hasta entonces cuenta como limpia, y la habitación muestra «Empieza el …». Una vez hecha ese día o después, la fecha ya no importa.',
         'Solo en temporada: solo toca entre dos meses (fuera de ellos no cuenta para la salud de la casa).',
         'A demanda (cuando sea): sin calendario; se puede hacer en cualquier momento. Activa "Mostrar en Hoy" para verla en Hoy, en Cuando quieras, y pon un límite de repeticiones (por día o semana) si se pudiera abusar de ella.',
-        'Una vez (pendiente): se hace una vez y desaparece de las listas (queda en Actividad). Fecha opcional "Hacer antes del": ese día aparece en Hoy y después en Atrasadas; sin fecha, en Cuando quieras. Añade una rápido con "+ Pendiente" en Hoy.',
+        'Una vez (pendiente): se hace una vez y desaparece de las listas (queda en Actividad). Fecha opcional "Hacer antes del". Los pendientes tienen su propia Lista de pendientes en Hoy, primero los atrasados; si ocultas esa lista en Personalizar, van a las listas del día (en Hoy en su fecha, después en Atrasadas; sin fecha, en Cuando quieras). Añade uno rápido con "+ Pendiente" en Hoy.',
         'Completar antes: permite repetir una tarea en cualquier nuevo día del calendario, incluso antes de que toque (útil para rutinas diarias).',
         'Recordar a las: un recordatorio a una hora fija ese día (o la tarde anterior).',
       ] },
@@ -293,10 +293,10 @@ export const GUIDE_ES: GuideSection[] = [
       ] },
       { h: 'Elige qué muestra Hoy' },
       { ul: [
-        'Personalizar (abajo del todo en Hoy) lista las partes que puedes ocultar: la mascota, las etiquetas, los equipos, La siguiente, Lo de siempre, la clasificación y más. 👁️ muestra una parte, 🚫 la oculta. Mostrar todo las devuelve todas.',
+        'Personalizar (abajo del todo en Hoy) tiene dos partes. Orden en la página: los bloques grandes (Esperando aprobación, En equipo, La siguiente, las listas de tareas, la Lista de pendientes, la Clasificación); arrastra ≡ o usa ▲▼ para mover uno. Botones de arriba: la mascota, las etiquetas, Lo de siempre y más. 👁️ muestra una parte, 🚫 la oculta (las listas de tareas no se pueden ocultar). Volver al inicio recupera el orden y lo muestra todo.',
         'Lo que ocultas se guarda para ti: es igual en cada móvil y ordenador donde inicies sesión, y otra persona en el mismo dispositivo tiene lo suyo.',
         'En el modo niño, los niños también ocultan partes de su propia página Hoy (las que muestra el modo niño).',
-        'El orden de Hoy es fijo. Un orden de tarjetas guardado en el antiguo Inicio se conserva pero ya no se usa; lo que ocultaste allí sigue oculto.',
+        'El resumen se queda arriba y las etiquetas en una fila; solo se mueven los bloques grandes. Un orden guardado en el antiguo Inicio se mantiene para los bloques que aún existen; lo que ocultaste allí sigue oculto.',
       ] },
       { h: 'Una cosa cada vez' },
       { ul: [
@@ -529,7 +529,7 @@ export const GUIDE_ES: GuideSection[] = [
           'Abre la tarea en su habitación (tócala), toca 📅 Hecho antes… y elige el día. Cuenta para ese día (racha incluida) en cuanto un padre la aprueba. Mira Tareas → Apuntarlo tarde.',
         ] },
         { q: 'Falta algo en Hoy', a: [
-          'Puede estar oculto: abre Personalizar (el botón al final de Hoy) y toca su 🚫 para volver a mostrarlo, o toca Mostrar todo.',
+          'Puede estar oculto: abre Personalizar (el botón al final de Hoy) y toca su 🚫 para volver a mostrarlo, o toca Volver al inicio.',
           'Algunas partes solo aparecen cuando tienen algo (aprobaciones, equipos, La siguiente, Cuando quieras, la etiqueta de la Misión de rescate), y algunas son solo para padres. Habitaciones, el Calendario y la Actividad reciente ya solo están en sus propias páginas.',
         ] },
         { q: 'Un padre o una madre no aparece en el Tablero', a: [

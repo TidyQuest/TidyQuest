@@ -368,7 +368,8 @@
       "more": "Plus",
       "badges": "Succès",
       "hi": "Salut, {name}",
-      "tabs": "Pages principales"
+      "tabs": "Pages principales",
+      "back": "Retour"
     },
     "app": {
       "roomsConfigured": "pièces configurées",
@@ -1889,7 +1890,11 @@
       "reset": "Tout afficher",
       "done": "Terminé",
       "saveFailed": "Impossible d'enregistrer la disposition. Vérifiez la connexion et réessayez.",
-      "hintToday": "👁️ affiche ou masque une partie d'Aujourd'hui. Enregistré pour vous sur chaque appareil."
+      "hintToday": "👁️ affiche ou masque une partie d'Aujourd'hui. Enregistré pour vous sur chaque appareil.",
+      "hintOrder": "Fais glisser ≡ ou utilise ▲▼ pour changer l'ordre. 👁️ affiche ou masque un élément. Enregistré pour toi sur tous tes appareils.",
+      "orderHead": "Ordre sur la page",
+      "partsHead": "Boutons en haut",
+      "resetAll": "Revenir au départ"
     },
     "shields": {
       "held": "{n} boucliers de série",
@@ -2476,7 +2481,8 @@
       "levelChip": "encore {n}",
       "streakChip": "série de {n} jours",
       "holiday": "Compte à rebours des fêtes",
-      "levelBlock": "Niveau"
+      "levelBlock": "Niveau",
+      "choreLists": "Listes de tâches (En retard, Aujourd'hui, À tout moment)"
     },
     "settingsIndex": {
       "search": "Rechercher un réglage",

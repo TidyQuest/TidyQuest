@@ -516,6 +516,10 @@ body {
   z-index: 100;
 }
 
+/* While a pop-up is open, pulling down mustn't reload the page (phones' pull-to-refresh) */
+html:has(.tq-modal-overlay) { overscroll-behavior-y: none; }
+.tq-modal-overlay { overscroll-behavior: contain; }
+
 /* Modal container — responsive by default */
 .tq-modal {
   width: 90vw;
@@ -2000,7 +2004,7 @@ select.today-chip.room-sort { cursor: pointer; appearance: auto; padding-right: 
 .cf-sheet-room { flex: 1; min-width: 0; font-size: 13px; font-weight: 700; color: var(--warm-text-light); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .cf-sheet-x { flex: none; align-self: center; width: 36px; height: 36px; border: 0; border-radius: 50%; background: none; font-size: 24px; line-height: 1; color: var(--warm-text-light); cursor: pointer; }
 .cf-sheet-x:hover { background: var(--warm-bg-subtle); }
-.cf-sheet-body { flex: 1; min-height: 0; overflow-y: auto; padding: 12px; display: grid; gap: 12px; background: var(--warm-bg-warm); }
+.cf-sheet-body { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 12px; display: grid; gap: 12px; background: var(--warm-bg-warm); }
 .cf-sheet-foot { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; padding: 10px 16px calc(10px + env(safe-area-inset-bottom)); border-top: 1px solid var(--warm-border-subtle); background: var(--warm-card); }
 .cf-sheet-foot .tq-btn { min-width: 96px; }
 .cf-group { display: grid; gap: 10px; min-width: 0; padding: 14px; border: 1px solid var(--warm-border-subtle); border-radius: var(--shape-radius-card); background: var(--warm-card); }
@@ -2032,7 +2036,8 @@ select.today-chip.room-sort { cursor: pointer; appearance: auto; padding-right: 
 .cf-health-ends { display: flex; justify-content: space-between; font-size: var(--fs-xs); font-weight: 600; color: var(--warm-text-light); }
 .cf-delete { justify-self: start; min-height: 40px; padding: 8px 14px; border: 1.5px solid var(--warm-danger-border); border-radius: 10px; background: none; font: 700 13px Nunito, sans-serif; color: var(--warm-danger); cursor: pointer; }
 @media (max-width: 768px) {
-  .cf-sheet { width: 100vw !important; max-width: 100vw !important; height: 92vh; max-height: 92vh !important; border-radius: var(--shape-radius-card) var(--shape-radius-card) 0 0 !important; }
+  /* dvh: the screen you can see (vh counts the space under the address bar, which pushed the sheet to the top) */
+  .cf-sheet { width: 100vw !important; max-width: 100vw !important; height: 85vh; height: 85dvh; max-height: 85vh !important; max-height: 85dvh !important; border-radius: var(--shape-radius-card) var(--shape-radius-card) 0 0 !important; }
   .cf-sheet-foot .tq-btn { flex: 1; }
 }
 @media (min-width: 1024px) {
@@ -2072,7 +2077,8 @@ select.today-chip.room-sort { cursor: pointer; appearance: auto; padding-right: 
 .rooms-tile-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; margin-bottom: 6px; }
 .rooms-tile-icon { position: relative; width: 42px; height: 42px; flex: none; border-radius: 10px; display: flex; align-items: center; justify-content: center; }
 .rooms-tile-icon > svg { width: 28px; height: 28px; }
-.rooms-tile-who { position: absolute; right: -6px; bottom: -6px; display: flex; border-radius: 50%; box-shadow: 0 0 0 2px var(--warm-card); }
+/* A solid backing: letter avatars are see-through tints and would show the room's colour */
+.rooms-tile-who { position: absolute; right: -6px; bottom: -6px; display: flex; border-radius: 35%; background: var(--warm-card); box-shadow: 0 0 0 2px var(--warm-card); }
 .rooms-tile-pct { font-size: 18px; font-weight: 900; line-height: 1.2; }
 .rooms-tile-name { font-size: 15px; font-weight: 800; line-height: 1.25; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow-wrap: anywhere; }
 .rooms-tile-sub { font-size: 13px; font-weight: 600; color: var(--warm-text-muted); }
@@ -2190,6 +2196,10 @@ html[data-look='quest'] .today-tabs { border-bottom-width: 4px; }
     --warm-accent-light: rgba(255, 255, 255, 0.18); --warm-streak-border: transparent; --warm-streak-text: #fff;
     --warm-border: rgba(255, 255, 255, 0.3); --warm-card: rgba(255, 255, 255, 0.18); --warm-accent: #fff;
   }
+  /* The garland lies over the top of the block instead of pushing it down */
+  html[data-look='quest'] .season-strip { position: relative; z-index: 1; margin: 0 -16px -22px; padding: 2px 16px 0; pointer-events: none; }
+  html[data-look='quest'] .season-strip:first-child { margin-top: -12px; }
+  html[data-look='quest'] .season-strip ~ .page-header { margin-top: 0 !important; padding-top: 28px; }
   html[data-look='quest'] .page-header .ph-add { background-color: var(--look-gold) !important; color: #3A2A00 !important; }
 }
 /* Computers: the side menu is the block */

@@ -229,7 +229,7 @@ export const GUIDE_EN: GuideSection[] = [
         'Starts on (📅): for any repeating chore. Nothing is due before that day, and it’s first due on it (with set weekdays or Monthly: on the first scheduled day from it). Until then it counts as clean, and the room shows “Starts …”. Once it’s been done on or after that day, the date no longer matters.',
         'Only in season: only due between two months (outside them it doesn’t count toward house health).',
         'On demand (anytime): no schedule; it can be done whenever. Turn on "Show on Today" to list it under Any time on Today, and set a repeat limit (per day or week) if it could be farmed.',
-        'One-time (to-do): done once, then it’s gone from the lists (it stays in Activity). Optional "Do by" date: it shows under Today on that day and under Overdue after it; without one it’s under Any time. Quick-add one with "+ To-do" on Today.',
+        'One-time (to-do): done once, then it’s gone from the lists (it stays in Activity). Optional "Do by" date. To-dos have their own To-do list on Today, overdue ones first; if you hide that list in Customise, they sit in the day’s lists instead (under Today on their date, Overdue after it, Any time without one). Quick-add one with "+ To-do" on Today.',
         'Allow early completion: lets a chore be redone on any new calendar day, even before it’s due (useful for daily routines).',
         'Remind at: a reminder at a set time on the day (or the evening before).',
       ] },
@@ -317,10 +317,10 @@ export const GUIDE_EN: GuideSection[] = [
       ] },
       { h: 'Choose what Today shows' },
       { ul: [
-        'Customise (at the bottom of Today) lists the parts you can hide: the mascot, the chips, team-ups, Next up, Your usual, the standings and more. 👁️ shows a part, 🚫 hides it. Show everything brings them all back.',
+        'Customise (at the bottom of Today) has two parts. Order on the page: the big blocks (Waiting for approval, Team-ups, Next up, the chore lists, the To-do list, the Leaderboard); drag ≡ or use ▲▼ to move one. Buttons at the top: the mascot, the chips, Your usual and more. 👁️ shows a part, 🚫 hides it (the chore lists can’t be hidden). Back to the start puts the order back and shows everything.',
         'What you hide is saved for you: it’s the same on every phone and computer you sign in on, and someone else on the same device has their own.',
         'In Kid mode, kids hide parts of their own Today too (the ones Kid mode shows).',
-        'Today’s order is fixed. A card order saved on the old Home is kept but no longer used; what you hid there stays hidden.',
+        'The summary stays at the top and the chips stay in one row; only the big blocks move. An order saved on the old Home carries over for the blocks that still exist; what you hid there stays hidden.',
       ] },
       { h: 'One thing at a time' },
       { ul: [
@@ -553,7 +553,7 @@ export const GUIDE_EN: GuideSection[] = [
           'Open the chore in its room (tap it), tap 📅 Done earlier… and pick the day. It counts on that day (streak included) once a parent approves it. See Chores → Logging it late.',
         ] },
         { q: 'Something is missing from Today', a: [
-          'It may be hidden: open Customise (the button at the bottom of Today) and tap its 🚫 to show it again, or tap Show everything.',
+          'It may be hidden: open Customise (the button at the bottom of Today) and tap its 🚫 to show it again, or tap Back to the start.',
           'Some parts only show when they have something in them (approvals, team-ups, Next up, Any time, the Rescue Mission chip), and some are for parents only. Rooms, the Calendar and Recent Activity are only on their own pages now.',
         ] },
         { q: 'A parent is missing from the Board', a: [

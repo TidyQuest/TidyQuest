@@ -205,7 +205,7 @@ export const GUIDE_NL: GuideSection[] = [
         'Begint op (📅): voor elke taak die terugkomt. Vóór die dag is niets aan de beurt, en de eerste keer is op die dag (met vaste weekdagen of Maandelijks: de eerste geplande dag vanaf die datum). Tot dan telt het als schoon, en de kamer toont „Begint op …”. Zodra het op of na die dag gedaan is, doet de datum er niet meer toe.',
         'Alleen in het seizoen: alleen aan de beurt tussen twee maanden (daarbuiten telt het niet mee voor de huisgezondheid).',
         'Wanneer nodig (op elk moment): geen schema; het kan altijd gedaan worden. Zet "Op Vandaag tonen" aan om het op Vandaag onder Wanneer je wilt te tonen en stel een herhaallimiet in (per dag of week) als het te vaak voor munten gedaan zou kunnen worden.',
-        'Eenmalig (to-do): één keer doen, daarna verdwijnt het uit de lijsten (het blijft in Activiteit staan). Optionele datum "Doen voor": op die dag staat het onder Vandaag, daarna onder Te laat; zonder datum onder Wanneer je wilt. Voeg er snel een toe met "+ To-do" op Vandaag.',
+        'Eenmalig (to-do): één keer doen, daarna verdwijnt het uit de lijsten (het blijft in Activiteit staan). Optionele datum "Doen voor". To-do’s hebben hun eigen To-dolijst op Vandaag, te late eerst; verberg je die lijst in Aanpassen, dan staan ze in de lijsten van de dag (op hun datum onder Vandaag, daarna onder Te laat, zonder datum onder Wanneer je wilt). Voeg er snel een toe met "+ To-do" op Vandaag.',
         'Vroegtijdig afronden toestaan: een klusje kan op elke nieuwe kalenderdag opnieuw gedaan worden, ook voordat het aan de beurt is (handig voor dagelijkse routines).',
         'Herinner om: een herinnering op een vast tijdstip op de dag zelf (of de avond ervoor).',
       ] },
@@ -293,10 +293,10 @@ export const GUIDE_NL: GuideSection[] = [
       ] },
       { h: 'Kies wat Vandaag toont' },
       { ul: [
-        'Aanpassen (onderaan Vandaag) toont de delen die je kunt verbergen: de mascotte, de labels, Samen doen, Hierna, Je vaste klusjes, de stand en meer. 👁️ toont een deel, 🚫 verbergt het. Alles tonen haalt ze allemaal terug.',
+        'Aanpassen (onderaan Vandaag) heeft twee delen. Volgorde op de pagina: de grote blokken (Wacht op goedkeuring, Samen doen, Hierna, de klusjeslijsten, de To-dolijst, het Scorebord); sleep ≡ of gebruik ▲▼ om er een te verplaatsen. Knoppen bovenaan: de mascotte, de labels, Je vaste klusjes en meer. 👁️ toont een deel, 🚫 verbergt het (de klusjeslijsten kun je niet verbergen). Terug naar het begin zet de volgorde terug en toont alles.',
         'Wat je verbergt wordt voor jou bewaard: het is hetzelfde op elke telefoon en computer waarop je inlogt, en iemand anders op hetzelfde apparaat heeft zijn eigen keuze.',
         'In Kindermodus verbergen kinderen ook delen van hun eigen pagina Vandaag (de delen die Kindermodus toont).',
-        'De volgorde van Vandaag staat vast. Een kaartvolgorde die op de oude Home is bewaard, blijft staan maar wordt niet meer gebruikt; wat je daar verborg, blijft verborgen.',
+        'De samenvatting blijft bovenaan en de labels blijven op één rij; alleen de grote blokken verschuiven. Een volgorde die op de oude Home is bewaard, geldt nog voor de blokken die er nog zijn; wat je daar verborg, blijft verborgen.',
       ] },
       { h: 'Eén ding tegelijk' },
       { ul: [
@@ -529,7 +529,7 @@ export const GUIDE_NL: GuideSection[] = [
           'Open het klusje in zijn kamer (tik erop), tik op 📅 Eerder gedaan… en kies de dag. Het telt voor die dag (reeks inbegrepen) zodra een ouder het goedkeurt. Zie Klusjes → Te laat invullen.',
         ] },
         { q: 'Er ontbreekt iets op Vandaag', a: [
-          'Het is misschien verborgen: open Aanpassen (de knop onderaan Vandaag) en tik op zijn 🚫 om het weer te tonen, of tik op Alles tonen.',
+          'Het is misschien verborgen: open Aanpassen (de knop onderaan Vandaag) en tik op zijn 🚫 om het weer te tonen, of tik op Terug naar het begin.',
           'Sommige delen verschijnen alleen als er iets in staat (goedkeuringen, Samen doen, Hierna, Wanneer je wilt, het label van de Reddingsmissie), en sommige zijn alleen voor ouders. Kamers, de Kalender en Recente activiteit staan nu alleen nog op hun eigen pagina’s.',
         ] },
         { q: 'Een ouder staat niet op het Scorebord', a: [

@@ -56,7 +56,8 @@ const RingGauge: React.FC<RingGaugeProps> = ({
       >
         <div
           style={{
-            fontSize: 36,
+            // Scales with the ring (36px at the full 140px); small rings (rooms, Today) drop the "/ 100"
+            fontSize: size >= 100 ? 36 : Math.round(size * 0.3),
             fontWeight: 800,
             color,
             lineHeight: 1,
@@ -64,7 +65,7 @@ const RingGauge: React.FC<RingGaugeProps> = ({
         >
           {value}
         </div>
-        <div
+        {size >= 100 && <div
           style={{
             fontSize: 12,
             color: 'var(--warm-text-light)',
@@ -73,7 +74,7 @@ const RingGauge: React.FC<RingGaugeProps> = ({
           }}
         >
           / 100
-        </div>
+        </div>}
       </div>
     </div>
   );

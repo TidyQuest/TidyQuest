@@ -31,7 +31,7 @@ import { UndoToast, type UndoState } from '../shared/UndoToast';
 import { BoostDetails } from '../shared/BoostDetails';
 import type { FocusData } from './Focus';
 import { HomeLayoutEditor } from '../shared/HomeLayoutEditor';
-import { KID_BLOCKS, LEGACY_HIDDEN_KEY, legacyHidden, TODAY_BLOCKS, type HomeLayout, type TodayBlockId } from '../../utils/homeLayout';
+import { KID_BLOCKS, LEGACY_HIDDEN_KEY, legacyHidden, orderBlocks, placeBlock, TODAY_BLOCKS, TODAY_ORDER, type HomeLayout, type TodayBlockId, type TodayOrderId } from '../../utils/homeLayout';
 import { TimerStartButton } from '../shared/ChoreTimer';
 import { useChoreTimer } from '../../hooks/useChoreTimer';
 import type { ListRoom } from './TaskList';
@@ -518,10 +518,11 @@ const Dashboard: React.FC<DashboardProps> = ({
     teamups: t('teamups.title'),
     focus: t('today.nextUp'),
     usual: t('home.usualTitle'),
+    todo: t('todos.title'),
     leaderboard: t('app.leaderboardTitle'),
   };
-  // This person's hidden parts of Today (saved on the server; the old browser-only hidden set is brought over the
-  // first time). Today's order is fixed (ENH-26), so a saved card order is kept but not used.
+  // This person's hidden parts of Today and the order of its big blocks (saved on the server; the old browser-only
+  // hidden set is brought over the first time)
   const [layout, setLayout] = useState<HomeLayout>(() => currentUser.homeLayout ?? { order: [], hidden: legacyHidden() });
   useEffect(() => {
     if (currentUser.homeLayout || legacyHidden().length === 0) return;
@@ -556,10 +557,20 @@ const Dashboard: React.FC<DashboardProps> = ({
     teamups: data.features?.teamups !== false,
     focus: !!data.focus,
     usual: data.features?.usual !== false,
+    todo: data.features?.todos !== false,
     leaderboard: gamificationEnabled,
   };
   const listedBlocks = TODAY_BLOCKS.filter((id) => blockApplies[id] && (!kidMode || KID_BLOCKS.has(id)));
   const shows = (id: TodayBlockId) => blockApplies[id] && (!kidMode || KID_BLOCKS.has(id)) && !hiddenSet.has(id);
+  // The big blocks under the summary, in this person's order; Customise moves them (the chore lists can't be hidden)
+  const blockOrder = orderBlocks(TODAY_ORDER, layout.order);
+  const orderable = (id: TodayOrderId) => id === 'lists' || listedBlocks.includes(id);
+  const saveOrder = (order: TodayOrderId[]) => saveLayout({ order, hidden: layout.hidden });
+  const stepBlock = (id: string, dir: -1 | 1) => {
+    const shown = blockOrder.filter(orderable);
+    const to = shown[shown.indexOf(id as TodayOrderId) + dir];
+    if (to) saveOrder(placeBlock(blockOrder, id as TodayOrderId, to, dir < 0 ? 'before' : 'after'));
+  };
 
   const togglePin = async (q: Quest) => {
     if (q.pinned) await api.unpinTask(q.id); else await api.pinTask(q.id);
@@ -594,7 +605,11 @@ const Dashboard: React.FC<DashboardProps> = ({
   );
 
   /* ── Today's lists (the server sorts every chore into Overdue, Today, Any time and Later; ENH-26) ── */
-  const lists = data.today ?? { overdue: [], today: [], anytime: [], later: [] };
+  // To-dos have their own section unless it's hidden: then they sit in the day's lists by their do-by date
+  const todoOn = shows('todo');
+  const sorted = data.today ?? { overdue: [], today: [], anytime: [], later: [] };
+  const choresOnly = (qs: Quest[]) => (todoOn ? qs.filter((q) => !q.oneTime) : qs);
+  const lists = { overdue: choresOnly(sorted.overdue), today: choresOnly(sorted.today), anytime: choresOnly(sorted.anytime), later: choresOnly(sorted.later) };
   // Waiting for a parent's OK counts as done for the kid who did it
   const waiting = (q: Quest) => !isAdult && (q.myPendingCount ?? 0) > 0;
   const settled = (q: Quest) => !!readyState(q).done || waiting(q);
@@ -969,7 +984,36 @@ const Dashboard: React.FC<DashboardProps> = ({
   );
 
   const canAddTodo = isParent && data.features?.todos !== false;
-  const tabs = (!filterLocked || canAddTodo) && (
+  const addTodoBtn = !showTodoAdd && (
+    <button type="button" className="today-link" onClick={() => { setShowTodoAdd(true); setTodoNotice(''); }}>+ {t('todos.add')}</button>
+  );
+  const todoAddForm = (
+    <>
+      {showTodoAdd && (
+        <TodoQuickAdd language={language}
+          people={(users ?? []).map((u) => ({ id: u.id, displayName: u.displayName }))}
+          onCancel={() => setShowTodoAdd(false)}
+          onAdded={(name) => { setShowTodoAdd(false); setTodoNotice(t('todos.added').replace('{name}', name)); onRefresh?.(); }} />
+      )}
+      {todoNotice && <div className="today-added">{todoNotice}</div>}
+    </>
+  );
+  // To-dos: every open one-time chore, overdue first, then by do-by date (the server sorts them)
+  const todoRows = todoOn ? filterQuests(data.todoQuests ?? []).map((q) => questRow(q, { key: `td-${q.id}`, highlight: missionTask(q) })) : [];
+  const todoBlock = todoOn && (todoRows.length > 0 || canAddTodo) && (
+    <section className="today-section today-todos">
+      <div className="today-sec">
+        <h3>📝 {t('todos.title')}{todoRows.length > 0 && ` · ${todoRows.length}`}</h3>
+        {canAddTodo && addTodoBtn}
+      </div>
+      {todoAddForm}
+      {todoRows.length > 0 && (
+        <div className="tq-card today-list chore-list">{isExpanded('todo') ? todoRows : todoRows.slice(0, LIMIT)}</div>
+      )}
+      {showMoreBtn('todo', todoRows.length)}
+    </section>
+  );
+  const tabs = (!filterLocked || (canAddTodo && !todoOn)) && (
     <div className="today-tabs-row">
       {!filterLocked && (
         <div className="today-tabs" role="group" aria-label={t('settings.taskView')}>
@@ -980,9 +1024,7 @@ const Dashboard: React.FC<DashboardProps> = ({
           ))}
         </div>
       )}
-      {canAddTodo && !showTodoAdd && (
-        <button type="button" className="today-link" onClick={() => { setShowTodoAdd(true); setTodoNotice(''); }}>+ {t('todos.add')}</button>
-      )}
+      {canAddTodo && !todoOn && addTodoBtn}
     </div>
   );
   const nothingAtAll = !nextUp && overdueRows.length + todayRows.length + doneRows.length + anytimeRows.length === 0;
@@ -1004,14 +1046,47 @@ const Dashboard: React.FC<DashboardProps> = ({
     </>
   );
 
+  const mainBlocks: Record<TodayOrderId, React.ReactNode> = {
+    pendingApprovals: !wide && approvals,
+    teamups: shows('teamups') && (
+      <TeamUpsCard items={data.teamups ?? []} userId={currentUser.id} language={language}
+        onDone={(taskId) => onCompleteTask(taskId)} onChanged={() => onRefresh?.()} />
+    ),
+    focus: nextCard,
+    lists: (
+      <>
+        {tabs}
+        {!todoOn && todoAddForm}
+        {nothingAtAll && <div className="tq-card tq-card-padded today-empty">{t('focus.nothing')}</div>}
+        {listsBlock}
+        {laterRows.length > 0 && (
+          <>
+            <button type="button" className="today-more" onClick={() => setShowLater((s) => !s)} aria-expanded={showLater}>
+              {showLater ? t('today.hideScheduled')
+                : laterRows.length === 1 ? t('today.showScheduledOne') : t('today.showScheduled').replace('{n}', String(laterRows.length))}
+            </button>
+            {showLater && section('later', t('dashboard.scheduled'), laterRows)}
+          </>
+        )}
+      </>
+    ),
+    todo: todoBlock,
+    leaderboard: !wide && standings,
+  };
+
   return (
     <>
-      {/* Customise: which parts of Today this person sees */}
+      {/* Customise: the order of Today's big blocks and which parts this person sees */}
       {showCustomize && (
         <HomeLayoutEditor
-          cards={listedBlocks.map((id) => ({ id, label: BLOCK_LABELS[id], visible: !hiddenSet.has(id) }))}
+          blocks={blockOrder.filter(orderable).map((id) => ({
+            id, label: id === 'lists' ? t('today.choreLists') : BLOCK_LABELS[id], visible: id === 'lists' ? undefined : !hiddenSet.has(id),
+          }))}
+          parts={listedBlocks.filter((id) => !(TODAY_ORDER as readonly string[]).includes(id)).map((id) => ({ id, label: BLOCK_LABELS[id], visible: !hiddenSet.has(id) }))}
+          onPlace={(id, target, where) => saveOrder(placeBlock(blockOrder, id as TodayOrderId, target as TodayOrderId, where))}
+          onStep={stepBlock}
           onToggle={toggleBlock}
-          onReset={() => saveLayout({ order: layout.order, hidden: [] })}
+          onReset={() => saveLayout({ order: [], hidden: [] })}
           onClose={() => { setShowCustomize(false); setLayoutError(false); }}
           error={layoutError}
           t={t}
@@ -1044,32 +1119,8 @@ const Dashboard: React.FC<DashboardProps> = ({
           {panel === 'mascot' && panelBody}
           {chips.length > 0 && <div className="today-chips">{chips}</div>}
           {panel !== 'mascot' && panelBody}
-          {!wide && approvals}
-          {shows('teamups') && (
-            <TeamUpsCard items={data.teamups ?? []} userId={currentUser.id} language={language}
-              onDone={(taskId) => onCompleteTask(taskId)} onChanged={() => onRefresh?.()} />
-          )}
-          {nextCard}
-          {tabs}
-          {showTodoAdd && (
-            <TodoQuickAdd language={language}
-              people={(users ?? []).map((u) => ({ id: u.id, displayName: u.displayName }))}
-              onCancel={() => setShowTodoAdd(false)}
-              onAdded={(name) => { setShowTodoAdd(false); setTodoNotice(t('todos.added').replace('{name}', name)); onRefresh?.(); }} />
-          )}
-          {todoNotice && <div className="today-added">{todoNotice}</div>}
-          {nothingAtAll && <div className="tq-card tq-card-padded today-empty">{t('focus.nothing')}</div>}
-          {listsBlock}
-          {laterRows.length > 0 && (
-            <>
-              <button type="button" className="today-more" onClick={() => setShowLater((s) => !s)} aria-expanded={showLater}>
-                {showLater ? t('today.hideScheduled')
-                  : laterRows.length === 1 ? t('today.showScheduledOne') : t('today.showScheduled').replace('{n}', String(laterRows.length))}
-              </button>
-              {showLater && section('later', t('dashboard.scheduled'), laterRows)}
-            </>
-          )}
-          {!wide && standings}
+          {/* The big blocks, in this person's order (Customise) */}
+          {blockOrder.map((id) => <React.Fragment key={id}>{mainBlocks[id]}</React.Fragment>)}
           {/* Always here, so a hidden part can come back */}
           <div className="today-customise">
             <button type="button" className="tq-btn tq-btn-secondary tq-btn-sm" onClick={() => setShowCustomize(true)}>⚙ {t('dashboard.customise')}</button>

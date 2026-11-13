@@ -368,7 +368,8 @@
       "more": "More",
       "badges": "Badges",
       "hi": "Hi, {name}",
-      "tabs": "Main pages"
+      "tabs": "Main pages",
+      "back": "Back"
     },
     "app": {
       "roomsConfigured": "rooms configured",
@@ -1889,7 +1890,11 @@
       "reset": "Show everything",
       "done": "Done",
       "saveFailed": "Couldn't save your layout. Check the connection and try again.",
-      "hintToday": "👁️ shows or hides a part of Today. Saved for you on every device."
+      "hintToday": "👁️ shows or hides a part of Today. Saved for you on every device.",
+      "hintOrder": "Drag ≡ or use ▲▼ to change the order. 👁️ shows or hides a part. Saved for you on every device.",
+      "orderHead": "Order on the page",
+      "partsHead": "Buttons at the top",
+      "resetAll": "Back to the start"
     },
     "shields": {
       "held": "{n} streak shields",
@@ -2476,7 +2481,8 @@
       "levelChip": "{n} to go",
       "streakChip": "{n}-day streak",
       "holiday": "Holiday countdown",
-      "levelBlock": "Level"
+      "levelBlock": "Level",
+      "choreLists": "Chore lists (Overdue, Today, Any time)"
     },
     "settingsIndex": {
       "search": "Search settings",

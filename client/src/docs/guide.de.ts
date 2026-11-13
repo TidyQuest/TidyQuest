@@ -205,7 +205,7 @@ export const GUIDE_DE: GuideSection[] = [
         'Beginnt am (📅): für jede wiederkehrende Aufgabe. Vor diesem Tag ist nichts fällig, und zum ersten Mal fällig ist sie an diesem Tag (mit bestimmten Wochentagen oder Monatlich: am ersten geplanten Tag ab diesem Datum). Bis dahin zählt sie als sauber, und der Raum zeigt „Beginnt am …“. Sobald sie an oder nach diesem Tag erledigt wurde, spielt das Datum keine Rolle mehr.',
         'Nur in der Saison: nur zwischen zwei Monaten fällig (außerhalb zählt sie nicht zur Hausgesundheit).',
         'Auf Abruf (jederzeit): kein Zeitplan; sie kann jederzeit gemacht werden. Schalte „Auf Heute anzeigen“ ein, um sie auf Heute unter Jederzeit aufzulisten, und lege ein Limit fest (pro Tag oder Woche), falls man sie ausnutzen könnte.',
-        'Einmalig (To-do): einmal erledigt, dann verschwindet sie aus den Listen (sie bleibt unter Aktivität). Optional mit Datum bei „Erledigen bis“: An dem Tag steht sie unter Heute, danach unter Überfällig; ohne Datum unter Jederzeit. Mit „+ To-do“ auf Heute legst du schnell eine an.',
+        'Einmalig (To-do): einmal erledigt, dann verschwindet sie aus den Listen (sie bleibt unter Aktivität). Optional mit Datum bei „Erledigen bis“. To-dos haben auf Heute ihre eigene To-do-Liste, überfällige zuerst; blendest du diese Liste unter Anpassen aus, stehen sie in den Listen des Tages (an ihrem Datum unter Heute, danach unter Überfällig, ohne Datum unter Jederzeit). Mit „+ To-do“ auf Heute legst du schnell eine an.',
         'Frühe Erledigung: erlaubt, eine Aufgabe an jedem neuen Kalendertag erneut zu machen, auch bevor sie fällig ist (praktisch für tägliche Routinen).',
         'Erinnern um: eine Erinnerung zu einer festen Uhrzeit am Tag selbst (oder am Abend davor).',
       ] },
@@ -293,10 +293,10 @@ export const GUIDE_DE: GuideSection[] = [
       ] },
       { h: 'Wähle, was Heute zeigt' },
       { ul: [
-        'Anpassen (unten auf Heute) listet die Teile, die du ausblenden kannst: das Maskottchen, die Chips, Team-ups, Als Nächstes, Deine Klassiker, die Wertung und mehr. 👁️ blendet einen Teil ein, 🚫 blendet ihn aus. Alles einblenden holt alle zurück.',
+        'Anpassen (unten auf Heute) hat zwei Teile. Reihenfolge auf der Seite: die großen Blöcke (Wartet auf Freigabe, Teamwork, Als Nächstes, die Aufgabenlisten, die To-do-Liste, die Bestenliste); zieh ≡ oder nutze ▲▼, um einen zu verschieben. Knöpfe oben: das Maskottchen, die Chips, Deine Klassiker und mehr. 👁️ blendet einen Teil ein, 🚫 blendet ihn aus (die Aufgabenlisten lassen sich nicht ausblenden). Zurück zum Anfang stellt die Reihenfolge zurück und blendet alles ein.',
         'Was du ausblendest, wird für dich gespeichert: Es ist auf jedem Handy und Computer gleich, auf dem du dich anmeldest, und jemand anderes auf demselben Gerät hat seine eigene Auswahl.',
         'Im Kindermodus blenden Kinder auch Teile ihrer eigenen Seite Heute aus (die, die der Kindermodus zeigt).',
-        'Die Reihenfolge auf Heute ist fest. Eine auf der alten Startseite gespeicherte Kartenreihenfolge bleibt erhalten, wird aber nicht mehr verwendet; was du dort ausgeblendet hast, bleibt ausgeblendet.',
+        'Die Übersicht bleibt oben und die Chips bleiben in einer Reihe; nur die großen Blöcke lassen sich verschieben. Eine auf der alten Startseite gespeicherte Reihenfolge gilt weiter für die Blöcke, die es noch gibt; was du dort ausgeblendet hast, bleibt ausgeblendet.',
       ] },
       { h: 'Eins nach dem anderen' },
       { ul: [
@@ -529,7 +529,7 @@ export const GUIDE_DE: GuideSection[] = [
           'Öffne die Aufgabe in ihrem Raum (tippe sie an), tippe auf 📅 Früher erledigt… und wähle den Tag. Sie zählt für diesen Tag (auch für die Serie), sobald ein Elternteil sie freigibt. Siehe Aufgaben → Nachtragen.',
         ] },
         { q: 'Auf Heute fehlt etwas', a: [
-          'Es ist vielleicht ausgeblendet: Öffne Anpassen (der Knopf unten auf Heute) und tippe auf sein 🚫, um es wieder einzublenden, oder tippe auf Alles einblenden.',
+          'Es ist vielleicht ausgeblendet: Öffne Anpassen (der Knopf unten auf Heute) und tippe auf sein 🚫, um es wieder einzublenden, oder tippe auf Zurück zum Anfang.',
           'Manche Teile erscheinen nur, wenn etwas drin ist (Freigaben, Team-ups, Als Nächstes, Jederzeit, der Chip der Rettungsmission), und manche sind nur für Eltern. Räume, der Kalender und die letzten Aktivitäten haben jetzt nur noch ihre eigenen Seiten.',
         ] },
         { q: 'Ein Elternteil fehlt auf dem Board', a: [
