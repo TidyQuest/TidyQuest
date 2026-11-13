@@ -130,7 +130,8 @@ What changed in each release, in plain language, newest first. Releases up to v0
 - **Home is now Today** (ENH-26, the third step of the new look). It starts with one summary card: a ring showing how
   much of today is done, how many chores are left and overdue, the coins up for grabs, your level and the mascot.
   Under it, a row of chips (Rescue Mission, house health, the next holiday, double coins events, your streak, goals)
-  that open when tapped, and one note when chores or rewards wait for a parent's OK, with a Review button.
+  that open when tapped (on a phone they scroll sideways; on a computer they wrap onto a second line so every chip
+  can be reached with a mouse), and one note when chores or rewards wait for a parent's OK, with a Review button.
 - **Your chores in three lists:** Overdue, Today (finished ones stay there, ticked and crossed out) and Any time
   (anytime chores and Your usual). Mine / Everyone above them shows how many are left in each. Chores due in the next
   30 days are behind "Show N scheduled…", and the week's standings come last, with a link to the Board.
