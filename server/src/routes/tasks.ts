@@ -25,7 +25,7 @@ import { taskName, tr } from '../utils/i18n';
 import { isFeatureOn } from '../utils/features';
 import { pauseTask, readPausedUntil, resumeTask } from '../utils/pause';
 import { earnShieldAt, lateStreak, nextStreak, noteBrokenStreak, settleStreak } from '../utils/streaks';
-import { baseCoinsOf, endTeamupsFor, groupTeamPending, openTeamupFor, teamShares, teamUpInfo, type Teamup } from '../utils/teamups';
+import { baseCoinsOf, endTeamupsFor, groupTeamPending, openTeamupFor, teamShares, teamUpContext, teamUpInfo, type Teamup } from '../utils/teamups';
 import { currentShares, isPerPerson, sharesCompleteAt, sharesFor } from '../utils/shares';
 import { isHosted } from '../hosted/context';
 import { fileUrl, oneFile, removeFile, uploadDir } from '../hosted/files';
@@ -300,6 +300,7 @@ router.get('/rooms/:roomId/tasks', (req: AuthRequest, res: Response) => {
 
   const roomAssignedUserId = room?.assignedUserId ?? null;
 
+  const teamCtx = teamUpContext(); // read once for the list (ENH-19)
   const tasksWithHealth = tasks.map((t) => {
     const taskAssigneeEntries = assigneesByTask.get(t.id) || [];
     const taskAssignedUserIds = taskAssigneeEntries.map(a => a.userId);
@@ -323,7 +324,7 @@ router.get('/rooms/:roomId/tasks', (req: AuthRequest, res: Response) => {
       assignedUsers,
       effectiveAssignedUserIds,
       completedTodayBy: completedTodayByTask.get(t.id) || null,
-      teamUp: teamUpInfo(t, req.userId!),
+      teamUp: teamUpInfo(t, req.userId!, teamCtx),
       assignmentMode: mode,
       sharedCompletions: (mode === 'shared' || mode === 'custom') ? sharesFor(t) : undefined,
       health: (() => {

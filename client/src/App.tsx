@@ -110,6 +110,10 @@ function AppContent() {
   const vacationUpdatePending = useRef(false);
   const dashboardLoadInFlight = useRef<Promise<void> | null>(null);
   const roomsRefreshInFlight = useRef<Promise<void> | null>(null);
+  // The family's data as of the last full load, and when that was (ENH-20): the 15-second check loads
+  // again only when it moved, or after 5 minutes so due times and room health keep up with the clock
+  const seenVersion = useRef<string | null>(null);
+  const lastFullLoad = useRef(0);
   const [gamificationEnabled, setGamificationEnabled] = useState(true);
   const [confetti, setConfetti] = useState(false);
   // The short banner after a Done: red when it failed, green (ok) when it only waits for a parent (FIX-33)
@@ -161,6 +165,8 @@ function AppContent() {
         ]);
         // The family's clock first, so everything drawn from this dashboard counts days at home
         setFamilyZone(dash.timeZone);
+        seenVersion.current = dash.dataVersion ?? null;
+        lastFullLoad.current = Date.now();
         setDashboardData(dash);
         if (dash.vacation && !vacationUpdatePending.current) setVacationConfig(dash.vacation);
         setRooms(roomsData);
@@ -229,13 +235,20 @@ function AppContent() {
     const isRewardsPath = location.pathname === '/rewards';
     const tick = () => {
       if (document.visibilityState !== 'visible') return;
-      // The coin balance in the header and on Rewards: a parent may just have approved a chore, given a bonus
-      // or refunded a reward (BUG-36)
-      void refreshUser();
-      // Rewards shows the parents' request list, which comes with the dashboard
-      if (isDashboardPath || isRewardsPath) loadDashboard();
-      if (isRoomsPath) refreshRooms();
-      if (isRewardsPath) loadRewards();
+      // Ask first whether anything changed (a few bytes); a failed check loads anyway (ENH-20)
+      void api.dataChanges().then((r) => r.v, () => null).then((v) => {
+        const stale = Date.now() - lastFullLoad.current > 5 * 60_000;
+        if (v !== null && v === seenVersion.current && !stale) return;
+        seenVersion.current = v;
+        lastFullLoad.current = Date.now();
+        // The coin balance in the header and on Rewards: a parent may just have approved a chore, given a bonus
+        // or refunded a reward (BUG-36)
+        void refreshUser();
+        // Rewards shows the parents' request list, which comes with the dashboard
+        if (isDashboardPath || isRewardsPath) loadDashboard();
+        if (isRoomsPath) refreshRooms();
+        if (isRewardsPath) loadRewards();
+      });
     };
     const interval = setInterval(tick, 15000);
     document.addEventListener('visibilitychange', tick);

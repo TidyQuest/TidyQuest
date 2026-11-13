@@ -1,4 +1,4 @@
-import db from '../database';
+import db, { prepared } from '../database';
 import { localDateStr } from './dateHelpers';
 import { isFeatureOn, rescueMultiplier } from './features';
 import { intervalDays } from './homeSections';
@@ -33,7 +33,7 @@ function behind(t: any, now: Date): number {
 
 /** Chores that could be today's mission, most forgotten first. */
 export function rescueCandidates(now: Date = new Date(), exclude: Set<number> = new Set()): Array<{ id: number; name: string; behind: number }> {
-  return (db.prepare('SELECT * FROM tasks WHERE archivedAt IS NULL AND deletedAt IS NULL AND pausedAt IS NULL AND onDemand = 0').all() as any[])
+  return (prepared('SELECT * FROM tasks WHERE archivedAt IS NULL AND deletedAt IS NULL AND pausedAt IS NULL AND onDemand = 0').all() as any[])
     .filter((t) => !exclude.has(t.id) && !isSeasonalNow(t, now))
     .map((t) => ({ task: t, behind: behind(t, now) }))
     // Not a chore nobody's home to do: none during a family vacation, nor one whose people are all away (BUG-49)
@@ -42,7 +42,7 @@ export function rescueCandidates(now: Date = new Date(), exclude: Set<number> = 
     .sort((a, b) => b.behind - a.behind || a.id - b.id);
 }
 
-const getRow = (day: string) => db.prepare('SELECT * FROM rescue_missions WHERE day = ?').get(day) as RescueRow | undefined;
+const getRow = (day: string) => prepared('SELECT * FROM rescue_missions WHERE day = ?').get(day) as RescueRow | undefined;
 
 /**
  * Today's mission, picked the first time anyone asks (null when switched off, skipped, or nothing is
@@ -54,14 +54,14 @@ export function todaysMission(now: Date = new Date()): RescueRow | null {
   let row = getRow(day);
   // Nobody has done it and its chore can't be done any more (deleted, paused, or a to-do that's finished)
   const gone = !!row && !row.skipped && !row.completedBy && (row.taskId === null
-    || !db.prepare('SELECT 1 FROM tasks WHERE id = ? AND archivedAt IS NULL AND deletedAt IS NULL AND pausedAt IS NULL').get(row.taskId));
+    || !prepared('SELECT 1 FROM tasks WHERE id = ? AND archivedAt IS NULL AND deletedAt IS NULL AND pausedAt IS NULL').get(row.taskId));
   if (!row || gone) {
     const pick = rescueCandidates(now)[0];
     if (!pick) {
-      if (gone) db.prepare('UPDATE rescue_missions SET taskId = NULL WHERE day = ?').run(day);
+      if (gone) prepared('UPDATE rescue_missions SET taskId = NULL WHERE day = ?').run(day);
       return null;
     }
-    db.prepare(`INSERT INTO rescue_missions (day, taskId, multiplier) VALUES (?, ?, ?)
+    prepared(`INSERT INTO rescue_missions (day, taskId, multiplier) VALUES (?, ?, ?)
                 ON CONFLICT(day) DO UPDATE SET taskId = excluded.taskId, multiplier = excluded.multiplier, completedBy = NULL, completionId = NULL`)
       .run(day, pick.id, rescueMultiplier());
     row = getRow(day);
@@ -79,17 +79,17 @@ export function rescueMultiplierFor(taskId: number, now: Date = new Date()): num
 export function claimRescue(taskId: number, userId: number, now: Date = new Date()): boolean {
   const m = todaysMission(now);
   if (!m || m.taskId !== taskId || m.completedBy) return false;
-  return db.prepare('UPDATE rescue_missions SET completedBy = ? WHERE day = ? AND taskId = ? AND completedBy IS NULL')
+  return prepared('UPDATE rescue_missions SET completedBy = ? WHERE day = ? AND taskId = ? AND completedBy IS NULL')
     .run(userId, m.day, taskId).changes > 0;
 }
 
 export function setRescueCompletion(day: string, completionId: number) {
-  db.prepare('UPDATE rescue_missions SET completionId = ? WHERE day = ?').run(completionId, day);
+  prepared('UPDATE rescue_missions SET completionId = ? WHERE day = ?').run(completionId, day);
 }
 
 /** A rejected or undone completion gives the bonus back (if its day is still today). */
 export function releaseRescue(completionId: number) {
-  db.prepare('UPDATE rescue_missions SET completedBy = NULL, completionId = NULL WHERE completionId = ?').run(completionId);
+  prepared('UPDATE rescue_missions SET completedBy = NULL, completionId = NULL WHERE completionId = ?').run(completionId);
 }
 
 /** Parents: another chore, a chosen one, or none today. */
@@ -101,13 +101,13 @@ export function rerollRescue(now: Date = new Date()): RescueRow | null {
 }
 export function chooseRescue(taskId: number, now: Date = new Date()): RescueRow | null {
   const day = localDateStr(now);
-  db.prepare(`INSERT INTO rescue_missions (day, taskId, multiplier, skipped) VALUES (?, ?, ?, 0)
+  prepared(`INSERT INTO rescue_missions (day, taskId, multiplier, skipped) VALUES (?, ?, ?, 0)
               ON CONFLICT(day) DO UPDATE SET taskId = excluded.taskId, multiplier = excluded.multiplier, completedBy = NULL, completionId = NULL, skipped = 0`)
     .run(day, taskId, rescueMultiplier());
   return todaysMission(now);
 }
 export function skipRescue(now: Date = new Date()) {
-  db.prepare(`INSERT INTO rescue_missions (day, taskId, multiplier, skipped) VALUES (?, NULL, ?, 1)
+  prepared(`INSERT INTO rescue_missions (day, taskId, multiplier, skipped) VALUES (?, NULL, ?, 1)
               ON CONFLICT(day) DO UPDATE SET taskId = NULL, completedBy = NULL, completionId = NULL, skipped = 1`)
     .run(localDateStr(now), rescueMultiplier());
 }

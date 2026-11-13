@@ -31,6 +31,13 @@ What changed in each release, in plain language, newest first. Releases up to v0
 
 ### Changed
 
+- **The app loads faster and uses much less data** (ENH-22, ENH-19, ENH-20). The server now compresses what it sends
+  (an open Today's refresh went from about 450 KB to under 30 KB on our family's data, the app itself from 1.7 MB to
+  under 0.5 MB), and phones keep the app's files instead of downloading them again on every open; updates still show
+  up as before. Today is about twice as fast to put together on the server, and so is Achievements. An open Today
+  still checks every 15 seconds, but now only asks "anything new?" and loads again only when something changed (or
+  every 5 minutes, so due times keep up with the clock), so a tablet left on Today no longer downloads everything
+  all day.
 - **A calmer, plainer look: "Fresh"** (ENH-30, the last layout step of the new look). Cards have thin borders and
   smaller corners, buttons are square-cornered with no glow, and filled buttons and links in the seven light colour
   themes use a deeper shade of their colour, so white text on them is easier to read (the default orange went from

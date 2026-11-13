@@ -182,8 +182,6 @@ interface DashboardProps {
   data: {
     houseHealth: number;
     rooms: Room[];
-    todaysQuests: Quest[];
-    nextTasks: Quest[];
     readyToComplete?: Quest[];
     scheduledUpcoming?: Quest[];
     onDemandQuests?: Quest[];

@@ -1,4 +1,4 @@
-import db from '../database';
+import db, { prepared } from '../database';
 import type { AchievementStats } from './achievements';
 import { weekOfSql } from './periods';
 
@@ -49,7 +49,7 @@ function fromRow(r: any): CustomBadge {
 }
 
 export function listCustomBadges(): CustomBadge[] {
-  return (db.prepare('SELECT * FROM custom_badges ORDER BY id').all() as any[]).map(fromRow);
+  return (prepared('SELECT * FROM custom_badges ORDER BY id').all() as any[]).map(fromRow);
 }
 
 export const customBadgeKey = (id: number) => `custom_${id}`;
@@ -67,7 +67,7 @@ export function readCustomBadgeInput(body: any): { error: string } | { values: O
   const taskIds = parseIds(body?.taskIds) ?? [];
   if ((metric === 'task_count' || metric === 'task_weeks') && taskIds.length === 0) return { error: 'tasks_required' };
   const roomId = body?.roomId != null && body.roomId !== '' ? Number(body.roomId) : null;
-  if (metric === 'room_count' && !(roomId && db.prepare('SELECT 1 FROM rooms WHERE id = ? AND deletedAt IS NULL').get(roomId))) return { error: 'room_required' };
+  if (metric === 'room_count' && !(roomId && prepared('SELECT 1 FROM rooms WHERE id = ? AND deletedAt IS NULL').get(roomId))) return { error: 'room_required' };
   const threshold = Math.round(Number(body?.threshold));
   if (!(threshold >= 1 && threshold <= 100000)) return { error: 'invalid_threshold' };
   const bonusCoins = Math.round(Number(body?.bonusCoins ?? 0));
@@ -121,7 +121,7 @@ export function customBadgeValue(badge: CustomBadge, userId: number, stats: Achi
       return (db.prepare(`SELECT COUNT(*) AS n FROM task_completions c WHERE c.userId = ? AND c.status = 'approved' AND c.taskId IN (${inList(badge.taskIds)})`)
         .get(userId, ...badge.taskIds) as { n: number }).n;
     case 'room_count':
-      return (db.prepare("SELECT COUNT(*) AS n FROM task_completions c JOIN tasks t ON t.id = c.taskId WHERE c.userId = ? AND c.status = 'approved' AND t.roomId = ?")
+      return (prepared("SELECT COUNT(*) AS n FROM task_completions c JOIN tasks t ON t.id = c.taskId WHERE c.userId = ? AND c.status = 'approved' AND t.roomId = ?")
         .get(userId, badge.roomId) as { n: number }).n;
     case 'task_weeks':
       return longestWeekRun((db.prepare(`SELECT DISTINCT ${weekOfSql('c.completedAt')} AS week FROM task_completions c WHERE c.userId = ? AND c.status = 'approved' AND c.taskId IN (${inList(badge.taskIds)})`)

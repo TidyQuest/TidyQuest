@@ -1,4 +1,4 @@
-import db from '../database';
+import db, { prepared } from '../database';
 import { dateStr, endOfDay, startOfDay } from './clock';
 import { hasWeekdaySchedule, monthlyRule, nextDueAt, weekdayMask, type ScheduledTask } from './schedule';
 
@@ -34,15 +34,13 @@ export function overdueDays(t: HomeTask, now: Date = new Date()): number {
 }
 
 export function pinnedTaskIds(userId: number): number[] {
-  return (db.prepare('SELECT taskId FROM task_pins WHERE userId = ? ORDER BY createdAt').all(userId) as Array<{ taskId: number }>).map((r) => r.taskId);
+  return (prepared('SELECT taskId FROM task_pins WHERE userId = ? ORDER BY createdAt').all(userId) as Array<{ taskId: number }>).map((r) => r.taskId);
 }
 
 /** Pins first, then the tasks this person did most (at least twice) in the last 30 days. */
 export function usualTasks<T extends HomeTask>(tasks: T[], userId: number, now: Date = new Date(), limit = 10): Array<T & { pinned: boolean; usualCount: number }> {
   const since = new Date(now.getTime() - 30 * DAY_MS).toISOString();
-  const counts = new Map((db.prepare(
-    "SELECT taskId, COUNT(*) AS n FROM task_completions WHERE userId = ? AND status IN ('approved', 'pending') AND completedAt >= ? GROUP BY taskId"
-  ).all(userId, since) as Array<{ taskId: number; n: number }>).map((r) => [r.taskId, r.n]));
+  const counts = new Map((prepared("SELECT taskId, COUNT(*) AS n FROM task_completions WHERE userId = ? AND status IN ('approved', 'pending') AND completedAt >= ? GROUP BY taskId").all(userId, since) as Array<{ taskId: number; n: number }>).map((r) => [r.taskId, r.n]));
   const byId = new Map(tasks.map((t) => [t.id, t]));
   const pins = pinnedTaskIds(userId).map((id) => byId.get(id)).filter((t): t is T => !!t);
   const pinnedIds = new Set(pins.map((t) => t.id));
@@ -54,7 +52,7 @@ export function usualTasks<T extends HomeTask>(tasks: T[], userId: number, now: 
 
 /** Chores overdue by at least their own interval, worst (most intervals behind) first. */
 export function forgottenTasks<T extends HomeTask>(tasks: T[], userId: number, now: Date = new Date(), exclude: Set<number> = new Set(), limit = 10): Array<T & { overdueDays: number }> {
-  const snoozed = new Set((db.prepare('SELECT taskId FROM task_snoozes WHERE userId = ? AND until > ?').all(userId, now.toISOString()) as Array<{ taskId: number }>).map((r) => r.taskId));
+  const snoozed = new Set((prepared('SELECT taskId FROM task_snoozes WHERE userId = ? AND until > ?').all(userId, now.toISOString()) as Array<{ taskId: number }>).map((r) => r.taskId));
   return tasks
     .filter((t) => !t.onDemand && !t.oneTime && !t.isSeasonal && !snoozed.has(t.id) && !exclude.has(t.id))
     .map((t) => ({ t, days: overdueDays(t, now), ratio: overdueDays(t, now) / intervalDays(t) }))
@@ -75,7 +73,7 @@ export function forgottenTasks<T extends HomeTask>(tasks: T[], userId: number, n
 type TodayTask = HomeTask & { health: number; showInDashboard?: number | boolean; allowEarlyCompletion?: number | boolean; doBy?: string | null };
 export type TodayItem<T> = T & { overdueDays?: number; snoozed?: boolean; pinned?: boolean };
 export function todaySections<T extends TodayTask>(tasks: T[], userId: number, now: Date = new Date(), opts: { todos?: boolean; laterDays?: number } = {}) {
-  const snoozed = new Set((db.prepare('SELECT taskId FROM task_snoozes WHERE userId = ? AND until > ?').all(userId, now.toISOString()) as Array<{ taskId: number }>).map((r) => r.taskId));
+  const snoozed = new Set((prepared('SELECT taskId FROM task_snoozes WHERE userId = ? AND until > ?').all(userId, now.toISOString()) as Array<{ taskId: number }>).map((r) => r.taskId));
   const pinned = new Set(pinnedTaskIds(userId));
   const today = dateStr(now);
   const endOfToday = endOfDay(now).getTime();

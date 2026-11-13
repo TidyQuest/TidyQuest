@@ -1,4 +1,4 @@
-import db from '../database';
+import db, { prepared } from '../database';
 import { isFeatureOn } from './features';
 
 /**
@@ -35,15 +35,15 @@ export function recordWhatsNewArrivals(instance: Pick<typeof db, 'prepare'> = db
 export function unseenWhatsNew(userId: number): string[] {
   if (!isFeatureOn('whatsNew')) return [];
   const map = arrivals();
-  const seen = new Set((db.prepare('SELECT itemId FROM whats_new_seen WHERE userId = ?').all(userId) as Array<{ itemId: string }>).map((r) => r.itemId));
+  const seen = new Set((prepared('SELECT itemId FROM whats_new_seen WHERE userId = ?').all(userId) as Array<{ itemId: string }>).map((r) => r.itemId));
   // julianday() reads both "2026-11-20 10:00:00" and ISO times, however the account was made
-  const olderThan = db.prepare('SELECT 1 FROM users WHERE id = ? AND julianday(createdAt) < julianday(?)');
+  const olderThan = prepared('SELECT 1 FROM users WHERE id = ? AND julianday(createdAt) < julianday(?)');
   return WHATS_NEW.filter((id) => map[id] && !seen.has(id) && olderThan.get(userId, map[id]));
 }
 
 /** Seen (or skipped): the given announcements, or all of them, for these people. */
 export function markWhatsNewSeen(userIds: number[], ids: readonly string[] = WHATS_NEW) {
   const known = ids.filter((id) => (WHATS_NEW as readonly string[]).includes(id));
-  const insert = db.prepare('INSERT OR IGNORE INTO whats_new_seen (userId, itemId) VALUES (?, ?)');
+  const insert = prepared('INSERT OR IGNORE INTO whats_new_seen (userId, itemId) VALUES (?, ?)');
   for (const userId of userIds) for (const id of known) insert.run(userId, id);
 }

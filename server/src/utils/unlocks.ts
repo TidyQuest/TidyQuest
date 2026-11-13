@@ -1,4 +1,4 @@
-import db from '../database';
+import db, { prepared } from '../database';
 import { ACHIEVEMENTS } from './achievements';
 import { customBadgeKey, levelFor } from './badges';
 
@@ -26,13 +26,13 @@ const BADGE_FRAME_ICONS = ['crown', 'diamond'];
 
 /** Coins earned over all time: approved chores plus coins given (the level's measure; it never goes down) */
 export function lifetimeCoins(userId: number): number {
-  const tasks = (db.prepare("SELECT COALESCE(SUM(coinsEarned), 0) AS n FROM task_completions WHERE userId = ? AND status = 'approved'").get(userId) as { n: number }).n;
-  const given = (db.prepare('SELECT COALESCE(SUM(amount), 0) AS n FROM coin_adjustments WHERE userId = ? AND amount > 0').get(userId) as { n: number }).n;
+  const tasks = (prepared("SELECT COALESCE(SUM(coinsEarned), 0) AS n FROM task_completions WHERE userId = ? AND status = 'approved'").get(userId) as { n: number }).n;
+  const given = (prepared('SELECT COALESCE(SUM(amount), 0) AS n FROM coin_adjustments WHERE userId = ? AND amount > 0').get(userId) as { n: number }).n;
   return tasks + given;
 }
 export const levelOf = (userId: number) => levelFor(lifetimeCoins(userId)).level;
 
-const earnedBadges = (userId: number) => new Set((db.prepare('SELECT achievementId FROM user_achievement_notifications WHERE userId = ?').all(userId) as { achievementId: string }[]).map((r) => r.achievementId));
+const earnedBadges = (userId: number) => new Set((prepared('SELECT achievementId FROM user_achievement_notifications WHERE userId = ?').all(userId) as { achievementId: string }[]).map((r) => r.achievementId));
 
 /** Badge frames this person could have: earned ones are unlocked */
 export function badgeFrames(userId: number, earned = earnedBadges(userId)) {
@@ -43,7 +43,7 @@ export function badgeFrames(userId: number, earned = earnedBadges(userId)) {
 /** Titles to pick from (from level 5): the level's own title, or any badge earned, built-in or the family's */
 export function titleOptions(userId: number, earned = earnedBadges(userId)): Array<{ id: string; titleKey?: string; text?: string }> {
   const builtIn = ACHIEVEMENTS.filter((a) => earned.has(a.id)).map((a) => ({ id: `badge:${a.id}`, titleKey: a.titleKey }));
-  const custom = (db.prepare('SELECT id, title, icon FROM custom_badges').all() as Array<{ id: number; title: string; icon: string }>)
+  const custom = (prepared('SELECT id, title, icon FROM custom_badges').all() as Array<{ id: number; title: string; icon: string }>)
     .filter((b) => earned.has(customBadgeKey(b.id))).map((b) => ({ id: `badge:${customBadgeKey(b.id)}`, text: `${b.icon} ${b.title}` }));
   return [{ id: 'level' }, ...builtIn, ...custom];
 }
@@ -63,7 +63,7 @@ export function canUse(userId: number, kind: 'frame' | 'celebration' | 'title' |
 export function unlocksFor(userId: number) {
   const level = levelOf(userId);
   const earned = earnedBadges(userId);
-  const me = db.prepare('SELECT avatarFrame, celebration, title, theme FROM users WHERE id = ?').get(userId) as { avatarFrame: string | null; celebration: string | null; title: string | null; theme: string | null };
+  const me = prepared('SELECT avatarFrame, celebration, title, theme FROM users WHERE id = ?').get(userId) as { avatarFrame: string | null; celebration: string | null; title: string | null; theme: string | null };
   return {
     level,
     items: UNLOCKS.map((u) => ({ ...u, unlocked: level >= u.level })),
@@ -77,8 +77,8 @@ export function unlocksFor(userId: number) {
 
 /** Everyone's frame, title, celebration and level, for avatars and names across the app */
 export function cosmetics(): Record<number, { level: number; frame: string | null; frameIcon?: string; celebration: string; titleKey?: string; titleText?: string }> {
-  const users = db.prepare('SELECT id, avatarFrame, celebration, title FROM users').all() as Array<{ id: number; avatarFrame: string | null; celebration: string | null; title: string | null }>;
-  const custom = new Map((db.prepare('SELECT id, title, icon FROM custom_badges').all() as Array<{ id: number; title: string; icon: string }>).map((b) => [customBadgeKey(b.id), `${b.icon} ${b.title}`]));
+  const users = prepared('SELECT id, avatarFrame, celebration, title FROM users').all() as Array<{ id: number; avatarFrame: string | null; celebration: string | null; title: string | null }>;
+  const custom = new Map((prepared('SELECT id, title, icon FROM custom_badges').all() as Array<{ id: number; title: string; icon: string }>).map((b) => [customBadgeKey(b.id), `${b.icon} ${b.title}`]));
   const out: ReturnType<typeof cosmetics> = {};
   for (const u of users) {
     const level = levelFor(lifetimeCoins(u.id));

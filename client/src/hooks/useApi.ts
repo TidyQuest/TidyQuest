@@ -458,6 +458,8 @@ export const api = {
 
   // Dashboard
   dashboard: () => apiFetch<any>('/dashboard'),
+  /** Moves whenever the family's data changes (ENH-20) */
+  dataChanges: () => apiFetch<{ v: string }>('/dashboard/changes'),
 
   // Rooms
   getRooms: () => apiFetch<any[]>('/rooms'),

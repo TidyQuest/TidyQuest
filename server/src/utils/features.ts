@@ -1,4 +1,4 @@
-import db from '../database';
+import db, { prepared } from '../database';
 import { isHosted } from '../hosted/context';
 
 /**
@@ -14,7 +14,7 @@ export const featureDefault = (f: Feature) => !(f === 'proofPhotos' && isHosted(
 export function getFeatures(): Record<Feature, boolean> {
   let stored: Partial<Record<Feature, boolean>> = {};
   try {
-    const raw = (db.prepare("SELECT value FROM app_settings WHERE key = 'features'").get() as { value: string } | undefined)?.value;
+    const raw = (prepared("SELECT value FROM app_settings WHERE key = 'features'").get() as { value: string } | undefined)?.value;
     if (raw) stored = JSON.parse(raw);
   } catch { /* fall back to the defaults */ }
   return Object.fromEntries(FEATURES.map((f) => [f, typeof stored[f] === 'boolean' ? stored[f] : featureDefault(f)])) as Record<Feature, boolean>;
@@ -24,7 +24,7 @@ export const isFeatureOn = (f: Feature) => getFeatures()[f];
 
 /** The Rescue Mission's multiplier (Settings → Features; 2 by default). */
 export function rescueMultiplier(): number {
-  const v = Number((db.prepare("SELECT value FROM app_settings WHERE key = 'rescueMultiplier'").get() as { value: string } | undefined)?.value);
+  const v = Number((prepared("SELECT value FROM app_settings WHERE key = 'rescueMultiplier'").get() as { value: string } | undefined)?.value);
   return v >= 1.5 && v <= 5 ? v : 2;
 }
 
@@ -38,7 +38,7 @@ export type Look = typeof LOOKS[number];
 /** The look the family picked (app_settings 'look'); Fresh until an admin picks another. */
 export function getLook(): Look {
   try {
-    const raw = (db.prepare("SELECT value FROM app_settings WHERE key = 'look'").get() as { value: string } | undefined)?.value;
+    const raw = (prepared("SELECT value FROM app_settings WHERE key = 'look'").get() as { value: string } | undefined)?.value;
     return (LOOKS as readonly string[]).includes(raw ?? '') ? raw as Look : 'fresh';
   } catch { return 'fresh'; }
 }
@@ -46,7 +46,7 @@ export function getLook(): Look {
 /** Holidays the family switched off one by one (app_settings 'holidaysOff', a JSON array). */
 export function holidaysOff(): string[] {
   try {
-    const raw = (db.prepare("SELECT value FROM app_settings WHERE key = 'holidaysOff'").get() as { value: string } | undefined)?.value;
+    const raw = (prepared("SELECT value FROM app_settings WHERE key = 'holidaysOff'").get() as { value: string } | undefined)?.value;
     const list = raw ? JSON.parse(raw) : [];
     return Array.isArray(list) ? list.filter((h) => (HOLIDAYS as readonly string[]).includes(h)) : [];
   } catch { return []; }
