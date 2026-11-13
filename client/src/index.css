@@ -1267,7 +1267,7 @@ html[data-theme='lava'] option {
   }
 
   .history-row {
-    grid-template-columns: 38px 1fr 70px !important;
+    grid-template-columns: 38px minmax(0, 1fr) 70px !important;
     min-width: 0 !important;
   }
 

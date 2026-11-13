@@ -152,6 +152,7 @@ What changed in each release, in plain language, newest first. Releases up to v0
   page.
 - **New look:** a chore's health number stays yellow, not red, while it can't be done yet, as it did before the new
   look (#183).
+- A very long chore name no longer makes the Activity page scroll sideways; the name wraps inside its row.
 
 ## v0.18.0 (2026-11-11)
 

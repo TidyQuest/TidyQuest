@@ -160,7 +160,7 @@ export function History({ language, isAdmin, users = [], rooms = [], userId, mas
         )}
         <div className="history-table-scroll">
           <div className="history-header" style={{
-            display: 'grid', gridTemplateColumns: isAdmin ? '44px 1fr 120px 100px 80px 60px' : '44px 1fr 120px 100px 80px',
+            display: 'grid', gridTemplateColumns: isAdmin ? '44px minmax(0, 1fr) 120px 100px 80px 60px' : '44px minmax(0, 1fr) 120px 100px 80px',
             gap: 12, padding: '0 8px 14px', borderBottom: 'var(--shape-border-w) solid var(--warm-border)',
             fontSize: 12, fontWeight: 800, color: 'var(--warm-text-light)',
           }}>
@@ -188,7 +188,7 @@ export function History({ language, isAdmin, users = [], rooms = [], userId, mas
               : h.displayName;
             return (
             <div key={`${h.type || 'completion'}-${h.id}`} className="history-row" style={{
-              display: 'grid', gridTemplateColumns: isAdmin ? '44px 1fr 120px 100px 80px 60px' : '44px 1fr 120px 100px 80px',
+              display: 'grid', gridTemplateColumns: isAdmin ? '44px minmax(0, 1fr) 120px 100px 80px 60px' : '44px minmax(0, 1fr) 120px 100px 80px',
               gap: 12, padding: '14px 8px', alignItems: 'center',
               borderBottom: '1px solid var(--warm-border-subtle)',
             }}>
@@ -203,7 +203,7 @@ export function History({ language, isAdmin, users = [], rooms = [], userId, mas
               ) : (
                 <UserAvatar userId={h.userId} name={h.displayName} color={h.avatarColor} size={34} avatarType={h.avatarType} avatarPreset={h.avatarPreset} avatarPhotoUrl={h.avatarPhotoUrl} />
               )}
-              <div>
+              <div style={{ minWidth: 0, overflowWrap: 'anywhere' }}>
                 {isShield ? (
                   <>
                     <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--warm-text)' }}>
