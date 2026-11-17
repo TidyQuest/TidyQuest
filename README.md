@@ -40,25 +40,25 @@ Perfect for families who want to:
 <details>
 <summary>Click to view screenshots</summary>
 
-### Dashboard
-![Dashboard](screenshots/dashboard.jpg)
-*Main dashboard showing task overview, streaks, and quick stats*
+### Today
+![Today](screenshots/dashboard.jpg)
+*Today's chores for the whole family, level progress, house health and this week's leaders*
 
-### Rooms & Tasks
+### Rooms
 ![Rooms](screenshots/rooms.jpg)
-*Room view with task health bars and completion tracking*
+*Every room's health at a glance, neediest first*
 
 ### Leaderboard
 ![Leaderboard](screenshots/leaderboard.jpg)
-*Family competition with weekly/monthly rankings*
+*Family rankings for this week, last week, the month, the quarter or the year*
 
 ### Rewards
 ![Rewards](screenshots/rewards.jpg)
-*Reward catalog and redemption system*
+*Spend coins on real-life rewards; kids' requests wait for a parent's OK*
 
 ### Achievements
 ![Achievements](screenshots/achievements.jpg)
-*Unlock badges for completing milestones*
+*Levels, and badges that grow from bronze to silver and beyond*
 
 </details>
 

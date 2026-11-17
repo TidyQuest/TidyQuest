@@ -9,6 +9,11 @@ What changed in each release, in plain language, newest first. Releases up to v0
 
 ## Unreleased
 
+### Changed
+
+- **New screenshots in the README.** The five pictures on the project page (Today, Rooms, Leaderboard, Rewards,
+  Achievements) now show the current look, with a made-up demo family.
+
 ## v0.19.0 (2026-11-17)
 
 ### Added
