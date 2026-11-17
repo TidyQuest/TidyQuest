@@ -2542,7 +2542,8 @@
       "secPaused": "Gepauzeerd",
       "urgentFirst": "Dringendste eerst",
       "showLater": "Toon {n} meer · later",
-      "noneHere": "Geen taken hier."
+      "noneHere": "Geen taken hier.",
+      "looksGreat": "{room} ziet er top uit"
     },
     "choreForm": {
       "titleAdd": "Klusje toevoegen",

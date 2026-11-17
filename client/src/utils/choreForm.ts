@@ -13,12 +13,6 @@ export function freqToDays(value: number, unit: string): number {
   return value * (u?.toDays || 1);
 }
 
-export function healthColor(value: number): string {
-  if (value >= 70) return 'var(--health-green)';
-  if (value >= 40) return 'var(--health-yellow)';
-  return 'var(--health-red)';
-}
-
 export type AssignMode = 'first' | 'shared' | 'custom' | 'rotating';
 
 export interface ChoreFormState {

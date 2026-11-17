@@ -9,7 +9,7 @@ import RingGauge from '../shared/RingGauge';
 import UserAvatar from '../shared/UserAvatar';
 import { FireIcon, CoinIcon } from '../icons/UIIcons';
 import { ShieldPanel } from '../shared/StreakShields';
-import { getHealthColor } from '../../utils/health';
+import { getHealthTextColor } from '../../utils/health';
 import { useTranslation } from '../../hooks/useTranslation';
 import { formatNextDue, isTaskForUser, taskCoins } from '../../utils/tasks';
 import { useTaskView } from '../../hooks/useTaskView';
@@ -790,7 +790,7 @@ const Dashboard: React.FC<DashboardProps> = ({
     missionShown && mission && chip('rescue', mission.completedBy
       ? <>✅ {t('rescue.rescuedBy').replace('{name}', mission.completedByName ?? '?')}</>
       : <>⚡ {t('rescue.title')} · <em>{t('today.rescueChip').replace('{m}', String(mission.multiplier))}</em></>, { hot: !mission.completedBy, panel: true }),
-    !wide && shows('houseHealth') && chip('health', <>🏠 {t('dashboard.houseHealth')} <em style={{ color: getHealthColor(houseHealth) }}>{houseHealth}</em></>, { panel: true }),
+    !wide && shows('houseHealth') && chip('health', <>🏠 {t('dashboard.houseHealth')} <em style={{ color: getHealthTextColor(houseHealth) }}>{houseHealth}</em></>, { panel: true }),
     holidayLine && chip('holiday', holidayLine),
     kidMode && shows('level') && myLevel && chip('level', <>⭐ {t('levels.level').replace('{n}', String(myLevel.level))} · {t('today.levelChip').replace('{n}', formatCoins(myLevel.nextLevelAt - myLevel.coinsEarned))}</>, { onClick: () => navigate('/achievements') }),
     shows('streak') && chip('streak', <>🔥 {t('today.streakChip').replace('{n}', String(currentUser.currentStreak))}</>, { panel: true }),

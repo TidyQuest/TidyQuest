@@ -190,7 +190,7 @@ export const GUIDE_NL: GuideSection[] = [
       { ul: [
         'Maak een kamer aan op de pagina Kamers; een kamertype voegt voorgestelde klusjes toe waaruit je kunt kiezen.',
         'De pagina Kamers toont een tegel per kamer, de meest dringende eerst: de gezondheid, hoeveel klusjes er zijn en hoeveel er vandaag te doen zijn. Zones groeperen de tegels (bijvoorbeeld "Boven" of "Ouderquests"); tik bovenaan op het label van een zone om alleen die kamers te zien, of op Mijn voor de jouwe. Ouders tikken op ✏️ Kamers bewerken om een kamer te hernoemen, in een zone te zetten (🏷️), aan iemand toe te wijzen of te verwijderen, en om zones toe te voegen, te hernoemen of te verwijderen.',
-        'De gezondheid van een kamer is het gemiddelde van de klusjes; de slechtste kamer is die waarvoor de mascotte om hulp vraagt.',
+        'De gezondheid van een kamer is het gemiddelde van de klusjes; de slechtste kamer is die waarvoor de mascotte om hulp vraagt. De gezondheidskleuren lopen geleidelijk van groen bij 100% via geel en rood naar donkerrood bij bijna 0%, en de pagina van een kamer zegt dat hij er top uitziet (90% en meer), er goed uitziet (70%), wel een opruimbeurt kan gebruiken (40%) of wat aandacht nodig heeft (onder 40%).',
         'De balk van een klusje wordt pas rood als het aan de beurt is. Een klusje dat nog niet kan (Vroegtijdig afronden toestaan uit) blijft geel in de kamer.',
       ] },
     ],

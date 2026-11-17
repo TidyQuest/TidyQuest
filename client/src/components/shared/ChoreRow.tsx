@@ -136,7 +136,7 @@ export function ChoreFacts({ task, language, showHealth = true }: { task: ChoreF
       {perPerson && <span className="chore-tag">{task.assignmentMode === 'shared' ? t('rooms.modeShared') : t('rooms.modeCustom')} · {task.sharedCompletions?.length ?? 0}/{people.length} {t('rooms.done')}</span>}
       <span className="chore-tag">{t('chore.lastDone').replace('{when}', timeAgo(task.lastCompletedAt))}</span>
       {showHealth && !task.onDemand && !task.oneTime && !task.outOfSeason && (
-        <span className="chore-tag">{t('rooms.health')} <b style={{ color: choreHealthColor({ ...task, health }) }}>{health}%</b></span>
+        <span className="chore-tag">{t('rooms.health')} <b style={{ color: choreHealthColor({ ...task, health }, true) }}>{health}%</b></span>
       )}
       {!!task.timerMinutes && <span className="chore-tag">⏱️ {task.timerMinutes} {t('timer.min')}</span>}
       {startsLater(task) && task.startsOn && <span className="chore-tag">📅 {t('schedule.startsLabel').replace('{date}', day(task.startsOn))}</span>}

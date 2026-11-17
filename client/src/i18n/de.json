@@ -2542,7 +2542,8 @@
       "secPaused": "Pausiert",
       "urgentFirst": "Dringendste zuerst",
       "showLater": "{n} weitere anzeigen · später",
-      "noneHere": "Hier gibt es keine Aufgaben."
+      "noneHere": "Hier gibt es keine Aufgaben.",
+      "looksGreat": "{room} sieht super aus"
     },
     "choreForm": {
       "titleAdd": "Aufgabe hinzufügen",

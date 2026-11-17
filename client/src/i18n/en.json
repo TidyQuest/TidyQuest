@@ -2542,7 +2542,8 @@
       "secPaused": "Paused",
       "urgentFirst": "Most urgent first",
       "showLater": "Show {n} more · later",
-      "noneHere": "No chores here."
+      "noneHere": "No chores here.",
+      "looksGreat": "{room} looks great"
     },
     "choreForm": {
       "titleAdd": "Add a chore",

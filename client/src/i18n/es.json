@@ -2542,7 +2542,8 @@
       "secPaused": "En pausa",
       "urgentFirst": "Las más urgentes primero",
       "showLater": "Mostrar {n} más · más adelante",
-      "noneHere": "No hay tareas aquí."
+      "noneHere": "No hay tareas aquí.",
+      "looksGreat": "{room} está impecable"
     },
     "choreForm": {
       "titleAdd": "Añadir una tarea",

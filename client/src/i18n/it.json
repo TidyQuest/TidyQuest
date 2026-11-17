@@ -2542,7 +2542,8 @@
       "secPaused": "In pausa",
       "urgentFirst": "Le più urgenti prima",
       "showLater": "Mostra altre {n} · più avanti",
-      "noneHere": "Nessuna faccenda qui."
+      "noneHere": "Nessuna faccenda qui.",
+      "looksGreat": "{room} è perfetta"
     },
     "choreForm": {
       "titleAdd": "Aggiungi un'attività",

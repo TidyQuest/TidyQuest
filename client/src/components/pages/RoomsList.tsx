@@ -6,7 +6,7 @@ import { TaskIcon } from '../icons/TaskIcons';
 import { IconPicker } from '../shared/IconPicker';
 import { PlusIcon, TrashIcon } from '../icons/UIIcons';
 import UserAvatar from '../shared/UserAvatar';
-import { getHealthColor, getRoomHealth } from '../../utils/health';
+import { getHealthColor, getHealthTextColor, getRoomHealth } from '../../utils/health';
 import { ROOM_COLORS } from '../../utils/colors';
 import { api } from '../../hooks/useApi';
 import { useTranslation } from '../../hooks/useTranslation';
@@ -372,7 +372,7 @@ export function RoomsList({ rooms, language, isAdmin, users, onSelectRoom, onCre
           </span>
           {room.isTodoRoom
             ? <span className="rooms-tile-pct" aria-hidden="true">📝</span>
-            : <span className="rooms-tile-pct" style={{ color: getHealthColor(rh) }}>{rh}%</span>}
+            : <span className="rooms-tile-pct" style={{ color: getHealthTextColor(rh) }}>{rh}%</span>}
         </div>
         {renamingRoom === room.id ? (
           <div className="rooms-tile-rename" onClick={(e) => e.stopPropagation()}>
@@ -666,7 +666,7 @@ export function RoomsList({ rooms, language, isAdmin, users, onSelectRoom, onCre
                 ) : (
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 16 }}>
                     {taskConfigs.map((task, idx) => {
-                      const healthColor = task.initialHealth >= 70 ? '#22C55E' : task.initialHealth >= 40 ? '#F59E0B' : '#EF4444';
+                      const healthColor = getHealthColor(task.initialHealth), healthText = getHealthTextColor(task.initialHealth);
                       return (
                         <div key={idx} style={{
                           padding: '14px 16px', borderRadius: 14,
@@ -709,7 +709,7 @@ export function RoomsList({ rooms, language, isAdmin, users, onSelectRoom, onCre
                                     value={task.initialHealth}
                                     onChange={(e) => updateTask(idx, { initialHealth: parseInt(e.target.value) })}
                                     style={{ flex: 1, accentColor: healthColor }} />
-                                  <span style={{ fontSize: 12, fontWeight: 800, color: healthColor, minWidth: 36, textAlign: 'right' }}>
+                                  <span style={{ fontSize: 12, fontWeight: 800, color: healthText, minWidth: 36, textAlign: 'right' }}>
                                     {task.initialHealth}%
                                   </span>
                                 </div>

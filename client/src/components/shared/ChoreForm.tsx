@@ -5,7 +5,8 @@ import { Toggle } from './Toggle';
 import { DueOnPicker, ReminderPicker, RotationPeriodPicker, SeasonPicker, StartsOnPicker, StepsField, TimerPicker } from './ScheduleFields';
 import { startsLater, todayIso, type ScheduleValue } from '../../utils/schedule';
 import { useTranslation } from '../../hooks/useTranslation';
-import { FREQ_UNITS, healthColor, initPercentages, type AssignMode, type ChoreFormState } from '../../utils/choreForm';
+import { getHealthColor, getHealthTextColor } from '../../utils/health';
+import { FREQ_UNITS, initPercentages, type AssignMode, type ChoreFormState } from '../../utils/choreForm';
 
 // The chore form (ENH-28), the same for Add and Edit: name and notes, When, Who, Effort & coins, then More options
 // folded. A bottom sheet on phones with Save pinned to the bottom; a panel beside the list on a computer.
@@ -290,11 +291,11 @@ export function ChoreSheet({ kind, form, setForm, schedule, setSchedule, room, u
                   <div>
                     <div className="cf-health-head">
                       <label htmlFor="cf-health">{t('rooms.health')}</label>
-                      <b style={{ color: healthColor(form.health) }}>{form.health}%</b>
+                      <b style={{ color: getHealthTextColor(form.health) }}>{form.health}%</b>
                     </div>
                     <input id="cf-health" type="range" min={0} max={100} step={10} value={form.health}
                       onChange={(e) => setForm((f) => ({ ...f, health: parseInt(e.target.value, 10), healthChanged: true }))}
-                      style={{ width: '100%', accentColor: healthColor(form.health) }} />
+                      style={{ width: '100%', accentColor: getHealthColor(form.health) }} />
                     <div className="cf-health-ends"><span>{t('rooms.dirty')}</span><span>{t('rooms.clean')}</span></div>
                   </div>
                 )}

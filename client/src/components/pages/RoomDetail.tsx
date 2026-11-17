@@ -585,7 +585,7 @@ export function RoomDetail({ room, language, isAdmin, currentUserId, currentUser
   const shown = sortedTasks.filter((task) => activeFilter === 'all'
     || (activeFilter === 'mine' ? currentUserId !== undefined && isTaskForUser(task, currentUserId, currentUserRole)
       : buckets.get(task.id) === activeFilter));
-  const headline = health < 40 ? 'roomPage.needsLove' : health < 70 ? 'roomPage.couldTidy' : 'roomPage.looksGood';
+  const headline = health < 40 ? 'roomPage.needsLove' : health < 70 ? 'roomPage.couldTidy' : health < 90 ? 'roomPage.looksGood' : 'roomPage.looksGreat';
   const summary = [
     overdueTasks.length > 0 && t('roomPage.overdue').replace('{n}', String(overdueTasks.length)),
     todayLeft.length > 0 && t('roomPage.leftToday').replace('{n}', String(todayLeft.length)),

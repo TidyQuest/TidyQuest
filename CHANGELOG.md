@@ -42,6 +42,12 @@ What changed in each release, in plain language, newest first. Releases up to v0
 
 ### Changed
 
+- **Health colours blend from green to dark red** (ENH-34). Room tiles, the room and House Health rings, chore
+  health and the start-health sliders slide smoothly from green at 100% through yellow-green, amber and red to dark
+  red near 0%, instead of jumping between green, yellow and red at 70% and 40%. The numbers next to them use the same
+  colour, darker on light themes and lighter on dark ones, so they stay readable. A room's page now says "looks great"
+  from 90% (then "looks good", "could use a tidy" and "needs some love" as before). A chore that can't be done yet
+  still stops at amber.
 - **The guide is easier to scan.** The label that opens each point is in bold ("**Every N days:** due again…"), and
   every menu path ("Settings → Features") is in bold and in your accent colour. A longer topic starts with a row of
   its sub-headings; tap one to jump there. Searching now marks the words you typed and shows only the matching parts

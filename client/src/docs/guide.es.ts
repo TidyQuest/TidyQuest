@@ -190,7 +190,7 @@ export const GUIDE_ES: GuideSection[] = [
       { ul: [
         'Crea una habitación en la página Habitaciones; un tipo de habitación añade tareas sugeridas entre las que puedes elegir.',
         'La página Habitaciones muestra una ficha por habitación, las más urgentes primero: su salud, cuántas tareas tiene y cuántas están pendientes hoy. Las zonas agrupan las fichas (por ejemplo "Planta de arriba" o "Misiones de los padres"); toca la etiqueta de una zona arriba para ver solo sus habitaciones, o Mías para las tuyas. Los padres tocan ✏️ Editar habitaciones para renombrar una habitación, ponerla en una zona (🏷️), asignarla a alguien o eliminarla, y para añadir, renombrar o eliminar zonas.',
-        'La salud de una habitación es el promedio de sus tareas; la peor habitación es aquella con la que la mascota pide ayuda.',
+        'La salud de una habitación es el promedio de sus tareas; la peor habitación es aquella con la que la mascota pide ayuda. Los colores de salud pasan poco a poco del verde al 100 % al amarillo y al rojo, hasta rojo oscuro cerca del 0 %, y la página de una habitación dice que está impecable (90 % o más), que está bien (70 %), que necesita un repaso (40 %) o que necesita un poco de cariño (menos del 40 %).',
         'La barra de una tarea solo se pone roja cuando le toca. Una tarea que aún no se puede hacer (Completar antes desactivado) se queda en amarillo en su habitación.',
       ] },
     ],
