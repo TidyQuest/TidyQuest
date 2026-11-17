@@ -43,6 +43,12 @@
   --health-green-bg: #EDF7ED;
   --health-yellow-bg: #FFF8EC;
   --health-red-bg: #FDECEC;
+  /* ENH-34: health in five clean steps (90+, 70+, 40+, 20+, below 20): bar colour, then readable text */
+  --health-s4: #22A45D; --health-s4-text: #098447;
+  --health-s3: #7CB342; --health-s3-text: #4F8007;
+  --health-s2: #F5A524; --health-s2-text: #9F6806;
+  --health-s1: #EF5A2B; --health-s1-text: #C84920;
+  --health-s0: #A61B29; --health-s0-text: #A51D2A;
   --warm-shadow: rgba(180, 150, 100, 0.1);
   --warm-primary-shadow: rgba(249, 115, 22, 0.25);
 
@@ -283,7 +289,9 @@ html[data-theme='night'] {
   --health-green-bg: #1A2E1A;
   --health-yellow-bg: #2E2A1A;
   --health-red-bg: #2E1A1A;
-  --health-deep: #B9403F; /* ENH-34: the 0% end of the health colours, brighter on dark cards */
+  /* ENH-34: health text lighter on dark cards; the lowest step's bar lighter too */
+  --health-s4-text: #24A45D; --health-s3-text: #7DB247; --health-s2-text: #F2A635;
+  --health-s1-text: #DD6C4A; --health-s0-text: #DF6866; --health-s0: #C23A3F;
   --warm-shadow: rgba(0, 0, 0, 0.3);
   --warm-primary-shadow: rgba(96, 165, 250, 0.25);
 
@@ -344,7 +352,9 @@ html[data-theme='ocean'] {
   --health-green-bg: #1A2E1A;
   --health-yellow-bg: #2E2A1A;
   --health-red-bg: #2E1A1A;
-  --health-deep: #B9403F; /* ENH-34: the 0% end of the health colours, brighter on dark cards */
+  /* ENH-34: health text lighter on dark cards; the lowest step's bar lighter too */
+  --health-s4-text: #24A45D; --health-s3-text: #7DB247; --health-s2-text: #F2A635;
+  --health-s1-text: #DD6C4A; --health-s0-text: #DF6866; --health-s0: #C23A3F;
   --warm-shadow: rgba(0, 0, 0, 0.3);
   --warm-primary-shadow: rgba(45, 212, 191, 0.25);
 
@@ -708,7 +718,9 @@ html[data-theme='galaxy'], html[data-theme='lava'] {
   --health-green-bg: #1A2E1A;
   --health-yellow-bg: #2E2A1A;
   --health-red-bg: #2E1A1A;
-  --health-deep: #B9403F; /* ENH-34: the 0% end of the health colours, brighter on dark cards */
+  /* ENH-34: health text lighter on dark cards; the lowest step's bar lighter too */
+  --health-s4-text: #24A45D; --health-s3-text: #7DB247; --health-s2-text: #F2A635;
+  --health-s1-text: #DD6C4A; --health-s0-text: #DF6866; --health-s0: #C23A3F;
   --warm-shadow: rgba(0, 0, 0, 0.35);
   --status-approved-text: #4ADE80;
   --status-approved-bg: #1A2E1A;
@@ -863,7 +875,9 @@ html[data-season-colors='halloween'] {
   --health-green-bg: #1A2E1A;
   --health-yellow-bg: #2E2A1A;
   --health-red-bg: #2E1A1A;
-  --health-deep: #B9403F; /* ENH-34: the 0% end of the health colours, brighter on dark cards */
+  /* ENH-34: health text lighter on dark cards; the lowest step's bar lighter too */
+  --health-s4-text: #24A45D; --health-s3-text: #7DB247; --health-s2-text: #F2A635;
+  --health-s1-text: #DD6C4A; --health-s0-text: #DF6866; --health-s0: #C23A3F;
   --warm-shadow: rgba(0, 0, 0, 0.35);
   --warm-primary-shadow: rgba(249, 115, 22, 0.3);
   --status-approved-text: #4ADE80;

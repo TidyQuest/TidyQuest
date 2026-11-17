@@ -190,7 +190,7 @@ export const GUIDE_DE: GuideSection[] = [
       { ul: [
         'Lege einen Raum auf der Seite Räume an; ein Raumtyp bringt vorgeschlagene Aufgaben mit, aus denen du wählen kannst.',
         'Die Seite Räume zeigt eine Kachel pro Raum, die dringendsten zuerst: seine Gesundheit, wie viele Aufgaben er hat und wie viele heute fällig sind. Zonen gruppieren die Kacheln (zum Beispiel „Obergeschoss“ oder „Eltern-Quests“); tippe oben auf den Chip einer Zone, um nur ihre Räume zu sehen, oder auf Meine für deine. Eltern tippen auf ✏️ Räume bearbeiten, um einen Raum umzubenennen, einer Zone zuzuordnen (🏷️), jemandem zuzuweisen oder zu löschen, und um Zonen anzulegen, umzubenennen oder zu löschen.',
-        'Die Gesundheit eines Raums ist der Durchschnitt seiner Aufgaben; der schlechteste Raum ist der, bei dem das Maskottchen um Hilfe bittet. Die Gesundheitsfarben gehen fließend von Grün bei 100 % über Gelb und Rot bis Dunkelrot nahe 0 %, und die Seite eines Raums sagt, dass er super aussieht (ab 90 %), gut aussieht (70 %), etwas Ordnung vertragen könnte (40 %) oder etwas Zuwendung braucht (unter 40 %).',
+        'Die Gesundheit eines Raums ist der Durchschnitt seiner Aufgaben; der schlechteste Raum ist der, bei dem das Maskottchen um Hilfe bittet. Die Gesundheitsfarben kommen in fünf Stufen: Grün ab 90 %, Hellgrün ab 70 %, Bernstein ab 40 %, Orangerot ab 20 % und darunter Dunkelrot, und die Seite eines Raums sagt, dass er super aussieht (ab 90 %), gut aussieht (70 %), etwas Ordnung vertragen könnte (40 %) oder etwas Zuwendung braucht (unter 40 %).',
         'Der Balken einer Aufgabe wird erst rot, wenn sie fällig ist. Eine Aufgabe, die noch nicht erledigt werden kann (Frühe Erledigung aus), bleibt gelb in ihrem Raum.',
       ] },
     ],

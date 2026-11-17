@@ -217,7 +217,7 @@ export const GUIDE_EN: GuideSection[] = [
       { ul: [
         'Create a room on the Rooms page; a room type adds suggested chores you can pick from.',
         'The Rooms page shows a tile per room, neediest first: its health, how many chores it has and how many are due today. Zones group the tiles (for example "Upstairs" or "Parents’ Quests"); tap a zone’s chip at the top to see only its rooms, or Mine for yours. Parents tap ✏️ Edit rooms to rename a room, move it to a zone (🏷️), assign it to someone or delete it, and to add, rename or delete zones.',
-        'A room’s health is the average of its chores; the worst room is the one the mascot asks for help with. Health colours slide smoothly from green at 100% through yellow and red to dark red near 0%, and a room’s page says it looks great (90% and up), looks good (70%), could use a tidy (40%) or needs some love (below 40%).',
+        'A room’s health is the average of its chores; the worst room is the one the mascot asks for help with. Health colours come in five steps: green from 90%, lime from 70%, amber from 40%, orange-red from 20% and dark red below that, and a room’s page says it looks great (90% and up), looks good (70%), could use a tidy (40%) or needs some love (below 40%).',
         'A chore’s bar turns red only once it’s due. A chore that can’t be done yet (Allow early completion off) stops at yellow in its room.',
       ] },
     ],

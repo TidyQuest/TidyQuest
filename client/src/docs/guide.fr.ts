@@ -190,7 +190,7 @@ export const GUIDE_FR: GuideSection[] = [
       { ul: [
         'Crée une pièce sur la page Pièces ; un type de pièce ajoute des tâches suggérées parmi lesquelles choisir.',
         'La page Pièces montre une tuile par pièce, les plus urgentes d’abord : sa santé, son nombre de tâches et combien sont à faire aujourd’hui. Les zones regroupent les tuiles (par exemple « À l’étage » ou « Quêtes des parents ») ; touche la pastille d’une zone en haut pour ne voir que ses pièces, ou Les miennes pour les tiennes. Les parents touchent ✏️ Modifier les pièces pour renommer une pièce, la mettre dans une zone (🏷️), l’attribuer à quelqu’un ou la supprimer, et pour ajouter, renommer ou supprimer des zones.',
-        'La santé d’une pièce est la moyenne de ses tâches ; la pire pièce est celle pour laquelle la mascotte demande de l’aide. Les couleurs de santé passent en douceur du vert à 100 % au jaune puis au rouge, et au rouge foncé près de 0 % ; la page d’une pièce dit qu’elle est impeccable (90 % et plus), en bon état (70 %), qu’elle mérite un petit rangement (40 %) ou qu’elle a besoin d’attention (moins de 40 %).',
+        'La santé d’une pièce est la moyenne de ses tâches ; la pire pièce est celle pour laquelle la mascotte demande de l’aide. Les couleurs de santé vont par cinq paliers : vert dès 90 %, vert-jaune dès 70 %, ambre dès 40 %, rouge orangé dès 20 % et rouge foncé en dessous ; la page d’une pièce dit qu’elle est impeccable (90 % et plus), en bon état (70 %), qu’elle mérite un petit rangement (40 %) ou qu’elle a besoin d’attention (moins de 40 %).',
         'La barre d’une tâche ne devient rouge qu’à son échéance. Une tâche qu’on ne peut pas encore faire (Complétion anticipée désactivée) s’arrête au jaune dans sa pièce.',
       ] },
     ],

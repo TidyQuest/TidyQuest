@@ -1,35 +1,16 @@
-// Health colours blend smoothly instead of jumping between three steps (ENH-34):
-// dark red at 0 → red at 20 → amber at 45 → yellow-green at 70 → green at 100.
-// Built from each theme's own --health-* colours, so every theme and dark mode keeps working.
-const STOPS: Array<[number, string]> = [
-  [0, 'var(--health-deep, color-mix(in oklab, var(--health-red) 62%, #000))'],
-  [20, 'var(--health-red)'],
-  [45, 'var(--health-yellow)'],
-  [70, 'color-mix(in oklab, var(--health-yellow) 45%, var(--health-green))'],
-  [100, 'var(--health-green)'],
-];
+// Health colours in five clean steps that match a room's wording (ENH-34): 90%+ green, 70%+ lime,
+// 40%+ amber, 20%+ orange-red, below 20% dark red. Each step has a bar colour and a readable text colour,
+// set per theme in index.css (--health-s0 … --health-s4 and their -text versions).
+const step = (h: number): number => (h >= 90 ? 4 : h >= 70 ? 3 : h >= 40 ? 2 : h >= 20 ? 1 : 0);
 
-/** Fill colour for a health bar or ring (0–100) */
+/** Bar or ring colour for a health value (0–100) */
 export function getHealthColor(h: number): string {
-  const v = Math.max(0, Math.min(100, Math.round(h)));
-  for (let i = 1; i < STOPS.length; i++) {
-    const [b, bc] = STOPS[i];
-    if (v > b) continue;
-    const [a, ac] = STOPS[i - 1];
-    if (v === b) return bc;
-    if (v === a) return ac;
-    return `color-mix(in oklab, ${bc} ${Math.round(((v - a) / (b - a)) * 100)}%, ${ac})`;
-  }
-  return STOPS[STOPS.length - 1][1];
+  return `var(--health-s${step(h)})`;
 }
 
-/** The same colour for small text (a % or a word): mixed with the theme's text colour so it stays
- *  readable on a light card (darker) and on a dark one (lighter). Below 20% it mixes toward red
- *  instead, so dark red text doesn't turn almost black. */
+/** The same step's colour for a % or a word: darker on light cards, lighter on dark ones */
 export function getHealthTextColor(h: number): string {
-  const v = Math.max(0, Math.min(100, Math.round(h)));
-  const base = v >= 20 ? 'var(--warm-text)' : `color-mix(in oklab, var(--warm-text) ${v * 5}%, var(--health-red))`;
-  return `color-mix(in oklab, ${getHealthColor(v)} 62%, ${base})`;
+  return `var(--health-s${step(h)}-text)`;
 }
 
 export function getHealthBg(h: number): string {
@@ -37,7 +18,7 @@ export function getHealthBg(h: number): string {
 }
 
 /** A chore that can't be done yet stops at amber: red means "due, do it now" (#153, #172, #183) */
-export const NOT_DUE_FLOOR = 45;
+export const NOT_DUE_FLOOR = 40;
 
 /** Done stays locked until a chore is due again (unless it's on demand or may be done early),
  *  so its colour shouldn't turn red yet: the same rule as the Done button in RoomDetail. */

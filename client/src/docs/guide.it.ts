@@ -190,7 +190,7 @@ export const GUIDE_IT: GuideSection[] = [
       { ul: [
         'Crea una stanza nella pagina Stanze; un tipo di stanza aggiunge faccende suggerite tra cui scegliere.',
         'La pagina Stanze mostra un riquadro per stanza, prima le più urgenti: la sua salute, quante faccende ha e quante sono da fare oggi. Le zone raggruppano i riquadri (per esempio "Piano di sopra" o "Missioni dei genitori"); tocca l’etichetta di una zona in alto per vedere solo le sue stanze, o Mie per le tue. I genitori toccano ✏️ Modifica stanze per rinominare una stanza, metterla in una zona (🏷️), assegnarla a qualcuno o eliminarla, e per aggiungere, rinominare o eliminare zone.',
-        'La salute di una stanza è la media delle sue faccende; la stanza messa peggio è quella per cui la mascotte chiede aiuto. I colori della salute sfumano dal verde al 100% al giallo e al rosso, fino al rosso scuro vicino allo 0%, e la pagina di una stanza dice che è perfetta (dal 90%), in ordine (70%), che avrebbe bisogno di una sistemata (40%) o che ha bisogno di attenzione (sotto il 40%).',
+        'La salute di una stanza è la media delle sue faccende; la stanza messa peggio è quella per cui la mascotte chiede aiuto. I colori della salute vanno a cinque livelli: verde dal 90%, verde lime dal 70%, ambra dal 40%, rosso arancio dal 20% e rosso scuro sotto, e la pagina di una stanza dice che è perfetta (dal 90%), in ordine (70%), che avrebbe bisogno di una sistemata (40%) o che ha bisogno di attenzione (sotto il 40%).',
         'La barra di un’attività diventa rossa solo quando è in scadenza. Un’attività che non si può ancora svolgere (Completamento anticipato disattivato) si ferma al giallo nella sua stanza.',
       ] },
     ],
