@@ -42,6 +42,11 @@ What changed in each release, in plain language, newest first. Releases up to v0
 
 ### Changed
 
+- **The guide is easier to scan.** The label that opens each point is in bold ("**Every N days:** due again…"), and
+  every menu path ("Settings → Features") is in bold and in your accent colour. A longer topic starts with a row of
+  its sub-headings; tap one to jump there. Searching now marks the words you typed and shows only the matching parts
+  of each topic, each under its sub-heading, instead of the whole topic. In all six languages.
+
 - **Badges use the same drawn icons as chores.** In Settings → Badges, a new badge's icon is picked from the same
   sheet as a chore's (Wins & extras first, then every area, with search and a suggestion from the badge's name),
   and it shows on Achievements, the "Next badge" line and the badge list. Badges made before keep their emoji until
@@ -153,6 +158,10 @@ What changed in each release, in plain language, newest first. Releases up to v0
 - The first tab and the menu say Today, and "Show in Dashboard" on anytime chores is now "Show on Today".
 
 ### Fixed
+
+- **Settings on a tablet shows its whole list.** On a wide screen (a tablet, or a big phone held sideways) the
+  list of settings could stop at Guide & help: its height counted the space under the browser's toolbar, so
+  Troubleshooting and Setup wizard were out of reach.
 
 - **The Calendar marks chores logged late.** A chore entered with 📅 Done earlier… used to show "12:00 PM" on the
   Calendar, as if it had really been done at noon. It now says "🕘 Logged late" instead of a time, and shows its note.

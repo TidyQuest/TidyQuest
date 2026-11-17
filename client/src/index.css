@@ -657,7 +657,9 @@ html:has(.tq-modal-overlay) { overscroll-behavior-y: none; }
   .settings-layout { grid-template-columns: minmax(260px, 320px) minmax(0, 1fr); }
   /* The list scrolls by itself, so opening a lower section doesn't lose your place in it */
   .settings-index {
-    position: sticky; top: var(--space-lg); max-height: calc(100vh - 2 * var(--space-lg));
+    /* dvh: on a tablet, 100vh counts the space under the browser's toolbar, which hid the last rows (Guide was the
+       last one you could reach); browsers without dvh keep 100vh */
+    position: sticky; top: var(--space-lg); max-height: calc(100vh - 2 * var(--space-lg)); max-height: calc(100dvh - 2 * var(--space-lg));
     overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; padding-right: 4px;
   }
   .settings-back { display: none; }
@@ -2326,4 +2328,14 @@ html[data-look='calm'] .today-tabs button.on { background: var(--warm-card); }
 @media (min-width: 1100px) {
   .rw-list { display: grid; grid-template-columns: 1fr 1fr; column-gap: 20px; }
   .rw-list > .chore-row:nth-child(2) { border-top: 0; border-top-left-radius: 12px; border-top-right-radius: 12px; }
+}
+
+/* The guide: bold labels, menu paths, search marks and each section's sub-heading jumps */
+.guide-bold { color: var(--warm-text); font-weight: 800; }
+.guide-path { color: var(--warm-accent); font-weight: 800; }
+.guide-mark { background: #FFE58A; color: #3A2E00; border-radius: 3px; padding: 0 1px; }
+.guide-subnav { display: flex; flex-wrap: wrap; gap: 4px 6px; padding-bottom: 10px; border-bottom: 1px solid var(--warm-border); }
+.guide-subnav button {
+  border: var(--shape-border-w) solid var(--warm-border); background: var(--warm-bg-subtle); color: var(--warm-text);
+  border-radius: 99px; padding: 4px 10px; font: inherit; font-size: 12px; font-weight: 800; cursor: pointer;
 }
