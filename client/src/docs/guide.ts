@@ -267,7 +267,7 @@ export const GUIDE_EN: GuideSection[] = [
       { p: 'Steps (one per line) list what a chore involves, like “Feet on the floor”, “Lights on”, “Put on the clothes”. They show as tick boxes in One thing at a time. The ticks are only a help: Done still finishes the chore.' },
       { h: 'Finishing a chore' },
       { ul: [
-        'Every chore is one row, the same on Today and in its room: its icon, its name, a line saying where, when or who (red when it’s late), its coins and a square ✓ button. That ✓ is Done: tap it when the chore is finished.',
+        'Every chore is one row, the same on Today and in its room: its icon, its name, a line saying where, when or who (“Due today” on the day it’s due, then red when it’s late), its coins and a square ✓ button. That ✓ is Done: tap it when the chore is finished.',
         'Tap the row itself to open it: the notes, how often it’s due, the effort, whose turn it is and when it was last done, plus the less-used buttons (Edit, Pin, 📅 Done earlier…, 🤝 Team up, 📎 and ⋯). Tap it again to close it. On Today, Go to room opens the chore in its room; the Tasks page lists every chore, and a tap opens it in its room.',
         'A room opens with a short summary (its health, how many chores are overdue or left today, and the coins waiting), then its chores under Overdue, Today, This week, When needed and Paused; “Show … more · later” opens the ones due after this week. The chips All, Mine, Overdue and Paused narrow the list. The last chip, When it’s due, is the sort: pick another order (health, name, coins…) to see one list, and the arrow next to it reverses it. ← goes back to the rooms; parents find Duplicate room under ⋯ in the summary.',
         'The 📎 button in the opened chore adds a note or photo as proof.',

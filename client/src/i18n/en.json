@@ -598,7 +598,8 @@
       "undoDoneTitle": "Undo this completion (takes its coins back)",
       "undoDoneConfirm": "Undo “{task}” for {name}? The {coins} coins come back off.",
       "moreOptions": "More options",
-      "assignmentMode": "Mode"
+      "assignmentMode": "Mode",
+      "dueToday": "Due today"
     },
     "avatars": {
       "cat": "Cat",

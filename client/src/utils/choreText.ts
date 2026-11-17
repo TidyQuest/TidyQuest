@@ -1,6 +1,6 @@
 // The words on a chore row (ENH-25): its schedule, when it's due and who it's for. Shared by Home, Tasks and
 // the room page so a chore reads the same wherever it shows.
-import { formatNextDue, taskNextDue } from './tasks';
+import { calendarDaysLate, formatNextDue, taskNextDue } from './tasks';
 import { monthlyLabel, weekdaysLabel, type ScheduledTaskFields } from './schedule';
 import { localeFor } from './locale';
 
@@ -51,10 +51,11 @@ export function choreDue(task: ChoreTextTask, t: T, language?: string): { text: 
       : '';
     return { text: [late ? t('todos.overdue') : '', by].filter(Boolean).join(' · '), late };
   }
-  const lateMs = Date.now() - taskNextDue(task).getTime();
-  if (lateMs > 0 && task.health <= 0) {
-    const days = task.overdueDays ?? Math.floor(lateMs / 86400000);
-    return { text: days < 1 ? t('roomDetail.overdue') : days === 1 ? t('home.overdueDay') : t('home.overdueDays').replace('{n}', String(days)), late: true };
+  // Late only from the day after it's due (as Today's lists sort it): on its due day it's "Due today"
+  const due = taskNextDue(task);
+  const days = task.overdueDays ?? calendarDaysLate(due);
+  if (due.getTime() < Date.now() && task.health <= 0 && days >= 1) {
+    return { text: days === 1 ? t('home.overdueDay') : t('home.overdueDays').replace('{n}', String(days)), late: true };
   }
   return { text: formatNextDue(task.lastCompletedAt, task.frequencyDays, t, language, task.health, task.nextDueAt).text, late: false };
 }

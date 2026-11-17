@@ -598,7 +598,8 @@
       "undoDoneTitle": "Annuler cette réalisation (retire ses pièces)",
       "undoDoneConfirm": "Annuler « {task} » pour {name} ? Les {coins} pièces seront retirées.",
       "moreOptions": "Plus d'options",
-      "assignmentMode": "Mode"
+      "assignmentMode": "Mode",
+      "dueToday": "À faire aujourd’hui"
     },
     "avatars": {
       "cat": "Chat",

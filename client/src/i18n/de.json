@@ -598,7 +598,8 @@
       "undoDoneTitle": "Diese Erledigung rückgängig machen (Münzen werden abgezogen)",
       "undoDoneConfirm": "„{task}“ für {name} rückgängig machen? Die {coins} Münzen werden wieder abgezogen.",
       "moreOptions": "Weitere Optionen",
-      "assignmentMode": "Modus"
+      "assignmentMode": "Modus",
+      "dueToday": "Heute fällig"
     },
     "avatars": {
       "cat": "Katze",

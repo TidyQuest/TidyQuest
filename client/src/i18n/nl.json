@@ -598,7 +598,8 @@
       "undoDoneTitle": "Deze voltooiing ongedaan maken (haalt de munten terug)",
       "undoDoneConfirm": "“{task}” van {name} ongedaan maken? De {coins} munten gaan er weer af.",
       "moreOptions": "Meer opties",
-      "assignmentMode": "Modus"
+      "assignmentMode": "Modus",
+      "dueToday": "Vandaag te doen"
     },
     "avatars": {
       "cat": "Kat",

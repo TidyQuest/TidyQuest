@@ -154,6 +154,7 @@ What changed in each release, in plain language, newest first. Releases up to v0
 
 ### Fixed
 
+- **A chore says "Due today" on its due day.** Its card used to say "Overdue" from midnight (the bins on bin day, weekend chores from first thing Saturday). It says Overdue from the next day, the same way the Today page sorts its lists.
 - **Taking back a Done puts the streak back** (BUG-50). Taking back a Done used to return the coins but leave the
   streak as that Done set it, so a mistaken tap could reset a long streak to 1 or count an extra day. Now the streak,
   its last day, and any shield the Done used or earned go back to how they were, unless another chore still counts for

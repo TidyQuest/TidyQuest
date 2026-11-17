@@ -598,7 +598,8 @@
       "undoDoneTitle": "Annulla questo completamento (toglie le sue monete)",
       "undoDoneConfirm": "Annullare «{task}» di {name}? Le {coins} monete vengono tolte.",
       "moreOptions": "Altre opzioni",
-      "assignmentMode": "Modalità"
+      "assignmentMode": "Modalità",
+      "dueToday": "Da fare oggi"
     },
     "avatars": {
       "cat": "Gatto",

@@ -598,7 +598,8 @@
       "undoDoneTitle": "Deshacer esta tarea hecha (quita sus monedas)",
       "undoDoneConfirm": "¿Deshacer «{task}» de {name}? Se le quitan las {coins} monedas.",
       "moreOptions": "Más opciones",
-      "assignmentMode": "Modo"
+      "assignmentMode": "Modo",
+      "dueToday": "Para hoy"
     },
     "avatars": {
       "cat": "Gato",
