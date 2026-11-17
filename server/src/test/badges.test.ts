@@ -4,6 +4,7 @@ import { dateStr, wall } from '../utils/clock';
 import type supertest from 'supertest';
 import type Database from 'better-sqlite3';
 import { levelFor, longestWeekRun } from '../utils/badges';
+import { titleOptions } from '../utils/unlocks';
 
 let agent: supertest.Agent;
 let db: InstanceType<typeof Database>;
@@ -80,6 +81,20 @@ describe('Secret badges', () => {
 });
 
 describe('Parent-made badges', () => {
+  it('keeps a chore icon ("icon:<key>"), turns a broken one into 🏅, and shows 🏅 in a text title', async () => {
+    const { admin, kid, mkTask } = await family();
+    const feed = await mkTask('Feed', { onDemand: true });
+    const make = (icon: string) => agent.post('/api/achievements/custom').set(auth(admin.token))
+      .send({ title: `Pet Hero ${icon}`, icon, metric: 'task_count', taskIds: [feed], threshold: 1, userIds: [kid.user.id] });
+    const drawn = (await make('icon:pets')).body;
+    expect(drawn.icon).toBe('icon:pets');
+    expect((await make('icon:../x')).body.icon).toBe('🏅');
+    expect((await make('icon:')).body.icon).toBe('🏅');
+    expect((await make('🐶')).body.icon).toBe('🐶');
+    await agent.post(`/api/tasks/${feed}/complete`).set(auth(kid.token)).expect(200);
+    expect(titleOptions(kid.user.id)).toContainEqual({ id: `badge:custom_${drawn.id}`, text: '🏅 Pet Hero icon:pets' });
+  });
+
   it('counts a task for the people chosen, pays the bonus once and records it', async () => {
     const { admin, kid, twin, mkTask } = await family();
     const feed = await mkTask('Feed', { onDemand: true });

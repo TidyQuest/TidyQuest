@@ -1,82 +1,32 @@
-import { useEffect } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { HomeIcon, RoomsIcon, TasksIcon, TrophyIcon, CalendarIcon, ActivityIcon, AchievementsIcon, SettingsIcon, RewardsIcon, InsightsIcon } from '../icons/NavIcons';
 import { FireIcon, CoinIcon, SparkleIcon } from '../icons/UIIcons';
 import { UserAvatar } from '../shared/UserAvatar';
 import { useTranslation } from '../../hooks/useTranslation';
 import { formatCoins } from '../../utils/format';
 import { UserTitle } from '../shared/UserTitle';
+import { navLabelKey, visibleNav } from './navItems';
 import type { User } from '../../hooks/useAuth';
 
 interface SidebarProps {
   user: User;
-  isMobileOpen?: boolean;
-  onClose?: () => void;
   gamificationEnabled?: boolean;
   collapsed?: boolean;
   onToggle?: () => void;
 }
 
-const navItems = [
-  { to: '/', label: 'Home', Icon: HomeIcon },
-  { to: '/rooms', label: 'Rooms', Icon: RoomsIcon },
-  { to: '/tasks', label: 'Tasks', Icon: TasksIcon },
-  { to: '/leaderboard', label: 'Board', Icon: TrophyIcon },
-  { to: '/calendar', label: 'Calendar', Icon: CalendarIcon },
-  { to: '/activity', label: 'Activity', Icon: ActivityIcon },
-  { to: '/insights', label: 'Insights', Icon: InsightsIcon, adminOnly: true },
-  { to: '/rewards', label: 'Rewards', Icon: RewardsIcon },
-  { to: '/achievements', label: 'Achievements', Icon: AchievementsIcon },
-  { to: '/settings', label: 'Settings', Icon: SettingsIcon },
-];
-
-const GAMIFICATION_ROUTES = new Set(['/leaderboard', '/rewards', '/achievements']);
-
-export function Sidebar({ user, isMobileOpen = false, onClose, gamificationEnabled = true, collapsed = false, onToggle }: SidebarProps) {
+/** The side menu on computers and tablets. Phones get the bottom bar instead (TabBar, ENH-24). */
+export function Sidebar({ user, gamificationEnabled = true, collapsed = false, onToggle }: SidebarProps) {
   const navigate = useNavigate();
   const { t } = useTranslation(user.language);
-  const effectiveCollapsed = isMobileOpen ? false : collapsed;
-
-  // While the phone menu is open, the page behind it doesn't scroll. Scrolling it hid the browser's toolbars, and
-  // the menu and its shade kept their old, shorter height, leaving a strip of page at the bottom (BUG-15).
-  useEffect(() => {
-    // (index.css applies it only in the phone layout, so turning the phone sideways never leaves the page stuck.)
-    if (!isMobileOpen) return;
-    document.documentElement.classList.add('phone-menu-open');
-    return () => document.documentElement.classList.remove('phone-menu-open');
-  }, [isMobileOpen]);
-
-  const handleNavClick = () => {
-    if (window.innerWidth <= 768 && onClose) {
-      onClose();
-    }
-  };
+  const effectiveCollapsed = collapsed;
 
   return (
     <>
-      {isMobileOpen && (
-        <div
-          onClick={onClose}
-          style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: 'rgba(0, 0, 0, 0.5)',
-            touchAction: 'none',
-            zIndex: 49,
-            display: 'none',
-          }}
-          className="mobile-overlay"
-        />
-      )}
-
       <nav
         style={{
           width: effectiveCollapsed ? 60 : 240,
           backgroundColor: 'var(--warm-sidebar)',
-          borderRight: '1.5px solid var(--warm-sidebar-border)',
+          borderRight: 'var(--shape-border-w) solid var(--warm-sidebar-border)',
           padding: effectiveCollapsed ? '24px 8px' : '24px 0',
           display: 'flex',
           flexDirection: 'column',
@@ -86,7 +36,7 @@ export function Sidebar({ user, isMobileOpen = false, onClose, gamificationEnabl
           zIndex: 50,
           transition: 'width 0.3s ease, padding 0.3s ease',
         }}
-        className={`sidebar ${isMobileOpen ? 'mobile-open' : ''}`}
+        className="sidebar"
       >
         <div style={{ padding: effectiveCollapsed ? '0 8px' : '0 20px', marginBottom: effectiveCollapsed ? 8 : 36, display: 'flex', alignItems: 'center', justifyContent: effectiveCollapsed ? 'center' : 'flex-start', gap: effectiveCollapsed ? 0 : 12, position: 'relative' }}>
           {effectiveCollapsed && onToggle ? (
@@ -114,7 +64,7 @@ export function Sidebar({ user, isMobileOpen = false, onClose, gamificationEnabl
               <div style={{
                 width: 42, height: 42, borderRadius: 14,
                 background: 'var(--warm-sidebar-active)',
-                border: '1.5px solid var(--warm-sidebar-user-border)',
+                border: 'var(--shape-border-w) solid var(--warm-sidebar-user-border)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 flexShrink: 0,
               }}>
@@ -122,7 +72,7 @@ export function Sidebar({ user, isMobileOpen = false, onClose, gamificationEnabl
               </div>
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: 19, fontWeight: 900, color: 'var(--warm-text)', letterSpacing: -0.5 }}>TidyQuest</div>
-                <div style={{ fontSize: 10, color: 'var(--warm-text-light)', fontWeight: 700, letterSpacing: 1.2, textTransform: 'uppercase' }}>
+                <div style={{ fontSize: 12, color: 'var(--warm-text-light)', fontWeight: 700 }}>
                   {t('nav.tagline')}
                 </div>
               </div>
@@ -151,52 +101,24 @@ export function Sidebar({ user, isMobileOpen = false, onClose, gamificationEnabl
               )}
             </>
           )}
-          {onClose && !effectiveCollapsed && (
-            <button
-              onClick={onClose}
-              className="mobile-only sidebar-close"
-              style={{
-                background: 'none',
-                border: 'none',
-                color: 'var(--warm-text-muted)',
-                cursor: 'pointer',
-                padding: 0,
-                width: 44,
-                height: 44,
-                borderRadius: 12,
-                flexShrink: 0,
-                marginLeft: 'auto',
-                marginRight: -8,
-                display: 'none',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-              aria-label={t('nav.closeMenu')}
-            >
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-                <path d="M5 5l10 10M15 5L5 15" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"/>
-              </svg>
-            </button>
-          )}
         </div>
 
         <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', overscrollBehavior: 'contain', display: 'flex', flexDirection: 'column', gap: 2, padding: effectiveCollapsed ? '0 8px' : '0 12px' }}>
-          {navItems.filter((item) => (gamificationEnabled || !GAMIFICATION_ROUTES.has(item.to)) && (!item.adminOnly || user.role === 'admin')).map((item) => (
+          {visibleNav(user, gamificationEnabled).map((item) => (
             <NavLink
               key={item.to}
               to={item.to}
               end={item.to === '/'}
               style={{ textDecoration: 'none' }}
-              onClick={handleNavClick}
             >
               {({ isActive }) => (
                 <div
-                  title={effectiveCollapsed ? t(`nav.${item.label.toLowerCase()}`) : undefined}
+                  title={effectiveCollapsed ? t(navLabelKey(item)) : undefined}
                   style={{
                     display: 'flex', alignItems: 'center', gap: 12,
                     padding: effectiveCollapsed ? '11px 0' : '11px 16px',
                     justifyContent: effectiveCollapsed ? 'center' : 'flex-start',
-                    borderRadius: 14,
+                    borderRadius: 'var(--shape-radius-control)',
                     backgroundColor: isActive ? 'var(--warm-sidebar-active)' : 'transparent',
                     borderLeft: isActive ? '3px solid var(--warm-accent)' : '3px solid transparent',
                     transition: 'all 0.15s ease',
@@ -206,7 +128,7 @@ export function Sidebar({ user, isMobileOpen = false, onClose, gamificationEnabl
                     <span style={{
                       fontSize: 14, fontWeight: isActive ? 800 : 600,
                       color: isActive ? 'var(--warm-accent)' : 'var(--warm-text-muted)',
-                    }}>{t(`nav.${item.label.toLowerCase()}`)}</span>
+                    }}>{t(navLabelKey(item))}</span>
                   )}
                 </div>
               )}
@@ -216,12 +138,12 @@ export function Sidebar({ user, isMobileOpen = false, onClose, gamificationEnabl
 
         <div style={{ padding: effectiveCollapsed ? '0 8px' : '0 14px' }}>
           <div
-            onClick={() => { navigate('/profile'); handleNavClick(); }}
+            onClick={() => navigate('/profile')}
             style={{
               display: 'flex', alignItems: 'center', gap: effectiveCollapsed ? 0 : 10,
               padding: effectiveCollapsed ? '8px' : '12px 14px',
               justifyContent: effectiveCollapsed ? 'center' : 'flex-start',
-              backgroundColor: 'var(--warm-sidebar-user-bg)', borderRadius: 16, border: '1.5px solid var(--warm-sidebar-user-border)',
+              backgroundColor: 'var(--warm-sidebar-user-bg)', borderRadius: 'var(--shape-radius-card)', border: 'var(--shape-border-w) solid var(--warm-sidebar-user-border)',
               cursor: 'pointer', transition: 'all 0.15s ease',
             }}
           >
@@ -237,13 +159,13 @@ export function Sidebar({ user, isMobileOpen = false, onClose, gamificationEnabl
             {!effectiveCollapsed && (
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: 13, fontWeight: 800, color: 'var(--warm-text)' }}>{user.displayName}</div>
-                <UserTitle userId={user.id} language={user.language} style={{ display: 'block', fontSize: 10 }} />
+                <UserTitle userId={user.id} language={user.language} style={{ display: 'block', fontSize: 12 }} />
                 {gamificationEnabled && (
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 2 }}>
-                    <span style={{ display: 'flex', alignItems: 'center', gap: 3, fontSize: 11, color: 'var(--warm-text-light)', fontWeight: 600 }}>
+                    <span style={{ display: 'flex', alignItems: 'center', gap: 3, fontSize: 12, color: 'var(--warm-text-light)', fontWeight: 600 }}>
                       <CoinIcon /> {formatCoins(user.coins)}
                     </span>
-                    <span style={{ display: 'flex', alignItems: 'center', gap: 3, fontSize: 11, color: 'var(--warm-text-light)', fontWeight: 600 }}>
+                    <span style={{ display: 'flex', alignItems: 'center', gap: 3, fontSize: 12, color: 'var(--warm-text-light)', fontWeight: 600 }}>
                       <FireIcon /> {t('common.daysShort').replace('{n}', String(user.currentStreak))}
                     </span>
                   </div>

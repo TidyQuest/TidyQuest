@@ -166,7 +166,7 @@ export function Profile({ user, theme, onChangeTheme, onUnlocksChanged, onSave, 
                   flex: 1, padding: '8px 12px', fontSize: 12, fontWeight: 700,
                   backgroundColor: avatarType === tab.key ? 'var(--warm-accent)' : 'var(--warm-accent-light)',
                   color: avatarType === tab.key ? '#fff' : 'var(--warm-accent)',
-                  border: avatarType === tab.key ? 'none' : '1.5px solid var(--warm-border)',
+                  border: avatarType === tab.key ? 'none' : 'var(--shape-border-w) solid var(--warm-border)',
                 }}
               >
                 {tab.label}
@@ -182,7 +182,7 @@ export function Profile({ user, theme, onChangeTheme, onUnlocksChanged, onSave, 
                   key={c}
                   onClick={() => setAvatarColor(c)}
                   style={{
-                    width: '100%', aspectRatio: '1', borderRadius: 12, border: avatarColor === c ? `3px solid ${c}` : '2px solid var(--warm-border)',
+                    width: '100%', aspectRatio: '1', borderRadius: 12, border: avatarColor === c ? `3px solid ${c}` : 'var(--shape-border-w) solid var(--warm-border)',
                     backgroundColor: c, cursor: 'pointer', outline: 'none',
                     boxShadow: avatarColor === c ? `0 0 0 3px ${c}33` : 'none',
                   }}
@@ -201,13 +201,13 @@ export function Profile({ user, theme, onChangeTheme, onUnlocksChanged, onSave, 
                   style={{
                     display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4,
                     padding: 8, borderRadius: 14, cursor: 'pointer', outline: 'none',
-                    border: avatarPreset === id ? '2.5px solid var(--warm-accent)' : '1.5px solid var(--warm-border)',
+                    border: avatarPreset === id ? '2.5px solid var(--warm-accent)' : 'var(--shape-border-w) solid var(--warm-border)',
                     backgroundColor: avatarPreset === id ? 'var(--warm-accent-light)' : 'var(--warm-bg-subtle)',
                     boxShadow: avatarPreset === id ? '0 0 0 3px var(--warm-primary-shadow)' : 'none',
                   }}
                 >
                   <AvatarPresetIcon presetId={id} size={44} />
-                  <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--warm-text-muted)' }}>{t(`avatars.${id}`)}</span>
+                  <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--warm-text-muted)' }}>{t(`avatars.${id}`)}</span>
                 </button>
               ))}
             </div>
@@ -228,13 +228,13 @@ export function Profile({ user, theme, onChangeTheme, onUnlocksChanged, onSave, 
                 onClick={() => fileRef.current?.click()}
                 style={{
                   padding: '10px 24px', backgroundColor: 'var(--warm-accent-light)', color: 'var(--warm-accent)',
-                  fontSize: 13, fontWeight: 700, border: '1.5px solid var(--warm-border)',
+                  fontSize: 13, fontWeight: 700, border: 'var(--shape-border-w) solid var(--warm-border)',
                 }}
               >
                 {t('profile.uploadPhoto')}
               </button>
               {avatarPhotoUrl && !uploadMsg && (
-                <div style={{ marginTop: 8, fontSize: 11, color: 'var(--warm-text-muted)', fontWeight: 600 }}>
+                <div style={{ marginTop: 8, fontSize: 12, color: 'var(--warm-text-muted)', fontWeight: 600 }}>
                   {t('profile.photoUploaded')}
                 </div>
               )}
@@ -283,7 +283,7 @@ export function Profile({ user, theme, onChangeTheme, onUnlocksChanged, onSave, 
           <button className="tq-btn tq-btn-secondary tq-btn-sm" onClick={handlePasswordChange} style={{ width: 'fit-content' }}>
             {t('settings.updatePassword')}
           </button>
-          {passwordMsg && <div style={{ fontSize: 11, color: 'var(--warm-text-light)', fontWeight: 700 }}>{passwordMsg}</div>}
+          {passwordMsg && <div style={{ fontSize: 12, color: 'var(--warm-text-light)', fontWeight: 700 }}>{passwordMsg}</div>}
         </div>
 
         {/* Save */}
@@ -309,18 +309,18 @@ export function Profile({ user, theme, onChangeTheme, onUnlocksChanged, onSave, 
         >
           🚪 {t('profile.logoutOthers')}
         </button>
-        <div style={{ fontSize: 11, color: 'var(--warm-text-light)', fontWeight: logoutOthersMsg ? 700 : 600, marginTop: 4, textAlign: 'center' }}>
+        <div style={{ fontSize: 12, color: 'var(--warm-text-light)', fontWeight: logoutOthersMsg ? 700 : 600, marginTop: 4, textAlign: 'center' }}>
           {logoutOthersMsg || t('profile.logoutOthersDesc')}
         </div>
       </div>
       <div className="tq-card tq-card-padded" style={{ marginTop: 16, display: 'grid', gap: 8 }}>
         <h3 className="tq-card-title" style={{ margin: 0 }}>🎨 {t('settings.theme')}</h3>
-        <div style={{ fontSize: 11, color: 'var(--warm-text-light)', fontWeight: 600 }}>{t('profile.themeDesc')}</div>
+        <div style={{ fontSize: 12, color: 'var(--warm-text-light)', fontWeight: 600 }}>{t('profile.themeDesc')}</div>
         <ThemePicker value={theme} onChange={(next) => void onChangeTheme(next)} language={user.language} level={myLevel} />
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, paddingTop: 8, borderTop: '1px solid var(--warm-border)' }}>
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ fontSize: 13, fontWeight: 800, color: 'var(--warm-text)' }}>🎃 {t('profile.holidayColors')}</div>
-            <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--warm-text-light)' }}>{t('profile.holidayColorsDesc')}</div>
+            <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--warm-text-light)' }}>{t('profile.holidayColorsDesc')}</div>
           </div>
           <Toggle checked={user.holidayColors !== 0} label={t('profile.holidayColors')}
             onChange={async (on) => { await api.updateProfile(user.id, { holidayColors: on }); onSave(); }} />

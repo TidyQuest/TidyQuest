@@ -60,7 +60,7 @@ export function CsvTransfer({ language, onImported }: { language?: string; onImp
   const pending = preview ? preview.summary.add + preview.summary.update : 0;
   const rowName = (r: CsvImportResult['rows'][number]) => (kind === 'tasks' ? `${r.room} › ${r.task}` : r.title);
   const badge = (text: string, color: string) => (
-    <span style={{ padding: '2px 8px', borderRadius: 12, fontSize: 11, fontWeight: 800, color, border: `1.5px solid ${color}` }}>{text}</span>
+    <span style={{ padding: '2px 8px', borderRadius: 12, fontSize: 12, fontWeight: 800, color, border: `1.5px solid ${color}` }}>{text}</span>
   );
   const fileButton = (k: CsvKind, label: string) => (
     <label className="tq-btn tq-btn-sm tq-btn-secondary" style={{ cursor: 'pointer' }}>
@@ -72,7 +72,7 @@ export function CsvTransfer({ language, onImported }: { language?: string; onImp
 
   return (
     <div style={{ display: 'grid', gap: 10 }}>
-      <div style={{ fontSize: 11, color: 'var(--warm-text-light)', fontWeight: 600 }}>{t('csv.desc')}</div>
+      <div style={{ fontSize: 12, color: 'var(--warm-text-light)', fontWeight: 600 }}>{t('csv.desc')}</div>
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
         <button className="tq-btn tq-btn-sm" onClick={() => download('tasks')}>⬇ {t('csv.exportTasks')}</button>
         <button className="tq-btn tq-btn-sm" onClick={() => download('rewards')}>⬇ {t('csv.exportRewards')}</button>
@@ -111,7 +111,7 @@ export function CsvTransfer({ language, onImported }: { language?: string; onImp
               {t('csv.apply').replace('{n}', String(pending))}
             </button>
             <button className="tq-btn tq-btn-secondary tq-btn-sm" onClick={() => { setPreview(null); setCsv(''); }}>{t('common.cancel')}</button>
-            {preview.summary.error > 0 && pending > 0 && <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--warm-text-light)' }}>{t('csv.errorsSkipped')}</span>}
+            {preview.summary.error > 0 && pending > 0 && <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--warm-text-light)' }}>{t('csv.errorsSkipped')}</span>}
           </div>
         </div>
       )}

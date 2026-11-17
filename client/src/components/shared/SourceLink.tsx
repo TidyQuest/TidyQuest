@@ -11,7 +11,7 @@ export function SourceFooter({ language }: { language: string }) {
   const url = useSourceUrl();
   const legal = useLegalLinks();
   return (
-    <div style={{ textAlign: 'center', marginTop: 22, fontSize: 11, fontWeight: 600, color: 'var(--warm-text-light)', display: 'grid', gap: 4 }}>
+    <div style={{ textAlign: 'center', marginTop: 22, fontSize: 12, fontWeight: 600, color: 'var(--warm-text-light)', display: 'grid', gap: 4 }}>
       <span>
         TidyQuest v{__APP_VERSION__} ·{' '}
         {url

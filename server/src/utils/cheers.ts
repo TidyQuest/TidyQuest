@@ -1,4 +1,4 @@
-import db from '../database';
+import db, { prepared } from '../database';
 import { notifyPeople } from './notify';
 import { taskName, tr } from './i18n';
 
@@ -40,20 +40,20 @@ export function cheersFor(completionIds: number[], viewerId: number): Map<number
  */
 export function toggleCheer(completionId: number, fromUserId: number, emoji: string): { error: string } | { cheers: CheerSummary } {
   if (!(CHEER_EMOJI as readonly string[]).includes(emoji)) return { error: 'invalid_emoji' };
-  const completion = db.prepare(`
+  const completion = prepared(`
     SELECT c.id, c.userId, c.status, t.name, t.translationKey FROM task_completions c JOIN tasks t ON t.id = c.taskId WHERE c.id = ?
   `).get(completionId) as { id: number; userId: number; status: string; name: string; translationKey: string | null } | undefined;
   if (!completion || completion.status !== 'approved') return { error: 'not_found' };
   if (completion.userId === fromUserId) return { error: 'own_chore' };
 
-  const existing = db.prepare('SELECT emoji FROM cheers WHERE completionId = ? AND fromUserId = ?').get(completionId, fromUserId) as { emoji: string } | undefined;
+  const existing = prepared('SELECT emoji FROM cheers WHERE completionId = ? AND fromUserId = ?').get(completionId, fromUserId) as { emoji: string } | undefined;
   if (existing?.emoji === emoji) {
-    db.prepare('DELETE FROM cheers WHERE completionId = ? AND fromUserId = ?').run(completionId, fromUserId);
+    prepared('DELETE FROM cheers WHERE completionId = ? AND fromUserId = ?').run(completionId, fromUserId);
   } else if (existing) {
-    db.prepare('UPDATE cheers SET emoji = ? WHERE completionId = ? AND fromUserId = ?').run(emoji, completionId, fromUserId);
+    prepared('UPDATE cheers SET emoji = ? WHERE completionId = ? AND fromUserId = ?').run(emoji, completionId, fromUserId);
   } else {
-    db.prepare('INSERT INTO cheers (completionId, fromUserId, emoji) VALUES (?, ?, ?)').run(completionId, fromUserId, emoji);
-    const from = (db.prepare('SELECT displayName FROM users WHERE id = ?').get(fromUserId) as { displayName: string }).displayName;
+    prepared('INSERT INTO cheers (completionId, fromUserId, emoji) VALUES (?, ?, ?)').run(completionId, fromUserId, emoji);
+    const from = (prepared('SELECT displayName FROM users WHERE id = ?').get(fromUserId) as { displayName: string }).displayName;
     void notifyPeople([completion.userId], 'cheer', (lang) => tr(lang, 'notify.cheer', { name: from, task: taskName(lang, completion), emoji }),
       { dedupeKey: `cheer:${completionId}:${fromUserId}` });
   }

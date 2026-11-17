@@ -18,7 +18,7 @@ export function DatePick({ value, min, max, label, text, onChange }: Props) {
   return (
     <div style={{ position: 'relative', display: 'inline-block', maxWidth: '100%', borderRadius: 8, padding: '2px 6px' }}>
       <span aria-hidden="true" style={{ fontWeight: 800, fontSize: 14, color: 'var(--warm-text)' }}>
-        📅 {text} <span style={{ color: 'var(--warm-text-muted)', fontSize: 11 }}>▾</span>
+        📅 {text} <span style={{ color: 'var(--warm-text-muted)', fontSize: 12 }}>▾</span>
       </span>
       <input type="date" aria-label={`${label}: ${text}`} value={value} min={min} max={max}
         onChange={(e) => { const v = e.target.value; if (v) onChange(v > max ? max : v); }}

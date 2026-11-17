@@ -213,6 +213,8 @@ export interface FeatureFlags {
   shields: boolean;
   proofPhotos: boolean;
   webPush: boolean;
+  /** "What's new" slides after a big update (NEW-38) */
+  whatsNew: boolean;
 }
 
 /** Team-ups on a chore in a list: can you start one, and has a team claimed it today? */
@@ -237,11 +239,12 @@ export interface UnlocksView {
 /** Cheers on one finished chore (counts in 👏 🎉 💪 ⭐ order, and the viewer's own) */
 export interface CheerSummary { counts: Array<{ emoji: string; count: number; names: string[] }>; mine: string | null }
 
-export interface FeaturesView { features: FeatureFlags; rescueMultiplier: number; holidaysOff: string[]; mascot: { creature: string; name: string; bedtimeFrom: string; bedtimeTo: string }; teamBonus: number; shieldPrice?: number;
+export type Look = 'fresh' | 'quest' | 'calm';
+export interface FeaturesView { features: FeatureFlags; rescueMultiplier: number; holidaysOff: string[]; look?: Look; mascot: { creature: string; name: string; bedtimeFrom: string; bedtimeTo: string }; teamBonus: number; shieldPrice?: number;
   /** Every creature: the active one, resting ones (with their name and stage) and new eggs */
   mascotRoster?: Array<{ creature: string; status: 'active' | 'resting' | 'new'; name: string; stage: string }> }
 
-export type NotifyKind = 'taskDue' | 'rewardRequest' | 'achievementUnlocked' | 'choreApproval' | 'coinBoost' | 'rescue' | 'outcome' | 'summary' | 'nudge' | 'reminder' | 'cheer' | 'teamup';
+export type NotifyKind = 'taskDue' | 'rewardRequest' | 'achievementUnlocked' | 'choreApproval' | 'coinBoost' | 'rescue' | 'outcome' | 'summary' | 'nudge' | 'reminder' | 'cheer' | 'teamup' | 'openChores';
 
 export interface NotifySettings {
   morningTime: string;
@@ -273,6 +276,8 @@ export interface NotifyPerson {
   canLogIn?: boolean;
   /** Phones and computers where they turned on web push (NEW-5) */
   devices: PushDeviceInfo[];
+  /** A family channel is on: without one (and none of their own) they get nothing (ENH-31) */
+  familyChannel?: boolean;
 }
 
 export interface PushDeviceInfo { id: number; label: string; createdAt: string; lastOkAt: string | null }
@@ -455,6 +460,8 @@ export const api = {
 
   // Dashboard
   dashboard: () => apiFetch<any>('/dashboard'),
+  /** Moves whenever the family's data changes (ENH-20) */
+  dataChanges: () => apiFetch<{ v: string }>('/dashboard/changes'),
 
   // Rooms
   getRooms: () => apiFetch<any[]>('/rooms'),
@@ -468,6 +475,8 @@ export const api = {
   saveSetup: (data: unknown) =>
     apiFetch<{ people: number; rooms: number; chores: number; rewards: number; goals: number; removedRewards: number }>('/setup', { method: 'POST', body: JSON.stringify(data) }),
   skipSetup: () => apiFetch<{ success: boolean }>('/setup/skip', { method: 'POST' }),
+  // "What's new" seen or skipped (NEW-38); no ids marks every one
+  whatsNewSeen: (ids?: string[]) => apiFetch<{ success: boolean }>('/whats-new/seen', { method: 'POST', body: JSON.stringify({ ids }) }),
   getDefaultTasks: (roomType: string) =>
     apiFetch<Array<{ name: string; frequencyDays: number; effort: number; isSeasonal?: boolean }>>(`/rooms/defaults/${roomType}`),
   createRoom: (data: { name: string; roomType: string; color?: string; accentColor?: string; tasks?: any[]; assignedUserId?: number | null }) =>
@@ -523,7 +532,7 @@ export const api = {
   // Leaderboard
   leaderboard: (period: 'week' | 'month' | 'quarter' | 'year') => apiFetch<any[]>(`/leaderboard?period=${period}`),
   getFeatures: () => apiFetch<FeaturesView>('/features'),
-  updateFeatures: (data: { features?: Partial<FeatureFlags>; rescueMultiplier?: number; holidaysOff?: string[]; mascot?: { creature?: string; name?: string; bedtimeFrom?: string; bedtimeTo?: string }; teamBonus?: number; shieldPrice?: number }) =>
+  updateFeatures: (data: { features?: Partial<FeatureFlags>; rescueMultiplier?: number; holidaysOff?: string[]; look?: Look; mascot?: { creature?: string; name?: string; bedtimeFrom?: string; bedtimeTo?: string }; teamBonus?: number; shieldPrice?: number }) =>
     apiFetch<FeaturesView>('/features', { method: 'PUT', body: JSON.stringify(data) }),
   // Today's Rescue Mission (parents): another one, a chosen chore, or none today
   // Streak shields: buy one with your coins, or a parent gives one
@@ -552,6 +561,8 @@ export const api = {
     apiFetch<NotifyPerson>(`/notify/people/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
   testNotifyPerson: (id: number) => apiFetch<{ results: Array<{ channel: string; ok: boolean; error?: string }> }>(`/notify/people/${id}/test`, { method: 'POST' }),
   // Web push on this device (NEW-5, utils/pushSync.ts)
+  // The "turn on notifications" card on Today (ENH-31): Turn on worked, or Not now
+  notifyCard: (answer: 'done' | 'snooze') => apiFetch<{ success: boolean }>('/notify/card', { method: 'POST', body: JSON.stringify({ answer }) }),
   pushInfo: () => apiFetch<{ publicKey: string; on: boolean; notificationsOn: boolean }>('/notify/push'),
   pushSignUp: (body: { endpoint: string; keys: { p256dh: string; auth: string }; label: string }) =>
     apiFetch<{ id: number }>('/notify/push/devices', { method: 'POST', body: JSON.stringify(body) }),

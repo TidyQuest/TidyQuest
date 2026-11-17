@@ -39,7 +39,7 @@ export function TimeZonePicker({ zone, zoneSet, language, onChange }: Props) {
     onChange(z).then(() => { setOpen(false); setQuery(''); }).catch(() => {}).finally(() => setSaving(false));
   };
 
-  const small = { fontSize: 11, color: 'var(--warm-text-light)', fontWeight: 600 } as const;
+  const small = { fontSize: 12, color: 'var(--warm-text-light)', fontWeight: 600 } as const;
   return (
     <div style={{ padding: '14px 0', borderTop: '1px solid var(--warm-border)' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
@@ -61,7 +61,7 @@ export function TimeZonePicker({ zone, zoneSet, language, onChange }: Props) {
       </div>
 
       {!zoneSet && device !== zone && (
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 10, padding: '10px 12px', borderRadius: 12, background: 'var(--warm-bg-subtle)', border: '1.5px solid var(--warm-border)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 10, padding: '10px 12px', borderRadius: 12, background: 'var(--warm-bg-subtle)', border: 'var(--shape-border-w) solid var(--warm-border)' }}>
           <div style={{ flex: 1, minWidth: 0, fontSize: 13, fontWeight: 700, color: 'var(--warm-text)', overflowWrap: 'anywhere' }}>
             {t('settings.timeZoneOffer').replace('{zone}', `${pretty(device)} (${offsetLabel(device)})`)}
           </div>
@@ -78,7 +78,7 @@ export function TimeZonePicker({ zone, zoneSet, language, onChange }: Props) {
           )}
           <input className="tq-input-compact" type="search" value={query} placeholder={t('settings.timeZoneSearch')} aria-label={t('settings.timeZoneSearch')}
             onChange={(e) => setQuery(e.target.value)} style={{ width: '100%', boxSizing: 'border-box' }} autoFocus />
-          <div role="listbox" aria-label={t('settings.timeZone')} style={{ maxHeight: 240, overflowY: 'auto', border: '1.5px solid var(--warm-border)', borderRadius: 12 }}>
+          <div role="listbox" aria-label={t('settings.timeZone')} style={{ maxHeight: 240, overflowY: 'auto', border: 'var(--shape-border-w) solid var(--warm-border)', borderRadius: 12 }}>
             {matches.length === 0 && <div style={{ ...small, padding: 12 }}>{t('settings.timeZoneNone')}</div>}
             {matches.map((z) => (
               <button key={z} role="option" aria-selected={z === zone} onClick={() => pick(z)} disabled={saving}

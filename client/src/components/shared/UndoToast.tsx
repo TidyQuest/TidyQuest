@@ -51,7 +51,7 @@ export function UndoToast({ undo, language, onClose, onRestored }: {
 
   return (
     <div role="status" style={{
-      position: 'fixed', left: '50%', bottom: 'calc(20px + env(safe-area-inset-bottom))', transform: 'translateX(-50%)',
+      position: 'fixed', left: '50%', bottom: 'calc(20px + var(--tabbar-h) + env(safe-area-inset-bottom))', transform: 'translateX(-50%)',
       zIndex: 9998, width: 'max-content', maxWidth: 'calc(100vw - 32px)', boxSizing: 'border-box',
       display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap', padding: '10px 12px 10px 16px', borderRadius: 14,
       backgroundColor: 'var(--warm-text)', color: 'var(--warm-card)', boxShadow: '0 6px 20px rgba(0,0,0,0.25)',
@@ -60,7 +60,7 @@ export function UndoToast({ undo, language, onClose, onRestored }: {
       <span style={{ minWidth: 0, overflowWrap: 'anywhere' }}>{error || undo.message}</span>
       {canUndo && <button onClick={restore} disabled={busy} style={{
         border: 'none', background: 'none', color: 'var(--warm-accent-light)', fontFamily: 'Nunito', fontWeight: 900,
-        fontSize: 14, cursor: 'pointer', padding: '4px 6px', textTransform: 'uppercase', letterSpacing: '0.03em',
+        fontSize: 14, cursor: 'pointer', padding: '4px 6px',
       }}>{t('trash.undo')}</button>}
       <button onClick={onClose} aria-label={t('common.close')} style={{
         border: 'none', background: 'none', color: 'inherit', opacity: 0.7, fontSize: 18, cursor: 'pointer', padding: '0 4px',

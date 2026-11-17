@@ -36,7 +36,7 @@ export function DuplicateRoom({ room, displayName, users, language, onDone, onCa
     }
   };
 
-  const label = { fontSize: 11, fontWeight: 700, color: 'var(--warm-text-light)' };
+  const label = { fontSize: 12, fontWeight: 700, color: 'var(--warm-text-light)' };
   return (
     <div className="tq-card tq-card-padded" style={{ marginBottom: 20, display: 'flex', flexDirection: 'column', gap: 10 }}>
       <div style={{ fontSize: 15, fontWeight: 900, color: 'var(--warm-text)' }}>{t('duplicateRoom.title')}</div>

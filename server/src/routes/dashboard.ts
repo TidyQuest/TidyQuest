@@ -2,7 +2,7 @@ import { Router, Response } from 'express';
 import { focusLine, focusModeFor, OPEN_PER_DAY } from '../utils/focus';
 import { parseHomeLayout } from '../utils/homeLayout';
 import { isPerPerson, sharesFor } from '../utils/shares';
-import db from '../database';
+import db, { prepared } from '../database';
 import { AuthRequest, authMiddleware } from '../middleware/auth';
 import { todoCounts, todoRoomId } from '../utils/todoRoom';
 import { calendarDaysUntil, beforeStart, hasFixedSchedule, isSeasonalNow, nextDueAt, oneTimeOverdue, scheduleFields, taskHealth } from '../utils/schedule';
@@ -11,36 +11,39 @@ import { syncPrimaryGoal } from '../utils/goals';
 import { repeatCountsFor } from '../utils/repeatLimits';
 import { boostTaskNames, getActiveBoosts } from '../utils/boosts';
 import { achievementsFor } from '../utils/achievementStats';
-import { forgottenTasks, usualTasks } from '../utils/homeSections';
+import { forgottenTasks, todaySections, usualTasks } from '../utils/homeSections';
 import { rescueCandidates, todaysMission } from '../utils/rescue';
-import { getFeatures, holidaysOff, isFeatureOn } from '../utils/features';
+import { getFeatures, getLook, holidaysOff, isFeatureOn } from '../utils/features';
+import { unseenWhatsNew } from '../utils/whatsNew';
+import { notifyCardFor } from '../utils/notifyCard';
 import { setupNeeded } from '../setup/apply';
 import { weekStartDay } from '../utils/periods';
-import { daySql, familyZone, savedZone } from '../utils/clock';
+import { familyZone, onDayArgs, onDaySql, savedZone } from '../utils/clock';
 import { MAX_SHIELDS, SHIELD_EVERY, shieldPrice, shieldsOn } from '../utils/streaks';
 import { cheersFor } from '../utils/cheers';
 import { cosmetics, unlocksFor } from '../utils/unlocks';
 import { mascotFor, TREAT_EFFORT } from '../utils/mascot';
-import { groupTeamPending, teamUpInfo, teamupsFor } from '../utils/teamups';
+import { dataVersion } from '../utils/changes';
+import { groupTeamPending, teamUpContext, teamUpInfo, teamupsFor } from '../utils/teamups';
 
 const router = Router();
 router.use(authMiddleware);
 
 router.get('/', (req: AuthRequest, res: Response) => {
+  // Read first: a change made while this answer is put together still moves it for the next check (ENH-20)
+  const version = dataVersion();
   // Refresh the cached goal first so it rolls over to the current week (and completes) on its own
   const myPrimaryGoal = syncPrimaryGoal(req.userId!);
-  const user = db.prepare(
-    'SELECT id, username, displayName, role, avatarColor, avatarType, avatarPreset, avatarPhotoUrl, coins, currentStreak, streakShields, goalCoins, goalStartAt, goalEndAt, lastActiveDate, language, taskView, kidMode, focusMode, homeLayout FROM users WHERE id = ?'
-  ).get(req.userId) as any;
+  const user = prepared('SELECT id, username, displayName, role, avatarColor, avatarType, avatarPreset, avatarPhotoUrl, coins, currentStreak, streakShields, goalCoins, goalStartAt, goalEndAt, lastActiveDate, language, taskView, kidMode, focusMode, homeLayout FROM users WHERE id = ?').get(req.userId) as any;
   const vacation = getGlobalVacation();
 
   // Kids don't see other people's private rooms (when the setting is on)
   const hiddenRooms = hiddenRoomIdsFor(req.userId);
-  const rooms = (db.prepare('SELECT * FROM rooms WHERE deletedAt IS NULL ORDER BY sortOrder, id').all() as any[]).filter((r) => !hiddenRooms.has(r.id));
+  const rooms = (prepared('SELECT * FROM rooms WHERE deletedAt IS NULL ORDER BY sortOrder, id').all() as any[]).filter((r) => !hiddenRooms.has(r.id));
   const allTasks: any[] = [];
 
   // Fetch all tasks in one query and group by roomId to avoid N+1
-  const dbTasks = db.prepare('SELECT * FROM tasks WHERE archivedAt IS NULL AND deletedAt IS NULL AND pausedAt IS NULL').all() as any[];
+  const dbTasks = prepared('SELECT * FROM tasks WHERE archivedAt IS NULL AND deletedAt IS NULL AND pausedAt IS NULL').all() as any[];
   const tasksByRoom = new Map<number, any[]>();
   for (const t of dbTasks) {
     if (!tasksByRoom.has(t.roomId)) tasksByRoom.set(t.roomId, []);
@@ -53,8 +56,8 @@ router.get('/', (req: AuthRequest, res: Response) => {
     `SELECT tc.taskId, tc.userId, u.displayName, u.avatarColor, u.avatarType, u.avatarPreset, u.avatarPhotoUrl
      FROM task_completions tc
      JOIN users u ON tc.userId = u.id
-     WHERE tc.status = 'approved' AND ${daySql('tc.completedAt')} = ${daySql('?')}`
-  ).all(nowIso) as any[];
+     WHERE tc.status = 'approved' AND ${onDaySql('tc.completedAt')}`
+  ).all(...onDayArgs(new Date(nowIso))) as any[];
   const completedTodayByTask = new Map(todayCompletions.map((c: any) => [c.taskId, {
     userId: c.userId, displayName: c.displayName, avatarColor: c.avatarColor,
     avatarType: c.avatarType, avatarPreset: c.avatarPreset, avatarPhotoUrl: c.avatarPhotoUrl,
@@ -68,18 +71,16 @@ router.get('/', (req: AuthRequest, res: Response) => {
 
   // The viewer's own completions still waiting for a parent, per task (Strict Mode)
   const myPendingByTask = new Map(
-    (db.prepare("SELECT taskId, COUNT(*) AS n, MAX(id) AS lastId FROM task_completions WHERE userId = ? AND status = 'pending' GROUP BY taskId")
+    (prepared("SELECT taskId, COUNT(*) AS n, MAX(id) AS lastId FROM task_completions WHERE userId = ? AND status = 'pending' GROUP BY taskId")
       .all(req.userId) as { taskId: number; n: number; lastId: number }[]).map((r) => [r.taskId, r])
   );
   // Anytime quests with a repeat limit: how many times the viewer did each this day/week
   const myRepeatCounts = repeatCountsFor(req.userId, dbTasks);
 
   // Batch-fetch all task assignees
-  const allTaskAssignees = db.prepare(
-    `SELECT ta.taskId, ta.userId, ta.coinPercentage, u.displayName, u.avatarColor, u.avatarType, u.avatarPreset, u.avatarPhotoUrl
+  const allTaskAssignees = prepared(`SELECT ta.taskId, ta.userId, ta.coinPercentage, u.displayName, u.avatarColor, u.avatarType, u.avatarPreset, u.avatarPhotoUrl
      FROM task_assignees ta
-     JOIN users u ON ta.userId = u.id`
-  ).all() as any[];
+     JOIN users u ON ta.userId = u.id`).all() as any[];
   const assigneesByTask = new Map<number, any[]>();
   for (const a of allTaskAssignees) {
     if (!assigneesByTask.has(a.taskId)) assigneesByTask.set(a.taskId, []);
@@ -88,6 +89,10 @@ router.get('/', (req: AuthRequest, res: Response) => {
 
   const nowTs = Date.now();
   const todoRoom = todoRoomId();
+  // Team-up facts and each person's vacation, read once instead of per chore (ENH-19)
+  const teamCtx = teamUpContext();
+  const vacationOf = new Map<number, ReturnType<typeof getUserVacation>>();
+  const userVacation = (id: number) => { let v = vacationOf.get(id); if (!v) vacationOf.set(id, (v = getUserVacation(id))); return v; };
   const roomsWithHealth = rooms.map((room) => {
     const tasks = tasksByRoom.get(room.id) || [];
     const tasksWithHealth = tasks.map((t) => {
@@ -96,7 +101,7 @@ router.get('/', (req: AuthRequest, res: Response) => {
         ? [room.assignedUserId]
         : taskAssigneesForTask.map((a: any) => a.userId);
       const taskVac = effectiveIds.length === 1
-        ? resolveVacation(vacation, getUserVacation(effectiveIds[0]))
+        ? resolveVacation(vacation, userVacation(effectiveIds[0]))
         : vacation;
       // Rolling interval or set weekdays, and the season (utils/schedule.ts)
       const health = taskHealth(t, taskVac);
@@ -123,7 +128,7 @@ router.get('/', (req: AuthRequest, res: Response) => {
         myRepeatCount: myRepeatCounts.get(t.id) || 0,
         sharedCompletions: isPerPerson(t) ? sharesFor(t) : sharedCompletionsByTask.get(t.id) || [],
         completedTodayBy: completedTodayByTask.get(t.id) || null,
-        teamUp: teamUpInfo(t, req.userId!),
+        teamUp: teamUpInfo(t, req.userId!, teamCtx),
         health,
         dueDate: new Date(dueDateTs).toISOString(),
         dueInDays,
@@ -194,8 +199,8 @@ router.get('/', (req: AuthRequest, res: Response) => {
     taskId: missionRow.taskId,
     multiplier: missionRow.multiplier,
     completedBy: missionRow.completedBy,
-    completedByName: missionRow.completedBy ? (db.prepare('SELECT displayName FROM users WHERE id = ?').get(missionRow.completedBy) as { displayName: string } | undefined)?.displayName ?? null : null,
-    taskName: missionTask?.name ?? (db.prepare('SELECT name FROM tasks WHERE id = ?').get(missionRow.taskId) as { name: string } | undefined)?.name ?? null,
+    completedByName: missionRow.completedBy ? (prepared('SELECT displayName FROM users WHERE id = ?').get(missionRow.completedBy) as { displayName: string } | undefined)?.displayName ?? null : null,
+    taskName: missionTask?.name ?? (prepared('SELECT name FROM tasks WHERE id = ?').get(missionRow.taskId) as { name: string } | undefined)?.name ?? null,
     task: missionTask,
   } : null;
   // Parents can choose another one
@@ -205,14 +210,12 @@ router.get('/', (req: AuthRequest, res: Response) => {
   const features = getFeatures();
   const usualQuests = features.usual ? usualTasks(allTasks, req.userId!) : [];
   const forgottenQuests = features.forgot ? forgottenTasks(allTasks, req.userId!, new Date(), new Set(missionRow?.taskId ? [missionRow.taskId] : [])) : [];
+  // The Today page: every chore under Overdue, Today, Any time or Later (ENH-26)
+  const today = todaySections(allTasks, req.userId!, new Date(), { todos: features.todos });
 
   const focusMode = features.focus ? focusModeFor(user) : 'off';
   const focus = focusMode === 'off' ? null
     : { mode: focusMode, openPerDay: OPEN_PER_DAY, ...focusLine(allTasks, user.id, missionRow?.taskId ?? null) };
-
-  // Backwards-compatible aliases
-  const todaysQuests = [...readyToComplete, ...onDemandQuests];
-  const nextTasks = scheduledUpcoming;
 
   // Completed today
   const completedToday = db.prepare(`
@@ -225,9 +228,9 @@ router.get('/', (req: AuthRequest, res: Response) => {
     JOIN rooms r ON t.roomId = r.id
     JOIN users u ON tc.userId = u.id
     WHERE tc.status = 'approved'
-      AND ${daySql('tc.completedAt')} = ${daySql('?')}
+      AND ${onDaySql('tc.completedAt')}
     ORDER BY tc.completedAt DESC
-  `).all(new Date().toISOString()) as any[];
+  `).all(...onDayArgs(new Date())) as any[];
   // Cheers on today's chores
   if (isFeatureOn('cheers')) {
     const cheers = cheersFor(completedToday.map((c) => c.completionId), req.userId!);
@@ -236,7 +239,7 @@ router.get('/', (req: AuthRequest, res: Response) => {
   }
 
   // Recent activity
-  const recentActivity = db.prepare(`
+  const recentActivity = prepared(`
     SELECT tc.*, t.name as taskName, t.translationKey, t.roomId, r.name as roomName, u.displayName, u.avatarColor, u.avatarType, u.avatarPreset, u.avatarPhotoUrl
     FROM task_completions tc
     JOIN tasks t ON tc.taskId = t.id
@@ -253,9 +256,7 @@ router.get('/', (req: AuthRequest, res: Response) => {
     if (!targetUser.goalStartAt && !targetUser.goalEndAt) return targetUser.coins;
     const from = targetUser.goalStartAt || '1970-01-01T00:00:00.000Z';
     const to = targetUser.goalEndAt || '9999-12-31T23:59:59.999Z';
-    const row = db.prepare(
-      "SELECT COALESCE(SUM(coinsEarned), 0) as total FROM task_completions WHERE userId = ? AND status = 'approved' AND completedAt >= ? AND completedAt <= ?"
-    ).get(targetUser.id, from, to) as { total: number };
+    const row = prepared("SELECT COALESCE(SUM(coinsEarned), 0) as total FROM task_completions WHERE userId = ? AND status = 'approved' AND completedAt >= ? AND completedAt <= ?").get(targetUser.id, from, to) as { total: number };
     return row?.total || 0;
   }
 
@@ -275,13 +276,11 @@ router.get('/', (req: AuthRequest, res: Response) => {
   // Each child's current goal, so parents can see who reached it (and earned the bonus)
   const childPrimaryGoals = new Map<number, ReturnType<typeof syncPrimaryGoal>>([[user.id, myPrimaryGoal]]);
   if (user.role === 'admin') {
-    const listed = db.prepare("SELECT id FROM users WHERE (role != 'admin' OR isParticipant = 1) AND id != ?").all(user.id) as { id: number }[];
+    const listed = prepared("SELECT id FROM users WHERE (role != 'admin' OR isParticipant = 1) AND id != ?").all(user.id) as { id: number }[];
     for (const c of listed) childPrimaryGoals.set(c.id, syncPrimaryGoal(c.id));
   }
   const childrenGoals = user.role === 'admin'
-    ? db.prepare(
-      "SELECT id, displayName, role, coins, goalCoins, goalStartAt, goalEndAt, avatarColor, avatarType, avatarPreset, avatarPhotoUrl FROM users WHERE role != 'admin' OR isParticipant = 1 ORDER BY displayName"
-    ).all().map((c: any) => {
+    ? prepared("SELECT id, displayName, role, coins, goalCoins, goalStartAt, goalEndAt, avatarColor, avatarType, avatarPreset, avatarPhotoUrl FROM users WHERE role != 'admin' OR isParticipant = 1 ORDER BY displayName").all().map((c: any) => {
       const currentCoins = c.goalCoins ? getGoalCoinsWithinPeriod(c) : c.coins;
       const primary = childPrimaryGoals.get(c.id);
       return {
@@ -296,7 +295,7 @@ router.get('/', (req: AuthRequest, res: Response) => {
 
   // Chores waiting for a parent's approval (Strict Mode), newest first
   const pendingCompletions = user.role === 'admin'
-    ? db.prepare(`
+    ? prepared(`
       SELECT tc.id, tc.taskId, tc.userId, tc.completedAt, tc.coinsEarned, tc.note, tc.photoUrl, tc.teamupId, tc.loggedAt,
              t.name AS taskName, t.translationKey, t.roomId, t.iconKey, r.name AS roomName, r.roomType, r.color AS roomColor,
              u.displayName, u.avatarColor, u.avatarType, u.avatarPreset, u.avatarPhotoUrl
@@ -311,15 +310,13 @@ router.get('/', (req: AuthRequest, res: Response) => {
   const pendingCompletionsGrouped = groupTeamPending(pendingCompletions);
 
   const pendingRewardRequests = user.role === 'admin'
-    ? db.prepare(
-      `SELECT rr.id, rr.costCoins, rr.redeemedAt, rr.status, r.title, u.displayName
+    ? prepared(`SELECT rr.id, rr.costCoins, rr.redeemedAt, rr.status, r.title, u.displayName
        FROM reward_redemptions rr
        JOIN rewards r ON rr.rewardId = r.id
        JOIN users u ON rr.userId = u.id
        WHERE rr.status = 'requested'
        ORDER BY rr.redeemedAt DESC
-       LIMIT 12`
-    ).all()
+       LIMIT 12`).all()
     : [];
 
   // Compute achievement badge tier per user (based on total approved completions)
@@ -331,29 +328,34 @@ router.get('/', (req: AuthRequest, res: Response) => {
     if (completions >= 1) return 'bronze';
     return null;
   }
-  const completionCounts = db.prepare(
-    "SELECT userId, COUNT(*) as cnt FROM task_completions WHERE status = 'approved' GROUP BY userId"
-  ).all() as { userId: number; cnt: number }[];
+  const completionCounts = prepared("SELECT userId, COUNT(*) as cnt FROM task_completions WHERE status = 'approved' GROUP BY userId").all() as { userId: number; cnt: number }[];
   const badges: Record<number, string | null> = {};
   for (const row of completionCounts) {
     badges[row.userId] = getBadgeTier(row.cnt);
   }
 
   res.json({
+    dataVersion: version,
     houseHealth,
     rooms: roomsWithHealth,
-    todaysQuests,
     readyToComplete,
     scheduledUpcoming,
     todoQuests,
     usualQuests,
     forgottenQuests,
+    today,
     rescueMission,
     rescueChoices,
     // One thing at a time: how this person sees it, and today's line (NEW-2)
     focus,
     features,
     holidaysOff: holidaysOff(),
+    // The family's look: shapes for everyone's screens (Settings → Look, NEW-37)
+    look: getLook(),
+    // "What's new" slides this person hasn't seen yet (NEW-38)
+    whatsNew: unseenWhatsNew(req.userId!),
+    // The "turn on notifications" card: 'kid' or 'parent' wording, or null (ENH-31)
+    notifyCard: notifyCardFor(req.userId!),
     // The week's first day, like Date.getDay(): 1 = Monday, 0 = Sunday (Settings → General)
     weekStart: weekStartDay(),
     // The family's time zone (Settings → General); timeZoneSet is false while the server's own (TZ) is used
@@ -367,7 +369,6 @@ router.get('/', (req: AuthRequest, res: Response) => {
     mascot: features.mascot ? mascotFor({ houseHealth, rooms: roomsWithHealth.filter((r) => !r.isTodoRoom), rescueDone: !!missionRow?.completedBy }) : null,
     nextUnlock: unlocksFor(req.userId!).next,
     onDemandQuests,
-    nextTasks,
     completedToday,
     myGoal,
     childrenGoals,
@@ -383,7 +384,7 @@ router.get('/', (req: AuthRequest, res: Response) => {
     badges,
     // The viewer's level and the closest badge still to earn ("Next up")
     ...(() => {
-      const gamificationOn = (db.prepare("SELECT value FROM app_settings WHERE key = 'gamificationEnabled'").get() as { value: string } | undefined)?.value !== '0';
+      const gamificationOn = (prepared("SELECT value FROM app_settings WHERE key = 'gamificationEnabled'").get() as { value: string } | undefined)?.value !== '0';
       const mine = gamificationOn ? achievementsFor(req.userId!) : null;
       return { myLevel: features.levels ? mine?.level ?? null : null, nextBadge: features.nextBadge ? mine?.nextBadge ?? null : null };
     })(),
@@ -391,6 +392,11 @@ router.get('/', (req: AuthRequest, res: Response) => {
     // Streak shields: null when they're off (or gamification is)
     shields: shieldsOn() ? { price: shieldPrice(), max: MAX_SHIELDS, every: SHIELD_EVERY } : null,
   });
+});
+
+/** Whether anything changed since the browser last loaded (ENH-20): a few bytes, asked every 15 seconds */
+router.get('/changes', (_req: AuthRequest, res: Response) => {
+  res.json({ v: dataVersion() });
 });
 
 export default router;

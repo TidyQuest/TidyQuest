@@ -7,5 +7,5 @@ export function UserTitle({ userId, language, style }: { userId?: number | null;
   const c = useCosmetic(userId);
   const text = c?.titleKey ? t(c.titleKey) : c?.titleText;
   if (!text) return null;
-  return <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--warm-accent)', ...style }}>🏷️ {text}</span>;
+  return <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--warm-accent)', ...style }}>🏷️ {text}</span>;
 }

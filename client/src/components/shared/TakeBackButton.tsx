@@ -20,7 +20,7 @@ export function TakeBackButton({ completionId, onDone, language }: { completionI
   };
   return (
     <button type="button" className="tq-btn tq-btn-secondary tq-btn-sm" disabled={busy} title={t('app.takeBackHint')}
-      onClick={(e) => { e.stopPropagation(); void takeBack(); }} style={{ padding: '6px 10px', fontSize: 11 }}>
+      onClick={(e) => { e.stopPropagation(); void takeBack(); }} style={{ padding: '6px 10px', fontSize: 12 }}>
       ↩ {t('app.takeBack')}
     </button>
   );

@@ -10,10 +10,10 @@ const CELEBRATIONS: Celebration[] = ['confetti', 'coins', 'fireworks'];
 const label = { fontSize: 12, fontWeight: 800, color: 'var(--warm-text-muted)' } as const;
 const option = (on: boolean, locked: boolean) => ({
   display: 'flex', flexDirection: 'column' as const, alignItems: 'center', gap: 4, padding: '8px 6px', borderRadius: 12, minWidth: 64,
-  fontFamily: 'Nunito', fontSize: 11, fontWeight: 800, color: 'var(--warm-text)', background: 'none',
+  fontFamily: 'Nunito', fontSize: 12, fontWeight: 800, color: 'var(--warm-text)', background: 'none',
   border: `2px solid ${on ? 'var(--warm-accent)' : 'var(--warm-border)'}`, opacity: locked ? 0.5 : 1, cursor: locked ? 'not-allowed' : 'pointer',
 });
-const lock = { fontSize: 10, color: 'var(--warm-text-light)' } as const;
+const lock = { fontSize: 12, color: 'var(--warm-text-light)' } as const;
 
 /** Profile: pick your avatar frame, celebration and title from what your level has unlocked. */
 export function UnlocksCard({ user, onChanged }: { user: User; onChanged?: () => void }) {
@@ -38,7 +38,7 @@ export function UnlocksCard({ user, onChanged }: { user: User; onChanged?: () =>
       <ConfettiEffect show={trying !== null} celebration={trying ?? 'confetti'} />
       <div>
         <h3 className="tq-card-title" style={{ margin: 0 }}>🔓 {t('unlocks.title')} · {t('levels.level').replace('{n}', String(view.level))}</h3>
-        <div style={{ fontSize: 11, color: 'var(--warm-text-light)', fontWeight: 600 }}>{t('unlocks.desc')}</div>
+        <div style={{ fontSize: 12, color: 'var(--warm-text-light)', fontWeight: 600 }}>{t('unlocks.desc')}</div>
       </div>
 
       <div style={{ display: 'grid', gap: 6 }}>
@@ -63,7 +63,7 @@ export function UnlocksCard({ user, onChanged }: { user: User; onChanged?: () =>
             </button>
           ))}
         </div>
-        {view.badgeFrames.some((f) => !f.unlocked) && <span style={{ ...lock, fontSize: 11 }}>{t('unlocks.badgeHint')}</span>}
+        {view.badgeFrames.some((f) => !f.unlocked) && <span style={{ ...lock, fontSize: 12 }}>{t('unlocks.badgeHint')}</span>}
       </div>
 
       <div style={{ display: 'grid', gap: 6 }}>

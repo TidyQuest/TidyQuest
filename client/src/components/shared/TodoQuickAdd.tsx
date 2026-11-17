@@ -36,11 +36,11 @@ export function TodoQuickAdd({ people, language, roomId, onAdded, onCancel }: {
   };
 
   const chip = (on: boolean): CSSProperties => ({
-    padding: '5px 10px', borderRadius: 20, fontSize: 12, fontWeight: 700, fontFamily: 'Nunito', cursor: 'pointer',
+    padding: '5px 10px', borderRadius: 'var(--shape-radius-control)', fontSize: 12, fontWeight: 700, fontFamily: 'Nunito', cursor: 'pointer',
     border: `1.5px solid ${on ? 'var(--warm-accent)' : 'var(--warm-border)'}`,
     backgroundColor: on ? 'var(--warm-accent-light)' : 'var(--warm-bg-input)', color: on ? 'var(--warm-accent)' : 'var(--warm-text)',
   });
-  const label: CSSProperties = { fontSize: 11, fontWeight: 700, color: 'var(--warm-text-muted)', display: 'flex', alignItems: 'center', gap: 6 };
+  const label: CSSProperties = { fontSize: 12, fontWeight: 700, color: 'var(--warm-text-muted)', display: 'flex', alignItems: 'center', gap: 6 };
   return (
     <div style={{ display: 'grid', gap: 8, padding: 12, borderRadius: 14, border: '1.5px dashed var(--warm-border)', marginBottom: 8 }}>
       <input className="tq-input" value={name} autoFocus maxLength={120} placeholder={t('todos.namePlaceholder')}

@@ -148,7 +148,7 @@ export function History({ language, isAdmin, users = [], rooms = [], userId, mas
                 <span style={{ fontSize: 18 }}>⏳</span>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--warm-text)' }}>{taskName(p.taskName, p.translationKey)}</div>
-                  <div style={{ fontSize: 11, color: 'var(--warm-text-light)', fontWeight: 600 }}>
+                  <div style={{ fontSize: 12, color: 'var(--warm-text-light)', fontWeight: 600 }}>
                     {roomDisplayName(p.roomName, p.roomType || '')} · {timeAgo(p.completedAt)} · {t('app.waitingForApproval')}
                   </div>
                   <Proof note={p.note} photoUrl={p.photoUrl} label={t('approvals.proofPhoto')} closeLabel={t('common.close')} />
@@ -160,9 +160,9 @@ export function History({ language, isAdmin, users = [], rooms = [], userId, mas
         )}
         <div className="history-table-scroll">
           <div className="history-header" style={{
-            display: 'grid', gridTemplateColumns: isAdmin ? '44px 1fr 120px 100px 80px 60px' : '44px 1fr 120px 100px 80px',
-            gap: 12, padding: '0 8px 14px', borderBottom: '1.5px solid var(--warm-border)',
-            fontSize: 11, fontWeight: 800, color: 'var(--warm-text-light)', textTransform: 'uppercase', letterSpacing: 1,
+            display: 'grid', gridTemplateColumns: isAdmin ? '44px minmax(0, 1fr) 120px 100px 80px 60px' : '44px minmax(0, 1fr) 120px 100px 80px',
+            gap: 12, padding: '0 8px 14px', borderBottom: 'var(--shape-border-w) solid var(--warm-border)',
+            fontSize: 12, fontWeight: 800, color: 'var(--warm-text-light)',
           }}>
             <div></div>
             <div>{t('history.task')}</div>
@@ -188,7 +188,7 @@ export function History({ language, isAdmin, users = [], rooms = [], userId, mas
               : h.displayName;
             return (
             <div key={`${h.type || 'completion'}-${h.id}`} className="history-row" style={{
-              display: 'grid', gridTemplateColumns: isAdmin ? '44px 1fr 120px 100px 80px 60px' : '44px 1fr 120px 100px 80px',
+              display: 'grid', gridTemplateColumns: isAdmin ? '44px minmax(0, 1fr) 120px 100px 80px 60px' : '44px minmax(0, 1fr) 120px 100px 80px',
               gap: 12, padding: '14px 8px', alignItems: 'center',
               borderBottom: '1px solid var(--warm-border-subtle)',
             }}>
@@ -203,13 +203,13 @@ export function History({ language, isAdmin, users = [], rooms = [], userId, mas
               ) : (
                 <UserAvatar userId={h.userId} name={h.displayName} color={h.avatarColor} size={34} avatarType={h.avatarType} avatarPreset={h.avatarPreset} avatarPhotoUrl={h.avatarPhotoUrl} />
               )}
-              <div>
+              <div style={{ minWidth: 0, overflowWrap: 'anywhere' }}>
                 {isShield ? (
                   <>
                     <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--warm-text)' }}>
                       🛡️ {t(h.shieldKind === 'used' && h.shieldCount > 1 ? 'history.shield_usedMany' : `history.shield_${h.shieldKind}`).replace('{n}', String(h.streak)).replace('{count}', String(h.shieldCount))}
                     </div>
-                    <div style={{ fontSize: 11, color: 'var(--warm-text-light)', fontWeight: 600 }}>
+                    <div style={{ fontSize: 12, color: 'var(--warm-text-light)', fontWeight: 600 }}>
                       {h.displayName}{h.createdByName ? ` · ${t('coins.by').replace('{name}', h.createdByName)}` : ''}
                     </div>
                     <div className="history-mobile-meta">{timeAgo(h.completedAt)}</div>
@@ -217,13 +217,13 @@ export function History({ language, isAdmin, users = [], rooms = [], userId, mas
                 ) : isPurchase ? (
                   <>
                     <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--warm-text)' }}>{t('history.boughtForMascot').replace('{item}', t(`mascot.item_${h.itemId}`))}</div>
-                    <div style={{ fontSize: 11, color: 'var(--warm-text-light)', fontWeight: 600 }}>{h.displayName}</div>
+                    <div style={{ fontSize: 12, color: 'var(--warm-text-light)', fontWeight: 600 }}>{h.displayName}</div>
                     <div className="history-mobile-meta">{timeAgo(h.completedAt)}</div>
                   </>
                 ) : isReward ? (
                   <>
                     <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--warm-text)' }}>🎁 {t('history.boughtReward').replace('{reward}', rewardTitleText(h.rewardTitle, t))}</div>
-                    <div style={{ fontSize: 11, color: 'var(--warm-text-light)', fontWeight: 600 }}>
+                    <div style={{ fontSize: 12, color: 'var(--warm-text-light)', fontWeight: 600 }}>
                       {h.displayName}{h.boughtByName ? ` · 🛒 ${t('rewards.boughtBy').replace('{name}', h.boughtByName)}` : ''}
                       {h.rewardStatus === 'requested' ? ` · ${t('rewards.statusPending')}` : ''}
                     </div>
@@ -232,7 +232,7 @@ export function History({ language, isAdmin, users = [], rooms = [], userId, mas
                 ) : isChipIn ? (
                   <>
                     <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--warm-text)' }}>🏦 {t('history.chippedIn').replace('{reward}', h.rewardTitle)}</div>
-                    <div style={{ fontSize: 11, color: 'var(--warm-text-light)', fontWeight: 600 }}>
+                    <div style={{ fontSize: 12, color: 'var(--warm-text-light)', fontWeight: 600 }}>
                       {h.displayName} · {t(`history.pot_${h.potStatus}`)}
                     </div>
                     <div className="history-mobile-meta">{timeAgo(h.completedAt)}</div>
@@ -241,7 +241,7 @@ export function History({ language, isAdmin, users = [], rooms = [], userId, mas
                   <>
                     {/* A parent's coin adjustment or a goal bonus, from the coin ledger */}
                     <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--warm-text)' }}>🪙 {h.reason || t('coins.adjusted')}</div>
-                    <div style={{ fontSize: 11, color: 'var(--warm-text-light)', fontWeight: 600 }}>
+                    <div style={{ fontSize: 12, color: 'var(--warm-text-light)', fontWeight: 600 }}>
                       {h.displayName}{h.createdByName ? ` · ${t('coins.by').replace('{name}', h.createdByName)}` : ''}
                     </div>
                     <div className="history-mobile-meta">{timeAgo(h.completedAt)}</div>
@@ -249,9 +249,10 @@ export function History({ language, isAdmin, users = [], rooms = [], userId, mas
                 ) : (
                   <>
                     <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--warm-text)' }}>{taskName(h.taskName, h.translationKey)}</div>
-                    <div style={{ fontSize: 11, color: 'var(--warm-text-light)', fontWeight: 600 }}>{t('history.by')} {byName}{!isDuo && <> <UserTitle userId={h.userId} language={language} style={{ fontSize: 10 }} /></>}</div>
+                    <div style={{ fontSize: 12, color: 'var(--warm-text-light)', fontWeight: 600 }}>{t('history.by')} {byName}{!isDuo && <> <UserTitle userId={h.userId} language={language} style={{ fontSize: 12 }} /></>}</div>
                     <div className="history-mobile-meta">{roomDisplayName(h.roomName, h.roomType || '')} · {timeAgo(h.completedAt)}</div>
-                    {h.loggedAt && <div style={{ fontSize: 11, color: 'var(--warm-text-muted)', fontWeight: 700, marginTop: 2 }}>🕘 {t('late.tag')}</div>}
+                    {h.approvedByName && <div style={{ fontSize: 12, color: 'var(--warm-text-muted)', fontWeight: 700, marginTop: 2, overflowWrap: 'anywhere' }}>✅ {t('history.approvedBy').replace('{name}', h.approvedByName)}</div>}
+                    {h.loggedAt && <div style={{ fontSize: 12, color: 'var(--warm-text-muted)', fontWeight: 700, marginTop: 2 }}>🕘 {t('late.tag')}</div>}
                     <Proof note={h.note} photoUrl={h.photoUrl} label={t('approvals.proofPhoto')} closeLabel={t('common.close')} />
                     {h.approvalNote && <div style={{ fontSize: 12, color: 'var(--warm-text-secondary)', fontWeight: 600, marginTop: 2, overflowWrap: 'anywhere' }}>💬 “{h.approvalNote}”</div>}
                     {h.cheers && (
@@ -271,8 +272,8 @@ export function History({ language, isAdmin, users = [], rooms = [], userId, mas
                 <div style={{ display: 'flex', justifyContent: 'center' }}>
                   {confirmCancel === h.id ? (
                     <div style={{ display: 'flex', gap: 4 }}>
-                      <button onClick={() => handleCancel(h.id)} style={{ background: 'none', border: '1px solid var(--warm-danger)', borderRadius: 8, padding: '3px 7px', fontSize: 10, fontWeight: 700, color: 'var(--warm-danger)', cursor: 'pointer', fontFamily: 'Nunito' }}>✓</button>
-                      <button onClick={() => setConfirmCancel(null)} style={{ background: 'none', border: '1px solid var(--warm-text-light)', borderRadius: 8, padding: '3px 7px', fontSize: 10, fontWeight: 700, color: 'var(--warm-text-light)', cursor: 'pointer', fontFamily: 'Nunito' }}>✗</button>
+                      <button onClick={() => handleCancel(h.id)} style={{ background: 'none', border: '1px solid var(--warm-danger)', borderRadius: 8, padding: '3px 7px', fontSize: 12, fontWeight: 700, color: 'var(--warm-danger)', cursor: 'pointer', fontFamily: 'Nunito' }}>✓</button>
+                      <button onClick={() => setConfirmCancel(null)} style={{ background: 'none', border: '1px solid var(--warm-text-light)', borderRadius: 8, padding: '3px 7px', fontSize: 12, fontWeight: 700, color: 'var(--warm-text-light)', cursor: 'pointer', fontFamily: 'Nunito' }}>✗</button>
                     </div>
                   ) : (
                     <button onClick={() => setConfirmCancel(h.id)} title={t('history.cancel')} style={{ background: 'none', border: '1px solid var(--warm-border)', borderRadius: 8, padding: '3px 8px', fontSize: 13, cursor: 'pointer', color: 'var(--warm-text-muted)' }}>🗑</button>

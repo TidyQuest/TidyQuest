@@ -1,4 +1,4 @@
-import db from '../database';
+import db, { prepared } from '../database';
 import { dateStr } from './clock';
 import { familyGoal } from './board';
 import { isFeatureOn } from './features';
@@ -22,7 +22,7 @@ export const STAGES = [
 
 export function mascotSettings(): { creature: string; name: string; bedtimeFrom: string; bedtimeTo: string } {
   try {
-    const raw = (db.prepare("SELECT value FROM app_settings WHERE key = 'mascot'").get() as { value: string } | undefined)?.value;
+    const raw = (prepared("SELECT value FROM app_settings WHERE key = 'mascot'").get() as { value: string } | undefined)?.value;
     const v = raw ? JSON.parse(raw) : {};
     return {
       creature: (CREATURES as readonly string[]).includes(v.creature) ? v.creature : DEFAULT.creature,
@@ -50,12 +50,12 @@ export function saveMascot(input: { creature?: unknown; name?: unknown; bedtimeF
     if (!HHMM.test(String(input[key]))) return 'invalid_bedtime';
     next[key] = String(input[key]);
   }
-  db.prepare("INSERT OR REPLACE INTO app_settings (key, value) VALUES ('mascot', ?)").run(JSON.stringify(next));
+  prepared("INSERT OR REPLACE INTO app_settings (key, value) VALUES ('mascot', ?)").run(JSON.stringify(next));
   return null;
 }
 
 /** Everyone's chore coins, all time */
-export const familyCoinsTotal = () => (db.prepare("SELECT COALESCE(SUM(coinsEarned), 0) AS n FROM task_completions WHERE status = 'approved'").get() as { n: number }).n;
+export const familyCoinsTotal = () => (prepared("SELECT COALESCE(SUM(coinsEarned), 0) AS n FROM task_completions WHERE status = 'approved'").get() as { n: number }).n;
 
 /**
  * Swapping mascots: each creature the family has had keeps its own growth, name and outfit. The active one
@@ -65,8 +65,8 @@ export const familyCoinsTotal = () => (db.prepare("SELECT COALESCE(SUM(coinsEarn
  */
 const DEFAULT_NAMES: Record<string, string> = { dog: 'Dusty', cat: 'Whiskers', dragon: 'Sparky', robot: 'Bolt', fox: 'Rusty', bunny: 'Clover', panda: 'Bamboo', axolotl: 'Axel' };
 type Pet = { name: string; progress: number; outfit: Outfit };
-const setting = (key: string) => (db.prepare('SELECT value FROM app_settings WHERE key = ?').get(key) as { value: string } | undefined)?.value;
-const setSetting = (key: string, value: string) => db.prepare('INSERT OR REPLACE INTO app_settings (key, value) VALUES (?, ?)').run(key, value);
+const setting = (key: string) => (prepared('SELECT value FROM app_settings WHERE key = ?').get(key) as { value: string } | undefined)?.value;
+const setSetting = (key: string, value: string) => prepared('INSERT OR REPLACE INTO app_settings (key, value) VALUES (?, ?)').run(key, value);
 
 /** The resting mascots, by creature */
 export function mascotPets(): Record<string, Pet> {
@@ -113,7 +113,7 @@ export function mascotFor(opts: { houseHealth: number; rooms: Array<{ id: number
   const messiest = [...opts.rooms].sort((a, b) => a.health - b.health)[0];
   // Birthdays are stored 'MM-DD'
   const today = dateStr(now).slice(5);
-  const birthday = (db.prepare('SELECT displayName FROM users WHERE birthday = ?').get(today) as { displayName: string } | undefined)?.displayName ?? null;
+  const birthday = (prepared('SELECT displayName FROM users WHERE birthday = ?').get(today) as { displayName: string } | undefined)?.displayName ?? null;
   const goalWon = !!familyGoal(now)?.reached;
   return {
     ...mascotSettings(),
@@ -143,7 +143,7 @@ export const TUMMY_PER_CHORE = 5;
 const DRAIN_PER_MS = 100 / (48 * 3600000);
 export function tummy(now: Date = new Date()): number {
   const since = new Date(now.getTime() - 7 * 24 * 3600000).toISOString();
-  const rows = db.prepare("SELECT completedAt, teamupId FROM task_completions WHERE status = 'approved' AND completedAt >= ? ORDER BY completedAt")
+  const rows = prepared("SELECT completedAt, teamupId FROM task_completions WHERE status = 'approved' AND completedAt >= ? ORDER BY completedAt")
     .all(since) as Array<{ completedAt: string; teamupId: number | null }>;
   const teams = new Set<number>();
   let level = 0;
@@ -164,7 +164,7 @@ export function tummy(now: Date = new Date()): number {
 export const TREAT_EFFORT = 3;
 export function treatAt(now: Date = new Date()): string | null {
   const since = new Date(now.getTime() - 7 * 24 * 3600000).toISOString();
-  return (db.prepare(`SELECT MAX(tc.approvedAt) AS at FROM task_completions tc JOIN tasks t ON t.id = tc.taskId
+  return (prepared(`SELECT MAX(tc.approvedAt) AS at FROM task_completions tc JOIN tasks t ON t.id = tc.taskId
     WHERE tc.status = 'approved' AND tc.completedAt >= ? AND t.effort >= ?`).get(since, TREAT_EFFORT) as { at: string | null }).at;
 }
 
@@ -181,11 +181,11 @@ export type Outfit = Partial<Record<'head' | 'face' | 'neck' | 'back', { id: str
 
 export function mascotOutfit(): Outfit {
   try {
-    const raw = (db.prepare("SELECT value FROM app_settings WHERE key = 'mascotOutfit'").get() as { value: string } | undefined)?.value;
+    const raw = (prepared("SELECT value FROM app_settings WHERE key = 'mascotOutfit'").get() as { value: string } | undefined)?.value;
     return raw ? JSON.parse(raw) : {};
   } catch { return {}; }
 }
-const saveOutfit = (o: Outfit) => db.prepare("INSERT OR REPLACE INTO app_settings (key, value) VALUES ('mascotOutfit', ?)").run(JSON.stringify(o));
+const saveOutfit = (o: Outfit) => prepared("INSERT OR REPLACE INTO app_settings (key, value) VALUES ('mascotOutfit', ?)").run(JSON.stringify(o));
 
 /** Buy an accessory: it goes on right away for everyone, replacing what was in that spot (there's no closet). */
 export function buyAccessory(userId: number, itemId: string): { error: string } | { outfit: Outfit; coins: number } {
@@ -194,13 +194,13 @@ export function buyAccessory(userId: number, itemId: string): { error: string } 
   if (!item) return { error: 'unknown_item' };
   // Nothing to wear (or to peek at) until it hatches
   if (mascotProgress() < STAGES[1].from) return { error: 'not_hatched' };
-  const me = db.prepare('SELECT coins, displayName FROM users WHERE id = ?').get(userId) as { coins: number; displayName: string } | undefined;
+  const me = prepared('SELECT coins, displayName FROM users WHERE id = ?').get(userId) as { coins: number; displayName: string } | undefined;
   if (!me) return { error: 'not_found' };
   if (me.coins < item.price) return { error: 'not_enough_coins' };
   const outfit = mascotOutfit();
   db.transaction(() => {
-    db.prepare('UPDATE users SET coins = coins - ? WHERE id = ?').run(item.price, userId);
-    db.prepare('INSERT INTO mascot_purchases (userId, itemId, price) VALUES (?, ?, ?)').run(userId, item.id, item.price);
+    prepared('UPDATE users SET coins = coins - ? WHERE id = ?').run(item.price, userId);
+    prepared('INSERT INTO mascot_purchases (userId, itemId, price) VALUES (?, ?, ?)').run(userId, item.id, item.price);
     outfit[item.slot] = { id: item.id, by: userId, byName: me.displayName, at: new Date().toISOString() };
     saveOutfit(outfit);
   })();
@@ -212,7 +212,7 @@ export function takeOffAccessory(userId: number, slot: string): { error: string 
   const outfit = mascotOutfit();
   const worn = outfit[slot as keyof Outfit];
   if (!worn) return { error: 'not_found' };
-  const role = (db.prepare('SELECT role FROM users WHERE id = ?').get(userId) as { role: string } | undefined)?.role;
+  const role = (prepared('SELECT role FROM users WHERE id = ?').get(userId) as { role: string } | undefined)?.role;
   if (worn.by !== userId && role !== 'admin') return { error: 'not_yours' };
   delete outfit[slot as keyof Outfit];
   saveOutfit(outfit);

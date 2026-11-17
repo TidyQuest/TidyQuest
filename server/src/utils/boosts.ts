@@ -1,4 +1,4 @@
-import db from '../database';
+import db, { prepared } from '../database';
 import { familyZone } from './clock';
 import { LOCALES, taskName, tr, type TaskLabel } from './i18n';
 import { notificationsOn, notifyPeople, type Builder } from './notify';
@@ -38,14 +38,14 @@ export function toBoost(row: any): CoinBoost {
 }
 
 export function getBoost(id: number): CoinBoost | null {
-  const row = db.prepare('SELECT * FROM coin_boosts WHERE id = ?').get(id);
+  const row = prepared('SELECT * FROM coin_boosts WHERE id = ?').get(id);
   return row ? toBoost(row) : null;
 }
 
 /** Boosts running right now (start inclusive, end exclusive), soonest-ending first. */
 export function getActiveBoosts(now: Date = new Date()): CoinBoost[] {
   const iso = now.toISOString();
-  return (db.prepare('SELECT * FROM coin_boosts WHERE startAt <= ? AND endAt > ? ORDER BY endAt ASC, id ASC').all(iso, iso) as any[]).map(toBoost);
+  return (prepared('SELECT * FROM coin_boosts WHERE startAt <= ? AND endAt > ? ORDER BY endAt ASC, id ASC').all(iso, iso) as any[]).map(toBoost);
 }
 
 /** Whether a boost counts for this chore: nothing picked = everything; otherwise its room or the chore itself. */

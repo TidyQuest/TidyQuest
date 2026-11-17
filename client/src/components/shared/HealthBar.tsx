@@ -1,12 +1,12 @@
 import React from 'react';
-import { getHealthColor } from '../../utils/health';
+import { getHealthColor, getHealthTextColor, NOT_DUE_FLOOR } from '../../utils/health';
 
 interface HealthBarProps {
   value: number;
   height?: number;
   showLabel?: boolean;
   animate?: boolean;
-  /** A chore that can't be done yet: it stops at yellow, since red means "due, do it now" (#153) */
+  /** A chore that can't be done yet: it stops at amber, since red means "due, do it now" (#153) */
   notDueYet?: boolean;
 }
 
@@ -17,7 +17,8 @@ const HealthBar: React.FC<HealthBarProps> = ({
   animate = false,
   notDueYet = false,
 }) => {
-  const color = notDueYet && value < 40 ? 'var(--health-yellow)' : getHealthColor(value);
+  const shade = notDueYet ? Math.max(value, NOT_DUE_FLOOR) : value;
+  const color = getHealthColor(shade);
 
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%' }}>
@@ -47,7 +48,7 @@ const HealthBar: React.FC<HealthBarProps> = ({
           style={{
             fontSize: 12,
             fontWeight: 700,
-            color,
+            color: getHealthTextColor(shade),
             minWidth: 36,
             textAlign: 'right',
           }}

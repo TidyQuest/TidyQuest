@@ -38,7 +38,7 @@ export function TeamUpDialog({ task, people, onClose, onStarted, language }: {
         <div>
           <div style={{ fontSize: 16, fontWeight: 800, color: 'var(--warm-text)' }}>🤝 {t('teamups.pickPartner')}</div>
           <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--warm-text-muted)', marginTop: 2 }}>{task.name}</div>
-          <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--warm-text-light)', marginTop: 4 }}>{t('teamups.how')}</div>
+          <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--warm-text-light)', marginTop: 4 }}>{t('teamups.how')}</div>
         </div>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
           {/* Someone who can't log in could never answer (ENH-16) */}
@@ -92,10 +92,10 @@ export function TeamUpsCard({ items, userId, onDone, onChanged, language }: {
           ? (ready ? t('teamups.team').replace('{names}', names) : t('teamups.waiting'))
           : t(x.invitedUserId === userId ? 'teamups.wantsHelp' : 'teamups.lookingFor').replace('{name}', starter);
         return (
-          <div key={x.id} style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 8, padding: '10px 12px', borderRadius: 14, background: 'var(--warm-bg-subtle)', border: '1.5px solid var(--warm-border)' }}>
+          <div key={x.id} style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 8, padding: '10px 12px', borderRadius: 14, background: 'var(--warm-bg-subtle)', border: 'var(--shape-border-w) solid var(--warm-border)' }}>
             <div style={{ flex: '1 1 180px', minWidth: 0 }}>
               <div style={{ fontSize: 13, fontWeight: 800, color: 'var(--warm-text)', overflowWrap: 'anywhere' }}>{x.taskName}</div>
-              <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--warm-text-muted)' }}>
+              <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--warm-text-muted)' }}>
                 {line}{x.share != null && x.share > 0 ? ` · ${t('teamups.share').replace('{n}', String(x.share))}` : ''}
               </div>
               {failed?.id === x.id && <div role="alert" style={{ fontSize: 12, fontWeight: 700, color: 'var(--warm-danger)', marginTop: 2 }}>{failed.message}</div>}

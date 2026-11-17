@@ -48,7 +48,7 @@ export function Register({ onRegister, onSwitchToLogin }: RegisterProps) {
       <div className="tq-card auth-card" style={{ padding: 40, width: 400, maxWidth: 'calc(100vw - 24px)' }}>
         <div style={{ textAlign: 'center', marginBottom: 28 }}>
           <div style={{
-            width: 56, height: 56, borderRadius: 18, margin: '0 auto 14px',
+            width: 56, height: 56, borderRadius: 'var(--shape-radius-card)', margin: '0 auto 14px',
             background: 'var(--warm-streak-bg)',
             border: '1.5px solid var(--warm-streak-border)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -65,7 +65,7 @@ export function Register({ onRegister, onSwitchToLogin }: RegisterProps) {
               localStorage.setItem('tidyquest_auth_lang', v);
             }}
             style={{
-              marginTop: 10, padding: '6px 10px', borderRadius: 10, border: '1.5px solid var(--warm-border)',
+              marginTop: 10, padding: '6px 10px', borderRadius: 10, border: 'var(--shape-border-w) solid var(--warm-border)',
               fontSize: 12, fontFamily: 'Nunito', fontWeight: 700, color: 'var(--warm-text-secondary)', backgroundColor: 'var(--warm-bg-subtle)',
             }}
           >

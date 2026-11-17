@@ -79,7 +79,7 @@ export function Leaderboard({ language }: { language?: string }) {
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, alignItems: 'center' }}>
         <div role="group" aria-label={t('board.period')} style={{
           display: 'flex', flexWrap: 'wrap', gap: 4, backgroundColor: 'var(--warm-accent-light)', borderRadius: 14, padding: 4,
-          border: '1.5px solid var(--warm-border)', maxWidth: '100%',
+          border: 'var(--shape-border-w) solid var(--warm-border)', maxWidth: '100%',
         }}>
           {PERIODS.map((p) => (
             <button key={p} style={chip(period === p)} aria-pressed={period === p} onClick={() => setParam('period', p, 'week')}>{periodLabel(p)}</button>
@@ -109,7 +109,7 @@ export function Leaderboard({ language }: { language?: string }) {
           <div style={{ height: 14, borderRadius: 8, backgroundColor: 'var(--warm-bg-subtle)', border: '1px solid var(--warm-border)', overflow: 'hidden', marginTop: 10 }}>
             <div style={{ width: `${Math.min(100, Math.round((goal.total / goal.target) * 100))}%`, height: '100%', background: 'linear-gradient(90deg, var(--warm-accent), #F59E0B)', transition: 'width 0.6s' }} />
           </div>
-          {period === 'lastWeek' && <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--warm-text-light)', marginTop: 6 }}>{t('board.familyGoalThisWeek')}</div>}
+          {period === 'lastWeek' && <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--warm-text-light)', marginTop: 6 }}>{t('board.familyGoalThisWeek')}</div>}
         </div>
       )}
 
@@ -127,7 +127,7 @@ export function Leaderboard({ language }: { language?: string }) {
                 }}>
                   <div style={{ fontSize: 12, fontWeight: 900, color: '#fff', opacity: 0.8 }}>#{u.rank}</div>
                   <div style={{ fontSize: 22, fontWeight: 900, color: '#fff' }}>{score(u)}</div>
-                  <div style={{ fontSize: 10, color: '#ffffffcc', fontWeight: 700, textAlign: 'center', padding: '0 4px' }}>{detail(u)}</div>
+                  <div style={{ fontSize: 12, color: '#ffffffcc', fontWeight: 700, textAlign: 'center', padding: '0 4px' }}>{detail(u)}</div>
                 </div>
               </div>
             ))}
@@ -146,7 +146,7 @@ export function Leaderboard({ language }: { language?: string }) {
                 border: u.rank === 1 ? '1.5px solid var(--warm-accent)' : '1px solid var(--warm-border)',
               }}>{u.score === null ? '–' : `#${u.rank}`}</div>
               <span title={u.movement > 0 ? t('board.movedUp').replace('{n}', String(u.movement)) : u.movement < 0 ? t('board.movedDown').replace('{n}', String(-u.movement)) : undefined}
-                style={{ fontSize: 10, fontWeight: 900, color: u.movement > 0 ? 'var(--health-green)' : u.movement < 0 ? 'var(--health-red)' : 'var(--warm-text-light)' }}>
+                style={{ fontSize: 12, fontWeight: 900, color: u.movement > 0 ? 'var(--health-green)' : u.movement < 0 ? 'var(--health-red)' : 'var(--warm-text-light)' }}>
                 {u.movement > 0 ? `▲${u.movement}` : u.movement < 0 ? `▼${-u.movement}` : '–'}
               </span>
             </div>
@@ -163,7 +163,7 @@ export function Leaderboard({ language }: { language?: string }) {
             </div>
             <div style={{ textAlign: 'right', flexShrink: 0 }}>
               <div style={{ fontSize: 22, fontWeight: 900, color: 'var(--warm-accent)' }}>{score(u)}</div>
-              <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--warm-text-light)' }}>{detail(u)}</div>
+              <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--warm-text-light)' }}>{detail(u)}</div>
             </div>
           </div>
         ))}
@@ -183,7 +183,7 @@ export function Leaderboard({ language }: { language?: string }) {
                   <span style={{ fontSize: 22, flexShrink: 0 }}>{text.icon}</span>
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ fontSize: 13, fontWeight: 800, color: 'var(--warm-text)', overflowWrap: 'anywhere' }}>{text.title}</div>
-                    <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--warm-text-light)' }}>{text.value}</div>
+                    <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--warm-text-light)' }}>{text.value}</div>
                   </div>
                   <div style={{ fontSize: 13, fontWeight: 900, color: 'var(--warm-accent)', textAlign: 'right', overflowWrap: 'anywhere', minWidth: 0 }}>{names(a.userIds)}</div>
                 </div>

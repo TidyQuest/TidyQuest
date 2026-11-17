@@ -3,7 +3,8 @@ import db from '../database';
 import { AuthRequest, authMiddleware } from '../middleware/auth';
 import { ensureAdmin } from '../utils/adminHelpers';
 import { NOTIFICATION_KINDS } from '../utils/notifications';
-import { getPeople, personalChannels, sendPersonTest } from '../utils/notify';
+import { familyChannels, getPeople, personalChannels, sendPersonTest, wants, type NotifyKind } from '../utils/notify';
+import { answerNotifyCard } from '../utils/notifyCard';
 import { activeDevices, pushOn, removeDevice, removeDeviceByEndpoint, saveDevice, vapidKeys } from '../utils/push';
 import { SCHEDULE_DEFAULTS } from '../utils/notifySchedule';
 import { tr } from '../utils/i18n';
@@ -84,8 +85,10 @@ function personView(id: number) {
   return {
     id: p.id, displayName: p.displayName, role: p.role, language: p.language,
     ntfyTopic: p.ntfyTopic ?? '', telegramChatId: p.telegramChatId ?? '', haNotifyService: p.haNotifyService ?? '',
-    prefs: Object.fromEntries(NOTIFICATION_KINDS.map((k) => [k, p.prefs[k] !== false])),
+    prefs: Object.fromEntries(NOTIFICATION_KINDS.map((k) => [k, wants(p, k)])),
     channels: [...new Set(personalChannels(p).map((c) => c.channel))],
+    // Whether a family channel is on: without one, someone with no channel of their own gets nothing (ENH-31)
+    familyChannel: familyChannels().length > 0,
     // Phones and computers where they turned on web push (NEW-5)
     devices: pushOn() ? activeDevices(p.id).map((d) => ({ id: d.id, label: d.label, createdAt: d.createdAt, lastOkAt: d.lastOkAt })) : [],
     // Can't log in (ENH-16): nothing is sent to them until a parent turns it back on
@@ -126,7 +129,11 @@ router.put('/people/:id', (req: AuthRequest, res: Response) => {
   const updates: Record<string, string | null> = {};
   for (const key of ['ntfyTopic', 'telegramChatId', 'haNotifyService']) if (b[key] !== undefined) updates[key] = clean(b[key]) || null;
   if (b.prefs && typeof b.prefs === 'object') {
-    updates.notifyPrefs = JSON.stringify(Object.fromEntries(NOTIFICATION_KINDS.filter((k) => b.prefs[k] === false).map((k) => [k, false])));
+    // Only what differs from the starting choice is kept (BUG-52: "Chores anyone can do" starts off for kids)
+    const person = getPeople().find((x) => x.id === id);
+    const start = (k: NotifyKind) => wants({ prefs: {}, role: person?.role ?? 'member' }, k);
+    updates.notifyPrefs = JSON.stringify(Object.fromEntries(NOTIFICATION_KINDS
+      .filter((k) => typeof b.prefs[k] === 'boolean' && b.prefs[k] !== start(k)).map((k) => [k, b.prefs[k]])));
   }
   const cols = Object.keys(updates);
   if (cols.length) db.prepare(`UPDATE users SET ${cols.map((c) => `${c} = ?`).join(', ')} WHERE id = ?`).run(...Object.values(updates), id);
@@ -156,6 +163,14 @@ router.post('/push/devices', (req: AuthRequest, res: Response) => {
   const device = saveDevice(req.userId!, { endpoint: b.endpoint, p256dh: b.keys?.p256dh, auth: b.keys?.auth, label: b.label });
   if (!device) return res.status(400).json({ error: 'invalid_subscription' });
   res.json({ id: device.id });
+});
+
+// The "turn on notifications" card on Today (ENH-31): Turn on worked, or Not now
+router.post('/card', (req: AuthRequest, res: Response) => {
+  const answer = req.body?.answer;
+  if (answer !== 'done' && answer !== 'snooze') return res.status(400).json({ error: 'invalid_answer' });
+  answerNotifyCard(req.userId!, answer);
+  res.json({ success: true });
 });
 
 // This device turns it off, or signs out

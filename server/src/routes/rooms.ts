@@ -2,14 +2,14 @@ import { todoCounts, todoRoomId } from '../utils/todoRoom';
 import { Router, Response } from 'express';
 import { pinnedTaskIds } from '../utils/homeSections';
 import { sharesFor } from '../utils/shares';
-import db from '../database';
+import db, { prepared } from '../database';
 import { AuthRequest, authMiddleware } from '../middleware/auth';
 import { isSeasonalNow, scheduleFields, taskHealth } from '../utils/schedule';
 import { suggestTaskIcon } from '../utils/taskIcons';
 import { ensureAdmin, getGlobalVacation, getUserVacation, hiddenRoomIdsFor, resolveVacation } from '../utils/adminHelpers';
 import { repeatCountsFor } from '../utils/repeatLimits';
 import { dropProofPhotos, softDeleteTasks } from '../utils/trash';
-import { daySql } from '../utils/clock';
+import { onDayArgs, onDaySql } from '../utils/clock';
 
 const router = Router();
 
@@ -135,13 +135,13 @@ router.use(authMiddleware);
 router.get('/', (req: AuthRequest, res: Response) => {
   // Kids don't see other people's private rooms (when the setting is on)
   const hiddenRooms = hiddenRoomIdsFor(req.userId);
-  const rooms = (db.prepare('SELECT * FROM rooms WHERE deletedAt IS NULL ORDER BY sortOrder, id').all() as any[]).filter((r) => !hiddenRooms.has(r.id));
+  const rooms = (prepared('SELECT * FROM rooms WHERE deletedAt IS NULL ORDER BY sortOrder, id').all() as any[]).filter((r) => !hiddenRooms.has(r.id));
   const vacation = getGlobalVacation();
 
   // Fetch all tasks in one query, then group by roomId (done one-time chores are archived, not listed).
   // Paused chores (ENH-1) only go to parents, who see them greyed in the room; they never count for health.
   const seesPaused = ensureAdmin(req.userId);
-  const allTasks = (db.prepare('SELECT * FROM tasks WHERE archivedAt IS NULL AND deletedAt IS NULL').all() as any[])
+  const allTasks = (prepared('SELECT * FROM tasks WHERE archivedAt IS NULL AND deletedAt IS NULL').all() as any[])
     .filter((t) => !t.pausedAt || seesPaused);
   const tasksByRoom = new Map<number, any[]>();
   for (const t of allTasks) {
@@ -150,7 +150,7 @@ router.get('/', (req: AuthRequest, res: Response) => {
   }
 
   // Fetch all users for assignedUser resolution
-  const allUsers = db.prepare('SELECT id, displayName, avatarColor, avatarType, avatarPreset, avatarPhotoUrl FROM users').all() as any[];
+  const allUsers = prepared('SELECT id, displayName, avatarColor, avatarType, avatarPreset, avatarPhotoUrl FROM users').all() as any[];
   const usersById = new Map(allUsers.map((u: any) => [u.id, u]));
 
   // Batch-fetch today's completions for Done button display
@@ -159,8 +159,8 @@ router.get('/', (req: AuthRequest, res: Response) => {
     `SELECT tc.id as completionId, tc.taskId, tc.userId, tc.coinsEarned, u.displayName, u.avatarColor, u.avatarType, u.avatarPreset, u.avatarPhotoUrl
      FROM task_completions tc
      JOIN users u ON tc.userId = u.id
-     WHERE tc.status = 'approved' AND ${daySql('tc.completedAt')} = ${daySql('?')}`
-  ).all(nowIso) as any[];
+     WHERE tc.status = 'approved' AND ${onDaySql('tc.completedAt')}`
+  ).all(...onDayArgs(new Date(nowIso))) as any[];
   const completedTodayByTask = new Map(todayCompletions.map((c: any) => [c.taskId, {
     completionId: c.completionId, userId: c.userId, coinsEarned: c.coinsEarned, displayName: c.displayName, avatarColor: c.avatarColor,
     avatarType: c.avatarType, avatarPreset: c.avatarPreset, avatarPhotoUrl: c.avatarPhotoUrl,
@@ -175,7 +175,7 @@ router.get('/', (req: AuthRequest, res: Response) => {
 
   // The viewer's own completions still waiting for a parent, per task (Strict Mode)
   const myPendingByTask = new Map(
-    (db.prepare("SELECT taskId, COUNT(*) AS n, MAX(id) AS lastId FROM task_completions WHERE userId = ? AND status = 'pending' GROUP BY taskId")
+    (prepared("SELECT taskId, COUNT(*) AS n, MAX(id) AS lastId FROM task_completions WHERE userId = ? AND status = 'pending' GROUP BY taskId")
       .all(req.userId) as { taskId: number; n: number; lastId: number }[]).map((r) => [r.taskId, r])
   );
   // Anytime quests with a repeat limit: how many times the viewer did each this day/week
@@ -184,7 +184,7 @@ router.get('/', (req: AuthRequest, res: Response) => {
   const myPins = new Set(pinnedTaskIds(req.userId!));
 
   // Batch-fetch all task_assignees
-  const allTaskAssignees = db.prepare('SELECT taskId, userId, coinPercentage FROM task_assignees').all() as { taskId: number; userId: number; coinPercentage: number }[];
+  const allTaskAssignees = prepared('SELECT taskId, userId, coinPercentage FROM task_assignees').all() as { taskId: number; userId: number; coinPercentage: number }[];
   const assigneesByTask = new Map<number, { userId: number; coinPercentage: number }[]>();
   for (const a of allTaskAssignees) {
     if (!assigneesByTask.has(a.taskId)) assigneesByTask.set(a.taskId, []);
@@ -275,14 +275,12 @@ router.post('/', (req: AuthRequest, res: Response) => {
   // Validate assignedUserId if provided
   const resolvedAssignedUserId: number | null = assignedUserId != null ? Number(assignedUserId) : null;
   if (resolvedAssignedUserId !== null) {
-    const targetUser = db.prepare('SELECT id FROM users WHERE id = ?').get(resolvedAssignedUserId);
+    const targetUser = prepared('SELECT id FROM users WHERE id = ?').get(resolvedAssignedUserId);
     if (!targetUser) return res.status(400).json({ error: 'Assigned user not found' });
   }
 
   const type = roomType || 'other';
-  const result = db.prepare(
-    'INSERT INTO rooms (name, roomType, color, accentColor, assignedUserId) VALUES (?, ?, ?, ?, ?)'
-  ).run(name, type, color || '#FFE4CC', accentColor || '#F97316', resolvedAssignedUserId);
+  const result = prepared('INSERT INTO rooms (name, roomType, color, accentColor, assignedUserId) VALUES (?, ?, ?, ?, ?)').run(name, type, color || '#FFE4CC', accentColor || '#F97316', resolvedAssignedUserId);
 
   const roomId = result.lastInsertRowid;
 
@@ -291,9 +289,7 @@ router.post('/', (req: AuthRequest, res: Response) => {
     ? customTasks
     : DEFAULT_TASKS[type] || [];
 
-  const insert = db.prepare(
-    'INSERT INTO tasks (roomId, name, frequencyDays, effort, isSeasonal, lastCompletedAt, translationKey, iconKey) VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
-  );
+  const insert = prepared('INSERT INTO tasks (roomId, name, frequencyDays, effort, isSeasonal, lastCompletedAt, translationKey, iconKey) VALUES (?, ?, ?, ?, ?, ?, ?, ?)');
   const insertedTaskIds: number[] = [];
   for (const task of tasksToInsert) {
     // If initialHealth is provided, compute a fake lastCompletedAt to represent current state
@@ -311,7 +307,7 @@ router.post('/', (req: AuthRequest, res: Response) => {
   }
 
   // Assign tasks to users: per-task assignment takes priority, then room-level fallback
-  const insertAssignee = db.prepare('INSERT OR IGNORE INTO task_assignees (taskId, userId, coinPercentage) VALUES (?, ?, 0)');
+  const insertAssignee = prepared('INSERT OR IGNORE INTO task_assignees (taskId, userId, coinPercentage) VALUES (?, ?, 0)');
   for (let i = 0; i < insertedTaskIds.length; i++) {
     const taskId = insertedTaskIds[i];
     const task = tasksToInsert[i];
@@ -322,8 +318,8 @@ router.post('/', (req: AuthRequest, res: Response) => {
     }
   }
 
-  const room = db.prepare('SELECT * FROM rooms WHERE id = ?').get(roomId) as any;
-  const allTasks = db.prepare('SELECT * FROM tasks WHERE roomId = ?').all(roomId);
+  const room = prepared('SELECT * FROM rooms WHERE id = ?').get(roomId) as any;
+  const allTasks = prepared('SELECT * FROM tasks WHERE roomId = ?').all(roomId);
   res.status(201).json({ ...room, tasks: allTasks });
 });
 
@@ -334,7 +330,7 @@ router.put('/:id', (req: AuthRequest, res: Response) => {
   }
 
   const { name, roomType, color, accentColor, sortOrder } = req.body;
-  const room = db.prepare('SELECT * FROM rooms WHERE id = ? AND deletedAt IS NULL').get(req.params.id) as any;
+  const room = prepared('SELECT * FROM rooms WHERE id = ? AND deletedAt IS NULL').get(req.params.id) as any;
   if (!room) return res.status(404).json({ error: 'Room not found' });
 
   // Build SQL dynamically to handle assignedUserId/zoneId: null (explicit unset) vs undefined (not provided)
@@ -344,7 +340,7 @@ router.put('/:id', (req: AuthRequest, res: Response) => {
   if ('zoneId' in req.body) {
     const zoneId = req.body.zoneId;
     if (zoneId !== null && zoneId !== undefined) {
-      const zone = db.prepare('SELECT id FROM zones WHERE id = ?').get(zoneId);
+      const zone = prepared('SELECT id FROM zones WHERE id = ?').get(zoneId);
       if (!zone) return res.status(400).json({ error: 'Zone not found' });
     }
     sql += ', zoneId = ?';
@@ -355,11 +351,11 @@ router.put('/:id', (req: AuthRequest, res: Response) => {
     const assignedUserId = req.body.assignedUserId;
     // Validate that user exists when setting (allow null to unset)
     if (assignedUserId !== null && assignedUserId !== undefined) {
-      const targetUser = db.prepare('SELECT id, role FROM users WHERE id = ?').get(assignedUserId) as any;
+      const targetUser = prepared('SELECT id, role FROM users WHERE id = ?').get(assignedUserId) as any;
       if (!targetUser) return res.status(400).json({ error: 'User not found' });
 
       // Check for tasks in this room already assigned to DIFFERENT users
-      const roomTasks = db.prepare('SELECT id, name FROM tasks WHERE roomId = ? AND deletedAt IS NULL AND archivedAt IS NULL').all(req.params.id) as { id: number; name: string }[];
+      const roomTasks = prepared('SELECT id, name FROM tasks WHERE roomId = ? AND deletedAt IS NULL AND archivedAt IS NULL').all(req.params.id) as { id: number; name: string }[];
       if (roomTasks.length > 0) {
         const taskIds = roomTasks.map(t => t.id);
         const conflicting = db.prepare(
@@ -382,7 +378,7 @@ router.put('/:id', (req: AuthRequest, res: Response) => {
             });
           }
           // Force mode: remove all existing task-level assignments for conflicting tasks
-          const deleteAssignees = db.prepare('DELETE FROM task_assignees WHERE taskId = ?');
+          const deleteAssignees = prepared('DELETE FROM task_assignees WHERE taskId = ?');
           for (const taskId of conflictingTaskIds) {
             deleteAssignees.run(taskId);
           }
@@ -400,17 +396,17 @@ router.put('/:id', (req: AuthRequest, res: Response) => {
   // If a new assignedUserId was just set, assign all tasks in this room to that user
   if ('assignedUserId' in req.body && req.body.assignedUserId != null) {
     const newUserId = Number(req.body.assignedUserId);
-    const roomTasks = db.prepare('SELECT id FROM tasks WHERE roomId = ? AND deletedAt IS NULL AND archivedAt IS NULL').all(req.params.id) as { id: number }[];
-    const insertAssignee = db.prepare('INSERT OR IGNORE INTO task_assignees (taskId, userId, coinPercentage) VALUES (?, ?, 0)');
+    const roomTasks = prepared('SELECT id FROM tasks WHERE roomId = ? AND deletedAt IS NULL AND archivedAt IS NULL').all(req.params.id) as { id: number }[];
+    const insertAssignee = prepared('INSERT OR IGNORE INTO task_assignees (taskId, userId, coinPercentage) VALUES (?, ?, 0)');
     for (const t of roomTasks) {
       insertAssignee.run(t.id, newUserId);
     }
   }
 
-  const updated = db.prepare('SELECT * FROM rooms WHERE id = ?').get(req.params.id) as any;
+  const updated = prepared('SELECT * FROM rooms WHERE id = ?').get(req.params.id) as any;
 
   // Resolve assignedUser for the response
-  const allUsers = db.prepare('SELECT id, displayName, avatarColor, avatarType, avatarPreset, avatarPhotoUrl FROM users').all() as any[];
+  const allUsers = prepared('SELECT id, displayName, avatarColor, avatarType, avatarPreset, avatarPhotoUrl FROM users').all() as any[];
   const usersById = new Map(allUsers.map((u: any) => [u.id, u]));
   const assignedUser = updated.assignedUserId ? (usersById.get(updated.assignedUserId) || null) : null;
 
@@ -424,15 +420,15 @@ router.delete('/:id', (req: AuthRequest, res: Response) => {
     return res.status(403).json({ error: 'Admin only' });
   }
 
-  const room = db.prepare('SELECT * FROM rooms WHERE id = ? AND deletedAt IS NULL').get(req.params.id);
+  const room = prepared('SELECT * FROM rooms WHERE id = ? AND deletedAt IS NULL').get(req.params.id);
   if (!room) return res.status(404).json({ error: 'Room not found' });
 
   db.transaction(() => {
     // Its chores can't come back (they aren't in the trash), so their proof photos go now (NEW-34)
-    const chores = (db.prepare('SELECT id FROM tasks WHERE roomId = ? AND deletedAt IS NULL').all(req.params.id) as { id: number }[]).map((t) => t.id);
+    const chores = (prepared('SELECT id FROM tasks WHERE roomId = ? AND deletedAt IS NULL').all(req.params.id) as { id: number }[]).map((t) => t.id);
     softDeleteTasks('roomId = ?', req.params.id);
     dropProofPhotos(chores);
-    db.prepare("UPDATE rooms SET deletedAt = datetime('now') WHERE id = ?").run(req.params.id);
+    prepared("UPDATE rooms SET deletedAt = datetime('now') WHERE id = ?").run(req.params.id);
   })();
   res.json({ success: true });
 });
@@ -441,7 +437,7 @@ router.delete('/:id', (req: AuthRequest, res: Response) => {
 // for the other. When a new owner is given and the room has one, the old owner's assignments go to them.
 router.post('/:id/duplicate', (req: AuthRequest, res: Response) => {
   if (!ensureAdmin(req.userId)) return res.status(403).json({ error: 'Admin only' });
-  const room = db.prepare('SELECT * FROM rooms WHERE id = ? AND deletedAt IS NULL').get(req.params.id) as any;
+  const room = prepared('SELECT * FROM rooms WHERE id = ? AND deletedAt IS NULL').get(req.params.id) as any;
   if (!room) return res.status(404).json({ error: 'Room not found' });
   const name = typeof req.body?.name === 'string' ? req.body.name.trim() : '';
   if (!name) return res.status(400).json({ error: 'name is required' });
@@ -450,26 +446,24 @@ router.post('/:id/duplicate', (req: AuthRequest, res: Response) => {
   const ownerUserId: number | null = 'ownerUserId' in (req.body || {})
     ? (newOwnerGiven ? Number(req.body.ownerUserId) : null)
     : room.assignedUserId ?? null;
-  if (ownerUserId !== null && !db.prepare('SELECT 1 FROM users WHERE id = ?').get(ownerUserId)) {
+  if (ownerUserId !== null && !prepared('SELECT 1 FROM users WHERE id = ?').get(ownerUserId)) {
     return res.status(400).json({ error: 'Owner not found' });
   }
   const swapFrom: number | null = newOwnerGiven && room.assignedUserId ? room.assignedUserId : null;
 
   const newRoomId = db.transaction(() => {
-    const id = Number(db.prepare(
-      'INSERT INTO rooms (name, roomType, color, accentColor, photoUrl, sortOrder, assignedUserId, zoneId) VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
-    ).run(name, room.roomType, room.color, room.accentColor, room.photoUrl ?? null, room.sortOrder, ownerUserId, room.zoneId ?? null).lastInsertRowid);
-    const tasks = db.prepare('SELECT * FROM tasks WHERE roomId = ? AND archivedAt IS NULL AND deletedAt IS NULL ORDER BY id').all(room.id) as any[];
+    const id = Number(prepared('INSERT INTO rooms (name, roomType, color, accentColor, photoUrl, sortOrder, assignedUserId, zoneId) VALUES (?, ?, ?, ?, ?, ?, ?, ?)').run(name, room.roomType, room.color, room.accentColor, room.photoUrl ?? null, room.sortOrder, ownerUserId, room.zoneId ?? null).lastInsertRowid);
+    const tasks = prepared('SELECT * FROM tasks WHERE roomId = ? AND archivedAt IS NULL AND deletedAt IS NULL ORDER BY id').all(room.id) as any[];
     // Every setting column is copied (so newer ones like schedules and repeat limits come along);
     // history and whose turn it is start fresh
     const fresh = ['id', 'roomId', 'lastCompletedAt', 'createdAt', 'rotationCurrentUserId'];
-    const cols = (db.prepare('PRAGMA table_info(tasks)').all() as { name: string }[]).map((c) => c.name).filter((c) => !fresh.includes(c));
+    const cols = (prepared('PRAGMA table_info(tasks)').all() as { name: string }[]).map((c) => c.name).filter((c) => !fresh.includes(c));
     const insertTask = db.prepare(`INSERT INTO tasks (roomId, ${cols.join(', ')}) VALUES (?, ${cols.map(() => '?').join(', ')})`);
-    const insertAssignee = db.prepare('INSERT OR IGNORE INTO task_assignees (taskId, userId, coinPercentage) VALUES (?, ?, ?)');
+    const insertAssignee = prepared('INSERT OR IGNORE INTO task_assignees (taskId, userId, coinPercentage) VALUES (?, ?, ?)');
     for (const t of tasks) {
       const values = cols.map((c) => (c === 'assignedUserId' && swapFrom !== null && t[c] === swapFrom ? ownerUserId : t[c]));
       const taskId = Number(insertTask.run(id, ...values).lastInsertRowid);
-      const assignees = db.prepare('SELECT userId, coinPercentage FROM task_assignees WHERE taskId = ? ORDER BY userId').all(t.id) as { userId: number; coinPercentage: number }[];
+      const assignees = prepared('SELECT userId, coinPercentage FROM task_assignees WHERE taskId = ? ORDER BY userId').all(t.id) as { userId: number; coinPercentage: number }[];
       const userIds: number[] = [];
       for (const a of assignees) {
         const userId = swapFrom !== null && a.userId === swapFrom ? ownerUserId! : a.userId;
@@ -478,14 +472,14 @@ router.post('/:id/duplicate', (req: AuthRequest, res: Response) => {
       }
       // Rotations start again from the first person
       if (t.assignmentMode === 'rotating' && userIds.length > 0) {
-        db.prepare('UPDATE tasks SET rotationCurrentUserId = ? WHERE id = ?').run(Math.min(...userIds), taskId);
+        prepared('UPDATE tasks SET rotationCurrentUserId = ? WHERE id = ?').run(Math.min(...userIds), taskId);
       }
     }
     return id;
   })();
 
-  const created = db.prepare('SELECT * FROM rooms WHERE id = ?').get(newRoomId) as any;
-  const tasks = db.prepare('SELECT * FROM tasks WHERE roomId = ?').all(newRoomId);
+  const created = prepared('SELECT * FROM rooms WHERE id = ?').get(newRoomId) as any;
+  const tasks = prepared('SELECT * FROM tasks WHERE roomId = ?').all(newRoomId);
   res.status(201).json({ ...created, tasks });
 });
 

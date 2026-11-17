@@ -1,4 +1,4 @@
-import db from '../database';
+import db, { prepared } from '../database';
 import { addDays, at, familyZone, startOfDay, wall, zoneSql } from './clock';
 
 /**
@@ -9,7 +9,7 @@ import { addDays, at, familyZone, startOfDay, wall, zoneSql } from './clock';
 
 /** The first day of the week, like Date.getDay(): 1 = Monday (the default), 0 = Sunday. */
 export function weekStartDay(): number {
-  const v = (db.prepare("SELECT value FROM app_settings WHERE key = 'weekStart'").get() as { value: string } | undefined)?.value;
+  const v = (prepared("SELECT value FROM app_settings WHERE key = 'weekStart'").get() as { value: string } | undefined)?.value;
   return v === '0' ? 0 : 1;
 }
 

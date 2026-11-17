@@ -46,7 +46,7 @@ export function TrashAdmin({ rooms, language, reloadKey, onRestored }: {
   const shown = showAll ? items : items.slice(0, 8);
   return (
     <div style={{ display: 'grid', gap: 6 }}>
-      <div style={{ fontSize: 11, color: 'var(--warm-text-light)', fontWeight: 600, marginBottom: 4 }}>{t('trash.desc').replace('{n}', String(keepDays))}</div>
+      <div style={{ fontSize: 12, color: 'var(--warm-text-light)', fontWeight: 600, marginBottom: 4 }}>{t('trash.desc').replace('{n}', String(keepDays))}</div>
       {items.length === 0 && <div style={{ fontSize: 12, color: 'var(--warm-text-light)', fontWeight: 600 }}>{t('trash.empty')}</div>}
       {shown.map((item) => {
         const needsRoom = item.kind === 'task' && item.roomExists === false;
@@ -56,7 +56,7 @@ export function TrashAdmin({ rooms, language, reloadKey, onRestored }: {
               <div style={{ fontSize: 12, fontWeight: 800, color: 'var(--warm-text)', overflowWrap: 'anywhere' }}>
                 {item.kind === 'task' ? '🧹' : '🎁'} {item.title}
               </div>
-              <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--warm-text-light)' }}>
+              <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--warm-text-light)' }}>
                 {[
                   item.kind === 'task' ? item.roomName : t('trash.reward'),
                   `${when(item.deletedAt)}${item.deletedByName ? ` · ${item.deletedByName}` : ''}`,
@@ -78,7 +78,7 @@ export function TrashAdmin({ rooms, language, reloadKey, onRestored }: {
       })}
       {items.length > 8 && (
         <button className="tq-btn tq-btn-sm tq-btn-secondary" onClick={() => setShowAll((v) => !v)} style={{ justifySelf: 'start' }}>
-          {showAll ? t('common.showLess') : t('common.showMore')}
+          {showAll ? t('common.showLess') : t('common.showMore').replace('{n}', String(items.length - 8))}
         </button>
       )}
       {error && <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--warm-danger)' }}>{error}</div>}

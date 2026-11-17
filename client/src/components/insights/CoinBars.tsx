@@ -2,7 +2,7 @@ import { useWidth } from './useWidth';
 import { barHit, useUnpinOutside } from './useBarPick';
 import { coinColor, formatValue, niceTicks, type CoinWeeks } from './insightsData';
 
-const AXIS_W = 34;
+const AXIS_W = 40;
 const PLOT_H = 180;
 const TOP = 8;
 const X_BAND = 22;
@@ -104,7 +104,7 @@ export function CoinBars({ labels, weeks, language, selected, hovered, onSelect,
           return (
             <g key={v}>
               {v !== 0 && <line x1={AXIS_W} x2={width} y1={y} y2={y} stroke="var(--viz-grid)" strokeWidth={1} />}
-              <text x={AXIS_W - 6} y={y + 3.5} textAnchor="end" fontSize={10} fill="var(--warm-text-muted)">{v < 0 ? `−${fmt(-v)}` : fmt(v)}</text>
+              <text x={AXIS_W - 6} y={y + 3.5} textAnchor="end" fontSize={12} fill="var(--warm-text-muted)">{v < 0 ? `−${fmt(-v)}` : fmt(v)}</text>
             </g>
           );
         })}
@@ -129,7 +129,7 @@ export function CoinBars({ labels, weeks, language, selected, hovered, onSelect,
         ))}
         {labels.map((l, i) => (i % every === 0 || i === lastI ? (
           (i === lastI || lastI - i >= every) && (
-            <text key={i} x={cx(i)} y={TOP + PLOT_H + 15} textAnchor="middle" fontSize={10}
+            <text key={i} x={cx(i)} y={TOP + PLOT_H + 15} textAnchor="middle" fontSize={12}
               fill={shown === i ? 'var(--warm-text)' : 'var(--warm-text-muted)'} fontWeight={shown === i ? 700 : 400}>{l}</text>
           )
         ) : null))}
@@ -139,14 +139,14 @@ export function CoinBars({ labels, weeks, language, selected, hovered, onSelect,
       <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--warm-text)', margin: '6px 0 0' }}>{balanceLabel}</div>
       <svg width="100%" height={LINE_TOP + LINE_H + 6} viewBox={`0 0 ${width} ${LINE_TOP + LINE_H + 6}`} aria-hidden="true" style={{ display: 'block', overflow: 'visible' }}>
         <line x1={AXIS_W} x2={width} y1={by(0) + 0.5} y2={by(0) + 0.5} stroke="var(--warm-border)" strokeWidth={1} />
-        <text x={AXIS_W - 6} y={by(balTop) + 3.5} textAnchor="end" fontSize={10} fill="var(--warm-text-muted)">{fmt(balTop)}</text>
-        <text x={AXIS_W - 6} y={by(0) + 3.5} textAnchor="end" fontSize={10} fill="var(--warm-text-muted)">0</text>
+        <text x={AXIS_W - 6} y={by(balTop) + 3.5} textAnchor="end" fontSize={12} fill="var(--warm-text-muted)">{fmt(balTop)}</text>
+        <text x={AXIS_W - 6} y={by(0) + 3.5} textAnchor="end" fontSize={12} fill="var(--warm-text-muted)">0</text>
         <polygon points={`${cx(0)},${by(0)} ${points} ${cx(lastI)},${by(0)}`} fill={balanceColor} opacity={0.1} />
         <polyline points={points} fill="none" stroke={balanceColor} strokeWidth={2} strokeLinejoin="round" strokeLinecap="round" />
         {[...new Set([lastI, ...(shown != null ? [shown] : [])])].map((i) => (
           <circle key={i} cx={cx(i)} cy={by(weeks.balance[i])} r={4} fill={balanceColor} stroke="var(--warm-card)" strokeWidth={2} />
         ))}
-        <text x={Math.min(width - 2, cx(lastI) + 2)} y={by(weeks.balance[lastI]) - 8} textAnchor="end" fontSize={11} fontWeight={700} fill="var(--warm-text)">
+        <text x={Math.min(width - 2, cx(lastI) + 2)} y={by(weeks.balance[lastI]) - 8} textAnchor="end" fontSize={12} fontWeight={700} fill="var(--warm-text)">
           {fmt(weeks.balance[lastI])}
         </text>
         {labels.map((l, i) => hit(i, 0, LINE_TOP + LINE_H + 6, l, false))}

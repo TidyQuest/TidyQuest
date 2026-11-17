@@ -39,7 +39,7 @@ export function BoostDetails({ boost, rooms, userId, role, coinsByEffort, multip
     : formatNextDue(task.lastCompletedAt, task.frequencyDays, t, language, task.health, task.nextDueAt));
   const rowStyle = {
     display: 'flex', alignItems: 'center', gap: 10, padding: '8px 10px', width: '100%', textAlign: 'left' as const,
-    borderRadius: 14, background: 'var(--warm-bg-subtle)', border: '1.5px solid var(--warm-border)',
+    borderRadius: 14, background: 'var(--warm-bg-subtle)', border: 'var(--shape-border-w) solid var(--warm-border)',
     cursor: 'pointer', fontFamily: 'Nunito', color: 'inherit',
   };
 
@@ -69,18 +69,17 @@ export function BoostDetails({ boost, rooms, userId, role, coinsByEffort, multip
                   <span style={{ width: 12, height: 32, borderRadius: 6, backgroundColor: room.color, border: `1.5px solid ${room.accentColor}44`, flexShrink: 0 }} />
                   <span style={{ flex: 1, minWidth: 0 }}>
                     <span style={{ display: 'block', fontSize: 13, fontWeight: 800, color: 'var(--warm-text)', overflowWrap: 'anywhere' }}>{roomDisplayName(room.name, room.roomType)}</span>
-                    <span style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--warm-text-light)' }}>
+                    <span style={{ display: 'block', fontSize: 12, fontWeight: 700, color: 'var(--warm-text-light)' }}>
                       {t('boosts.roomCounts').replace('{n}', String(tasks.length)).replace('{ready}', String(ready))}
                     </span>
                   </span>
-                  <span aria-hidden style={{ color: 'var(--warm-text-light)', fontWeight: 900 }}>›</span>
                 </button>
               );
             })}
           </div>
         ) : groups.map(({ room, tasks }) => (
           <div key={room.id} style={{ display: 'grid', gap: 6 }}>
-            <div style={{ fontSize: 12, fontWeight: 800, color: 'var(--warm-text-muted)', textTransform: 'uppercase', letterSpacing: 0.4 }}>{roomDisplayName(room.name, room.roomType)}</div>
+            <div style={{ fontSize: 12, fontWeight: 800, color: 'var(--warm-text-muted)' }}>{roomDisplayName(room.name, room.roomType)}</div>
             {tasks.map((task) => {
               const due = status(task);
               return (
@@ -90,7 +89,7 @@ export function BoostDetails({ boost, rooms, userId, role, coinsByEffort, multip
                   </span>
                   <span style={{ flex: 1, minWidth: 0 }}>
                     <span style={{ display: 'block', fontSize: 13, fontWeight: 700, color: 'var(--warm-text)', overflowWrap: 'anywhere' }}>{taskName(task.name, task.translationKey)}</span>
-                    <span style={{ display: 'block', fontSize: 11, fontWeight: 700, color: due.color }}>{due.text}</span>
+                    <span style={{ display: 'block', fontSize: 12, fontWeight: 700, color: due.color }}>{due.text}</span>
                   </span>
                   <span style={{ fontSize: 13, fontWeight: 900, color: 'var(--warm-accent)', whiteSpace: 'nowrap' }}>
                     ⚡ {formatCoins(Math.round(taskCoins(task, coinsByEffort) * multiplierFor(task.id, room.id)))}

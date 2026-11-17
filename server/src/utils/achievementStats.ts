@@ -1,5 +1,5 @@
 import { todoRoomId } from './todoRoom';
-import db from '../database';
+import db, { prepared } from '../database';
 import { ACHIEVEMENTS, buildAchievements, type AchievementStats } from './achievements';
 import { badgeAppliesTo, customBadgeKey, customBadgeValue, levelFor, listCustomBadges, longestWeekRun } from './badges';
 import { tr } from './i18n';
@@ -10,25 +10,10 @@ import { dayAt, daySql, endOfDay, hourSql, startOfDay, wall } from './clock';
 import { boostCovers, toBoost } from './boosts';
 import { startOfLocalWeek, weekOfSql, weekStartDay } from './periods';
 
-/**
- * Everything the badges are measured on, for one person. Shared by the Achievements page and the
- * unlock check after a completion.
- */
-export function getAchievementStats(userId: number, now: Date = new Date()): AchievementStats | null {
-  const user = db.prepare('SELECT id, currentStreak, birthday FROM users WHERE id = ?').get(userId) as { id: number; currentStreak: number; birthday: string | null } | undefined;
-  if (!user) return null;
-  const vacation = resolveVacation(getGlobalVacation(), getUserVacation(userId));
-
-  const completions = (db.prepare("SELECT COUNT(*) AS n FROM task_completions WHERE userId = ? AND status = 'approved'").get(userId) as { n: number }).n;
-
-  // Coins earned over all time (approved chores plus coins given, e.g. goal bonuses), not today's
-  // balance: spending coins on a reward must not take a badge away
-  const earnedFromTasks = (db.prepare("SELECT COALESCE(SUM(coinsEarned), 0) AS n FROM task_completions WHERE userId = ? AND status = 'approved'").get(userId) as { n: number }).n;
-  const earnedFromAdjustments = (db.prepare('SELECT COALESCE(SUM(amount), 0) AS n FROM coin_adjustments WHERE userId = ? AND amount > 0').get(userId) as { n: number }).n;
-
-  // Rooms with health >= 70 ("clean") right now
+/** How many rooms have health 70 or more ("clean") right now */
+function cleanRooms(vacation: { isVacation: boolean; startDate: string | null }, now: Date): number {
   const tasksByRoom = new Map<number, any[]>();
-  for (const t of db.prepare('SELECT * FROM tasks WHERE archivedAt IS NULL AND deletedAt IS NULL AND pausedAt IS NULL AND oneTime = 0').all() as any[]) {
+  for (const t of prepared('SELECT * FROM tasks WHERE archivedAt IS NULL AND deletedAt IS NULL AND pausedAt IS NULL AND oneTime = 0').all() as any[]) {
     if (!tasksByRoom.has(t.roomId)) tasksByRoom.set(t.roomId, []);
     tasksByRoom.get(t.roomId)!.push(t);
   }
@@ -41,19 +26,49 @@ export function getAchievementStats(userId: number, now: Date = new Date()): Ach
     const health = totalEffort > 0 ? Math.round(forAvg.reduce((s, t) => s + taskHealth(t, vacation, now) * t.effort, 0) / totalEffort) : 100;
     if (health >= 70) roomsClean++;
   }
+  return roomsClean;
+}
+
+/** Numbers that are the same for everyone, worked out once when one page needs several people's (ENH-19) */
+export interface StatsShared { roomsClean: Map<string, number> }
+export const newStatsShared = (): StatsShared => ({ roomsClean: new Map() });
+
+/**
+ * Everything the badges are measured on, for one person. Shared by the Achievements page and the
+ * unlock check after a completion.
+ */
+export function getAchievementStats(userId: number, now: Date = new Date(), shared?: StatsShared): AchievementStats | null {
+  const user = prepared('SELECT id, currentStreak, birthday FROM users WHERE id = ?').get(userId) as { id: number; currentStreak: number; birthday: string | null } | undefined;
+  if (!user) return null;
+  const vacation = resolveVacation(getGlobalVacation(), getUserVacation(userId));
+
+  const completions = (prepared("SELECT COUNT(*) AS n FROM task_completions WHERE userId = ? AND status = 'approved'").get(userId) as { n: number }).n;
+
+  // Coins earned over all time (approved chores plus coins given, e.g. goal bonuses), not today's
+  // balance: spending coins on a reward must not take a badge away
+  const earnedFromTasks = (prepared("SELECT COALESCE(SUM(coinsEarned), 0) AS n FROM task_completions WHERE userId = ? AND status = 'approved'").get(userId) as { n: number }).n;
+  const earnedFromAdjustments = (prepared('SELECT COALESCE(SUM(amount), 0) AS n FROM coin_adjustments WHERE userId = ? AND amount > 0').get(userId) as { n: number }).n;
+
+  // Rooms with health >= 70 ("clean") right now; the same for everyone on the same vacation
+  const cleanKey = `${vacation.isVacation}|${vacation.startDate}`;
+  let roomsClean = shared?.roomsClean.get(cleanKey);
+  if (roomsClean === undefined) {
+    roomsClean = cleanRooms(vacation, now);
+    shared?.roomsClean.set(cleanKey, roomsClean);
+  }
 
   // This week (its first day 00:00 local) and the most recent weekend (Sat + Sun)
   const first = weekStartDay();
   const weekStart = startOfLocalWeek(now, first);
-  const weekly = (db.prepare("SELECT COUNT(*) AS n FROM task_completions WHERE userId = ? AND status = 'approved' AND completedAt >= ?").get(userId, weekStart.toISOString()) as { n: number }).n;
+  const weekly = (prepared("SELECT COUNT(*) AS n FROM task_completions WHERE userId = ? AND status = 'approved' AND completedAt >= ?").get(userId, weekStart.toISOString()) as { n: number }).n;
   const nowDay = wall(now).weekday;
   const lastSat = startOfDay(now, -(nowDay === 6 ? 0 : nowDay === 0 ? 1 : nowDay + 1));
   const lastSun = endOfDay(lastSat, 1);
-  const weekend = (db.prepare("SELECT COUNT(*) AS n FROM task_completions WHERE userId = ? AND status = 'approved' AND completedAt >= ? AND completedAt <= ?")
+  const weekend = (prepared("SELECT COUNT(*) AS n FROM task_completions WHERE userId = ? AND status = 'approved' AND completedAt >= ? AND completedAt <= ?")
     .get(userId, lastSat.toISOString(), lastSun.toISOString()) as { n: number }).n;
 
   // Perfect weeks: full past weeks with at least one completion every day
-  const days = (db.prepare(`SELECT ${daySql('completedAt')} AS day FROM task_completions WHERE userId = ? AND status = 'approved' GROUP BY day ORDER BY day`)
+  const days = (prepared(`SELECT ${daySql('completedAt')} AS day FROM task_completions WHERE userId = ? AND status = 'approved' GROUP BY day ORDER BY day`)
     .all(userId) as Array<{ day: string }>).map((r) => r.day);
   let perfectWeeks = 0;
   if (days.length > 0) {
@@ -67,7 +82,7 @@ export function getAchievementStats(userId: number, now: Date = new Date()): Ach
     }
   }
 
-  const count = (sql: string, ...args: unknown[]) => (db.prepare(sql).get(userId, ...args) as { n: number }).n;
+  const count = (sql: string, ...args: unknown[]) => (prepared(sql).get(userId, ...args) as { n: number }).n;
 
   // Rewards bought (requested or approved; refunded ones don't count) and chip-ins to a family pot
   const rewardsRedeemed = count("SELECT COUNT(*) AS n FROM reward_redemptions WHERE userId = ? AND status IN ('requested', 'approved')");
@@ -77,10 +92,10 @@ export function getAchievementStats(userId: number, now: Date = new Date()): Ach
   const cheersReceived = count('SELECT COUNT(*) AS n FROM cheers ch JOIN task_completions c ON c.id = ch.completionId WHERE c.userId = ?');
 
   // Chores done while a double coins event covered them
-  const boosts = (db.prepare('SELECT * FROM coin_boosts').all() as any[]).map(toBoost);
+  const boosts = (prepared('SELECT * FROM coin_boosts').all() as any[]).map(toBoost);
   let boostCompletions = 0;
   if (boosts.length > 0) {
-    const done = db.prepare("SELECT c.completedAt, c.taskId, t.roomId FROM task_completions c JOIN tasks t ON t.id = c.taskId WHERE c.userId = ? AND c.status = 'approved'")
+    const done = prepared("SELECT c.completedAt, c.taskId, t.roomId FROM task_completions c JOIN tasks t ON t.id = c.taskId WHERE c.userId = ? AND c.status = 'approved'")
       .all(userId) as Array<{ completedAt: string; taskId: number; roomId: number }>;
     const windows = boosts.map((b) => ({ from: Date.parse(b.startAt), to: Date.parse(b.endAt), b }));
     boostCompletions = done.filter((c) => {
@@ -90,14 +105,14 @@ export function getAchievementStats(userId: number, now: Date = new Date()): Ach
   }
 
   // Weekly goals reached in a row (the longest run)
-  const goalWeeks = longestWeekRun((db.prepare(
+  const goalWeeks = longestWeekRun((prepared(
     `SELECT ${weekOfSql('startAt', first)} AS week FROM user_goals WHERE userId = ? AND status = 'completed' AND startAt IS NOT NULL`
   ).all(userId) as Array<{ week: string }>).map((r) => r.week));
 
   // Secret ones: every scheduled chore of a room (3 or more) done in one day, chores before 8 am,
   // and a chore on your birthday
-  const roomSizes = new Map((db.prepare('SELECT roomId, COUNT(*) AS n FROM tasks WHERE onDemand = 0 AND oneTime = 0 AND archivedAt IS NULL AND deletedAt IS NULL AND pausedAt IS NULL GROUP BY roomId').all() as Array<{ roomId: number; n: number }>).map((r) => [r.roomId, r.n]));
-  const roomSweeps = (db.prepare(
+  const roomSizes = new Map((prepared('SELECT roomId, COUNT(*) AS n FROM tasks WHERE onDemand = 0 AND oneTime = 0 AND archivedAt IS NULL AND deletedAt IS NULL AND pausedAt IS NULL GROUP BY roomId').all() as Array<{ roomId: number; n: number }>).map((r) => [r.roomId, r.n]));
+  const roomSweeps = (prepared(
     `SELECT t.roomId, COUNT(DISTINCT c.taskId) AS n FROM task_completions c JOIN tasks t ON t.id = c.taskId
      WHERE c.userId = ? AND c.status = 'approved' AND t.onDemand = 0 GROUP BY ${daySql('c.completedAt')}, t.roomId`
   ).all(userId) as Array<{ roomId: number; n: number }>).filter((r) => (roomSizes.get(r.roomId) ?? 0) >= 3 && r.n >= roomSizes.get(r.roomId)!).length;
@@ -129,14 +144,14 @@ export function getAchievementStats(userId: number, now: Date = new Date()): Ach
 
 /** When each badge was first earned (user_achievement_notifications records every first unlock). */
 export function earnedBadges(userId: number): Map<string, string> {
-  const rows = db.prepare('SELECT achievementId, sentAt FROM user_achievement_notifications WHERE userId = ?').all(userId) as Array<{ achievementId: string; sentAt: string }>;
+  const rows = prepared('SELECT achievementId, sentAt FROM user_achievement_notifications WHERE userId = ?').all(userId) as Array<{ achievementId: string; sentAt: string }>;
   // SQLite datetime('now') is UTC without a zone
   return new Map(rows.map((r) => [r.achievementId, r.sentAt.includes('T') ? r.sentAt : `${r.sentAt.replace(' ', 'T')}Z`]));
 }
 
 /** Coins paid once for each built-in badge (Settings → Badges; 0 = none). */
 export function builtinBadgeBonus(): number {
-  const row = db.prepare("SELECT value FROM app_settings WHERE key = 'badgeBonusCoins'").get() as { value: string } | undefined;
+  const row = prepared("SELECT value FROM app_settings WHERE key = 'badgeBonusCoins'").get() as { value: string } | undefined;
   return Math.max(0, Math.round(Number(row?.value) || 0));
 }
 
@@ -175,10 +190,10 @@ export interface BadgeItem {
  * history), and their ids are returned in `newlyEarned`; this runs after a completion so the pop-up
  * and notification go out once. Viewing only reads.
  */
-export function achievementsFor(userId: number, options: { record?: boolean; now?: Date } = {}) {
-  const stats = getAchievementStats(userId, options.now);
+export function achievementsFor(userId: number, options: { record?: boolean; now?: Date; shared?: StatsShared } = {}) {
+  const stats = getAchievementStats(userId, options.now, options.shared);
   if (!stats) return null;
-  const language = (db.prepare('SELECT language FROM users WHERE id = ?').get(userId) as { language: string | null } | undefined)?.language ?? 'en';
+  const language = (prepared('SELECT language FROM users WHERE id = ?').get(userId) as { language: string | null } | undefined)?.language ?? 'en';
   const builtinBonus = builtinBadgeBonus();
   const live: BadgeItem[] = [
     ...buildAchievements(stats).map((a) => ({
@@ -197,14 +212,14 @@ export function achievementsFor(userId: number, options: { record?: boolean; now
 
   const newlyEarned: string[] = [];
   if (options.record) {
-    const save = db.prepare('INSERT OR IGNORE INTO user_achievement_notifications (userId, achievementId) VALUES (?, ?)');
+    const save = prepared('INSERT OR IGNORE INTO user_achievement_notifications (userId, achievementId) VALUES (?, ?)');
     for (const a of live) {
       if (!a.unlocked || save.run(userId, a.id).changes === 0) continue;
       newlyEarned.push(a.id);
       if (a.bonusCoins > 0) {
         const title = a.titleKey ? tr(language, a.titleKey) : a.title;
-        db.prepare('UPDATE users SET coins = coins + ? WHERE id = ?').run(a.bonusCoins, userId);
-        db.prepare('INSERT INTO coin_adjustments (userId, amount, reason, createdBy) VALUES (?, ?, ?, NULL)')
+        prepared('UPDATE users SET coins = coins + ? WHERE id = ?').run(a.bonusCoins, userId);
+        prepared('INSERT INTO coin_adjustments (userId, amount, reason, createdBy) VALUES (?, ?, ?, NULL)')
           .run(userId, a.bonusCoins, `🏅 ${tr(language, 'badges.bonusReason').replace('{name}', title ?? '')}`);
       }
     }

@@ -155,7 +155,7 @@ export function MascotCard({ m, costume, language, suggestions = [], userId, isP
         {fed && !asleep && <span className="mascot-fed" aria-hidden="true">🍪</span>}
       </button>
       <div style={{ flex: '1 1 180px', minWidth: 0, display: 'grid', gap: 6 }}>
-        <div className="mascot-bubble" style={{ position: 'relative', padding: '8px 12px', borderRadius: 14, background: 'var(--warm-bg-subtle)', border: '1.5px solid var(--warm-border)', fontSize: 13, fontWeight: 800, color: 'var(--warm-text)' }}>
+        <div className="mascot-bubble" style={{ position: 'relative', padding: '8px 12px', borderRadius: 14, background: 'var(--warm-bg-subtle)', border: 'var(--shape-border-w) solid var(--warm-border)', fontSize: 13, fontWeight: 800, color: 'var(--warm-text)' }}>
           {say}
           {!tap && !m.event && !asleep && !hungry && m.messiestRoom && m.stage !== 'egg' && (
             <button type="button" className="tq-btn tq-btn-primary tq-btn-sm" style={{ display: 'block', marginTop: 6 }} onClick={() => navigate(`/rooms/${m.messiestRoom!.id}`)}>
@@ -173,19 +173,19 @@ export function MascotCard({ m, costume, language, suggestions = [], userId, isP
             role="meter" aria-valuenow={m.tummy} aria-valuemin={0} aria-valuemax={100} aria-label={t('mascot.tummy')}>
             <span style={{ display: 'block', width: `${m.tummy}%`, height: '100%', background: hungry ? 'var(--warm-danger)' : '#F59E0B' }} />
           </span>
-          <span style={{ fontSize: 11, fontWeight: 800, color: 'var(--warm-text-light)', minWidth: 32, textAlign: 'right' }}>{m.tummy}%</span>
+          <span style={{ fontSize: 12, fontWeight: 800, color: 'var(--warm-text-light)', minWidth: 32, textAlign: 'right' }}>{m.tummy}%</span>
         </div>
         {m.nextStage ? (
           <div style={{ display: 'grid', gap: 3 }}>
             <span style={{ height: 6, borderRadius: 99, background: 'var(--health-bar-track)', overflow: 'hidden', display: 'block' }}>
               <span style={{ display: 'block', width: `${pct}%`, height: '100%', background: 'var(--warm-accent)' }} />
             </span>
-            <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--warm-text-light)' }}>
+            <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--warm-text-light)' }}>
               {t('mascot.grows').replace('{stage}', t(`mascot.stage_${m.nextStage.stage}`)).replace('{n}', formatCoins(m.nextStage.at - m.familyCoins))}
             </span>
           </div>
         ) : (
-          <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--warm-text-light)' }}>{t('mascot.maxed')}</span>
+          <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--warm-text-light)' }}>{t('mascot.maxed')}</span>
         )}
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
           {suggestions.length > 0 && !asleep && (
@@ -194,13 +194,13 @@ export function MascotCard({ m, costume, language, suggestions = [], userId, isP
             </button>
           )}
           {m.shop && m.stage !== 'egg' && <button type="button" className="tq-btn tq-btn-secondary tq-btn-sm" onClick={() => setShopOpen(true)}>🛍️ {t('mascot.shop')}</button>}
-          {m.shop && m.stage === 'egg' && <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--warm-text-light)', alignSelf: 'center' }}>{t('mascot.shopAfterHatch')}</span>}
+          {m.shop && m.stage === 'egg' && <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--warm-text-light)', alignSelf: 'center' }}>{t('mascot.shopAfterHatch')}</span>}
         </div>
         {idea && (
           <div style={{ display: 'grid', gap: 6, padding: '10px 12px', borderRadius: 14, border: '1.5px solid var(--warm-accent)', background: 'var(--warm-accent-light)' }}>
-            <div style={{ fontSize: 11, fontWeight: 800, color: 'var(--warm-accent)' }}>{t(`mascot.why_${idea.reason}`).replace('{room}', idea.roomName)}</div>
+            <div style={{ fontSize: 12, fontWeight: 800, color: 'var(--warm-accent)' }}>{t(`mascot.why_${idea.reason}`).replace('{room}', idea.roomName)}</div>
             <div style={{ fontSize: 14, fontWeight: 900, color: 'var(--warm-text)', overflowWrap: 'anywhere' }}>{idea.name}</div>
-            <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--warm-text-light)' }}>{idea.roomName}{idea.coins ? ` · 🪙 ${idea.coins}` : ''}</div>
+            <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--warm-text-light)' }}>{idea.roomName}{idea.coins ? ` · 🪙 ${idea.coins}` : ''}</div>
             <button type="button" className="tq-btn tq-btn-primary tq-btn-sm" style={{ justifySelf: 'start' }}
               onClick={() => navigate(`/rooms/${idea.roomId}?task=${idea.taskId}`)}>{t('mascot.letsDoIt')}</button>
           </div>
@@ -248,10 +248,10 @@ function MascotShop({ m, costume, language, userId, isParent, coins, onClose, on
           {slots.filter((s) => outfit[s]).map((s) => {
             const w = outfit[s]!;
             return (
-              <span key={s} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 11, fontWeight: 700, color: 'var(--warm-text-muted)', padding: '4px 8px', borderRadius: 99, border: '1px solid var(--warm-border)' }}>
+              <span key={s} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 700, color: 'var(--warm-text-muted)', padding: '4px 8px', borderRadius: 99, border: '1px solid var(--warm-border)' }}>
                 {t(`mascot.item_${w.id}`)} · {t('mascot.giftFrom').replace('{name}', w.byName)}
                 {(w.by === userId || isParent) && (
-                  <button type="button" className="tq-btn tq-btn-sm" disabled={busy} style={{ padding: '1px 8px', fontSize: 11 }}
+                  <button type="button" className="tq-btn tq-btn-sm" disabled={busy} style={{ padding: '1px 8px', fontSize: 12 }}
                     onClick={() => void act(() => api.takeOffAccessory(s))}>{t('mascot.takeOff')}</button>
                 )}
               </span>
@@ -262,16 +262,16 @@ function MascotShop({ m, costume, language, userId, isParent, coins, onClose, on
         <div style={{ overflowY: 'auto', display: 'grid', gap: 12, minHeight: 0 }}>
           {slots.map((slot) => (
             <div key={slot} style={{ display: 'grid', gap: 6 }}>
-              <div style={{ fontSize: 11, fontWeight: 800, color: 'var(--warm-text-light)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{t(`mascot.slot_${slot}`)}</div>
+              <div style={{ fontSize: 12, fontWeight: 800, color: 'var(--warm-text-light)' }}>{t(`mascot.slot_${slot}`)}</div>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                 {m.shop!.filter((i) => i.slot === slot).map((i) => {
                   const wearing = outfit[slot]?.id === i.id;
                   return (
                     <div key={i.id} style={{ display: 'grid', justifyItems: 'center', gap: 2, width: 92, padding: 6, borderRadius: 12, border: `2px solid ${wearing ? 'var(--warm-accent)' : 'var(--warm-border)'}` }}>
                       <MascotPicture m={{ ...m, stage: 'grown', mood: 'happy', event: null }} outfit={{ [slot]: { id: i.id, by: 0, byName: '', at: '' } }} size={56} bare />
-                      <span style={{ fontSize: 11, fontWeight: 800, color: 'var(--warm-text)', textAlign: 'center' }}>{t(`mascot.item_${i.id}`)}</span>
+                      <span style={{ fontSize: 12, fontWeight: 800, color: 'var(--warm-text)', textAlign: 'center' }}>{t(`mascot.item_${i.id}`)}</span>
                       <button type="button" className={wearing ? 'tq-btn tq-btn-sm' : 'tq-btn tq-btn-primary tq-btn-sm'} disabled={busy || wearing || wallet < i.price}
-                        style={{ padding: '3px 10px', fontSize: 11 }} onClick={() => void act(() => api.buyAccessory(i.id))}>
+                        style={{ padding: '3px 10px', fontSize: 12 }} onClick={() => void act(() => api.buyAccessory(i.id))}>
                         {wearing ? t('mascot.wearing') : `🪙 ${i.price}`}
                       </button>
                     </div>

@@ -17,12 +17,12 @@ export function ThemePicker({ value, onChange, language, level }: { value: Theme
           <button key={theme} type="button" role="radio" aria-checked={on} disabled={locked} onClick={() => onChange(theme)} style={{
             opacity: locked ? 0.55 : 1, cursor: locked ? 'not-allowed' : 'pointer',
             display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, padding: '8px 4px', borderRadius: 12,
-            fontFamily: 'Nunito', fontSize: 11, fontWeight: 800, color: 'var(--warm-text)', background: 'none',
+            fontFamily: 'Nunito', fontSize: 12, fontWeight: 800, color: 'var(--warm-text)', background: 'none',
             border: `2px solid ${on ? 'var(--warm-accent)' : 'var(--warm-border)'}`,
           }}>
             <span style={{ width: 36, height: 36, borderRadius: 99, background: `linear-gradient(135deg, ${sw.bg} 50%, ${sw.accent} 50%)`, border: '1px solid var(--warm-border)', display: 'block' }} />
             {t(themeLabelKey(theme))}
-            {locked && <span style={{ fontSize: 10, color: 'var(--warm-text-light)' }}>🔒 {t('levels.level').replace('{n}', String(needs))}</span>}
+            {locked && <span style={{ fontSize: 12, color: 'var(--warm-text-light)' }}>🔒 {t('levels.level').replace('{n}', String(needs))}</span>}
           </button>
         );
       })}

@@ -1,10 +1,12 @@
 import type Database from 'better-sqlite3';
+import { recordWhatsNewArrivals } from './utils/whatsNew';
 
 /**
  * Schema added by this fork, kept in one place: the server applies it at startup
  * (initDatabase) and the tests apply it on their in-memory database, so the two can't drift.
  * Everything here must be idempotent.
  */
+
 const NEW_TABLES: string[] = [
   // Coin ledger: every manual coin change a parent makes, with the amount actually applied
   `CREATE TABLE IF NOT EXISTS coin_adjustments (
@@ -215,6 +217,13 @@ const NEW_TABLES: string[] = [
     lastOkAt TEXT
   )`,
   `CREATE INDEX IF NOT EXISTS idx_push_subscriptions_user ON push_subscriptions(userId)`,
+  // "What's new" slides after a big update (NEW-38, utils/whatsNew.ts): who has seen (or skipped) which one
+  `CREATE TABLE IF NOT EXISTS whats_new_seen (
+    userId INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    itemId TEXT NOT NULL,
+    seenAt TEXT NOT NULL DEFAULT (datetime('now')),
+    PRIMARY KEY (userId, itemId)
+  )`,
 ];
 
 /** Columns added to existing tables (ignored when they already exist). */
@@ -338,6 +347,11 @@ const NEW_COLUMNS: string[] = [
   `ALTER TABLE notification_queue ADD COLUMN onlyIf TEXT`,
   // The optional one-line note a parent gave when rejecting this reward request (ENH-23)
   `ALTER TABLE reward_redemptions ADD COLUMN rejectNote TEXT`,
+  // The "turn on notifications" card on Today (ENH-31, utils/notifyCard.ts): JSON {done, snoozes, until}
+  `ALTER TABLE users ADD COLUMN notifyCard TEXT`,
+  // BUG-50: the person's streak just before and after this Done moved it (JSON {before, after}), so
+  // taking the Done back can put the streak back (utils/streaks.ts restoreStreak)
+  `ALTER TABLE task_completions ADD COLUMN streakBefore TEXT`,
 ];
 
 /** Fork tables included in backup export/import: key in the backup file -> table. */
@@ -363,6 +377,8 @@ export const BACKUP_TABLES: Array<{ key: string; table: string }> = [
   { key: 'rescueMissions', table: 'rescue_missions' },
   { key: 'notificationLog', table: 'notification_log' },
   { key: 'dueReminders', table: 'task_due_notifications' },
+  // Who has seen which "What's new" (NEW-38), so a restore doesn't show them again
+  { key: 'whatsNewSeen', table: 'whats_new_seen' },
 ];
 
 export function applyForkSchema(instance: InstanceType<typeof Database>) {
@@ -374,4 +390,6 @@ export function applyForkSchema(instance: InstanceType<typeof Database>) {
       if (!e.message?.includes('duplicate column')) throw e;
     }
   }
+  // "What's new" (NEW-38): when each announcement reached this database
+  recordWhatsNewArrivals(instance);
 }

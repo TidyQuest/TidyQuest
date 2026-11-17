@@ -117,7 +117,7 @@ export function SearchOverlay({ onClose, rooms, rewards, language, gamificationE
         className="tq-card"
         style={{ width: '100%', minWidth: 0, maxWidth: 620, maxHeight: '75vh', display: 'flex', flexDirection: 'column', overflow: 'hidden', padding: 0 }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '14px 16px', borderBottom: '1.5px solid var(--warm-border)', color: 'var(--warm-text-light)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '14px 16px', borderBottom: 'var(--shape-border-w) solid var(--warm-border)', color: 'var(--warm-text-light)' }}>
           <SearchIcon />
           <input
             ref={inputRef}
@@ -145,7 +145,7 @@ export function SearchOverlay({ onClose, rooms, rewards, language, gamificationE
             return (
               <div key={hit.key}>
                 {showHeading && (
-                  <div style={{ fontSize: 11, fontWeight: 800, color: 'var(--warm-text-light)', textTransform: 'uppercase', letterSpacing: '0.05em', padding: '10px 10px 4px' }}>
+                  <div style={{ fontSize: 12, fontWeight: 800, color: 'var(--warm-text-light)', padding: '10px 10px 4px' }}>
                     {sectionTitle[hit.section]}{hit.section === 'tasks' && taskTotal > 0 ? ` · ${taskTotal}` : ''}
                   </div>
                 )}
@@ -169,7 +169,7 @@ export function SearchOverlay({ onClose, rooms, rewards, language, gamificationE
                   )}
                   <span style={{ flex: 1, minWidth: 0 }}>
                     <span style={{ display: 'block', fontSize: 14, fontWeight: 700, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{hit.title}</span>
-                    {hit.subtitle && <span style={{ display: 'block', fontSize: 11, fontWeight: 600, color: 'var(--warm-text-light)' }}>{hit.subtitle}</span>}
+                    {hit.subtitle && <span style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--warm-text-light)' }}>{hit.subtitle}</span>}
                   </span>
                   {hit.coins !== undefined && (
                     <span style={{ fontSize: 12, fontWeight: 800, color: 'var(--warm-accent)', display: 'inline-flex', alignItems: 'center', gap: 3, flexShrink: 0 }}>

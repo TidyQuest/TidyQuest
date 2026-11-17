@@ -1,5 +1,5 @@
 import React from 'react';
-import { getHealthColor } from '../../utils/health';
+import { getHealthColor, getHealthTextColor } from '../../utils/health';
 
 interface RingGaugeProps {
   value: number;
@@ -33,12 +33,12 @@ const RingGauge: React.FC<RingGaugeProps> = ({
           cy={size / 2}
           r={r}
           fill="none"
-          stroke={color}
           strokeWidth={strokeWidth}
           strokeDasharray={circ}
           strokeDashoffset={offset}
           strokeLinecap="round"
           style={{
+            stroke: color,
             transition:
               'stroke-dashoffset 1s cubic-bezier(.4,2,.6,1), stroke 0.5s ease',
           }}
@@ -56,24 +56,25 @@ const RingGauge: React.FC<RingGaugeProps> = ({
       >
         <div
           style={{
-            fontSize: 36,
+            // Scales with the ring (36px at the full 140px); small rings (rooms, Today) drop the "/ 100"
+            fontSize: size >= 100 ? 36 : Math.round(size * 0.3),
             fontWeight: 800,
-            color,
+            color: getHealthTextColor(value),
             lineHeight: 1,
           }}
         >
           {value}
         </div>
-        <div
+        {size >= 100 && <div
           style={{
-            fontSize: 11,
+            fontSize: 12,
             color: 'var(--warm-text-light)',
             fontWeight: 600,
             marginTop: 2,
           }}
         >
           / 100
-        </div>
+        </div>}
       </div>
     </div>
   );

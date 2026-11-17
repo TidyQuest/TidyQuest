@@ -2,7 +2,7 @@ import { Router, Response } from 'express';
 import db from '../database';
 import { AuthRequest, authMiddleware } from '../middleware/auth';
 import { ensureAdmin } from '../utils/adminHelpers';
-import { FEATURES, HOLIDAYS, featureDefault, getFeatures, holidaysOff, rescueMultiplier } from '../utils/features';
+import { FEATURES, HOLIDAYS, LOOKS, featureDefault, getLook, getFeatures, holidaysOff, rescueMultiplier } from '../utils/features';
 import { mascotRoster, mascotSettings, saveMascot } from '../utils/mascot';
 import { TEAM_BONUSES, teamBonus } from '../utils/teamups';
 import { shieldPrice } from '../utils/streaks';
@@ -11,7 +11,7 @@ import { shieldPrice } from '../utils/streaks';
 const router = Router();
 router.use(authMiddleware);
 
-const view = () => ({ features: getFeatures(), rescueMultiplier: rescueMultiplier(), holidaysOff: holidaysOff(), mascot: mascotSettings(), mascotRoster: mascotRoster(), teamBonus: teamBonus(), shieldPrice: shieldPrice() });
+const view = () => ({ features: getFeatures(), rescueMultiplier: rescueMultiplier(), holidaysOff: holidaysOff(), look: getLook(), mascot: mascotSettings(), mascotRoster: mascotRoster(), teamBonus: teamBonus(), shieldPrice: shieldPrice() });
 
 router.get('/', (_req: AuthRequest, res: Response) => res.json(view()));
 
@@ -52,6 +52,11 @@ router.put('/', (req: AuthRequest, res: Response) => {
   if (hOff !== undefined) {
     if (!Array.isArray(hOff) || hOff.some((h) => !(HOLIDAYS as readonly string[]).includes(h))) return res.status(400).json({ error: 'invalid_holiday' });
     db.prepare("INSERT OR REPLACE INTO app_settings (key, value) VALUES ('holidaysOff', ?)").run(JSON.stringify([...new Set(hOff)]));
+  }
+  // The look (NEW-37): Fresh, Quest or Calm for the whole family
+  if (req.body?.look !== undefined) {
+    if (!(LOOKS as readonly unknown[]).includes(req.body.look)) return res.status(400).json({ error: 'invalid_look' });
+    db.prepare("INSERT OR REPLACE INTO app_settings (key, value) VALUES ('look', ?)").run(req.body.look);
   }
   res.json(view());
 });

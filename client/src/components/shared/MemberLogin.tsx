@@ -5,7 +5,7 @@ import { useTranslation } from '../../hooks/useTranslation';
 interface Member { id: number; displayName: string; username?: string; canLogIn?: number | boolean }
 
 const title = { fontSize: 12, fontWeight: 700, color: 'var(--warm-text)' } as const;
-const desc = { fontSize: 11, color: 'var(--warm-text-light)', fontWeight: 500, marginTop: 2 } as const;
+const desc = { fontSize: 12, color: 'var(--warm-text-light)', fontWeight: 500, marginTop: 2 } as const;
 
 /**
  * "Can log in" on a family member's card (ENH-16). Off: signed out everywhere, no notifications, and a parent ticks
@@ -71,7 +71,7 @@ export function MemberLogin({ member, language, onChange }: {
           <button type="button" className="tq-btn tq-btn-secondary tq-btn-sm" disabled={busy} onClick={cancel}>{t('common.cancel')}</button>
         </div>
       )}
-      {message && <div role="status" style={{ fontSize: 11, fontWeight: 700, color: 'var(--warm-text-light)', overflowWrap: 'anywhere' }}>{message}</div>}
+      {message && <div role="status" style={{ fontSize: 12, fontWeight: 700, color: 'var(--warm-text-light)', overflowWrap: 'anywhere' }}>{message}</div>}
     </div>
   );
 }

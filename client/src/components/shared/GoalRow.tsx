@@ -57,33 +57,33 @@ export function GoalRow({ goal, language, formatDate, onChanged, onDelete }: {
     return (
       <div style={{ ...box, display: 'flex', flexWrap: 'wrap', gap: 6, alignItems: 'center' }}>
         <input className="tq-input" value={title} onChange={(e) => setTitle(e.target.value)} style={{ flex: '2 1 160px', minWidth: 0 }} />
-        <label style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, fontWeight: 700 }}>
+        <label style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, fontWeight: 700 }}>
           {t('settings.goalCoins')}
           <input type="number" min={1} className="tq-input-compact" value={coins} onChange={(e) => setCoins(e.target.value)} style={{ width: 70 }} />
         </label>
-        <label style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, fontWeight: 700 }} title={t('settings.goalRewardDesc')}>
+        <label style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, fontWeight: 700 }} title={t('settings.goalRewardDesc')}>
           {t('settings.goalReward')}
           <input type="number" min={0} className="tq-input-compact" value={bonus} onChange={(e) => setBonus(e.target.value)} style={{ width: 64 }} />
         </label>
-        <label style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, fontWeight: 700, cursor: 'pointer' }}>
+        <label style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, fontWeight: 700, cursor: 'pointer' }}>
           <input type="checkbox" checked={repeat} onChange={(e) => setRepeat(e.target.checked)} style={{ accentColor: 'var(--warm-accent)' }} />
           {t('goals.repeatWeekly')}
         </label>
         <button className="tq-btn tq-btn-primary tq-btn-sm" onClick={save}>{t('common.save')}</button>
         <button className="tq-btn tq-btn-sm" onClick={() => setEditing(false)}>{t('common.cancel')}</button>
-        {error && <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--warm-danger)' }}>{error}</span>}
+        {error && <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--warm-danger)' }}>{error}</span>}
       </div>
     );
   }
   return (
     <div style={{ ...box, display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center' }}>
-      <div style={{ flex: '2 1 160px', minWidth: 0, fontSize: 11, fontWeight: 800, color: 'var(--warm-text)' }}>
+      <div style={{ flex: '2 1 160px', minWidth: 0, fontSize: 12, fontWeight: 800, color: 'var(--warm-text)' }}>
         {goal.title}{goal.status === 'completed' ? ' ✓' : ''}
-        <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--warm-text-light)' }}>
+        <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--warm-text-light)' }}>
           {goal.endAt ? formatDate(goal.endAt) : ''}{goal.repeatWeekly ? ` · ↻ ${t('goals.repeatWeekly')}` : ''}
         </div>
       </div>
-      <div style={{ fontSize: 11, fontWeight: 800, color: 'var(--warm-accent)', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+      <div style={{ fontSize: 12, fontWeight: 800, color: 'var(--warm-accent)', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
         <CoinIcon /> {formatCoins(goal.goalCoins)}
         {(goal.rewardCoins ?? 0) > 0 && <span style={{ color: 'var(--health-green)' }}>· +{formatCoins(goal.rewardCoins)} {t('goals.bonus')}</span>}
       </div>

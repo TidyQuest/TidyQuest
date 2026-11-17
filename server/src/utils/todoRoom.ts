@@ -1,4 +1,4 @@
-import db from '../database';
+import db, { prepared } from '../database';
 import { LANGUAGES, tr } from './i18n';
 import { oneTimeOverdue, type ScheduledTask } from './schedule';
 
@@ -10,9 +10,9 @@ import { oneTimeOverdue, type ScheduledTask } from './schedule';
 
 /** The To-dos room's id, or null when the family has none (never made, or deleted). */
 export function todoRoomId(): number | null {
-  const saved = Number((db.prepare("SELECT value FROM app_settings WHERE key = 'todoRoomId'").get() as { value: string } | undefined)?.value);
+  const saved = Number((prepared("SELECT value FROM app_settings WHERE key = 'todoRoomId'").get() as { value: string } | undefined)?.value);
   if (!saved) return null;
-  return db.prepare('SELECT 1 FROM rooms WHERE id = ? AND deletedAt IS NULL').get(saved) ? saved : null;
+  return prepared('SELECT 1 FROM rooms WHERE id = ? AND deletedAt IS NULL').get(saved) ? saved : null;
 }
 
 export const isTodoRoom = (roomId: number | string | null | undefined): boolean =>
@@ -29,11 +29,11 @@ export function ensureTodoRoom(language: string): number {
   const saved = todoRoomId();
   if (saved) return saved;
   const names = new Set([language, ...LANGUAGES].map((l) => sameName(tr(l, 'todos.roomName'))));
-  const existing = (db.prepare('SELECT id, name FROM rooms WHERE deletedAt IS NULL ORDER BY id').all() as Array<{ id: number; name: string }>)
+  const existing = (prepared('SELECT id, name FROM rooms WHERE deletedAt IS NULL ORDER BY id').all() as Array<{ id: number; name: string }>)
     .find((r) => names.has(sameName(r.name)));
-  const id = existing?.id ?? Number(db.prepare("INSERT INTO rooms (name, roomType, color, accentColor) VALUES (?, 'other', '#E0F2FE', '#0284C7')")
+  const id = existing?.id ?? Number(prepared("INSERT INTO rooms (name, roomType, color, accentColor) VALUES (?, 'other', '#E0F2FE', '#0284C7')")
     .run(tr(language, 'todos.roomName')).lastInsertRowid);
-  db.prepare("INSERT OR REPLACE INTO app_settings (key, value) VALUES ('todoRoomId', ?)").run(String(id));
+  prepared("INSERT OR REPLACE INTO app_settings (key, value) VALUES ('todoRoomId', ?)").run(String(id));
   return id;
 }
 

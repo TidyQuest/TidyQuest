@@ -1,4 +1,4 @@
-import db from '../database';
+import db, { prepared } from '../database';
 import { readSteps } from './focus';
 import { calculateHealth } from './health';
 import { weekStartDay } from './periods';
@@ -277,7 +277,7 @@ export function rotationTurnFor(
 /** Same, looking the assignees up (completion route). */
 export function rotationTurnUserId(task: { id: number; assignmentMode?: string | null; rotationPeriod?: string | null; rotationCurrentUserId?: number | null }, now: Date = new Date()): number | null {
   if (task.rotationPeriod !== 'week') return task.rotationCurrentUserId ?? null;
-  const ids = (db.prepare('SELECT userId FROM task_assignees WHERE taskId = ?').all(task.id) as { userId: number }[]).map((a) => a.userId);
+  const ids = (prepared('SELECT userId FROM task_assignees WHERE taskId = ?').all(task.id) as { userId: number }[]).map((a) => a.userId);
   return rotationTurnFor(task, ids, now);
 }
 
@@ -401,9 +401,9 @@ export function saveScheduleInput(taskId: number, values: Partial<Record<Schedul
     db.prepare(`UPDATE tasks SET ${cols.map((c) => `${c} = ?`).join(', ')} WHERE id = ?`).run(...cols.map((c) => values[c]), taskId);
   }
   if (health !== undefined && health !== null && health !== '') {
-    const task = db.prepare('SELECT * FROM tasks WHERE id = ?').get(taskId) as any;
+    const task = prepared('SELECT * FROM tasks WHERE id = ?').get(taskId) as any;
     if (task && hasFixedSchedule(task)) {
-      db.prepare('UPDATE tasks SET lastCompletedAt = ? WHERE id = ?').run(lastCompletedAtForHealth(task, Number(health)), taskId);
+      prepared('UPDATE tasks SET lastCompletedAt = ? WHERE id = ?').run(lastCompletedAtForHealth(task, Number(health)), taskId);
     }
   }
 }

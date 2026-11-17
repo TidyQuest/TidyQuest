@@ -49,9 +49,11 @@ interface Props {
   onExit: () => void;
   /** Leave it for Settings → Guide & help */
   onOpenGuide: () => void;
+  /** Cancel on the first step (back to Settings when it was opened from there); defaults to onExit */
+  onCancel?: () => void;
 }
 
-export function SetupWizard({ user, onSaved, onExit, onOpenGuide }: Props) {
+export function SetupWizard({ user, onSaved, onExit, onOpenGuide, onCancel = onExit }: Props) {
   const { t, taskName, roomName } = useTranslation(user.language);
   const [catalog, setCatalog] = useState<SetupCatalog | null>(null);
   const [loadFailed, setLoadFailed] = useState(false);
@@ -610,7 +612,7 @@ export function SetupWizard({ user, onSaved, onExit, onOpenGuide }: Props) {
       {step < 4 && (
         <div className="setup-nav">
           {step === 0
-            ? <button type="button" className="tq-btn tq-btn-secondary" onClick={catalog.needed ? skip : onExit}>{catalog.needed ? t('setup.notNow') : t('common.cancel')}</button>
+            ? <button type="button" className="tq-btn tq-btn-secondary" onClick={catalog.needed ? skip : onCancel}>{catalog.needed ? t('setup.notNow') : t('common.cancel')}</button>
             : <button type="button" className="tq-btn tq-btn-secondary" onClick={() => { setError(''); setStep((s) => s - 1); }} disabled={saving}>{t('setup.back')}</button>}
           {step < 3
             ? <button type="button" className="tq-btn tq-btn-primary" onClick={next}>{t('setup.next')}</button>

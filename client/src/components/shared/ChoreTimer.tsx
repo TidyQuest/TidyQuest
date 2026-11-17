@@ -250,7 +250,6 @@ export function ChoreTimerBar({ language }: { language?: string }) {
       {!finished && s.endsAt === null && <span style={{ fontWeight: 700, opacity: 0.8 }}>{t('timer.paused')}</span>}
       {/* width 0 + grow: a long name never widens the page */}
       <span style={{ flex: '1 1 0', width: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', textAlign: 'left', fontWeight: 700 }}>{s.name}</span>
-      <span aria-hidden="true">›</span>
     </button>
   );
 }

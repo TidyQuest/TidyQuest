@@ -13,13 +13,20 @@ export function taskNextDue(task: { lastCompletedAt: string | null; frequencyDay
   return task.nextDueAt ? new Date(task.nextDueAt) : getNextDueDate(task.lastCompletedAt, task.frequencyDays);
 }
 
+/** Whole calendar days (family time) between a chore's due moment and now: 0 on its due day, 1 the day after. */
+export function calendarDaysLate(due: Date, now: Date = new Date()): number {
+  return Math.round((startOfDay(now).getTime() - startOfDay(due).getTime()) / (24 * 60 * 60 * 1000));
+}
+
 export function formatNextDue(lastCompletedAt: string | null, frequencyDays: number, t: (k: string) => string, language?: string, health?: number, nextDueAt?: string | null): { text: string; color: string } {
   const nextDue = taskNextDue({ lastCompletedAt, frequencyDays, nextDueAt });
   const now = new Date();
 
   // Time-based countdown for tasks due within the next 24 hours
   const diffMs = nextDue.getTime() - now.getTime();
-  // Only show overdue when health is truly 0 (aligns with server-side calculation)
+  // Past its due moment: still "Due today" on its due day (as Today's lists sort it); Overdue from the next day,
+  // and only when health is truly 0 (aligns with server-side calculation)
+  if (diffMs < 0 && calendarDaysLate(nextDue, now) < 1) return { text: t('roomDetail.dueToday'), color: 'var(--health-yellow)' };
   if (diffMs < 0 && (health === undefined || health <= 0)) return { text: t('roomDetail.overdue'), color: 'var(--health-red)' };
   if (diffMs < 0) return { text: t('roomDetail.inMinutes').replace('{m}', '1'), color: 'var(--health-yellow)' };
 

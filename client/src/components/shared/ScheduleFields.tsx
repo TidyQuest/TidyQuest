@@ -5,16 +5,18 @@ import { wall } from '../../utils/clock';
 
 // Form controls for a task's scheduling options; the helpers live in utils/schedule.ts.
 
-const labelStyle = { fontSize: 11, fontWeight: 700, color: 'var(--warm-text-light)' };
+const labelStyle = { fontSize: 12, fontWeight: 700, color: 'var(--warm-text-light)' };
 const chip = (on: boolean) => ({
-  minWidth: 34, padding: '4px 6px', borderRadius: 16, fontSize: 11, fontWeight: 800, fontFamily: 'Nunito', cursor: 'pointer',
+  minWidth: 34, padding: '4px 6px', borderRadius: 'var(--shape-radius-control)', fontSize: 12, fontWeight: 800, fontFamily: 'Nunito', cursor: 'pointer',
   border: `1.5px solid ${on ? 'var(--warm-accent)' : 'var(--warm-border)'}`,
   backgroundColor: on ? 'var(--warm-accent-light)' : 'transparent', color: on ? 'var(--warm-accent)' : 'var(--warm-text-light)',
 });
 
 /** "Every [interval]" or "On [M T W T F S S]". */
-export function DueOnPicker({ value, onChange, interval, t, language, allowOnce = true }: {
+export function DueOnPicker({ value, onChange, interval, t, language, allowOnce = true, seg = false }: {
   value: ScheduleValue;
+  /** The modes as a row of buttons on their own line (the chore form, ENH-28) instead of a drop-down */
+  seg?: boolean;
   /** Offer "One time" (to-dos can be switched off in Settings → Features) */
   allowOnce?: boolean;
   onChange: (v: ScheduleValue) => void;
@@ -24,19 +26,27 @@ export function DueOnPicker({ value, onChange, interval, t, language, allowOnce 
 }) {
   const toggle = (day: number) => onChange({ ...value, weekdays: value.weekdays ^ (1 << day) });
   const week = weekOrder(useWeekStart());
+  // Switching to set days with none picked yet: start from today's weekday
+  const setMode = (mode: ScheduleValue['mode']) =>
+    onChange({ ...value, mode, weekdays: mode === 'weekdays' && !value.weekdays ? 1 << wall().weekday : value.weekdays });
+  const modes: Array<[ScheduleValue['mode'], string]> = [
+    ['interval', t('roomDetail.every')], ['weekdays', t('schedule.onDays')], ['monthly', t('schedule.monthly')],
+    ...((allowOnce || value.mode === 'once') ? [['once', t('schedule.once')] as [ScheduleValue['mode'], string]] : []),
+  ];
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-      <select className="tq-input-compact" value={value.mode} aria-label={t('schedule.dueMode')}
-        onChange={(e) => {
-          const mode = e.target.value as ScheduleValue['mode'];
-          // Switching to set days with none picked yet: start from today's weekday
-          onChange({ ...value, mode, weekdays: mode === 'weekdays' && !value.weekdays ? 1 << wall().weekday : value.weekdays });
-        }}>
-        <option value="interval">{t('roomDetail.every')}</option>
-        <option value="weekdays">{t('schedule.onDays')}</option>
-        <option value="monthly">{t('schedule.monthly')}</option>
-        {(allowOnce || value.mode === 'once') && <option value="once">{t('schedule.once')}</option>}
-      </select>
+      {seg ? (
+        <div className="cf-seg" role="group" aria-label={t('schedule.dueMode')}>
+          {modes.map(([m, label]) => (
+            <button type="button" key={m} className={value.mode === m ? 'on' : ''} aria-pressed={value.mode === m} onClick={() => setMode(m)}>{label}</button>
+          ))}
+        </div>
+      ) : (
+        <select className="tq-input-compact" value={value.mode} aria-label={t('schedule.dueMode')}
+          onChange={(e) => setMode(e.target.value as ScheduleValue['mode'])}>
+          {modes.map(([m, label]) => <option key={m} value={m}>{label}</option>)}
+        </select>
+      )}
       {value.mode === 'once' ? (
         <label style={{ ...labelStyle, display: 'flex', alignItems: 'center', gap: 6 }} title={t('schedule.oneTimeDesc')}>
           {t('schedule.doBy')}
@@ -86,7 +96,7 @@ function MonthlyPicker({ value, onChange, t, language }: {
         </select>
       )}
       {value.monthWeek === 0 && value.monthDay >= 29 && value.monthDay < 31 && (
-        <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--warm-text-muted)' }}>{t('schedule.shortMonths')}</span>
+        <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--warm-text-muted)' }}>{t('schedule.shortMonths')}</span>
       )}
     </div>
   );
@@ -224,7 +234,7 @@ export function StepsField({ value, onChange, t }: {
       <textarea id="tq-chore-steps" className="tq-input-compact" rows={Math.min(6, Math.max(2, count + 1))} value={value.steps}
         placeholder={t('focus.stepsPlaceholder')} maxLength={12 * 121}
         onChange={(e) => onChange({ ...value, steps: e.target.value })} style={{ resize: 'vertical', fontFamily: 'inherit' }} />
-      <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--warm-text-muted)' }}>{t('focus.stepsDesc')}</span>
+      <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--warm-text-muted)' }}>{t('focus.stepsDesc')}</span>
     </div>
   );
 }

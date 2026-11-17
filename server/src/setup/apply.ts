@@ -1,3 +1,4 @@
+import { markWhatsNewSeen } from '../utils/whatsNew';
 import bcrypt from 'bcryptjs';
 import db from '../database';
 import { createTask } from '../routes/tasks';
@@ -328,6 +329,8 @@ export function applySetup(requesterId: number, raw: unknown): SetupResult {
     }
 
     db.prepare("INSERT OR REPLACE INTO app_settings (key, value, updatedAt) VALUES ('setupDone', ?, datetime('now'))").run(new Date().toISOString());
+    // A family that just set up has nothing old to be told about (NEW-38)
+    markWhatsNewSeen((db.prepare('SELECT id FROM users').all() as Array<{ id: number }>).map((u) => u.id));
   });
   try {
     save();

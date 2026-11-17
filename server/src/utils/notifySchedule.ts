@@ -1,7 +1,7 @@
 import db, { currentDatabase, prepared } from '../database';
 import { taskName, tr, type TaskLabel } from './i18n';
 import { dropQueued, flushNotificationQueue, notificationsOn, notifyPeople } from './notify';
-import { atHome, taskAudience } from './notifyMessages';
+import { atHome, choreAudience, taskAudience } from './notifyMessages';
 import { dueBy } from './notifyChecks';
 import { isSeasonalNow } from './schedule';
 import { localDateStr } from './dateHelpers';
@@ -158,23 +158,24 @@ async function taskReminders(now: Date) {
         const late = (now.getTime() - first.getTime()) / 60000 - (stage - 1) * STAGE_GAP_MIN;
         if (late < 0 || late >= STAGE_WINDOW_MIN) continue;
         if (!dueBy(t, target, now)) continue;
-        const people = taskAudience(t);
-        const audience = atHome(people, now);
-        if (!audience) continue; // everyone it's for is on vacation: the parents aren't told either
+        const people = atHome(taskAudience(t), now);
+        if (!people) continue; // everyone it's for is on vacation: the parents aren't told either
+        const audience = choreAudience(t, now); // null: nobody wants this open chore's reminders, but a parent still hears at stage 3
         const key = (n: number) => `reminder:${t.id}:${day}:${n}`;
         const onlyIf = { taskDue: t.id, by: target.toISOString() };
+        if (stage < 3 && !audience) continue;
         if (stage === 1) {
           const tomorrow = !!t.reminderDayBefore;
-          await notifyPeople(audience, 'reminder', (lang) => tr(lang, tomorrow ? 'notify.reminderTomorrow' : 'notify.reminder', { task: taskName(lang, t) }),
+          await notifyPeople(audience!, 'reminder', (lang) => tr(lang, tomorrow ? 'notify.reminderTomorrow' : 'notify.reminder', { task: taskName(lang, t) }),
             { now, dedupeKey: key(1), onlyIf, ...(tomorrow ? { expiresAt: endOfDay(first) } : {}) });
         } else if (stage === 2) {
           dropQueued(key(1)); // a first reminder still waiting out quiet hours: this one takes its place
-          await notifyPeople(audience, 'reminder', (lang) => tr(lang, 'notify.reminderAgain', { task: taskName(lang, t) }), { now, dedupeKey: key(2), onlyIf });
+          await notifyPeople(audience!, 'reminder', (lang) => tr(lang, 'notify.reminderAgain', { task: taskName(lang, t) }), { now, dedupeKey: key(2), onlyIf });
         } else {
           const parents = atHome('parents', now);
           if (!parents) continue;
-          const names = Array.isArray(audience)
-            ? (db.prepare(`SELECT displayName FROM users WHERE id IN (${audience.map(() => '?').join(',')})`).all(...audience) as Array<{ displayName: string }>).map((u) => u.displayName).join(', ')
+          const names = Array.isArray(people)
+            ? (db.prepare(`SELECT displayName FROM users WHERE id IN (${people.map(() => '?').join(',')})`).all(...people) as Array<{ displayName: string }>).map((u) => u.displayName).join(', ')
             : '';
           await notifyPeople(parents, 'reminder', (lang) => tr(lang, 'notify.reminderParents', { task: taskName(lang, t) }) + (names ? ` (${names})` : ''), { now, dedupeKey: key(3), onlyIf });
         }
