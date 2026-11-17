@@ -707,8 +707,8 @@ html[data-theme='galaxy'], html[data-theme='lava'] {
   --warm-coin: #FBBF24;
   --health-green-bg: #1A2E1A;
   --health-yellow-bg: #2E2A1A;
-  --health-deep: #B9403F; /* ENH-34: the 0% end of the health colours, brighter on dark cards */
   --health-red-bg: #2E1A1A;
+  --health-deep: #B9403F; /* ENH-34: the 0% end of the health colours, brighter on dark cards */
   --warm-shadow: rgba(0, 0, 0, 0.35);
   --status-approved-text: #4ADE80;
   --status-approved-bg: #1A2E1A;
@@ -862,8 +862,8 @@ html[data-season-colors='halloween'] {
   --health-bar-track: #3B2F52;
   --health-green-bg: #1A2E1A;
   --health-yellow-bg: #2E2A1A;
-  --health-deep: #B9403F; /* ENH-34: the 0% end of the health colours, brighter on dark cards */
   --health-red-bg: #2E1A1A;
+  --health-deep: #B9403F; /* ENH-34: the 0% end of the health colours, brighter on dark cards */
   --warm-shadow: rgba(0, 0, 0, 0.35);
   --warm-primary-shadow: rgba(249, 115, 22, 0.3);
   --status-approved-text: #4ADE80;
