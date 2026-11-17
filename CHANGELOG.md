@@ -9,6 +9,8 @@ What changed in each release, in plain language, newest first. Releases up to v0
 
 ## Unreleased
 
+## v0.19.0 (2026-11-17)
+
 ### Added
 
 - **Activity shows who approved a chore.** A chore a parent approved now says "✅ Approved by" and that parent's name,
