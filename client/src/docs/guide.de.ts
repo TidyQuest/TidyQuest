@@ -256,7 +256,7 @@ export const GUIDE_DE: GuideSection[] = [
       { ul: [
         'Vergessen, auf Erledigt zu tippen? Öffne die Aufgabe in ihrem Raum (tippe sie an), tippe auf 📅 Früher erledigt…, wähle den Tag (bis zu 7 Tage zurück) und tippe auf Eintragen. Eltern und Mitglieder können wählen, wer es gemacht hat.',
         'Sie zählt für diesen Tag: für Serien, das Wochenziel, das Board und den Kalender. Füllt sie den Tag, an dem eine Serie gerissen ist, kommt die Serie zurück. Ein Ziel, dessen Woche vorbei ist, zahlt seinen Bonus trotzdem, sobald die Münzen reichen.',
-        'Sie bringt die üblichen Münzen der Aufgabe, ohne doppelte Münzen oder Rettungsmission. Alle außer Eltern warten auf die Freigabe eines Elternteils, auch ohne Strenger Modus. Aktivität und die Freigabeliste markieren sie mit 🕘 Nachgetragen.',
+        'Sie bringt die üblichen Münzen der Aufgabe, ohne doppelte Münzen oder Rettungsmission. Alle außer Eltern warten auf die Freigabe eines Elternteils, auch ohne Strenger Modus. Aktivität, der Kalender und die Freigabeliste markieren sie mit 🕘 Nachgetragen (der Kalender zeigt das statt einer Uhrzeit, dazu eine Notiz, falls vorhanden).',
         'Nicht möglich an einem Tag, an dem die Aufgabe schon erledigt war (bei Erster gewinnt von irgendwem), vor dem Anlegen der Aufgabe oder ihrem Startdatum, oder an einem Tag, an dem sie noch nicht fällig war.',
       ] },
       { h: 'Eine Aufgabe pausieren' },

@@ -39,6 +39,8 @@ interface Completion {
   userId: number;
   displayName: string;
   participants?: Array<{ id: number; displayName: string }>;
+  loggedAt?: string | null;
+  note?: string | null;
 }
 
 interface CalendarProps {
@@ -137,7 +139,7 @@ export function Calendar({ tasks, language, onOpenTask, viewer }: CalendarProps)
   const selectedLabel = selected ? new Date(year, month, selected).toLocaleDateString(locale, { weekday: 'long', month: 'long', day: 'numeric' }) : '';
 
   const navBtn = { width: 36, height: 36, borderRadius: 12, border: 'var(--shape-border-w) solid var(--warm-border)', background: 'var(--warm-bg-subtle)', color: 'var(--warm-text)', cursor: 'pointer', fontSize: 18, fontWeight: 800, fontFamily: 'Nunito' } as const;
-  const itemRow = (key: string, iconKey: string | undefined, title: string, subtitle: string, onClick?: () => void) => (
+  const itemRow = (key: string, iconKey: string | undefined, title: string, subtitle: string, onClick?: () => void, note?: string | null) => (
     <button key={key} onClick={onClick} disabled={!onClick} style={{
       display: 'flex', alignItems: 'center', gap: 10, width: '100%', textAlign: 'left', padding: '10px 4px',
       border: 'none', borderBottom: '1px solid var(--warm-border)', background: 'none', cursor: onClick ? 'pointer' : 'default', fontFamily: 'Nunito', color: 'inherit',
@@ -148,6 +150,7 @@ export function Calendar({ tasks, language, onOpenTask, viewer }: CalendarProps)
       <span style={{ flex: 1, minWidth: 0 }}>
         <span style={{ display: 'block', fontSize: 13, fontWeight: 700, color: 'var(--warm-text)' }}>{title}</span>
         <span style={{ display: 'block', fontSize: 12, color: 'var(--warm-text-light)', fontWeight: 600 }}>{subtitle}</span>
+        {note && <span style={{ display: 'block', fontSize: 12, color: 'var(--warm-text-secondary)', fontWeight: 600, overflowWrap: 'anywhere', marginTop: 2 }}>“{note}”</span>}
       </span>
     </button>
   );
@@ -234,10 +237,12 @@ export function Calendar({ tasks, language, onOpenTask, viewer }: CalendarProps)
                 <div style={{ fontSize: 12, fontWeight: 800, color: 'var(--health-green)', marginTop: 12 }}>{t('calendar.choresDone')}</div>
                 {selectedDone.map((c) => {
                   const who = c.participants && c.participants.length > 1 ? c.participants.map((p) => p.displayName).join(' & ') : c.displayName;
-                  const time = new Date(c.completedAt).toLocaleTimeString(locale, { hour: 'numeric', minute: '2-digit', timeZone: familyZone() });
+                  // A late log is stored at noon of the chosen day: say "Logged late" rather than a made-up time
+                  const time = c.loggedAt ? `🕘 ${t('late.tag')}`
+                    : new Date(c.completedAt).toLocaleTimeString(locale, { hour: 'numeric', minute: '2-digit', timeZone: familyZone() });
                   return itemRow(`c${c.id}`, tasks.find((tk) => tk.id === c.taskId)?.iconKey, taskName(c.taskName, c.translationKey),
                     `${roomDisplayName(c.roomName, c.roomType || '')} · ${t('history.by')} ${who} · ${time}`,
-                    onOpenTask ? () => onOpenTask(c.roomId, c.taskId) : undefined);
+                    onOpenTask ? () => onOpenTask(c.roomId, c.taskId) : undefined, c.note);
                 })}
               </>
             )}

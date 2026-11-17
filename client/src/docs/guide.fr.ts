@@ -256,7 +256,7 @@ export const GUIDE_FR: GuideSection[] = [
       { ul: [
         'Oublié d’appuyer sur Fait ? Ouvrez la tâche dans sa pièce (touchez-la), appuyez sur 📅 Fait plus tôt…, choisissez le jour (jusqu’à 7 jours en arrière) puis Noter. Les parents et les membres peuvent choisir qui l’a fait.',
         'Elle compte pour ce jour-là : pour les séries, l’objectif de la semaine, le Tableau et le Calendrier. Si elle remplit le jour qui a cassé une série, la série revient. Un objectif dont la semaine est finie verse quand même son bonus quand les pièces l’atteignent.',
-        'Elle rapporte les pièces habituelles de la tâche, sans pièces doublées ni Mission sauvetage. Tout le monde sauf les parents attend l’accord d’un parent, même sans le Mode strict. Activité et la liste à approuver la marquent 🕘 Noté en retard.',
+        'Elle rapporte les pièces habituelles de la tâche, sans pièces doublées ni Mission sauvetage. Tout le monde sauf les parents attend l’accord d’un parent, même sans le Mode strict. Activité, le Calendrier et la liste à approuver la marquent 🕘 Noté en retard (le Calendrier l’affiche à la place de l’heure, avec la note éventuelle).',
         'Impossible de la noter un jour où la tâche était déjà faite (en Premier arrivé, premier servi, par n’importe qui), avant que la tâche soit ajoutée ou avant sa date de début, ou un jour où elle n’était pas encore à faire.',
       ] },
       { h: 'Mettre une tâche en pause' },

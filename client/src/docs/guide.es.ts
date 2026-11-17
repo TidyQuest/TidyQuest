@@ -256,7 +256,7 @@ export const GUIDE_ES: GuideSection[] = [
       { ul: [
         '¿Se te olvidó tocar Hecho? Abre la tarea en su habitación (tócala), toca 📅 Hecho antes…, elige el día (hasta 7 días atrás) y toca Apuntar. Los padres y los miembros pueden elegir quién lo hizo.',
         'Cuenta para ese día: para las rachas, el objetivo semanal, el Tablero y el Calendario. Si llena el día que rompió una racha, la racha vuelve. Un objetivo cuya semana ya terminó paga igualmente su bono cuando las monedas lo alcanzan.',
-        'Da las monedas de siempre de la tarea, sin monedas dobles ni Misión de rescate. Todos menos los padres esperan la aprobación de un padre, aunque el Modo estricto esté apagado. Actividad y la lista de aprobaciones la marcan 🕘 Apuntado tarde.',
+        'Da las monedas de siempre de la tarea, sin monedas dobles ni Misión de rescate. Todos menos los padres esperan la aprobación de un padre, aunque el Modo estricto esté apagado. Actividad, el Calendario y la lista de aprobaciones la marcan 🕘 Apuntado tarde (el Calendario lo muestra en lugar de una hora, con la nota si la hay).',
         'No se puede poner en un día en que la tarea ya estaba hecha (con El primero gana, por cualquiera), antes de que se añadiera la tarea o de su fecha de inicio, ni en un día en que todavía no tocaba.',
       ] },
       { h: 'Pausar una tarea' },

@@ -256,7 +256,7 @@ export const GUIDE_IT: GuideSection[] = [
       { ul: [
         'Hai dimenticato di toccare Fatto? Apri la faccenda nella sua stanza (toccala), tocca 📅 Fatto prima…, scegli il giorno (fino a 7 giorni fa) e tocca Segna. Genitori e membri possono scegliere chi l’ha fatta.',
         'Conta per quel giorno: per le serie, l’obiettivo settimanale, la Classifica e il Calendario. Se riempie il giorno che ha interrotto una serie, la serie torna. Un obiettivo la cui settimana è finita paga comunque il suo bonus quando le monete lo raggiungono.',
-        'Dà le solite monete della faccenda, senza monete doppie né Missione di salvataggio. Tutti tranne i genitori aspettano l’approvazione di un genitore, anche con la Modalità rigorosa spenta. Attività e l’elenco da approvare la segnano 🕘 Segnato in ritardo.',
+        'Dà le solite monete della faccenda, senza monete doppie né Missione di salvataggio. Tutti tranne i genitori aspettano l’approvazione di un genitore, anche con la Modalità rigorosa spenta. Attività, il Calendario e l’elenco da approvare la segnano 🕘 Segnato in ritardo (il Calendario lo mostra al posto dell’ora, con l’eventuale nota).',
         'Non si può mettere in un giorno in cui la faccenda era già fatta (con Primo arrivato, da chiunque), prima che la faccenda fosse aggiunta o della sua data di inizio, o in un giorno in cui non era ancora da fare.',
       ] },
       { h: 'Mettere in pausa una faccenda' },

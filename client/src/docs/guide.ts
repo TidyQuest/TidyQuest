@@ -280,7 +280,7 @@ export const GUIDE_EN: GuideSection[] = [
       { ul: [
         'Forgot to tap Done? Open the chore in its room (tap it), tap 📅 Done earlier…, pick the day (up to 7 days back) and tap Log it. Parents and members can pick who did it.',
         'It counts on that day: for streaks, the weekly goal, the Board and the Calendar. If it fills the day that broke a streak, the streak comes back. A goal whose week has ended still pays its bonus once the coins reach it.',
-        'It pays the chore’s usual coins, without double coins or the Rescue Mission. Everyone but parents waits for a parent’s approval, even with Strict Mode off. Activity and the approval list mark it 🕘 Logged late.',
+        'It pays the chore’s usual coins, without double coins or the Rescue Mission. Everyone but parents waits for a parent’s approval, even with Strict Mode off. Activity, the Calendar and the approval list mark it 🕘 Logged late (the Calendar shows that instead of a time, plus any note).',
         'It can’t go on a day the chore was already done (with First come, first served, by anyone), before the chore was added or its start date, or on a day it wasn’t due yet.',
       ] },
       { h: 'Pausing a chore' },

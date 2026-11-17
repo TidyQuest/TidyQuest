@@ -256,7 +256,7 @@ export const GUIDE_NL: GuideSection[] = [
       { ul: [
         'Vergeten op Klaar! te tikken? Open het klusje in zijn kamer (tik erop), tik op 📅 Eerder gedaan…, kies de dag (tot 7 dagen terug) en tik op Invullen. Ouders en leden kunnen kiezen wie het deed.',
         'Het telt voor die dag: voor reeksen, het weekdoel, het Scorebord en de Kalender. Vult het de dag waarop een reeks brak, dan komt de reeks terug. Een doel waarvan de week voorbij is, betaalt zijn bonus toch zodra de munten het halen.',
-        'Het levert de gewone munten van het klusje op, zonder dubbele munten of Reddingsmissie. Iedereen behalve ouders wacht op goedkeuring van een ouder, ook als Oudercontrole uit staat. Activiteit en de goedkeuringslijst markeren het met 🕘 Te laat ingevuld.',
+        'Het levert de gewone munten van het klusje op, zonder dubbele munten of Reddingsmissie. Iedereen behalve ouders wacht op goedkeuring van een ouder, ook als Oudercontrole uit staat. Activiteit, de Kalender en de goedkeuringslijst markeren het met 🕘 Te laat ingevuld (de Kalender toont dat in plaats van een tijd, met de eventuele notitie).',
         'Het kan niet op een dag waarop het klusje al gedaan was (bij Wie het eerst komt, wie het eerst maalt, door wie dan ook), vóór het klusje werd toegevoegd of vóór de startdatum, of op een dag waarop het nog niet hoefde.',
       ] },
       { h: 'Een klusje pauzeren' },
