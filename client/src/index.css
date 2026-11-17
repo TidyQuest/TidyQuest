@@ -659,9 +659,8 @@ html:has(.tq-modal-overlay) { overscroll-behavior-y: none; }
   .settings-layout { grid-template-columns: minmax(260px, 320px) minmax(0, 1fr); }
   /* The list scrolls by itself, so opening a lower section doesn't lose your place in it */
   .settings-index {
-    /* dvh: on a tablet, 100vh counts the space under the browser's toolbar, which hid the last rows (Guide was the
-       last one you could reach); browsers without dvh keep 100vh */
-    position: sticky; top: var(--space-lg); max-height: calc(100vh - 2 * var(--space-lg)); max-height: calc(100dvh - 2 * var(--space-lg));
+    /* Its max-height comes from useFitToScreen: from where the list really is down to the bottom of the screen */
+    position: sticky; top: var(--space-lg); max-height: calc(100dvh - 2 * var(--space-lg));
     overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; padding-right: 4px;
   }
   .settings-back { display: none; }
@@ -2343,3 +2342,24 @@ html[data-look='calm'] .today-tabs button.on { background: var(--warm-card); }
   border: var(--shape-border-w) solid var(--warm-border); background: var(--warm-bg-subtle); color: var(--warm-text);
   border-radius: 99px; padding: 4px 10px; font: inherit; font-size: 12px; font-weight: 800; cursor: pointer;
 }
+/* The guide on wide screens: search and topics on the left (sized to the screen, scrolls by itself), the open
+   topic on the right at a reading width */
+.guide-wide { display: grid; grid-template-columns: minmax(250px, 320px) minmax(0, 780px); gap: var(--space-xl); align-items: start; }
+.guide-aside {
+  position: sticky; top: var(--space-lg); display: grid; gap: 12px; align-content: start; min-width: 0;
+  overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; padding-right: 4px;
+}
+.guide-reading { display: grid; gap: 14px; min-width: 0; }
+.guide-topics { display: grid; gap: 2px; padding: 6px; }
+.guide-topic {
+  display: flex; align-items: center; gap: 8px; width: 100%; text-align: left; padding: 8px 10px; border: none;
+  border-radius: 10px; background: none; color: var(--warm-text); font: inherit; font-size: 14px; font-weight: 800; cursor: pointer;
+}
+.guide-topic:hover { background: var(--warm-bg-subtle); }
+.guide-topic.on { background: var(--warm-accent-light); color: var(--warm-accent); }
+.guide-topic-subs { display: grid; gap: 0; margin: 2px 0 6px 34px; border-left: 2px solid var(--warm-border); }
+.guide-topic-subs button {
+  text-align: left; padding: 5px 10px; border: none; background: none; color: var(--warm-text-secondary);
+  font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; border-radius: 0 8px 8px 0;
+}
+.guide-topic-subs button:hover { background: var(--warm-bg-subtle); color: var(--warm-text); }

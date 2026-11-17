@@ -1,6 +1,7 @@
-import { Fragment, Suspense, use, useEffect, useState, type ReactNode } from 'react';
+import { Fragment, Suspense, use, useEffect, useRef, useState, type ReactNode } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from '../../hooks/useTranslation';
+import { WIDE, useFitToScreen, useMediaQuery } from '../../hooks/useWideLayout';
 import { guideFor, type GuideBlock, type GuideSection } from '../../docs/guide';
 
 /** Guide text without its **bold** marks, lower case, for search */
@@ -33,7 +34,8 @@ function marked(s: string, q: string): ReactNode {
 /** Guide text: **x** is bold (a menu path, with →, also in the accent colour); search words are marked */
 function Rich({ s, q }: { s: string; q: string }) {
   return <>{s.split(/\*\*(.+?)\*\*/g).map((part, i) => i % 2
-    ? <strong key={i} className={part.includes('→') ? 'guide-path' : 'guide-bold'}>{marked(part, q)}</strong>
+    // A label ("…in Settings → Family Members:") stays dark even with a path in it; only a bare path is coloured
+    ? <strong key={i} className={part.includes('→') && !/:\s*$/.test(part) ? 'guide-path' : 'guide-bold'}>{marked(part, q)}</strong>
     : <Fragment key={i}>{marked(part, q)}</Fragment>)}</>;
 }
 
@@ -104,6 +106,36 @@ export function Guide({ language, onWhatsNew }: { language?: string; onWhatsNew?
   return <Suspense fallback={null}><GuideBody language={language} onWhatsNew={onWhatsNew} /></Suspense>;
 }
 
+/** A section's title line: icon, title and the "For parents" tag */
+function SectionTitle({ s, forParents }: { s: GuideSection; forParents: string }) {
+  return (
+    <>
+      <span aria-hidden="true">{s.icon}</span> {s.title}
+      {s.parents && <span style={{ fontSize: 12, fontWeight: 800, color: 'var(--warm-text-light)', border: '1px solid var(--warm-border)', borderRadius: 99, padding: '2px 8px' }}>{forParents}</span>}
+    </>
+  );
+}
+
+/** A section's text: its sub-heading jumps (phones; wide screens list them on the left), then the blocks */
+function SectionBody({ s, query, contents, chips }: { s: GuideSection; query: string; contents: string; chips: boolean }) {
+  const q = query.trim().toLowerCase();
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 12 }}>
+      {chips && !q && s.blocks.filter((b) => 'h' in b).length >= 3 && (
+        <nav aria-label={contents} className="guide-subnav">
+          {s.blocks.map((b, i) => 'h' in b && (
+            <button key={i} type="button" onClick={() => scrollToHeading(s.id, i)}>{b.h}</button>
+          ))}
+        </nav>
+      )}
+      {visibleBlocks(s, q).map(({ b, i }) => <Block key={i} b={b} query={query} id={`guide-${s.id}-${i}`} />)}
+    </div>
+  );
+}
+
+const scrollToHeading = (sectionId: string, i: number) =>
+  document.getElementById(`guide-${sectionId}-${i}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
 function GuideBody({ language, onWhatsNew }: { language?: string; onWhatsNew?: () => void }) {
   const { t } = useTranslation(language);
   const navigate = useNavigate();
@@ -111,8 +143,14 @@ function GuideBody({ language, onWhatsNew }: { language?: string; onWhatsNew?: (
   const guide = guideFor(language);
   const sections = Array.isArray(guide) ? guide : use(guide);
   const [query, setQuery] = useState('');
-  // Sections start closed; a link like /guide#troubleshooting opens that one
-  const [open, setOpen] = useState<Set<string>>(() => new Set(location.hash ? [location.hash.slice(1)] : []));
+  const wide = useMediaQuery(WIDE);
+  const asideRef = useRef<HTMLElement>(null);
+  useFitToScreen(asideRef, wide);
+  const hashId = location.hash.slice(1);
+  // Phones: sections start closed; a link like /guide#troubleshooting opens that one
+  const [open, setOpen] = useState<Set<string>>(() => new Set(hashId ? [hashId] : []));
+  // Wide screens: one topic at a time, the one in the address (#chores), else the first
+  const current = sections.find((s) => s.id === hashId) ?? sections[0];
   const q = query.trim().toLowerCase();
   const shown = q ? sections.filter((s) => sectionText(s).includes(q)) : sections;
   const toggle = (id: string, on: boolean) => setOpen((prev) => { const next = new Set(prev); if (on) next.add(id); else next.delete(id); return next; });
@@ -121,11 +159,19 @@ function GuideBody({ language, onWhatsNew }: { language?: string; onWhatsNew?: (
     window.history.replaceState(null, '', `#${id}`);
     window.setTimeout(() => document.getElementById(`guide-${id}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
   };
-  // Arriving with a hash (Settings → Troubleshooting): go to that section once it has opened. Things that
+  // Wide screens: picking a topic shows it on the right, from its top
+  const pick = (id: string, heading?: number) => {
+    navigate({ hash: `#${id}` }, { replace: true });
+    window.setTimeout(() => {
+      if (heading !== undefined) scrollToHeading(id, heading);
+      else document.getElementById('guide-reading')?.scrollIntoView({ block: 'start' });
+    }, 30);
+  };
+  // Arriving with a hash on a phone (Settings → Troubleshooting): go to that section once it has opened. Things that
   // load late above it (the season strip) push it down, so follow it for a moment unless the reader moves first.
   useEffect(() => {
     const id = location.hash.slice(1);
-    if (!id) return;
+    if (!id || window.matchMedia(WIDE).matches) return;
     const go = () => document.getElementById(`guide-${id}`)?.scrollIntoView({ block: 'start' });
     const timer = window.setTimeout(go, 50);
     const follow = new ResizeObserver(go);
@@ -137,40 +183,72 @@ function GuideBody({ language, onWhatsNew }: { language?: string; onWhatsNew?: (
     return () => { window.clearTimeout(timer); window.clearTimeout(settle); stop(); };
   }, [location.hash]);
 
+  const top = (
+    <div className="tq-card tq-card-padded" style={{ display: 'grid', gap: 10 }}>
+      {!wide && <p style={text}>{t('guide.intro')}</p>}
+      {onWhatsNew && <button type="button" className="tq-btn tq-btn-secondary tq-btn-sm" style={{ justifySelf: 'start' }} onClick={onWhatsNew}>📣 {t('whatsNew.replay')}</button>}
+      <input className="tq-input" type="search" value={query} onChange={(e) => setQuery(e.target.value)} placeholder={t('guide.search')} aria-label={t('guide.search')} />
+      {!q && !wide && (
+        <nav aria-label={t('guide.contents')} style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+          {sections.map((s) => (
+            <button key={s.id} type="button" className="tq-btn tq-btn-secondary tq-btn-sm" onClick={() => jump(s.id)}>{s.icon} {s.title}</button>
+          ))}
+        </nav>
+      )}
+    </div>
+  );
+  const back = <button type="button" className="tq-btn tq-btn-secondary tq-btn-sm" style={{ justifySelf: 'start' }} onClick={() => navigate('/settings')}>← {t('nav.settings')}</button>;
+  const titleStyle = { display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', fontSize: 16, fontWeight: 900, color: 'var(--warm-text)' } as const;
+
+  // Wide screens: search and the topics (with the open topic's sub-headings) on the left, one topic on the right.
+  // While searching, the right side shows the matching parts of every topic.
+  if (wide) {
+    return (
+      <div className="page-enter guide-wide">
+        <aside ref={asideRef} className="guide-aside">
+          {back}
+          {top}
+          <nav aria-label={t('guide.contents')} className="tq-card guide-topics">
+            {shown.map((s) => {
+              const on = !q && s.id === current.id;
+              return (
+                <div key={s.id}>
+                  <button type="button" className={`guide-topic${on ? ' on' : ''}`} aria-current={on ? 'true' : undefined}
+                    onClick={() => (q ? document.getElementById(`guide-${s.id}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' }) : pick(s.id))}>
+                    <span aria-hidden="true">{s.icon}</span> {s.title}
+                  </button>
+                  {on && s.blocks.some((b) => 'h' in b) && (
+                    <div className="guide-topic-subs">
+                      {s.blocks.map((b, i) => 'h' in b && <button key={i} type="button" onClick={() => pick(s.id, i)}>{b.h}</button>)}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+            {shown.length === 0 && <div className="tq-empty-state">{t('guide.noMatch')}</div>}
+          </nav>
+        </aside>
+        <div id="guide-reading" className="guide-reading">
+          {(q ? shown : [current]).map((s) => (
+            <section key={s.id} id={`guide-${s.id}`} className="tq-card" style={{ padding: '18px 22px', scrollMarginTop: 16 }}>
+              <h2 style={{ ...titleStyle, fontSize: 20, margin: 0 }}><SectionTitle s={s} forParents={t('guide.forParents')} /></h2>
+              <SectionBody s={s} query={query} contents={t('guide.contents')} chips={false} />
+            </section>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="page-enter tq-page-narrow" style={{ display: 'grid', gap: 14 }}>
-      <button type="button" className="tq-btn tq-btn-secondary tq-btn-sm" style={{ justifySelf: 'start' }} onClick={() => navigate('/settings')}>← {t('nav.settings')}</button>
-      <div className="tq-card tq-card-padded" style={{ display: 'grid', gap: 10 }}>
-        <p style={text}>{t('guide.intro')}</p>
-        {onWhatsNew && <button type="button" className="tq-btn tq-btn-secondary tq-btn-sm" style={{ justifySelf: 'start' }} onClick={onWhatsNew}>📣 {t('whatsNew.replay')}</button>}
-        <input className="tq-input" type="search" value={query} onChange={(e) => setQuery(e.target.value)} placeholder={t('guide.search')} aria-label={t('guide.search')} />
-        {!q && (
-          <nav aria-label={t('guide.contents')} style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-            {sections.map((s) => (
-              <button key={s.id} type="button" className="tq-btn tq-btn-secondary tq-btn-sm" onClick={() => jump(s.id)}>{s.icon} {s.title}</button>
-            ))}
-          </nav>
-        )}
-      </div>
-
+      {back}
+      {top}
       {shown.map((s) => (
         <details key={s.id} id={`guide-${s.id}`} className="tq-card" open={!!q || open.has(s.id)}
           onToggle={(e) => { if (!q) toggle(s.id, (e.target as HTMLDetailsElement).open); }} style={{ padding: '14px 16px', scrollMarginTop: 80 }}>
-          <summary style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', fontSize: 16, fontWeight: 900, color: 'var(--warm-text)' }}>
-            <span aria-hidden="true">{s.icon}</span> {s.title}
-            {s.parents && <span style={{ fontSize: 12, fontWeight: 800, color: 'var(--warm-text-light)', border: '1px solid var(--warm-border)', borderRadius: 99, padding: '2px 8px' }}>{t('guide.forParents')}</span>}
-          </summary>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 12 }}>
-            {/* A longer section starts with its sub-headings, each a jump to that part */}
-            {!q && s.blocks.filter((b) => 'h' in b).length >= 3 && (
-              <nav aria-label={t('guide.contents')} className="guide-subnav">
-                {s.blocks.map((b, i) => 'h' in b && (
-                  <button key={i} type="button" onClick={() => document.getElementById(`guide-${s.id}-${i}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' })}>{b.h}</button>
-                ))}
-              </nav>
-            )}
-            {visibleBlocks(s, q).map(({ b, i }) => <Block key={i} b={b} query={query} id={`guide-${s.id}-${i}`} />)}
-          </div>
+          <summary style={{ ...titleStyle, cursor: 'pointer' }}><SectionTitle s={s} forParents={t('guide.forParents')} /></summary>
+          <SectionBody s={s} query={query} contents={t('guide.contents')} chips />
         </details>
       ))}
       {shown.length === 0 && <div className="tq-empty-state">{t('guide.noMatch')}</div>}

@@ -53,6 +53,11 @@ What changed in each release, in plain language, newest first. Releases up to v0
   its sub-headings; tap one to jump there. Searching now marks the words you typed and shows only the matching parts
   of each topic, each under its sub-heading, instead of the whole topic. In all six languages.
 
+- **The guide uses the whole screen on a computer or tablet.** Search and the list of topics sit on the left, with
+  the open topic's sub-headings under it, and the topic you picked fills the right at a comfortable reading width,
+  instead of one narrow column with empty space beside it. Searching shows the matching parts of every topic on the
+  right. Phones keep the one-column guide.
+
 - **Badges use the same drawn icons as chores.** In Settings → Badges, a new badge's icon is picked from the same
   sheet as a chore's (Wins & extras first, then every area, with search and a suggestion from the badge's name),
   and it shows on Achievements, the "Next badge" line and the badge list. Badges made before keep their emoji until
@@ -165,9 +170,10 @@ What changed in each release, in plain language, newest first. Releases up to v0
 
 ### Fixed
 
-- **Settings on a tablet shows its whole list.** On a wide screen (a tablet, or a big phone held sideways) the
-  list of settings could stop at Guide & help: its height counted the space under the browser's toolbar, so
-  Troubleshooting and Setup wizard were out of reach.
+- **Settings on a computer or tablet shows its whole list.** On a wide screen the list of settings scrolls by
+  itself, but it was as tall as the whole window while the page title sat above it, so its bottom was below the
+  screen: scrolling over the list stopped at Guide & help, and Troubleshooting and Setup wizard were out of reach.
+  The list now ends where the screen ends.
 
 - **The Calendar marks chores logged late.** A chore entered with 📅 Done earlier… used to show "12:00 PM" on the
   Calendar, as if it had really been done at noon. It now says "🕘 Logged late" instead of a time, and shows its note.

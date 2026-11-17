@@ -1,5 +1,6 @@
-import { useState, type ReactNode } from 'react';
+import { useRef, useState, type ReactNode } from 'react';
 import { useTranslation } from '../../hooks/useTranslation';
+import { WIDE, useFitToScreen, useMediaQuery } from '../../hooks/useWideLayout';
 
 // ENH-27: Settings as a short index. Each row opens its section (its own page on a phone, beside the index on a
 // desktop); the search box narrows the rows by title, summary and the names of the settings inside.
@@ -32,12 +33,15 @@ export function SettingsIndex({ groups, selected, language, footer }: {
 }) {
   const { t } = useTranslation(language);
   const [query, setQuery] = useState('');
+  // Beside the open section (wide screens) the list scrolls by itself and ends where the screen ends
+  const navRef = useRef<HTMLElement>(null);
+  useFitToScreen(navRef, useMediaQuery(WIDE));
   const q = fold(query.trim());
   const shown = groups
     .map((g) => ({ ...g, rows: q ? g.rows.filter((r) => fold([r.title, r.summary ?? '', ...(r.keywords ?? [])].join(' ')).includes(q)) : g.rows }))
     .filter((g) => g.rows.length > 0);
   return (
-    <nav className="settings-index" aria-label={t('nav.settings')}>
+    <nav ref={navRef} className="settings-index" aria-label={t('nav.settings')}>
       <input type="search" className="tq-input settings-search" value={query} onChange={(e) => setQuery(e.target.value)}
         placeholder={t('settingsIndex.search')} aria-label={t('settingsIndex.search')} />
       {shown.map((g) => (
