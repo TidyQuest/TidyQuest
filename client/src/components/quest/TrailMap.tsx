@@ -66,6 +66,8 @@ function TrailMapImpl({ world, length, spaces, players, meId, myPos, jump, reach
       ...T0, isAutumn: world === 'woods', isWinter: world === 'summit', isSpring: world === 'blossom', isSummer: world === 'shores',
       halo: `0 0 2px ${g}, 0 0 5px ${g}, 0 0 9px ${g}`, goS: look(T0.goS), backS: look(T0.backS),
       kicker: texts.kicker, title: texts.title, sub: texts.sub, keyTitle: texts.keyTitle,
+      // The banner is 250 px wide inside: long world names (and other languages) get a smaller size
+      titleSize: texts.title.length > 26 ? 15 : texts.title.length > 21 ? 17 : texts.title.length > 16 ? 20 : 24,
     };
     const L = T0.land.c;
     const V = {

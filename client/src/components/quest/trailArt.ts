@@ -264,7 +264,7 @@ export function topHtml(V: any): string {
   const { T, mapKey } = V;
   return `<div style="position: absolute; left: 16px; top: 22px; width: 282px; box-sizing: border-box; padding: 14px 16px 15px; border-radius: 18px; background: ${T.banner}; border: 2px solid ${T.edge}; box-shadow: 0 4px 0 ${T.edge}">
 <div style="font-size: 12px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: ${T.accentInk}">${T.kicker}</div>
-<div style="font-family: Fredoka, Nunito, sans-serif; font-weight: 600; font-size: 24px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.1; margin-top: 2px; color: ${T.ink}">${T.title}</div>
+<div style="font-family: Fredoka, Nunito, sans-serif; font-weight: 600; font-size: ${T.titleSize}px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.1; margin-top: 2px; color: ${T.ink}">${T.title}</div>
 <div style="font-size: 13px; font-weight: 700; margin-top: 6px; color: ${T.muted}">${T.sub}</div>
 </div>
 <div style="position: absolute; left: 16px; top: 146px; width: 358px; box-sizing: border-box; padding: 12px 14px 14px; border-radius: 18px; background: ${T.banner}; border: 2px solid ${T.edge}; box-shadow: 0 4px 0 ${T.edge}">
