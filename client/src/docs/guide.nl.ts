@@ -248,7 +248,9 @@ export const GUIDE_NL: GuideSection[] = [
         'Een kamer opent met een korte samenvatting (de staat, hoeveel klusjes te laat zijn of vandaag nog moeten, en de munten die klaarliggen), daarna de klusjes onder Te laat, Vandaag, Deze week, Wanneer nodig en Gepauzeerd; ‘Toon … meer · later’ toont de klusjes die pas na deze week moeten. De chips Alle, Mijn, Te laat en Gepauzeerd beperken de lijst. De laatste chip, Wanneer het moet, is de sortering: kies een andere volgorde (staat, naam, munten…) voor één lijst; de pijl ernaast keert die om. ← gaat terug naar de kamers; ouders vinden Ruimte dupliceren onder ⋯ in de samenvatting.',
         'De 📎-knop in het geopende klusje voegt een notitie of foto toe als bewijs.',
         'Als een ouder het goedkeurt, blijven de notitie en foto bij het klusje in Activiteit (tik op de foto om hem groot te zien). Ouders zien die van iedereen, de anderen alleen hun eigen. De link naar een foto opent voor niemand anders, ook niet na het uitloggen. Ongedaan maken of afwijzen van het klusje verwijdert de foto.',
-        'Ouders en leden kunnen een klusje voor iemand anders op klaar zetten ("wie heeft het gedaan?").',
+        "**Volwassenen (ouders en leden) kunnen een klusje voor iemand anders op klaar zetten.** Bij een toegewezen klusje vraagt Klaar! „Wie heeft dit klusje gedaan?”. Bij een klusje dat iedereen mag doen, telt Klaar! voor jou, en een balk zegt „… telt voor jou” met **Wijzigen**, ongeveer 10 seconden lang (langer zolang je erop staat): tik op Wijzigen en kies wie het echt deed. De munten, reeks en badges gaan dan naar die persoon alsof die zelf op Klaar! tikte, en bij jou blijft niets over. Wijzigen kan 10 minuten; daarna maak je het ongedaan in Activiteit.",
+        "**👥 Gedaan voor iemand…** in het geopende klusje kiest eerst wie het deed en zet het dan op klaar. Die persoon krijgt een melding („Papa heeft … voor je als gedaan gemarkeerd”), en Activiteit toont „Als gedaan gemarkeerd door Papa”. Met Oudercontrole is het meteen goedgekeurd. Een kind kan geen klusje voor iemand anders op klaar zetten.",
+        "**Instellingen → Algemeen → „Als een volwassene op Klaar! tikt bij een klusje dat iedereen mag doen”:** *Voor mij laten tellen (met Wijzigen)* of *Altijd vragen wie het deed*. Zolang geen ouder kiest, wordt gezinnen met iemand die niet inlogt altijd gevraagd (die persoon krijgt klusjes alleen zo).",
         'Een vergissing kun je ongedaan maken via Activiteit (ouders), of met ↩️ Ongedaan naast "Gedaan door" van het klusje in de kamer (ouders; er wordt eerst gevraagd, omdat de munten er weer af gaan). Een Samen doen wordt voor het hele team ongedaan gemaakt en ieders munten daarvoor worden teruggenomen. De streak gaat terug naar wat hij was vóór dat Klaar, tenzij een ander klusje nog voor die dag telt. Een kind kan zijn eigen Klaar terugnemen zolang het op goedkeuring wacht.',
       ] },
       { p: '**Instellingen → Functies → Bewijsfoto’s** zet foto’s uit; de 📎-knop voegt dan alleen een notitie toe. Op tidyquest.org staan foto’s eerst uit, en een ouder zet ze aan.' },
@@ -786,6 +788,12 @@ export const GUIDE_NL: GuideSection[] = [
         ] },
         { q: 'Is de app up-to-date?', a: [
           '**Instellingen → Algemeen** toont de versie. Zie "Installeren en updaten" om te updaten of terug te gaan.',
+        ] },
+      ] },
+      { qa: [
+        { q: "Ik vinkte een klusje af voor mijn kind, maar de munten gingen naar mij", a: [
+          "Bij een klusje dat iedereen mag doen, telt het Klaar! van een volwassene voor die volwassene. Tik op **Wijzigen** in de balk die meteen daarna verschijnt en kies je kind: de munten, reeks en badges gaan naar hem of haar.",
+          "Balk gemist? Maak het ongedaan in Activiteit en zet het opnieuw op klaar met **👥 Gedaan voor iemand…** in het geopende klusje. Wil je het elke keer gevraagd worden, kies dan *Altijd vragen wie het deed* in **Instellingen → Algemeen**.",
         ] },
       ] },
     ],

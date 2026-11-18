@@ -548,7 +548,8 @@
       "shield_used": "Uno scudo ha salvato una serie di {n} giorni",
       "shield_usedMany": "{count} scudi hanno salvato una serie di {n} giorni",
       "boughtReward": "Ha comprato {reward}",
-      "approvedBy": "Approvato da {name}"
+      "approvedBy": "Approvato da {name}",
+      "markedBy": "Segnato come fatto da {name}"
     },
     "roomDetail": {
       "name": "Nome",
@@ -1479,7 +1480,8 @@
       "shieldGiven": "🛡️ {name} ti ha regalato uno scudo della serie. Salva la tua serie se salti un giorno.",
       "recapLastWeek": "📊 La settimana scorsa: {lines}",
       "testFamily": "👋 Test di TidyQuest inviato da {name} alle {time}: le notifiche della famiglia funzionano!",
-      "parentSays": "{parent} dice: {reason}"
+      "parentSays": "{parent} dice: {reason}",
+      "doneForYou": "✅ {name} ha segnato «{task}» come fatto per te"
     },
     "notifyAdmin": {
       "peopleTitle": "Chi riceve cosa",
@@ -2634,6 +2636,19 @@
       "finisherReason": "Sentiero delle avventure: traguardo raggiunto",
       "prizeReason": "Sentiero delle avventure: primo al traguardo",
       "treatReason": "Sentiero delle avventure: premio per la mascotte"
+    },
+    "doneFor": {
+      "countedYours": "«{task}» contato come tuo",
+      "change": "Cambia",
+      "givenTo": "«{task}» è andato a {names}",
+      "doneForSomeone": "Fatto per qualcuno…",
+      "settingTitle": "Quando un adulto tocca Fatto su un compito che chiunque può fare",
+      "settingDesc": "«Chiedi sempre» va bene per le famiglie dove gli adulti spuntano spesso i compiti per bambini che non usano l'app.",
+      "optMine": "Contalo come mio (con Cambia)",
+      "optAsk": "Chiedi sempre chi l'ha fatto",
+      "auto": "(scelto per la vostra famiglia)",
+      "tooLate": "Troppo tardi per cambiare chi l'ha fatto. Annulla il Fatto in Attività, poi segnalo per la persona giusta.",
+      "notChangeable": "Questo Fatto non può passare a qualcun altro."
     }
   }
 }

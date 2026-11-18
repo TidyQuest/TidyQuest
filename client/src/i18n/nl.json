@@ -548,7 +548,8 @@
       "shield_used": "Een schild redde een reeks van {n} dagen",
       "shield_usedMany": "{count} schilden redden een reeks van {n} dagen",
       "boughtReward": "Kocht {reward}",
-      "approvedBy": "Goedgekeurd door {name}"
+      "approvedBy": "Goedgekeurd door {name}",
+      "markedBy": "Als gedaan gemarkeerd door {name}"
     },
     "roomDetail": {
       "name": "Naam",
@@ -1479,7 +1480,8 @@
       "shieldGiven": "🛡️ {name} gaf je een reeksschild. Het redt je reeks als je een dag mist.",
       "recapLastWeek": "📊 Vorige week: {lines}",
       "testFamily": "👋 Test van TidyQuest, verstuurd door {name} om {time}: de gezinsmeldingen werken!",
-      "parentSays": "{parent} zegt: {reason}"
+      "parentSays": "{parent} zegt: {reason}",
+      "doneForYou": "✅ {name} heeft „{task}” voor je als gedaan gemarkeerd"
     },
     "notifyAdmin": {
       "peopleTitle": "Wie krijgt wat",
@@ -2634,6 +2636,19 @@
       "finisherReason": "Avonturenpad: finish gehaald",
       "prizeReason": "Avonturenpad: als eerste bij de finish",
       "treatReason": "Avonturenpad: traktatie voor de mascotte"
+    },
+    "doneFor": {
+      "countedYours": "„{task}” telt voor jou",
+      "change": "Wijzigen",
+      "givenTo": "„{task}” ging naar {names}",
+      "doneForSomeone": "Gedaan voor iemand…",
+      "settingTitle": "Als een volwassene op Klaar! tikt bij een klusje dat iedereen mag doen",
+      "settingDesc": "„Altijd vragen” past bij gezinnen waar volwassenen vaak klusjes afvinken voor kinderen die de app niet gebruiken.",
+      "optMine": "Voor mij laten tellen (met Wijzigen)",
+      "optAsk": "Altijd vragen wie het deed",
+      "auto": "(gekozen voor jullie gezin)",
+      "tooLate": "Te laat om te wijzigen wie het deed. Neem het Klaar! terug in Activiteit en markeer het dan voor de juiste persoon.",
+      "notChangeable": "Dit Klaar! kan niet aan iemand anders gegeven worden."
     }
   }
 }

@@ -11,6 +11,7 @@ interface User {
   avatarPreset?: string;
   avatarPhotoUrl?: string;
   coinPercentage?: number;
+  isParticipant?: number | boolean;
 }
 
 interface AdminCompleteModalProps {
@@ -28,9 +29,16 @@ interface AdminCompleteModalProps {
   language?: string;
   onConfirm: (userIds: number[]) => Promise<void>;
   onClose: () => void;
+  /** The person tapping: listed first on a chore anyone can do (FIX-37) */
+  currentUserId?: number;
+  /** Change after a grown-up's own Done (FIX-37): their Done doesn't count as already taken */
+  changing?: boolean;
 }
 
-export function AdminCompleteModal({ task, allUsers, language, onConfirm, onClose }: AdminCompleteModalProps) {
+/** A chore a grown-up's Done can be handed on from with Change (FIX-37) */
+export type ChangeTask = AdminCompleteModalProps['task'] & { translationKey?: string | null };
+
+export function AdminCompleteModal({ task, allUsers, language, onConfirm, onClose, currentUserId, changing }: AdminCompleteModalProps) {
   const { t } = useTranslation(language);
   const [selected, setSelected] = useState<number[]>([]);
   const [loading, setLoading] = useState(false);
@@ -44,13 +52,15 @@ export function AdminCompleteModal({ task, allUsers, language, onConfirm, onClos
   } else if (task.assignedToChildren) {
     candidates = allUsers.filter(u => u.role === 'child' || u.role === undefined);
   } else {
-    candidates = allUsers;
+    // Anyone can do it: everyone who can get credit, the person tapping first (FIX-37)
+    candidates = allUsers.filter((u) => (u.isParticipant !== 0 && u.isParticipant !== false) || u.id === currentUserId);
+    candidates.sort((a, b) => Number(b.id === currentUserId) - Number(a.id === currentUserId));
   }
 
   const isSharedOrCustom = task.assignmentMode === 'shared' || task.assignmentMode === 'custom';
-  const completedUserIds = (task.sharedCompletions || []).map(c => c.userId);
-  // For first mode: if task already completed, no one can be selected
-  const firstModeCompleted = !isSharedOrCustom && !!task.completedTodayBy;
+  const completedUserIds = (task.sharedCompletions || []).map(c => c.userId).filter((id) => !(changing && id === currentUserId));
+  // For first mode: if task already completed, no one can be selected (unless it's the Done being changed)
+  const firstModeCompleted = !isSharedOrCustom && !!task.completedTodayBy && !changing;
   // Build a map of userId → coinPercentage from assignedUsers
   const percentageByUser = new Map<number, number>();
   for (const u of task.assignedUsers || []) {

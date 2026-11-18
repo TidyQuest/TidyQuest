@@ -548,7 +548,8 @@
       "shield_used": "Un bouclier a sauvé une série de {n} jours",
       "shield_usedMany": "{count} boucliers ont sauvé une série de {n} jours",
       "boughtReward": "A acheté {reward}",
-      "approvedBy": "Approuvé par {name}"
+      "approvedBy": "Approuvé par {name}",
+      "markedBy": "Marqué fait par {name}"
     },
     "roomDetail": {
       "name": "Nom",
@@ -1479,7 +1480,8 @@
       "shieldGiven": "🛡️ {name} t'a donné un bouclier de série. Il protège ta série si tu manques un jour.",
       "recapLastWeek": "📊 La semaine dernière : {lines}",
       "testFamily": "👋 Test TidyQuest envoyé par {name} à {time} : les notifications de la famille fonctionnent !",
-      "parentSays": "{parent} dit : {reason}"
+      "parentSays": "{parent} dit : {reason}",
+      "doneForYou": "✅ {name} a marqué « {task} » comme fait pour toi"
     },
     "notifyAdmin": {
       "peopleTitle": "Qui reçoit quoi",
@@ -2634,6 +2636,19 @@
       "finisherReason": "Sentier des quêtes : arrivée atteinte",
       "prizeReason": "Sentier des quêtes : premier à l'arrivée",
       "treatReason": "Sentier des quêtes : friandise pour la mascotte"
+    },
+    "doneFor": {
+      "countedYours": "« {task} » compté pour toi",
+      "change": "Changer",
+      "givenTo": "« {task} » attribué à {names}",
+      "doneForSomeone": "Fait pour quelqu'un…",
+      "settingTitle": "Quand un adulte appuie sur Fait pour une tâche que tout le monde peut faire",
+      "settingDesc": "« Toujours demander » convient aux familles où les adultes cochent souvent des tâches pour des enfants qui n'utilisent pas l'appli.",
+      "optMine": "Le compter pour moi (avec Changer)",
+      "optAsk": "Toujours demander qui l'a fait",
+      "auto": "(choisi pour votre famille)",
+      "tooLate": "Trop tard pour changer qui l'a fait. Annulez la tâche dans Activité, puis marquez-la faite pour la bonne personne.",
+      "notChangeable": "Cette tâche faite ne peut pas être attribuée à quelqu'un d'autre."
     }
   }
 }

@@ -14,6 +14,8 @@ import { SearchOverlay } from './components/shared/SearchOverlay';
 import { SearchContext } from './components/shared/searchContext';
 import type { Proof } from './components/shared/ProofModal';
 import { PhotoFailedNote, type PhotoProblem } from './components/shared/PhotoFailedNote';
+import { ChangeBar } from './components/shared/ChangeBar';
+import { AdminCompleteModal, type ChangeTask } from './components/shared/AdminCompleteModal';
 import { AchievementUnlockToast } from './components/ui/AchievementUnlockToast';
 import Dashboard from './components/pages/Dashboard';
 import { Focus, type FocusData } from './components/pages/Focus';
@@ -76,7 +78,7 @@ function AppContent() {
   }, [user?.id]);
   const browserLang = typeof navigator !== 'undefined' ? navigator.language.slice(0, 2) : 'en';
   // Always call useTranslation unconditionally (React hooks rule) — use user's language if known, else browser lang
-  const { t, roomDisplayName } = useTranslation(user?.language ?? browserLang);
+  const { t, roomDisplayName, taskName: choreTaskName } = useTranslation(user?.language ?? browserLang);
   const [authView, setAuthView] = useState<'login' | 'register'>('login');
   const [dashboardData, setDashboardData] = useState<any>(null);
   const [rooms, setRooms] = useState<any[]>([]);
@@ -119,10 +121,21 @@ function AppContent() {
   const [confetti, setConfetti] = useState(false);
   // The short banner after a Done: red when it failed, green (ok) when it only waits for a parent (FIX-33)
   const [taskMsg, setTaskMsg] = useState<{ text: string; ok?: boolean } | null>(null);
+  // FIX-37: "counted as yours · Change" after a grown-up's one-tap Done, and the picker Change opens
+  const [changeOffer, setChangeOffer] = useState<{ completionId: number; task: ChangeTask } | null>(null);
+  const [changePick, setChangePick] = useState<{ completionId: number; task: ChangeTask } | null>(null);
   const [photoProblem, setPhotoProblem] = useState<PhotoProblem | null>(null);
   const [unlockedAchievements, setUnlockedAchievements] = useState<string[]>([]);
   // Names for the pop-up from the completion itself (parent-made and secret badges aren't in the page data yet)
   const [unlockedInfo, setUnlockedInfo] = useState<Array<{ id: string; titleKey: string | null; title: string | null }>>([]);
+  // Badges a grown-up's changeable Done earned: their pop-up waits until the bar closes without Change
+  const heldBadges = useRef<{ ids: string[]; info?: Array<{ id: string; titleKey: string | null; title: string | null }> } | null>(null);
+  const closeChangeOffer = useCallback(() => {
+    setChangeOffer(null);
+    const held = heldBadges.current;
+    heldBadges.current = null;
+    if (held) { setUnlockedInfo(held.info ?? []); setUnlockedAchievements(held.ids); }
+  }, []);
   const [searchOpen, setSearchOpen] = useState(false);
   // "What's new" after a big update (NEW-38): who closed it on this visit, or replayed from the guide
   const [whatsNewClosedBy, setWhatsNewClosedBy] = useState<number | null>(null);
@@ -350,9 +363,13 @@ function AppContent() {
   }, [sidebarCollapsed]);
 
   /** Resolves true when the chore was recorded (or waits for approval) */
-  const handleCompleteTask = async (taskId: number, proof?: Proof): Promise<boolean> => {
+  /** changeTask: a grown-up's one-tap Done on a chore anyone can do, which they can hand on with Change (FIX-37) */
+  const handleCompleteTask = async (taskId: number, proof?: Proof, opts?: { changeTask?: ChangeTask }): Promise<boolean> => {
     try {
-      const result = await api.completeTask(taskId, undefined, proof?.note ? { note: proof.note } : {});
+      setChangeOffer(null);
+      const result = await api.completeTask(taskId, undefined, { ...(proof?.note ? { note: proof.note } : {}), ...(opts?.changeTask ? { changeable: true } : {}) });
+      heldBadges.current = null;
+      if (result.changeable && result.completionId && opts?.changeTask) setChangeOffer({ completionId: result.completionId, task: opts.changeTask });
       if (proof?.file && result.completionId) {
         const { file } = proof;
         const { completionId } = result;
@@ -372,7 +389,9 @@ function AppContent() {
         await Promise.all([refreshRooms(), loadDashboard()]);
         return true;
       }
-      if (result.newAchievements && result.newAchievements.length > 0) {
+      if (result.newAchievements && result.newAchievements.length > 0 && result.changeable && opts?.changeTask) {
+        heldBadges.current = { ids: result.newAchievements, info: result.newAchievementInfo };
+      } else if (result.newAchievements && result.newAchievements.length > 0) {
         setUnlockedInfo(result.newAchievementInfo ?? []);
         setUnlockedAchievements(result.newAchievements);
       }
@@ -581,6 +600,26 @@ function AppContent() {
         </div>
       )}
 
+      {changeOffer && (
+        <ChangeBar key={changeOffer.completionId} language={user?.language} onClose={closeChangeOffer}
+          text={t('doneFor.countedYours').replace('{task}', choreTaskName(changeOffer.task.name, changeOffer.task.translationKey))}
+          onChange={() => { heldBadges.current = null; setChangePick(changeOffer); setChangeOffer(null); }} />
+      )}
+      {changePick && (
+        <AdminCompleteModal task={changePick.task} allUsers={familySettings} language={user?.language} currentUserId={user?.id} changing
+          onClose={() => setChangePick(null)}
+          onConfirm={async (userIds) => {
+            await api.changeCompletion(changePick.completionId, userIds);
+            const names = familySettings.filter((u) => userIds.includes(u.id)).map((u) => u.displayName).join(', ');
+            const name = choreTaskName(changePick.task.name, changePick.task.translationKey);
+            setChangePick(null);
+            setTaskMsg({ text: t('doneFor.givenTo').replace('{task}', name).replace('{names}', names), ok: true });
+            setTimeout(() => setTaskMsg(null), 3500);
+            refreshUser();
+            await Promise.all([refreshRooms(), loadDashboard()]);
+          }} />
+      )}
+
       {photoProblem && (
         <PhotoFailedNote key={photoProblem.completionId} problem={photoProblem} language={user?.language}
           onClose={() => setPhotoProblem((p) => (p === photoProblem ? null : p))} />
@@ -666,7 +705,7 @@ function AppContent() {
           } />
 
           <Route path="/rooms/:id" element={
-            <RoomDetailWrapper rooms={rooms} roomsLoaded={roomsLoaded} strictMode={!!dashboardData?.strictMode} shieldsOn={!!dashboardData?.shields} allowOneTime={dashboardData?.features?.todos !== false} allowPhotos={dashboardData?.features?.proofPhotos !== false} allowPins={dashboardData?.features?.usual !== false} user={user} users={familySettings} coinsByEffort={coinsByEffort} gamificationEnabled={gamificationEnabled} onCompleteTask={handleCompleteTask} onRefresh={() => { refreshRooms(); loadDashboard(); }} onAchievementsUnlocked={setUnlockedAchievements} />
+            <RoomDetailWrapper rooms={rooms} roomsLoaded={roomsLoaded} strictMode={!!dashboardData?.strictMode} grownUpDone={dashboardData?.grownUpDone?.value} shieldsOn={!!dashboardData?.shields} allowOneTime={dashboardData?.features?.todos !== false} allowPhotos={dashboardData?.features?.proofPhotos !== false} allowPins={dashboardData?.features?.usual !== false} user={user} users={familySettings} coinsByEffort={coinsByEffort} gamificationEnabled={gamificationEnabled} onCompleteTask={handleCompleteTask} onRefresh={() => { refreshRooms(); loadDashboard(); }} onAchievementsUnlocked={setUnlockedAchievements} />
           } />
 
           <Route path="/focus" element={
@@ -905,7 +944,7 @@ function AppContent() {
   );
 }
 
-function RoomDetailWrapper({ rooms, roomsLoaded, strictMode, shieldsOn, allowOneTime, allowPhotos, allowPins, user, users, coinsByEffort, gamificationEnabled, onCompleteTask, onRefresh, onAchievementsUnlocked }: { rooms: any[]; roomsLoaded: boolean; strictMode?: boolean; shieldsOn?: boolean; allowOneTime?: boolean; allowPhotos?: boolean; allowPins?: boolean; user: any; users?: any[]; coinsByEffort: Record<number, number>; gamificationEnabled: boolean; onCompleteTask: (id: number, proof?: Proof) => void; onRefresh: () => void; onAchievementsUnlocked?: (ids: string[]) => void }) {
+function RoomDetailWrapper({ rooms, roomsLoaded, strictMode, grownUpDone, shieldsOn, allowOneTime, allowPhotos, allowPins, user, users, coinsByEffort, gamificationEnabled, onCompleteTask, onRefresh, onAchievementsUnlocked }: { rooms: any[]; roomsLoaded: boolean; strictMode?: boolean; grownUpDone?: 'mine' | 'ask'; shieldsOn?: boolean; allowOneTime?: boolean; allowPhotos?: boolean; allowPins?: boolean; user: any; users?: any[]; coinsByEffort: Record<number, number>; gamificationEnabled: boolean; onCompleteTask: (id: number, proof?: Proof, opts?: { changeTask?: ChangeTask }) => void; onRefresh: () => void; onAchievementsUnlocked?: (ids: string[]) => void }) {
   const navigate = useNavigate();
   const { t, roomDisplayName } = useTranslation(user?.language || 'en');
   const { id: idParam } = useParams<{ id: string }>();
@@ -932,7 +971,7 @@ function RoomDetailWrapper({ rooms, roomsLoaded, strictMode, shieldsOn, allowOne
   return (
     <>
       <PageHeader title={roomDisplayName(room.name, room.roomType)} subtitle={room.isTodoRoom ? t('todos.countLine').replace('{n}', String(room.todoCount ?? 0)) : `${room.tasks?.length || 0} ${t('rooms.tasksTracked')}`} addLabel={user?.role === 'admin' ? t(room.isTodoRoom ? 'todos.add' : 'roomDetail.addTask') : undefined} onBack={() => navigate('/rooms', { state: { fromRoom: room.id } })} backLabel={t('rooms.backToRooms')} user={user} onCoinsClick={() => navigate('/rewards')} onStreakClick={() => navigate('/achievements')} gamificationEnabled={gamificationEnabled} shieldsOn={shieldsOn} />
-      <RoomDetail room={room} language={user?.language} isAdmin={user?.role === 'admin'} currentUserId={user?.id} currentUserRole={user?.role} users={users} coinsByEffort={coinsByEffort} onCompleteTask={onCompleteTask} onOpenRoom={(id) => navigate(`/rooms/${id}`)} allowOneTime={allowOneTime} allowPhotos={allowPhotos} allowPins={allowPins} focusTaskId={focusTaskId} strictMode={strictMode} onlyMine={user?.taskView === 'mineOnly' || !!user?.kidMode} onRefresh={onRefresh} onAchievementsUnlocked={onAchievementsUnlocked} />
+      <RoomDetail room={room} language={user?.language} isAdmin={user?.role === 'admin'} currentUserId={user?.id} currentUserRole={user?.role} users={users} coinsByEffort={coinsByEffort} onCompleteTask={onCompleteTask} onOpenRoom={(id) => navigate(`/rooms/${id}`)} allowOneTime={allowOneTime} allowPhotos={allowPhotos} allowPins={allowPins} focusTaskId={focusTaskId} strictMode={strictMode} onlyMine={user?.taskView === 'mineOnly' || !!user?.kidMode} grownUpDone={grownUpDone} onRefresh={onRefresh} onAchievementsUnlocked={onAchievementsUnlocked} />
     </>
   );
 }

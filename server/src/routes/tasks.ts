@@ -11,7 +11,8 @@ import { notifyAchievementUnlocksForUser, checkAndRecordNewAchievements } from '
 import { badgeInfo } from '../utils/achievementStats';
 import { pinnedTaskIds } from '../utils/homeSections';
 import { claimRescue, releaseRescue, setRescueCompletion, todaysMission } from '../utils/rescue';
-import { notifyChoreApproved, notifyChoreRejected, notifyChoreWaiting, oneLineReason } from '../utils/notifyMessages';
+import { notifyChoreApproved, notifyChoreRejected, notifyChoreWaiting, notifyDoneForYou, oneLineReason } from '../utils/notifyMessages';
+import { dropQueued } from '../utils/notify';
 import { ensureAdmin, getCoinsByEffortConfig, getGlobalVacation, getUserVacation, resolveVacation, isStrictModeEnabled, hiddenRoomIdsFor, taskHiddenFor } from '../utils/adminHelpers';
 import { localDateStr } from '../utils/dateHelpers';
 import { dayAt, daySql, endOfDay as endOfDayOf, startOfDay } from '../utils/clock';
@@ -840,14 +841,21 @@ function dueOnDay(task: any, userId: number, when: string): boolean {
 }
 
 // Complete task
-router.post('/tasks/:id/complete', (req: AuthRequest, res: Response) => {
-  const task = db.prepare('SELECT * FROM tasks WHERE id = ? AND deletedAt IS NULL').get(req.params.id) as any;
-  if (!task) return res.status(404).json({ error: 'Task not found' });
+type Outcome = { status: number; body: any };
+
+/**
+ * Mark a chore done (the Done route, and Change after a grown-up's one-tap Done, FIX-37). Alerts go into
+ * `after`, to be sent once the database work has stuck: Change rolls everything back if one person fails.
+ */
+function completeFor(taskId: string | number, requesterId: number, reqBody: any, after: Array<() => void>): Outcome {
+  const req = { userId: requesterId, body: reqBody ?? {} };
+  const task = db.prepare('SELECT * FROM tasks WHERE id = ? AND deletedAt IS NULL').get(taskId) as any;
+  if (!task) return { status: 404, body: { error: 'Task not found' } };
   // A one-time chore is done once: archived after that, and only one completion can wait for approval
-  if (task.archivedAt) return res.status(409).json({ error: 'already_done' });
-  if (task.pausedAt) return res.status(409).json({ error: 'paused' });
+  if (task.archivedAt) return { status: 409, body: { error: 'already_done' } };
+  if (task.pausedAt) return { status: 409, body: { error: 'paused' } };
   if (task.oneTime && db.prepare("SELECT 1 FROM task_completions WHERE taskId = ? AND status = 'pending'").get(task.id)) {
-    return res.status(409).json({ error: 'already_done_by_other' });
+    return { status: 409, body: { error: 'already_done_by_other' } };
   }
 
   // Enforce assignment rules
@@ -857,16 +865,16 @@ router.post('/tasks/:id/complete', (req: AuthRequest, res: Response) => {
 
   // "Done earlier…": logged late for a past day
   const lateDay = readDoneOn(req.body);
-  if (lateDay && typeof lateDay === 'object') return res.status(400).json(lateDay);
+  if (lateDay && typeof lateDay === 'object') return { status: 400, body: lateDay };
   if (lateDay) {
     const added = task.createdAt ? localDateStr(parseStored(task.createdAt)) : '';
-    if (lateDay < added || (task.startsOn && lateDay < task.startsOn)) return res.status(409).json({ error: 'before_start' });
+    if (lateDay < added || (task.startsOn && lateDay < task.startsOn)) return { status: 409, body: { error: 'before_start' } };
   }
 
   // Support completing on behalf of another user (admin/member only)
   const { onBehalfOfUserId } = req.body;
   if (onBehalfOfUserId && !isAdminOrMember) {
-    return res.status(403).json({ error: 'forbidden' });
+    return { status: 403, body: { error: 'forbidden' } };
   }
   const effectiveUserId = (onBehalfOfUserId && isAdminOrMember)
     ? Number(onBehalfOfUserId)
@@ -877,20 +885,20 @@ router.post('/tasks/:id/complete', (req: AuthRequest, res: Response) => {
   const team = lateDay || !isFeatureOn('teamups') ? null : openTeamupFor(task.id);
   const teamClaimed = !!team && team.members.length >= 2;
   if (teamClaimed && !team!.members.some((m) => m.userId === effectiveUserId)) {
-    return res.status(409).json({ error: 'claimed_by_team', names: team!.members.map((m) => m.displayName) });
+    return { status: 409, body: { error: 'claimed_by_team', names: team!.members.map((m) => m.displayName) } };
   }
 
   if (room?.assignedUserId !== null && room?.assignedUserId !== undefined) {
     // Room-level assignment: only the assigned user, admins, and members can complete
     if (!isAdminOrMember && req.userId !== room.assignedUserId) {
-      return res.status(403).json({ error: 'not_assigned' });
+      return { status: 403, body: { error: 'not_assigned' } };
     }
   } else {
     // Check task-level multi-user assignment
     const taskAssignees = db.prepare('SELECT userId FROM task_assignees WHERE taskId = ?').all(task.id) as { userId: number }[];
     if (taskAssignees.length > 0) {
       if (!isAdminOrMember && !taskAssignees.some(a => a.userId === req.userId)) {
-        return res.status(403).json({ error: 'not_assigned' });
+        return { status: 403, body: { error: 'not_assigned' } };
       }
     }
   }
@@ -901,7 +909,7 @@ router.post('/tasks/:id/complete', (req: AuthRequest, res: Response) => {
   if (task.assignmentMode === 'rotating' && !isAdminOrMember) {
     const rotationUserId = rotationTurnUserId(task);
     if (rotationUserId && req.userId !== rotationUserId) {
-      return res.status(409).json({ error: 'not_your_turn' });
+      return { status: 409, body: { error: 'not_your_turn' } };
     }
   }
 
@@ -915,7 +923,7 @@ router.post('/tasks/:id/complete', (req: AuthRequest, res: Response) => {
       `SELECT id FROM task_completions WHERE taskId = ? AND userId = ? AND status IN ('approved', 'pending') AND ${daySql('completedAt')} = ${daySql('?')}`
     ).get(task.id, effectiveUserId, when);
     if (alreadyDoneBySelf) {
-      return res.status(409).json({ error: lateDay ? 'already_done_that_day' : 'already_done_today' });
+      return { status: 409, body: { error: lateDay ? 'already_done_that_day' : 'already_done_today' } };
     }
 
     if (task.assignmentMode !== 'shared' && task.assignmentMode !== 'custom') {
@@ -924,7 +932,7 @@ router.post('/tasks/:id/complete', (req: AuthRequest, res: Response) => {
         `SELECT id FROM task_completions WHERE taskId = ? AND userId != ? AND status IN ('approved', 'pending') AND ${daySql('completedAt')} = ${daySql('?')}`
       ).get(task.id, effectiveUserId, when);
       if (alreadyDoneByOther) {
-        return res.status(409).json({ error: 'already_done_by_other' });
+        return { status: 409, body: { error: 'already_done_by_other' } };
       }
     }
 
@@ -936,10 +944,10 @@ router.post('/tasks/:id/complete', (req: AuthRequest, res: Response) => {
     const lastDone: string | null = waiting && (!task.lastCompletedAt || new Date(waiting.completedAt) > new Date(task.lastCompletedAt))
       ? waiting.completedAt : task.lastCompletedAt;
     if (lateDay) {
-      if (!task.oneTime && !dueOnDay(task, effectiveUserId, when)) return res.status(409).json({ error: 'not_yet_due' });
+      if (!task.oneTime && !dueOnDay(task, effectiveUserId, when)) return { status: 409, body: { error: 'not_yet_due' } };
     } else if (isPerPerson(task) && !task.oneTime && currentShares(task, new Date(now), true).some((s) => s.userId === effectiveUserId)) {
       // Shared chore: this person's share is done until the chore comes due for them again (BUG-26)
-      return res.status(409).json({ error: 'not_yet_due' });
+      return { status: 409, body: { error: 'not_yet_due' } };
     } else if (lastDone && !task.oneTime) {
       const globalVac = getGlobalVacation();
       const taskAssigneesForVac = db.prepare('SELECT userId FROM task_assignees WHERE taskId = ?').all(task.id) as { userId: number }[];
@@ -953,11 +961,11 @@ router.post('/tasks/:id/complete', (req: AuthRequest, res: Response) => {
           const lastDay = localDateStr(new Date(lastDone));
           const today = localDateStr();
           if (lastDay >= today) {
-            return res.status(409).json({ error: 'not_yet_due', health: currentHealth });
+            return { status: 409, body: { error: 'not_yet_due', health: currentHealth } };
           }
           // Different calendar day — allow despite health > 0
         } else {
-          return res.status(409).json({ error: 'not_yet_due', health: currentHealth });
+          return { status: 409, body: { error: 'not_yet_due', health: currentHealth } };
         }
       }
     }
@@ -967,14 +975,14 @@ router.post('/tasks/:id/complete', (req: AuthRequest, res: Response) => {
     if (repeat) {
       const count = countInPeriod(task.id, effectiveUserId, repeat.period, new Date(when));
       if (count >= repeat.limit) {
-        return res.status(409).json({ error: 'repeat_limit_reached', limit: repeat.limit, period: repeat.period, count });
+        return { status: 409, body: { error: 'repeat_limit_reached', limit: repeat.limit, period: repeat.period, count } };
       }
     }
   }
 
   if (teamClaimed) {
     const note = typeof req.body.note === 'string' && req.body.note.trim() ? req.body.note.trim().slice(0, 500) : null;
-    return res.json(completeAsTeam(task, team!, effectiveUserId, isAdminOrMember, new Date().toISOString(), note));
+    return { status: 200, body: completeAsTeam(task, team!, effectiveUserId, isAdminOrMember, new Date().toISOString(), note) };
   }
 
   // Fetch assignees once — needed for coin splitting and lastCompletedAt logic
@@ -1027,10 +1035,11 @@ router.post('/tasks/:id/complete', (req: AuthRequest, res: Response) => {
     const pendingId = Number(db.prepare(
       "INSERT INTO task_completions (taskId, userId, completedAt, coinsEarned, status, note, loggedAt) VALUES (?, ?, ?, ?, 'pending', ?, ?)"
     ).run(task.id, effectiveUserId, when, coins, note, loggedAt).lastInsertRowid);
-    void notifyChoreWaiting(effectiveUserId, task, pendingId);
+    after.push(() => void notifyChoreWaiting(effectiveUserId, task, pendingId));
+    if (effectiveUserId !== req.userId) markedBy(pendingId, req.userId);
     if (rescued) setRescueCompletion(mission!.day, pendingId);
     if (!lateDay) endTeamupsFor(task.id);
-    return res.json({ coinsEarned: 0, health: task.health, pendingApproval: true, completionId: pendingId, rescued, late: !!lateDay });
+    return { status: 200, body: { coinsEarned: 0, health: task.health, pendingApproval: true, completionId: pendingId, rescued, late: !!lateDay } };
   }
 
   const completionId = applyApprovedCompletion(task, task.id, effectiveUserId, coins, when, gamificationOn, {
@@ -1040,11 +1049,33 @@ router.post('/tasks/:id/complete', (req: AuthRequest, res: Response) => {
   if (!lateDay) endTeamupsFor(task.id);
   if (!lateDay || isLatestCompletion(task.id, when)) advanceRotation(task, effectiveUserId);
 
+  // A grown-up's one-tap Done on a chore anyone can do can still be handed to someone else for a little while
+  // (FIX-37): the badge alert waits that long, and the badges it earned are kept on the Done so Change can take
+  // them back
+  const changeable = req.body.changeable === true && isAdminOrMember && effectiveUserId === req.userId && !lateDay;
   const newAchievements = gamificationOn ? checkAndRecordNewAchievements(effectiveUserId) : [];
-  if (newAchievements.length > 0) void notifyAchievementUnlocksForUser(effectiveUserId, newAchievements);
+  if (changeable && newAchievements.length > 0) {
+    db.prepare('UPDATE task_completions SET changeBadges = ? WHERE id = ?').run(JSON.stringify(newAchievements), completionId);
+  }
+  if (newAchievements.length > 0) {
+    after.push(() => void notifyAchievementUnlocksForUser(effectiveUserId, newAchievements,
+      changeable ? { notBefore: new Date(Date.now() + CHANGE_HOLD_MS), dedupeKey: `change-${completionId}` } : undefined));
+  }
+  // Done for someone else: Activity says who marked it, and they hear about it
+  if (effectiveUserId !== req.userId) {
+    markedBy(completionId, req.userId);
+    after.push(() => void notifyDoneForYou(effectiveUserId, req.userId, task));
+  }
   // Titles for the pop-up: parent-made and secret badges aren't in the page data the app already has
   const health = lateDay ? taskHealth(db.prepare('SELECT * FROM tasks WHERE id = ?').get(task.id) as ScheduledTask) : 100;
-  res.json({ coinsEarned: coins, health, pendingApproval: false, newAchievements, newAchievementInfo: badgeInfo(effectiveUserId, newAchievements), completionId, rescued, late: !!lateDay });
+  return { status: 200, body: { coinsEarned: coins, health, pendingApproval: false, newAchievements, newAchievementInfo: badgeInfo(effectiveUserId, newAchievements), completionId, rescued, late: !!lateDay, ...(changeable ? { changeable: true } : {}) } };
+}
+
+router.post('/tasks/:id/complete', (req: AuthRequest, res: Response) => {
+  const after: Array<() => void> = [];
+  const out = completeFor(String(req.params.id), req.userId!, req.body, after);
+  for (const send of after) send();
+  res.status(out.status).json(out.body);
 });
 
 router.get('/completions/pending', (req: AuthRequest, res: Response) => {
@@ -1194,6 +1225,104 @@ router.delete('/tasks/:id/snooze', (req: AuthRequest, res: Response) => {
 // Cancel (undo) a task completion — admin only
 // Undo a completion. A parent can undo any; the person who tapped Done can take it back while it
 // still waits for approval. A team's completions are undone together and the team-up reopens.
+/** How long a grown-up's one-tap Done can be handed to someone else, and its badge alert waits (FIX-37) */
+const CHANGE_WINDOW_MS = 10 * 60_000;
+const CHANGE_HOLD_MS = 60_000;
+
+/** Done for someone else (FIX-37): Activity shows "(by Dad)" */
+function markedBy(completionId: number, userId: number) {
+  db.prepare('UPDATE task_completions SET markedByUserId = ? WHERE id = ?').run(userId, completionId);
+}
+
+/**
+ * Change (FIX-37): a grown-up's own Done goes to the people they pick instead, all or nothing. The grown-up's
+ * coins, streak, turn and any badge that Done earned go back, its held badge alert is dropped, and each person
+ * gets the chore as if a grown-up had picked them in "Who did it?".
+ */
+router.post('/completions/:completionId/change', (req: AuthRequest, res: Response) => {
+  const requester = db.prepare('SELECT role FROM users WHERE id = ?').get(req.userId) as { role?: string } | undefined;
+  if (requester?.role !== 'admin' && requester?.role !== 'member') return res.status(403).json({ error: 'forbidden' });
+  const completion = db.prepare(
+    'SELECT id, taskId, userId, coinsEarned, status, teamupId, completedAt, streakBefore, loggedAt, changeBadges FROM task_completions WHERE id = ?'
+  ).get(req.params.completionId) as (TakeBackRow & { taskId: number; teamupId: number | null; loggedAt: string | null; changeBadges: string | null }) | undefined;
+  if (!completion) return res.status(404).json({ error: 'Completion not found' });
+  if (completion.userId !== req.userId || completion.teamupId || completion.loggedAt) return res.status(409).json({ error: 'not_changeable' });
+  if (Date.now() - new Date(completion.completedAt).getTime() > CHANGE_WINDOW_MS) return res.status(409).json({ error: 'change_too_late' });
+  const raw: unknown[] = Array.isArray(req.body?.userIds) ? req.body.userIds : [];
+  const userIds = [...new Set(raw.map(Number))].filter((id) => Number.isInteger(id) && id > 0);
+  if (userIds.length === 0 || userIds.length !== raw.length) return res.status(400).json({ error: 'invalid_users' });
+  if (userIds.length === 1 && userIds[0] === req.userId) return res.json({ unchanged: true });
+
+  const after: Array<() => void> = [];
+  const results: any[] = [];
+  let failed: Outcome | null = null;
+  try {
+    db.transaction(() => {
+      takeBack(completion, [completion]);
+      const badges = parseBadges(completion.changeBadges);
+      if (badges.length > 0) {
+        const marks = badges.map(() => '?').join(', ');
+        db.prepare(`DELETE FROM user_achievement_notifications WHERE userId = ? AND achievementId IN (${marks})`).run(req.userId, ...badges);
+      }
+      dropQueued(`change-${completion.id}`);
+      for (const uid of userIds) {
+        const out = completeFor(completion.taskId, req.userId!, uid === req.userId ? {} : { onBehalfOfUserId: uid }, after);
+        if (out.status !== 200) { failed = out; throw new Error('change_failed'); }
+        results.push({ userId: uid, ...out.body });
+      }
+    })();
+  } catch (e) {
+    if (failed) return res.status((failed as Outcome).status).json((failed as Outcome).body);
+    throw e;
+  }
+  for (const send of after) send();
+  res.json({ changed: results });
+});
+
+function parseBadges(raw: string | null): string[] {
+  if (!raw) return [];
+  try { const v = JSON.parse(raw); return Array.isArray(v) ? v.filter((x) => typeof x === 'string') : []; } catch { return []; }
+}
+
+type TakeBackRow = { id: number; userId: number; coinsEarned: number; status: string; completedAt: string; streakBefore: string | null };
+/** Take Dones back (one, or a team's): coins, streak, last-done date, turn, a one-time chore. Run inside a transaction. */
+function takeBack(completion: { taskId: number; teamupId: number | null }, rows: TakeBackRow[]): number {
+  let coinsDeducted = 0;
+  for (const row of rows) {
+    if (row.status === 'approved') {
+      db.prepare('UPDATE users SET coins = MAX(0, coins - ?) WHERE id = ?').run(row.coinsEarned, row.userId);
+      coinsDeducted += row.coinsEarned;
+    }
+    // Delete the completion record and its photo (an undone Rescue Mission is open again)
+    removeProofPhotos('id = ?', row.id);
+    db.prepare('DELETE FROM task_completions WHERE id = ?').run(row.id);
+    releaseRescue(row.id);
+  }
+  if (completion.teamupId) db.prepare("UPDATE teamups SET status = 'open' WHERE id = ?").run(completion.teamupId);
+
+  // A Done that was still waiting never changed the chore, so taking it back changes nothing either (BUG-46)
+  const approved = rows.filter((r) => r.status === 'approved');
+  if (approved.length === 0) return coinsDeducted;
+  // The streak goes back to before the Done, if that Done moved it (BUG-50)
+  for (const r of approved) restoreStreak(r.userId, r.completedAt, r.streakBefore);
+  const task = db.prepare('SELECT * FROM tasks WHERE id = ?').get(completion.taskId) as any;
+  if (!task) return coinsDeducted;
+  const prev = db.prepare(
+    "SELECT completedAt FROM task_completions WHERE taskId = ? AND status = 'approved' ORDER BY completedAt DESC LIMIT 1"
+  ).get(completion.taskId) as { completedAt: string } | undefined;
+  // Only the completion that set the last-done date takes it back: to the date it replaced, or (when
+  // that's unknown) to the completion before it. A shared chore's other shares still stand.
+  if (approved.some((r) => r.completedAt === task.lastCompletedAt)) {
+    const back = task.prevLastCompletedAt ?? (isPerPerson(task) ? null : prev?.completedAt ?? null);
+    db.prepare('UPDATE tasks SET lastCompletedAt = ?, prevLastCompletedAt = NULL WHERE id = ?').run(back, task.id);
+  }
+  // The turn it passed on comes back, unless someone has done the chore since (BUG-27)
+  if (!prev || approved.some((r) => new Date(r.completedAt) > new Date(prev.completedAt))) retreatRotation(task);
+  // Undoing a one-time chore's completion brings it back
+  if (!prev) db.prepare('UPDATE tasks SET archivedAt = NULL WHERE id = ? AND oneTime = 1').run(completion.taskId);
+  return coinsDeducted;
+}
+
 router.delete('/completions/:completionId', (req: AuthRequest, res: Response) => {
   const completion = db.prepare(
     'SELECT id, taskId, userId, coinsEarned, status, teamupId, completedAt, streakBefore FROM task_completions WHERE id = ?'
@@ -1211,40 +1340,7 @@ router.delete('/completions/:completionId', (req: AuthRequest, res: Response) =>
   }
 
   let coinsDeducted = 0;
-  db.transaction(() => {
-    for (const row of rows) {
-      if (row.status === 'approved') {
-        db.prepare('UPDATE users SET coins = MAX(0, coins - ?) WHERE id = ?').run(row.coinsEarned, row.userId);
-        coinsDeducted += row.coinsEarned;
-      }
-      // Delete the completion record and its photo (an undone Rescue Mission is open again)
-      removeProofPhotos('id = ?', row.id);
-      db.prepare('DELETE FROM task_completions WHERE id = ?').run(row.id);
-      releaseRescue(row.id);
-    }
-    if (completion.teamupId) db.prepare("UPDATE teamups SET status = 'open' WHERE id = ?").run(completion.teamupId);
-
-    // A Done that was still waiting never changed the chore, so taking it back changes nothing either (BUG-46)
-    const approved = rows.filter((r) => r.status === 'approved');
-    if (approved.length === 0) return;
-    // The streak goes back to before the Done, if that Done moved it (BUG-50)
-    for (const r of approved) restoreStreak(r.userId, r.completedAt, r.streakBefore);
-    const task = db.prepare('SELECT * FROM tasks WHERE id = ?').get(completion.taskId) as any;
-    if (!task) return;
-    const prev = db.prepare(
-      "SELECT completedAt FROM task_completions WHERE taskId = ? AND status = 'approved' ORDER BY completedAt DESC LIMIT 1"
-    ).get(completion.taskId) as { completedAt: string } | undefined;
-    // Only the completion that set the last-done date takes it back: to the date it replaced, or (when
-    // that's unknown) to the completion before it. A shared chore's other shares still stand.
-    if (approved.some((r) => r.completedAt === task.lastCompletedAt)) {
-      const back = task.prevLastCompletedAt ?? (isPerPerson(task) ? null : prev?.completedAt ?? null);
-      db.prepare('UPDATE tasks SET lastCompletedAt = ?, prevLastCompletedAt = NULL WHERE id = ?').run(back, task.id);
-    }
-    // The turn it passed on comes back, unless someone has done the chore since (BUG-27)
-    if (!prev || approved.some((r) => new Date(r.completedAt) > new Date(prev.completedAt))) retreatRotation(task);
-    // Undoing a one-time chore's completion brings it back
-    if (!prev) db.prepare('UPDATE tasks SET archivedAt = NULL WHERE id = ? AND oneTime = 1').run(completion.taskId);
-  })();
+  db.transaction(() => { coinsDeducted = takeBack(completion, rows); })();
 
   res.json({ success: true, coinsDeducted });
 });

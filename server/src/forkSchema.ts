@@ -403,6 +403,10 @@ const NEW_COLUMNS: string[] = [
   // BUG-50: the person's streak just before and after this Done moved it (JSON {before, after}), so
   // taking the Done back can put the streak back (utils/streaks.ts restoreStreak)
   `ALTER TABLE task_completions ADD COLUMN streakBefore TEXT`,
+  // FIX-37: the grown-up who marked this Done for someone else (Activity's "by Dad"), and the badges a
+  // grown-up's one-tap Done earned (JSON ids), taken back if they hand the Done to someone else
+  `ALTER TABLE task_completions ADD COLUMN markedByUserId INTEGER`,
+  `ALTER TABLE task_completions ADD COLUMN changeBadges TEXT`,
 ];
 
 /** Fork tables included in backup export/import: key in the backup file -> table. */

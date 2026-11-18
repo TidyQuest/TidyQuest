@@ -548,7 +548,8 @@
       "shield_used": "Un escudo salvó una racha de {n} días",
       "shield_usedMany": "{count} escudos salvaron una racha de {n} días",
       "boughtReward": "Compró {reward}",
-      "approvedBy": "Aprobado por {name}"
+      "approvedBy": "Aprobado por {name}",
+      "markedBy": "Marcada como hecha por {name}"
     },
     "roomDetail": {
       "name": "Nombre",
@@ -1479,7 +1480,8 @@
       "shieldGiven": "🛡️ {name} te dio un escudo de racha. Salva tu racha si te saltas un día.",
       "recapLastWeek": "📊 La semana pasada: {lines}",
       "testFamily": "👋 Prueba de TidyQuest enviada por {name} a las {time}: ¡las notificaciones de la familia funcionan!",
-      "parentSays": "{parent} dice: {reason}"
+      "parentSays": "{parent} dice: {reason}",
+      "doneForYou": "✅ {name} marcó «{task}» como hecha por ti"
     },
     "notifyAdmin": {
       "peopleTitle": "Quién recibe qué",
@@ -2634,6 +2636,19 @@
       "finisherReason": "Sendero de aventuras: llegada a la meta",
       "prizeReason": "Sendero de aventuras: primero en la meta",
       "treatReason": "Sendero de aventuras: premio para la mascota"
+    },
+    "doneFor": {
+      "countedYours": "«{task}» contó como tuya",
+      "change": "Cambiar",
+      "givenTo": "«{task}» fue para {names}",
+      "doneForSomeone": "Hecha por otra persona…",
+      "settingTitle": "Cuando un adulto pulsa Hecho en una tarea que cualquiera puede hacer",
+      "settingDesc": "«Preguntar siempre» va bien a familias donde los adultos marcan a menudo tareas por niños que no usan la app.",
+      "optMine": "Contarla como mía (con Cambiar)",
+      "optAsk": "Preguntar siempre quién la hizo",
+      "auto": "(elegido para tu familia)",
+      "tooLate": "Ya es tarde para cambiar quién la hizo. Deshaz el Hecho en Actividad y márcala para la persona correcta.",
+      "notChangeable": "Este Hecho no se puede pasar a otra persona."
     }
   }
 }

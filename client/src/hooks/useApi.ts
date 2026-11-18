@@ -506,10 +506,17 @@ export const api = {
   resetTask: (id: number) =>
     apiFetch<{ success: boolean; completionsRemoved: number; coinsDeducted: number; lastCompletedAt: string }>(`/tasks/${id}/reset`, { method: 'POST' }),
   /** doneOn: "Done earlier…" for a past day ('YYYY-MM-DD', up to 7 days back) */
-  completeTask: (id: number, onBehalfOfUserId?: number, extra: { note?: string; doneOn?: string } = {}) =>
-    apiFetch<{ coinsEarned: number; health: number; pendingApproval?: boolean; newAchievements?: string[]; newAchievementInfo?: Array<{ id: string; titleKey: string | null; title: string | null; icon: string }>; completionId?: number; late?: boolean }>(`/tasks/${id}/complete`, {
+  /** changeable: a grown-up's one-tap Done on a chore anyone can do, which Change can hand on (FIX-37) */
+  completeTask: (id: number, onBehalfOfUserId?: number, extra: { note?: string; doneOn?: string; changeable?: boolean } = {}) =>
+    apiFetch<{ coinsEarned: number; health: number; pendingApproval?: boolean; newAchievements?: string[]; newAchievementInfo?: Array<{ id: string; titleKey: string | null; title: string | null; icon: string }>; completionId?: number; late?: boolean; changeable?: boolean }>(`/tasks/${id}/complete`, {
       method: 'POST', body: JSON.stringify({ ...(onBehalfOfUserId ? { onBehalfOfUserId } : {}), ...extra }),
     }),
+  /** Change (FIX-37): a grown-up's own Done goes to these people instead */
+  changeCompletion: (completionId: number, userIds: number[]) =>
+    apiFetch<{ changed?: Array<{ userId: number; newAchievements?: string[] }>; unchanged?: boolean }>(`/completions/${completionId}/change`, { method: 'POST', body: JSON.stringify({ userIds }) }),
+  getGrownUpDone: () => apiFetch<{ value: 'mine' | 'ask'; chosen: boolean }>('/users/grown-up-done'),
+  setGrownUpDone: (value: 'mine' | 'ask' | null) =>
+    apiFetch<{ value: 'mine' | 'ask'; chosen: boolean }>('/users/grown-up-done', { method: 'PUT', body: JSON.stringify({ value }) }),
   approveCompletionsBatch: (ids: number[]) =>
     apiFetch<{ approved: number[]; skipped: Array<{ id: number; error: string }> }>('/completions/approve-batch', { method: 'POST', body: JSON.stringify({ ids }) }),
   rejectCompletionsBatch: (ids: number[], reason?: string) =>

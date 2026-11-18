@@ -248,7 +248,9 @@ export const GUIDE_DE: GuideSection[] = [
         'Ein Raum öffnet mit einer kurzen Übersicht (sein Zustand, wie viele Aufgaben überfällig oder heute noch offen sind und die Münzen, die warten), danach seine Aufgaben unter Überfällig, Heute, Diese Woche, Bei Bedarf und Pausiert; „… weitere anzeigen · später“ zeigt die, die erst nach dieser Woche fällig sind. Die Chips Alle, Meine, Überfällig und Pausiert grenzen die Liste ein. Der letzte Chip, Nach Fälligkeit, ist die Sortierung: Wähle eine andere Reihenfolge (Zustand, Name, Münzen …) für eine einzige Liste; der Pfeil daneben kehrt sie um. ← geht zurück zu den Räumen; Eltern finden Raum duplizieren unter ⋯ in der Übersicht.',
         'Der 📎-Knopf in der geöffneten Aufgabe fügt eine Notiz oder ein Foto als Beweis hinzu.',
         'Nach der Freigabe durch ein Elternteil bleiben Notiz und Foto bei der Aufgabe unter Aktivität (tippe auf das Foto, um es groß zu sehen). Eltern sehen die von allen, alle anderen nur ihre eigenen. Der Link zu einem Foto öffnet sich für niemanden sonst, auch nicht nach dem Abmelden. Wird die Aufgabe rückgängig gemacht oder abgelehnt, wird ihr Foto gelöscht.',
-        'Eltern und Mitglieder können eine Aufgabe für jemand anderen als erledigt markieren („Wer hat es gemacht?“).',
+        "**Erwachsene (Eltern und Mitglieder) können eine Aufgabe für jemand anderen als erledigt markieren.** Bei einer zugewiesenen Aufgabe fragt Erledigt „Wer hat diese Aufgabe erledigt?“. Bei einer Aufgabe, die jeder machen kann, zählt Erledigt für dich, und eine Leiste zeigt „… zählt für dich“ mit **Ändern** für etwa 10 Sekunden (länger, solange du darauf bist): tippe auf Ändern und wähle, wer es wirklich war. Münzen, Serie und Abzeichen gehen dann an diese Person, als hätte sie selbst auf Erledigt getippt, und bei dir bleibt nichts. Ändern geht 10 Minuten lang; danach in Aktivität rückgängig machen.",
+        "**👥 Für jemanden erledigt…** in der geöffneten Aufgabe wählt zuerst, wer es war, und markiert sie dann als erledigt. Die Person bekommt eine Nachricht („Papa hat … für dich als erledigt markiert“), und Aktivität zeigt „Als erledigt markiert von Papa“. Mit Strenger Modus gilt es sofort als genehmigt. Ein Kind kann keine Aufgabe für jemand anderen erledigen.",
+        "**Einstellungen → Allgemein → „Wenn ein Erwachsener bei einer Aufgabe, die jeder machen kann, auf Erledigt tippt“:** *Für mich zählen (mit Ändern)* oder *Immer fragen, wer es war*. Solange kein Elternteil wählt, werden Familien mit jemandem, der sich nicht anmeldet, immer gefragt (diese Person bekommt Aufgaben nur so).",
         'Ein Fehler lässt sich unter Aktivität rückgängig machen (Eltern) oder mit ↩️ Rückgängig neben „Erledigt von“ der Aufgabe in ihrem Raum (Eltern; es fragt vorher nach, weil die Münzen wieder abgezogen werden). Ein Teamwork wird für das ganze Team rückgängig gemacht, und die Münzen aller dafür werden zurückgenommen. Die Serie wird wieder so wie vor diesem Erledigt, außer eine andere Aufgabe zählt noch für diesen Tag. Ein Kind kann sein eigenes Erledigt zurücknehmen, solange es auf Freigabe wartet.',
       ] },
       { p: '**Einstellungen → Funktionen → Beweisfotos** schaltet Fotos aus; der 📎-Knopf fügt dann nur eine Notiz hinzu. Auf tidyquest.org sind Fotos am Anfang aus, und ein Elternteil schaltet sie ein.' },
@@ -786,6 +788,12 @@ export const GUIDE_DE: GuideSection[] = [
         ] },
         { q: 'Ist die App auf dem neuesten Stand?', a: [
           '**Einstellungen → Allgemein** zeigt die Version. Zum Aktualisieren oder Zurückgehen siehe „Installieren und aktualisieren“.',
+        ] },
+      ] },
+      { qa: [
+        { q: "Ich habe eine Aufgabe für mein Kind abgehakt, aber die Münzen gingen an mich", a: [
+          "Bei einer Aufgabe, die jeder machen kann, zählt das Erledigt eines Erwachsenen für ihn. Tippe in der Leiste, die gleich danach erscheint, auf **Ändern** und wähle dein Kind: Münzen, Serie und Abzeichen gehen an es.",
+          "Leiste verpasst? Mach es in Aktivität rückgängig und markiere es neu mit **👥 Für jemanden erledigt…** in der geöffneten Aufgabe. Um jedes Mal gefragt zu werden, wähle *Immer fragen, wer es war* unter **Einstellungen → Allgemein**.",
         ] },
       ] },
     ],

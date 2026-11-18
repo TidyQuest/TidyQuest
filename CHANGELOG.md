@@ -18,6 +18,20 @@ What changed in each release, in plain language, newest first. Releases up to v0
   treats, high fives, the finish and the first-place prize, and it rolls any leftover stars when the month ends. It
   has a switch under Settings → Features (on by default). The map, the Today card and the settings page come in
   the next parts, so there's nothing to play in the app yet.
+- **"Done for someone…"** (FIX-37). A new button in an opened chore lets parents and members pick who did a chore
+  before marking it done, assigned or not. The person gets a notification ("Dad marked … done for you"), and Activity
+  says "Marked done by Dad".
+- **A family setting for a grown-up's Done** (FIX-37): Settings → General → "When a grown-up taps Done on a chore
+  anyone can do", with *Count it as mine (with Change)* or *Always ask who did it*. Until a parent picks one, families
+  with someone who can't log in are always asked, and other families get "Count it as mine".
+
+### Fixed
+
+- **A parent ticking off a chore anyone can do for a kid no longer has to keep the coins** (FIX-37). Done still counts
+  as the grown-up's, but a bar now says "… counted as yours" with **Change** for about 10 seconds (longer while
+  you're on it). Change gives the chore to whoever really did it: coins, streak, turn and any badge that Done earned
+  move to them, and nothing is left with the grown-up. The grown-up's badge notification waits a minute, so it doesn't
+  go out for a chore they hand on. A grown-up alone with nobody else to give it to doesn't see the bar.
 
 ## v0.19.0 (2026-11-17)
 

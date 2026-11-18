@@ -9,6 +9,8 @@ const CODES: Record<string, string> = {
   not_your_turn: 'app.notYourTurn',
   paused: 'app.chorePaused',
   claimed_by_team: 'app.claimedByTeam',
+  change_too_late: 'doneFor.tooLate',
+  not_changeable: 'doneFor.notChangeable',
 };
 
 // A parent marking it done for someone else: "You already did this" would be about the wrong person

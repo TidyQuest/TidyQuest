@@ -248,7 +248,9 @@ export const GUIDE_FR: GuideSection[] = [
         'Une pièce s’ouvre sur un court résumé (son état, combien de tâches sont en retard ou restantes aujourd’hui, et les pièces à gagner), puis ses tâches sous En retard, Aujourd’hui, Cette semaine, Au besoin et En pause ; « Afficher … de plus · plus tard » montre celles prévues après cette semaine. Les puces Toutes, Les miennes, En retard et En pause filtrent la liste. La dernière puce, Échéance, est le tri : choisissez un autre ordre (état, nom, pièces…) pour voir une seule liste ; la flèche à côté l’inverse. ← revient aux pièces ; les parents trouvent Dupliquer la pièce sous ⋯ dans le résumé.',
         'Le bouton 📎 dans la tâche ouverte ajoute une note ou une photo comme preuve.',
         'Après l’approbation d’un parent, la note et la photo restent avec la tâche dans Activité (appuie sur la photo pour la voir en grand). Les parents voient celles de tout le monde ; les autres, seulement les leurs. Le lien d’une photo ne s’ouvre pour personne d’autre, ni après la déconnexion. Annuler ou refuser la tâche supprime sa photo.',
-        'Les parents et les membres peuvent marquer une tâche comme faite pour quelqu’un d’autre (« qui l’a faite ? »).',
+        "**Les adultes (parents et membres) peuvent marquer une tâche comme faite pour quelqu’un d’autre.** Sur une tâche attribuée, Fait demande « Qui a fait cette tâche ? ». Sur une tâche que tout le monde peut faire, Fait compte pour vous, et une barre affiche « … compté pour toi » avec **Changer** pendant environ 10 secondes (plus longtemps si vous êtes dessus) : appuyez sur Changer et choisissez qui l’a vraiment faite. Les pièces, la série et les badges vont alors à cette personne comme si elle avait appuyé sur Fait, et rien ne vous reste. Changer marche pendant 10 minutes ; ensuite, annulez depuis Activité.",
+        "**👥 Fait pour quelqu'un…** dans la tâche ouverte choisit qui l’a faite avant de la marquer faite. La personne reçoit une alerte (« Papa a marqué … comme fait pour toi »), et Activité affiche « Marqué fait par Papa ». Avec le Mode strict, c’est approuvé tout de suite. Un enfant ne peut pas marquer une tâche faite pour quelqu’un d’autre.",
+        "**Paramètres → Général → « Quand un adulte appuie sur Fait pour une tâche que tout le monde peut faire » :** *Le compter pour moi (avec Changer)* ou *Toujours demander qui l'a fait*. Tant qu’un parent n’a pas choisi, les familles avec quelqu’un qui ne se connecte pas sont toujours interrogées (cette personne ne reçoit des tâches que comme ça).",
         'Une erreur peut être annulée depuis Activité (parents), ou avec ↩️ Annuler à côté du « Fait par » de la tâche dans sa pièce (parents ; l’appli demande d’abord, car les pièces sont reprises). Une tâche en équipe est annulée pour toute l’équipe, et les pièces de chacun sont reprises. La série revient à ce qu’elle était avant ce Fait, sauf si une autre tâche compte encore pour ce jour-là. Un enfant peut annuler son propre Fait tant qu’il attend la validation.',
       ] },
       { p: '**Paramètres → Fonctionnalités → Photos de preuve** désactive les photos ; le bouton 📎 n’ajoute alors qu’une note. Sur tidyquest.org, les photos sont désactivées au départ et un parent les active.' },
@@ -786,6 +788,12 @@ export const GUIDE_FR: GuideSection[] = [
         ] },
         { q: 'L’appli est-elle à jour ?', a: [
           '**Paramètres → Général** montre la version. Voir « Installation et mises à jour » pour mettre à jour ou revenir en arrière.',
+        ] },
+      ] },
+      { qa: [
+        { q: "J’ai coché une tâche pour mon enfant mais les pièces sont venues à moi", a: [
+          "Sur une tâche que tout le monde peut faire, le Fait d’un adulte compte pour lui. Appuyez sur **Changer** dans la barre qui s’affiche juste après et choisissez votre enfant : les pièces, la série et les badges passent à lui.",
+          "Barre ratée ? Annulez dans Activité et marquez-la à nouveau avec **👥 Fait pour quelqu'un…** dans la tâche ouverte. Pour qu’on vous demande à chaque fois, choisissez *Toujours demander qui l'a fait* dans **Paramètres → Général**.",
         ] },
       ] },
     ],

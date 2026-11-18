@@ -248,7 +248,9 @@ export const GUIDE_ES: GuideSection[] = [
         'Una habitación se abre con un breve resumen (su estado, cuántas tareas están atrasadas o pendientes hoy y las monedas esperando), y luego sus tareas en Atrasadas, Hoy, Esta semana, Cuando haga falta y En pausa; «Mostrar … más · más adelante» abre las que vencen después de esta semana. Las fichas Todas, Mías, Atrasadas y En pausa filtran la lista. La última ficha, Por vencimiento, es el orden: elige otro (estado, nombre, monedas…) para ver una sola lista, y la flecha de al lado lo invierte. ← vuelve a las habitaciones; los padres encuentran Duplicar habitación en ⋯ dentro del resumen.',
         'El botón 📎 de la tarea abierta añade una nota o una foto como prueba.',
         'Cuando un padre o una madre la aprueba, la nota y la foto se quedan con la tarea en Actividad (pulsa la foto para verla en grande). Los padres ven las de todos; los demás, solo las suyas. El enlace de una foto no se abre para nadie más, ni después de cerrar sesión. Deshacer o rechazar la tarea borra su foto.',
-        'Los padres y miembros pueden marcar una tarea como hecha por otra persona ("¿quién la hizo?").',
+        "**Los adultos (padres y miembros) pueden marcar una tarea como hecha por otra persona.** En una tarea asignada, Hecho pregunta «¿Quién completó esta tarea?». En una tarea que cualquiera puede hacer, Hecho cuenta como tuya, y una barra dice «… contó como tuya» con **Cambiar** durante unos 10 segundos (más si estás encima): pulsa Cambiar y elige quién la hizo de verdad. Las monedas, la racha y las insignias pasan a esa persona como si hubiera pulsado Hecho, y a ti no te queda nada. Cambiar funciona durante 10 minutos; después, deshazla desde Actividad.",
+        "**👥 Hecha por otra persona…** en la tarea abierta elige quién la hizo antes de marcarla. Esa persona recibe un aviso («Papá marcó … como hecha por ti») y Actividad muestra «Marcada como hecha por Papá». Con el Modo estricto queda aprobada al momento. Un niño no puede marcar una tarea por otra persona.",
+        "**Ajustes → General → «Cuando un adulto pulsa Hecho en una tarea que cualquiera puede hacer»:** *Contarla como mía (con Cambiar)* o *Preguntar siempre quién la hizo*. Mientras ningún padre elija, a las familias con alguien que no inicia sesión se les pregunta siempre (esa persona solo recibe tareas así).",
         'Un error se puede deshacer desde Actividad (padres), o con ↩️ Deshacer junto al "Hecho por" de la tarea en su habitación (padres; pregunta antes, porque las monedas se devuelven). Una tarea En equipo se deshace para todo el equipo y se retiran las monedas de todos. La racha vuelve a ser la de antes de ese Hecho, salvo que otra tarea siga contando para ese día. Un niño puede deshacer su propio Hecho mientras espera aprobación.',
       ] },
       { p: '**Ajustes → Funciones → Fotos de prueba** desactiva las fotos; el botón 📎 entonces solo añade una nota. En tidyquest.org las fotos empiezan desactivadas, y un padre o una madre las activa.' },
@@ -786,6 +788,12 @@ export const GUIDE_ES: GuideSection[] = [
         ] },
         { q: '¿La app está actualizada?', a: [
           '**Ajustes → General** muestra la versión. Mira "Instalación y actualización" para actualizar o volver atrás.',
+        ] },
+      ] },
+      { qa: [
+        { q: "Marqué una tarea por mi hijo pero las monedas fueron para mí", a: [
+          "En una tarea que cualquiera puede hacer, el Hecho de un adulto cuenta como suyo. Pulsa **Cambiar** en la barra que aparece justo después y elige a tu hijo: las monedas, la racha y las insignias pasan a él.",
+          "¿Se te pasó la barra? Deshazla en Actividad y vuelve a marcarla con **👥 Hecha por otra persona…** en la tarea abierta. Para que te pregunte siempre, elige *Preguntar siempre quién la hizo* en **Ajustes → General**.",
         ] },
       ] },
     ],

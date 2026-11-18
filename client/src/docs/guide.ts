@@ -275,7 +275,9 @@ export const GUIDE_EN: GuideSection[] = [
         'A room opens with a short summary (its health, how many chores are overdue or left today, and the coins waiting), then its chores under Overdue, Today, This week, When needed and Paused; “Show … more · later” opens the ones due after this week. The chips All, Mine, Overdue and Paused narrow the list. The last chip, When it’s due, is the sort: pick another order (health, name, coins…) to see one list, and the arrow next to it reverses it. ← goes back to the rooms; parents find Duplicate room under ⋯ in the summary.',
         'The 📎 button in the opened chore adds a note or photo as proof.',
         'After a parent approves, the note and photo stay with the chore in Activity (tap the photo to see it full size). Parents see everyone’s; everyone else sees only their own. A photo’s link doesn’t open for anyone else, or after logging out. Undoing or rejecting the chore deletes its photo.',
-        'Parents and members can mark a chore done for someone else ("who did it?").',
+        "**Grown-ups (parents and members) can mark a chore done for someone else.** On a chore assigned to people, Done asks \"Who completed this task?\". On a chore anyone can do, Done counts as yours, and a bar says “… counted as yours” with **Change** for about 10 seconds (longer while you're on it): tap Change and pick who really did it. The coins, streak and badges then go to them as if they'd tapped Done, and nothing stays with you. Change works for 10 minutes; after that, undo it from Activity.",
+        "**👥 Done for someone…** in the opened chore picks who did it before marking it done. They get an alert (“Dad marked … done for you”), and Activity shows “Marked done by Dad”. Under Strict Mode it counts as approved straight away. A kid can't mark a chore done for someone else.",
+        "**Settings → General → \"When a grown-up taps Done on a chore anyone can do\":** *Count it as mine (with Change)* or *Always ask who did it*. Until a parent picks, families with someone who can't log in are always asked (they only get chores this way).",
         'A mistake can be undone from Activity (parents), or with ↩️ Undo next to the chore’s "Done by" in its room (parents; it asks first, because the coins come back off). A team-up is undone for the whole team, and everyone’s coins for it are taken back. The streak goes back to what it was before that Done, unless another chore still counts for that day. A kid can take back their own Done while it waits for approval.',
       ] },
       { p: '**Settings → Features → Proof photos** switches photos off; the 📎 button then adds a note only. On tidyquest.org photos start off, and a parent turns them on.' },
@@ -813,6 +815,12 @@ export const GUIDE_EN: GuideSection[] = [
         ] },
         { q: 'Is the app up to date?', a: [
           '**Settings → General** shows the version. See "Installing and updating" to update or roll back.',
+        ] },
+      ] },
+      { qa: [
+        { q: "I ticked a chore off for my kid but the coins went to me", a: [
+          "On a chore anyone can do, a grown-up's Done counts as theirs. Tap **Change** on the bar that shows straight after and pick your kid: the coins, streak and badges move to them.",
+          "Missed the bar? A parent can undo it in Activity and mark it again with **👥 Done for someone…** in the opened chore. To be asked every time, pick *Always ask who did it* in **Settings → General**.",
         ] },
       ] },
     ],

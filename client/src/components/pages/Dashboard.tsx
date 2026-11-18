@@ -24,7 +24,8 @@ import { choreDue } from '../../utils/choreText';
 import type { ScheduledTaskFields } from '../../utils/schedule';
 import { claimedLabel } from '../../utils/teamups';
 import { formatCoins } from '../../utils/format';
-import { AdminCompleteModal } from '../shared/AdminCompleteModal';
+import { AdminCompleteModal, type ChangeTask } from '../shared/AdminCompleteModal';
+import { doneMode, hasAssignees, someoneElseCanGetIt } from '../../utils/grownUpDone';
 import { api } from '../../hooks/useApi';
 import { TakeBackButton } from '../shared/TakeBackButton';
 import { UndoToast, type UndoState } from '../shared/UndoToast';
@@ -215,6 +216,7 @@ interface DashboardProps {
     /** Chores waiting for a parent (admins only) */
     pendingCompletions?: PendingItem[];
     strictMode?: boolean;
+    grownUpDone?: { value: 'mine' | 'ask'; chosen: boolean };
     /** Streak shields: null when they're off */
     shields?: { price: number; max: number; every: number } | null;
     currentUser: CurrentUser;
@@ -222,9 +224,9 @@ interface DashboardProps {
     badges?: Record<number, string | null>;
   };
   family: FamilyMember[];
-  users?: Array<{ id: number; displayName: string; role: string; avatarColor: string; avatarType?: string; avatarPreset?: string; avatarPhotoUrl?: string }>;
+  users?: Array<{ id: number; displayName: string; role: string; avatarColor: string; avatarType?: string; avatarPreset?: string; avatarPhotoUrl?: string; isParticipant?: number | boolean }>;
   language?: string;
-  onCompleteTask: (taskId: number, proof?: Proof) => void;
+  onCompleteTask: (taskId: number, proof?: Proof, opts?: { changeTask?: ChangeTask }) => void;
   onRefresh?: () => void;
   /** Coins changed outside a chore (a streak shield bought): refresh the header's total */
   onCoinsChanged?: () => void;
@@ -394,9 +396,10 @@ const Dashboard: React.FC<DashboardProps> = ({
   };
   const timer = useChoreTimer();
   const finish = (q: Quest) => {
-    const hasAssignees = (q.effectiveAssignedUserIds && q.effectiveAssignedUserIds.length > 0) || q.assignedToChildren;
-    if (isAdult && hasAssignees) setAdminModalQuest(q);
-    else onCompleteTask(q.id);
+    // FIX-37: a grown-up's Done asks who did it, or counts as theirs with Change for a few seconds
+    const mode = doneMode(q, currentUser, users, data.grownUpDone?.value);
+    if (mode === 'pick') setAdminModalQuest(q);
+    else onCompleteTask(q.id, undefined, mode === 'change' ? { changeTask: q } : undefined);
   };
   type TickState = { disabled: boolean; label: string; done?: boolean };
   const ready: TickState = { disabled: false, label: t('roomDetail.done') };
@@ -469,6 +472,7 @@ const Dashboard: React.FC<DashboardProps> = ({
           {canDo && !waitForTimer && <TimerStartButton task={timerTask} language={language} className="chore-act" />}
           {q.teamUp?.canStart && <ChoreAct onClick={() => setTeamPick(q)}>🤝 {t('teamups.teamUp')}</ChoreAct>}
           {canAddProof && canDo && !waitForTimer && <ChoreAct onClick={() => setProofQuest(q)}>📎 {proofLabel}</ChoreAct>}
+          {isAdult && canDo && (hasAssignees(q) || someoneElseCanGetIt(currentUser.id, users)) && <ChoreAct onClick={() => setAdminModalQuest(q)}>👥 {t('doneFor.doneForSomeone')}</ChoreAct>}
           <TakeBackButton completionId={q.myPendingId} onDone={() => onRefresh?.()} language={language} />
         </div>
       </ChoreRow>
@@ -1165,6 +1169,7 @@ const Dashboard: React.FC<DashboardProps> = ({
         <AdminCompleteModal
           task={adminModalQuest}
           allUsers={(users || []) as any[]}
+          currentUserId={currentUser.id}
           language={language}
           onConfirm={async (userIds) => {
             try {

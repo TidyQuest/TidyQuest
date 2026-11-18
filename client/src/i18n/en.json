@@ -548,7 +548,8 @@
       "shield_used": "A shield saved a {n}-day streak",
       "shield_usedMany": "{count} shields saved a {n}-day streak",
       "boughtReward": "Bought {reward}",
-      "approvedBy": "Approved by {name}"
+      "approvedBy": "Approved by {name}",
+      "markedBy": "Marked done by {name}"
     },
     "roomDetail": {
       "name": "Name",
@@ -1479,7 +1480,8 @@
       "shieldGiven": "🛡️ {name} gave you a streak shield. It saves your streak if you miss a day.",
       "recapLastWeek": "📊 Last week: {lines}",
       "testFamily": "👋 Test from TidyQuest, sent by {name} at {time}: family notifications work!",
-      "parentSays": "{parent} says: {reason}"
+      "parentSays": "{parent} says: {reason}",
+      "doneForYou": "✅ {name} marked “{task}” done for you"
     },
     "notifyAdmin": {
       "peopleTitle": "Who gets what",
@@ -2634,6 +2636,19 @@
       "finisherReason": "Quest Trail: reached the finish",
       "prizeReason": "Quest Trail: first to the finish",
       "treatReason": "Quest Trail: mascot treat"
+    },
+    "doneFor": {
+      "countedYours": "“{task}” counted as yours",
+      "change": "Change",
+      "givenTo": "“{task}” went to {names}",
+      "doneForSomeone": "Done for someone…",
+      "settingTitle": "When a grown-up taps Done on a chore anyone can do",
+      "settingDesc": "“Always ask” suits families where grown-ups often tick chores off for kids who don't use the app.",
+      "optMine": "Count it as mine (with Change)",
+      "optAsk": "Always ask who did it",
+      "auto": "(chosen for your family)",
+      "tooLate": "Too late to change who did it. Take the Done back in Activity, then mark it done for the right person.",
+      "notChangeable": "This Done can't be handed to someone else."
     }
   }
 }

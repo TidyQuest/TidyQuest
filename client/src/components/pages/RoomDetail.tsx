@@ -18,8 +18,9 @@ import { TakeBackButton } from '../shared/TakeBackButton';
 import { TodoQuickAdd } from '../shared/TodoQuickAdd';
 import { localeFor } from '../../utils/locale';
 import { useTranslation } from '../../hooks/useTranslation';
-import { AdminCompleteModal } from '../shared/AdminCompleteModal';
+import { AdminCompleteModal, type ChangeTask } from '../shared/AdminCompleteModal';
 import { ProofModal, type Proof } from '../shared/ProofModal';
+import { doneMode, hasAssignees, someoneElseCanGetIt } from '../../utils/grownUpDone';
 import { LateLogModal } from '../shared/LateLogModal';
 import { UndoToast, type UndoState } from '../shared/UndoToast';
 import { TeamUpDialog } from '../shared/TeamUp';
@@ -96,9 +97,11 @@ interface RoomDetailProps {
   isAdmin: boolean;
   currentUserId?: number;
   currentUserRole?: 'admin' | 'member' | 'child';
-  users?: Array<{ id: number; displayName: string; role: string; avatarColor: string; avatarType?: string; avatarPreset?: string; avatarPhotoUrl?: string }>;
+  users?: Array<{ id: number; displayName: string; role: string; avatarColor: string; avatarType?: string; avatarPreset?: string; avatarPhotoUrl?: string; isParticipant?: number | boolean }>;
+  /** What a grown-up's Done on a chore anyone can do does (FIX-37) */
+  grownUpDone?: 'mine' | 'ask';
   coinsByEffort?: Record<number, number>;
-  onCompleteTask: (taskId: number, proof?: Proof) => void;
+  onCompleteTask: (taskId: number, proof?: Proof, opts?: { changeTask?: ChangeTask }) => void;
   /** Strict Mode is on: kids can attach a note or photo when finishing */
   strictMode?: boolean;
   onRefresh?: () => void;
@@ -118,7 +121,7 @@ interface RoomDetailProps {
 }
 
 
-export function RoomDetail({ room, language, isAdmin, currentUserId, currentUserRole, users, coinsByEffort, onCompleteTask, onRefresh, onOpenRoom, allowOneTime = true, allowPhotos = true, allowPins = true, onAchievementsUnlocked, focusTaskId, onlyMine, strictMode }: RoomDetailProps) {
+export function RoomDetail({ room, language, isAdmin, currentUserId, currentUserRole, users, coinsByEffort, onCompleteTask, onRefresh, onOpenRoom, allowOneTime = true, allowPhotos = true, allowPins = true, onAchievementsUnlocked, focusTaskId, onlyMine, strictMode, grownUpDone }: RoomDetailProps) {
   const { taskName: translateTask, roomDisplayName, t } = useTranslation(language);
   const [animatedTask, setAnimatedTask] = useState<number | null>(null);
   const timer = useChoreTimer();
@@ -201,13 +204,13 @@ export function RoomDetail({ room, language, isAdmin, currentUserId, currentUser
   });
 
   const handleComplete = (task: Task) => {
-    const isAdminOrMember = currentUserRole === 'admin' || currentUserRole === 'member';
-    const hasAssignees = (task.effectiveAssignedUserIds && task.effectiveAssignedUserIds.length > 0) || task.assignedToChildren;
-    if (isAdminOrMember && hasAssignees) {
+    // FIX-37: a grown-up's Done asks who did it, or counts as theirs with Change for a few seconds
+    const mode = doneMode(task, { id: currentUserId ?? 0, role: currentUserRole }, users, grownUpDone);
+    if (mode === 'pick') {
       setAdminModalTask(task);
     } else {
       setAnimatedTask(task.id);
-      onCompleteTask(task.id);
+      onCompleteTask(task.id, undefined, mode === 'change' ? { changeTask: task } : undefined);
       setTimeout(() => setAnimatedTask(null), 2200);
     }
   };
@@ -516,6 +519,9 @@ export function RoomDetail({ room, language, isAdmin, currentUserId, currentUser
             {!paused && !btn.disabled && !waitForTimer && <TimerStartButton task={timerTask} language={language} className="chore-act" />}
             {!paused && task.teamUp?.canStart && <ChoreAct onClick={() => setTeamPick(task)}>🤝 {t('teamups.teamUp')}</ChoreAct>}
             {!paused && canAddProof && !btn.disabled && !waitForTimer && <ChoreAct onClick={() => setProofTask(task)}>📎 {proofLabel}</ChoreAct>}
+            {!paused && !btn.disabled && !waitForTimer && (currentUserRole === 'admin' || currentUserRole === 'member') && (hasAssignees(task) || someoneElseCanGetIt(currentUserId ?? 0, users)) && (
+              <ChoreAct onClick={() => setAdminModalTask(task)}>👥 {t('doneFor.doneForSomeone')}</ChoreAct>
+            )}
             {!paused && <TakeBackButton completionId={task.myPendingId} onDone={() => onRefresh?.()} language={language} />}
             {isAdmin && task.completedTodayBy?.completionId && (
               <ChoreAct onClick={() => void undoDone(task)} title={t('roomDetail.undoDoneTitle')}>↩️ {t('roomDetail.undoDone')}</ChoreAct>
@@ -813,6 +819,7 @@ export function RoomDetail({ room, language, isAdmin, currentUserId, currentUser
       <AdminCompleteModal
         task={adminModalTask}
         allUsers={(users || []) as any[]}
+        currentUserId={currentUserId}
         language={language}
         onConfirm={handleAdminModalConfirm}
         onClose={() => setAdminModalTask(null)}

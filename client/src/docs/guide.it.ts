@@ -248,7 +248,9 @@ export const GUIDE_IT: GuideSection[] = [
         'Una stanza si apre con un breve riepilogo (il suo stato, quante faccende sono in ritardo o rimaste oggi e le monete in attesa), poi le sue faccende sotto In ritardo, Oggi, Questa settimana, Al bisogno e In pausa; «Mostra altre … · più avanti» apre quelle in scadenza dopo questa settimana. Le etichette Tutte, Mie, In ritardo e In pausa filtrano l’elenco. L’ultima, Per scadenza, è l’ordinamento: scegline un altro (stato, nome, monete…) per vedere un solo elenco; la freccia accanto lo inverte. ← torna alle stanze; i genitori trovano Duplica stanza sotto ⋯ nel riepilogo.',
         'Il pulsante 📎 nella faccenda aperta aggiunge una nota o una foto come prova.',
         'Dopo l’approvazione di un genitore, la nota e la foto restano con la faccenda in Attività (tocca la foto per vederla in grande). I genitori vedono quelle di tutti; gli altri solo le proprie. Il link di una foto non si apre per nessun altro, né dopo essere usciti. Annullare o rifiutare la faccenda cancella la sua foto.',
-        'Genitori e membri possono segnare una faccenda come fatta per qualcun altro ("chi l’ha fatta?").',
+        "**Gli adulti (genitori e membri) possono segnare un compito come fatto per qualcun altro.** Su un compito assegnato, Fatto chiede «Chi ha completato questo compito?». Su un compito che chiunque può fare, Fatto conta come tuo, e una barra dice «… contato come tuo» con **Cambia** per circa 10 secondi (di più se ci sei sopra): tocca Cambia e scegli chi l’ha fatto davvero. Monete, serie e badge vanno a quella persona come se avesse toccato Fatto, e a te non resta niente. Cambia funziona per 10 minuti; dopo, annulla da Attività.",
+        "**👥 Fatto per qualcuno…** nel compito aperto sceglie chi l’ha fatto prima di segnarlo. La persona riceve un avviso («Papà ha segnato … come fatto per te») e Attività mostra «Segnato come fatto da Papà». Con la Modalità rigorosa è approvato subito. Un bambino non può segnare un compito per qualcun altro.",
+        "**Impostazioni → Generale → «Quando un adulto tocca Fatto su un compito che chiunque può fare»:** *Contalo come mio (con Cambia)* o *Chiedi sempre chi l'ha fatto*. Finché un genitore non sceglie, alle famiglie con qualcuno che non accede viene sempre chiesto (quella persona riceve compiti solo così).",
         'Un errore si può annullare da Attività (genitori), oppure con ↩️ Annulla accanto a "Fatto da" della faccenda nella sua stanza (genitori; chiede conferma, perché le monete vengono tolte). Una squadra viene annullata per tutta la squadra e le monete di tutti per quella faccenda vengono riprese. La serie torna com’era prima di quel Fatto, a meno che un’altra faccenda conti ancora per quel giorno. Un bambino può ritirare il proprio Fatto finché aspetta l’approvazione.',
       ] },
       { p: '**Impostazioni → Funzioni → Foto di prova** spegne le foto; il pulsante 📎 aggiunge allora solo una nota. Su tidyquest.org le foto partono spente, e un genitore le attiva.' },
@@ -786,6 +788,12 @@ export const GUIDE_IT: GuideSection[] = [
         ] },
         { q: 'L’app è aggiornata?', a: [
           '**Impostazioni → Generale** mostra la versione. Vedi "Installazione e aggiornamenti" per aggiornare o tornare indietro.',
+        ] },
+      ] },
+      { qa: [
+        { q: "Ho spuntato un compito per mio figlio ma le monete sono andate a me", a: [
+          "Su un compito che chiunque può fare, il Fatto di un adulto conta come suo. Tocca **Cambia** sulla barra che compare subito dopo e scegli tuo figlio: monete, serie e badge passano a lui.",
+          "Barra persa? Annulla in Attività e segnalo di nuovo con **👥 Fatto per qualcuno…** nel compito aperto. Per una domanda ogni volta, scegli *Chiedi sempre chi l'ha fatto* in **Impostazioni → Generale**.",
         ] },
       ] },
     ],

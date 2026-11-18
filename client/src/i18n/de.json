@@ -548,7 +548,8 @@
       "shield_used": "Ein Schild hat eine {n}-Tage-Serie gerettet",
       "shield_usedMany": "{count} Schilde haben eine {n}-Tage-Serie gerettet",
       "boughtReward": "Hat {reward} gekauft",
-      "approvedBy": "Freigegeben von {name}"
+      "approvedBy": "Freigegeben von {name}",
+      "markedBy": "Als erledigt markiert von {name}"
     },
     "roomDetail": {
       "name": "Name",
@@ -1479,7 +1480,8 @@
       "shieldGiven": "🛡️ {name} hat dir einen Serienschild geschenkt. Er rettet deine Serie, wenn du einen Tag verpasst.",
       "recapLastWeek": "📊 Letzte Woche: {lines}",
       "testFamily": "👋 Test von TidyQuest, gesendet von {name} um {time}: Die Familien-Benachrichtigungen funktionieren!",
-      "parentSays": "{parent} sagt: {reason}"
+      "parentSays": "{parent} sagt: {reason}",
+      "doneForYou": "✅ {name} hat „{task}“ für dich als erledigt markiert"
     },
     "notifyAdmin": {
       "peopleTitle": "Wer bekommt was",
@@ -2634,6 +2636,19 @@
       "finisherReason": "Abenteuerpfad: Ziel erreicht",
       "prizeReason": "Abenteuerpfad: als Erste(r) im Ziel",
       "treatReason": "Abenteuerpfad: Leckerli fürs Maskottchen"
+    },
+    "doneFor": {
+      "countedYours": "„{task}“ zählt für dich",
+      "change": "Ändern",
+      "givenTo": "„{task}“ ging an {names}",
+      "doneForSomeone": "Für jemanden erledigt…",
+      "settingTitle": "Wenn ein Erwachsener bei einer Aufgabe, die jeder machen kann, auf Erledigt tippt",
+      "settingDesc": "„Immer fragen“ passt zu Familien, in denen Erwachsene oft Aufgaben für Kinder abhaken, die die App nicht nutzen.",
+      "optMine": "Für mich zählen (mit Ändern)",
+      "optAsk": "Immer fragen, wer es war",
+      "auto": "(für eure Familie gewählt)",
+      "tooLate": "Zu spät, um zu ändern, wer es war. Nimm das Erledigt in Aktivität zurück und markiere es dann für die richtige Person.",
+      "notChangeable": "Dieses Erledigt kann niemand anderem gegeben werden."
     }
   }
 }
