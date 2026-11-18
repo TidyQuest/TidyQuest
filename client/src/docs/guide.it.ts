@@ -401,7 +401,7 @@ export const GUIDE_IT: GuideSection[] = [
       { h: 'Distintivi' },
       { p: 'I distintivi predefiniti si sbloccano da soli. I genitori possono crearne di propri in **Impostazioni → Distintivi** (per esempio "Compiti per 4 settimane di fila"), con monete bonus facoltative, e impostare le monete per ogni distintivo predefinito. La sua icona si sceglie come quella di un\'attività: tocca il pulsante accanto a Icona per aprire Scegli un\'icona.' },
       { h: 'Sentiero delle avventure' },
-      { where: 'Oggi → la scheda 🎲 Sentiero delle avventure e la sua mappa (genitori: Impostazioni → Sentiero delle avventure)' },
+      { where: 'Oggi → la scheda Sentiero delle avventure e la sua mappa (genitori: Impostazioni → Sentiero delle avventure)' },
       { p: 'Un gioco da tavolo a cui tutta la famiglia gioca per un mese. Gioca chiunque abbia «Partecipa alle attività» attivo, genitori compresi. Ogni mese si apre una nuova mappa, e il 1° tutti ripartono dalla Partenza.' },
       { ul: [
         '**Stelle:** 1 stella per ogni giorno in cui svolgi un’attività, e una stella bonus quando ne svolgi 3 o più quel giorno (al massimo 2 al giorno). Ogni attività conta una volta al giorno. Un’attività in attesa dell’approvazione di un genitore dà la sua stella quando viene approvata, per il giorno in cui è stata svolta.',
@@ -411,6 +411,7 @@ export const GUIDE_IT: GuideSection[] = [
         '**Fine del mese:** le stelle che nessuno ha tirato vengono tirate per loro a mezzanotte dell’ultimo giorno. La prossima volta che apri l’app vedi chi ha vinto e la nuova mappa.',
         '**Avvisi:** «Mancano 3 giorni» arriva la sera, due giorni prima della fine del mese, e i risultati arrivano con la lista del mattino il 1°. Sono Spintarelle e Riepiloghi in **Impostazioni → Notifiche**, e aspettano la fine delle ore di silenzio.',
       ] },
+      { p: '**In Modalità bambino:** la scheda in Oggi ha un grande pulsante **Tira!** che tira il dado lì, con **Vedi la mappa** sotto. Ogni tiro mostra un’immagine e poche parole («+2 monete!»), e le due stelle di oggi si riempiono con le attività.' },
       { h: 'Sentiero delle avventure per i genitori' },
       { where: 'Impostazioni → Sentiero delle avventure' },
       { ul: [

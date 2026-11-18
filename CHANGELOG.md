@@ -22,8 +22,8 @@ What changed in each release, in plain language, newest first. Releases up to v0
   Blossom Trail or Sunny Shores) with everyone's piece showing their own avatar, the die and your stars at the
   bottom, a map key, and a card saying what each roll did. The Today card shows the stars waiting to be rolled, where
   everyone is on the trail and today's two stars; Customise can hide or move it. The first time someone opens the app
-  in a new month, a screen shows who won last month, everyone's place, their trail badges and the new world. The
-  parents' settings page (prize, trail length, time of day, fog) comes in part 3; until then the defaults apply.
+  in a new month, a screen shows who won last month, everyone's place, their trail badges and the new world.
+  Parents set the prize, trail length, time of day and fog in Settings → Quest Trail (part 3).
 - **"Done for someone…"** (FIX-37). A new button in an opened chore lets parents and members pick who did a chore
   before marking it done, assigned or not. The person gets a notification ("Dad marked … done for you"), and Activity
   says "Marked done by Dad".
@@ -36,11 +36,15 @@ What changed in each release, in plain language, newest first. Releases up to v0
 - **Two Quest Trail alerts** (NEW-40): "3 days left" in the evening two days before the month ends (to everyone still
   on the way who isn't on vacation), and last month's results with the morning list on the 1st. They come as Nudges
   and Summaries, so the existing switches and quiet hours apply.
+- **Quest Trail in Kid mode** (NEW-40): the Today card gets a big Roll! button that rolls right there, with See the
+  map underneath; each roll shows a picture and two or three words, and today's two stars are big and fill in. On
+  the map page, results are a big picture and a few words.
 - **Quest Trail in the guide** (Settings → Guide & help → Game extras), with two troubleshooting answers, in all six
   languages.
 
 ### Fixed
 
+- **The Quest Trail map no longer scrolls sideways on a 390-pixel phone** (NEW-40): it was 5 pixels too wide.
 - **A parent ticking off a chore anyone can do for a kid no longer has to keep the coins** (FIX-37). Done still counts
   as the grown-up's, but a bar now says "… counted as yours" with **Change** for about 10 seconds (longer while
   you're on it). Change gives the chore to whoever really did it: coins, streak, turn and any badge that Done earned

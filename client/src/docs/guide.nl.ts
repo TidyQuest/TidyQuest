@@ -401,7 +401,7 @@ export const GUIDE_NL: GuideSection[] = [
       { h: 'Badges' },
       { p: 'Ingebouwde badges ontgrendelen vanzelf. Ouders kunnen er zelf maken in **Instellingen → Badges** (bijvoorbeeld "4 weken op rij huiswerk"), met optionele bonusmunten, en munten instellen voor elke ingebouwde badge. Het icoon kies je zoals bij een taak: tik op de knop naast Pictogram om Kies een icoon te openen.' },
       { h: 'Avonturenpad' },
-      { where: 'Vandaag → de kaart 🎲 Avonturenpad en de landkaart (ouders: Instellingen → Avonturenpad)' },
+      { where: 'Vandaag → de kaart Avonturenpad en de landkaart (ouders: Instellingen → Avonturenpad)' },
       { p: 'Een bordspel dat het hele gezin een maand lang speelt. Iedereen met ‘Doet mee aan klusjes’ aan speelt mee, ouders ook. Elke maand gaat er een nieuwe kaart open, en op de 1e begint iedereen weer bij Start.' },
       { ul: [
         '**Sterren:** 1 ster voor elke dag dat je een klusje doet, en een bonusster als je er die dag 3 of meer doet (hooguit 2 per dag). Elk klusje telt één keer per dag. Een klusje dat op goedkeuring van een ouder wacht, geeft zijn ster zodra het is goedgekeurd, voor de dag waarop het gedaan is.',
@@ -411,6 +411,7 @@ export const GUIDE_NL: GuideSection[] = [
         '**Einde van de maand:** sterren die niemand gooide, worden om middernacht op de laatste dag voor ze gegooid. De volgende keer dat je de app opent, zie je wie er won en de nieuwe kaart.',
         '**Meldingen:** ‘Nog 3 dagen’ komt ’s avonds, twee dagen voor het einde van de maand, en de uitslag komt op de 1e met de ochtendlijst. Het zijn Duwtjes en Samenvattingen in **Instellingen → Meldingen**, en ze wachten stille uren af.',
       ] },
+      { p: '**In Kindermodus:** de kaart op Vandaag heeft een grote knop **Gooien!** die daar meteen gooit, met **Naar de kaart** eronder. Elke worp toont een plaatje en een paar woorden (‘+2 munten!’), en de twee sterren van vandaag vullen zich met elk klusje.' },
       { h: 'Avonturenpad voor ouders' },
       { where: 'Instellingen → Avonturenpad' },
       { ul: [

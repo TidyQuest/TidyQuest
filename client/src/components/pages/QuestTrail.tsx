@@ -19,6 +19,8 @@ interface Props {
   language: string;
   coins: number;
   onCoinsChanged: () => void;
+  /** Kid mode: results are a big picture and two or three words, and the small hints go */
+  kidMode?: boolean;
 }
 
 const sleep = (ms: number) => new Promise<void>((r) => { window.setTimeout(r, ms); });
@@ -34,7 +36,7 @@ function follow(userId: number, smooth: boolean) {
   window.scrollTo({ top: Math.max(0, top), behavior: smooth && !calm() ? 'smooth' : 'auto' });
 }
 
-const QuestTrail: React.FC<Props> = ({ userId, language, coins, onCoinsChanged }) => {
+const QuestTrail: React.FC<Props> = ({ userId, language, coins, onCoinsChanged, kidMode }) => {
   const { t } = useTranslation(language);
   const navigate = useNavigate();
   const [state, setState] = useState<QuestState | null>(null);
@@ -221,13 +223,13 @@ const QuestTrail: React.FC<Props> = ({ userId, language, coins, onCoinsChanged }
 
       <div className="quest-dock">
         {result && tile && (
-          <div className="quest-result tq-card" role="status">
+          <div className={`quest-result tq-card${kidMode ? ' kid' : ''}`} role="status">
             <span className="quest-result-tile" style={{ background: tile.bg, color: tile.fg }}>
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d={ICONS[result.kind]} /></svg>
             </span>
             <span className="quest-result-text">
               <strong>{result.title}</strong>
-              <span>{result.body}</span>
+              {!kidMode && <span>{result.body}</span>}
             </span>
             <button type="button" className="quest-icon-btn" aria-label={t('quest.close')} onClick={() => setResult(null)}>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" /></svg>
@@ -244,7 +246,7 @@ const QuestTrail: React.FC<Props> = ({ userId, language, coins, onCoinsChanged }
                 <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8l2.8 5.8 6.4.9-4.6 4.5 1.1 6.3L12 17.3l-5.7 3 1.1-6.3-4.6-4.5 6.4-.9z" fill="#FFC93C" stroke="#D98A0B" strokeWidth="1.4" strokeLinejoin="round" /></svg>
                 <b>{stars}</b> {t(stars === 1 ? 'quest.starOne' : 'quest.starMany')}
               </span>
-              <small>{hint}</small>
+              {!kidMode && <small>{hint}</small>}
             </div>
             <button type="button" className="quest-roll" disabled={!canRoll} onClick={() => void roll()}>{rollLabel}</button>
           </div>

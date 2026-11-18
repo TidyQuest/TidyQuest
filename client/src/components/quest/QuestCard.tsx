@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { api } from '../../hooks/useApi';
 import { useTranslation } from '../../hooks/useTranslation';
 import { UserAvatar } from '../shared/UserAvatar';
+import { KidQuestCard } from './KidQuestCard';
 import { MonthEnd } from './MonthEnd';
 import { daysLeft, fill } from './questText';
 import type { QuestState } from './types';
@@ -17,11 +18,15 @@ interface Props {
   language?: string;
   /** Changes whenever Today reloads (a chore done or taken back), so the stars stay current */
   refreshKey: unknown;
+  /** Kid mode: a big Roll button right on the card, few words (KidQuestCard) */
+  kidMode?: boolean;
+  /** After a roll on the card (kid mode): Today reloads, for the coins */
+  onRolled?: () => void;
 }
 
 const STAR = 'M12 2.8l2.8 5.8 6.4.9-4.6 4.5 1.1 6.3L12 17.3l-5.7 3 1.1-6.3-4.6-4.5 6.4-.9z';
 
-export const QuestCard: React.FC<Props> = ({ userId, language, refreshKey }) => {
+export const QuestCard: React.FC<Props> = ({ userId, language, refreshKey, kidMode, onRolled }) => {
   const { t } = useTranslation(language);
   const navigate = useNavigate();
   const [state, setState] = useState<QuestState | null>(null);
@@ -32,6 +37,7 @@ export const QuestCard: React.FC<Props> = ({ userId, language, refreshKey }) => 
     api.questState().then((s) => { if (live) setState(s.enabled ? s : null); }).catch(() => { /* the card just stays away */ });
     return () => { live = false; };
   }, [refreshKey]);
+  const reload = () => { api.questState().then((s) => setState(s.enabled ? s : null)).catch(() => undefined); onRolled?.(); };
 
   if (!state) return null;
   const len = state.trail.length;
@@ -57,6 +63,12 @@ export const QuestCard: React.FC<Props> = ({ userId, language, refreshKey }) => 
   const todayLine = !today || me?.finishedAt ? '' : today.chores === 0
     ? t('quest.todayFirst')
     : bonusLeft === 0 ? t('quest.todayBoth') : fill(t(bonusLeft === 1 ? 'quest.todayBonusOne' : 'quest.todayBonusMany'), { n: bonusLeft });
+
+  const monthEnd = state.lastMonth && !endSeen && (
+    <MonthEnd last={state.lastMonth} current={state} userId={userId} language={language || 'en'}
+      onDone={() => { setEndSeen(true); void api.questEndSeen().catch(() => undefined).then(() => navigate('/quest')); }} />
+  );
+  if (kidMode) return <><KidQuestCard state={state} userId={userId} language={language} onRolled={reload} />{monthEnd}</>;
 
   return (
     <>
@@ -100,10 +112,7 @@ export const QuestCard: React.FC<Props> = ({ userId, language, refreshKey }) => 
           </span>
         )}
       </button>
-      {state.lastMonth && !endSeen && (
-        <MonthEnd last={state.lastMonth} current={state} userId={userId} language={language || 'en'}
-          onDone={() => { setEndSeen(true); void api.questEndSeen().catch(() => undefined).then(() => navigate('/quest')); }} />
-      )}
+      {monthEnd}
     </>
   );
 };

@@ -401,7 +401,7 @@ export const GUIDE_FR: GuideSection[] = [
       { h: 'Badges' },
       { p: 'Les badges intégrés se débloquent tout seuls. Les parents peuvent créer les leurs dans **Paramètres → Badges** (par exemple « Devoirs 4 semaines de suite »), avec des pièces bonus facultatives, et fixer des pièces pour chaque badge intégré. Son icône se choisit comme celle d\'une tâche : touchez le bouton à côté d\'Icône pour ouvrir Choisir une icône.' },
       { h: 'Sentier des quêtes' },
-      { where: 'Aujourd’hui → la carte 🎲 Sentier des quêtes et sa carte du monde (parents : Paramètres → Sentier des quêtes)' },
+      { where: 'Aujourd’hui → la carte Sentier des quêtes et sa carte du monde (parents : Paramètres → Sentier des quêtes)' },
       { p: 'Un jeu de plateau auquel toute la famille joue pendant un mois. Tous ceux qui ont « Participe aux tâches » activé jouent, parents compris. Chaque mois ouvre une nouvelle carte, et le 1er tout le monde repart du Départ.' },
       { ul: [
         '**Étoiles :** 1 étoile pour chaque jour où tu fais une tâche, et une étoile bonus quand tu en fais 3 ou plus ce jour-là (2 par jour au maximum). Chaque tâche compte une fois par jour. Une tâche qui attend l’accord d’un parent donne son étoile une fois approuvée, pour le jour où elle a été faite.',
@@ -411,6 +411,7 @@ export const GUIDE_FR: GuideSection[] = [
         '**Fin du mois :** les étoiles que personne n’a lancées sont lancées à minuit le dernier jour. La prochaine fois que tu ouvres l’appli, tu vois qui a gagné et la nouvelle carte.',
         '**Alertes :** « Plus que 3 jours » arrive le soir, deux jours avant la fin du mois, et les résultats arrivent avec la liste du matin le 1er. Ce sont des Coups de pouce et des Résumés dans **Paramètres → Notifications**, et elles attendent la fin des heures calmes.',
       ] },
+      { p: '**En Mode enfant :** la carte sur Aujourd’hui a un grand bouton **Lancer !** qui lance le dé sur place, avec **Voir la carte** en dessous. Chaque lancer montre une image et quelques mots (« +2 pièces ! »), et les deux étoiles du jour se remplissent au fil des tâches.' },
       { h: 'Sentier des quêtes pour les parents' },
       { where: 'Paramètres → Sentier des quêtes' },
       { ul: [

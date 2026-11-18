@@ -428,7 +428,7 @@ export const GUIDE_EN: GuideSection[] = [
       { h: 'Badges' },
       { p: 'Built-in badges unlock by themselves. Parents can make their own in **Settings → Badges** (for example "Homework 4 weeks in a row"), with optional bonus coins, and set coins for every built-in badge. Its icon is picked like a chore\'s: tap the button next to Icon to open Choose an icon (Wins & extras is at the top, and Search icons… finds the rest).' },
       { h: 'Quest Trail' },
-      { where: 'Today → the 🎲 Quest Trail card and its map (parents: Settings → Quest Trail)' },
+      { where: 'Today → the Quest Trail card and its map (parents: Settings → Quest Trail)' },
       { p: 'A board game the whole family plays over a month. Everyone with "Participates in tasks" on plays, parents included. Each month opens a new map, and on the 1st everyone starts again at Start.' },
       { ul: [
         '**Stars:** 1 star for any day you do a chore, and a bonus star when you do 3 or more that day (2 a day at most). Each chore counts once a day. A chore waiting for a parent’s approval gives its star once it’s approved, for the day it was done.',
@@ -438,6 +438,7 @@ export const GUIDE_EN: GuideSection[] = [
         '**End of the month:** stars nobody rolled are rolled for them at midnight on the last day. The next time you open the app you see who won and the new map.',
         '**Alerts:** "3 days left" comes in the evening two days before the month ends, and the results come with the morning list on the 1st. They are Nudges and Summaries in **Settings → Notifications**, and wait out quiet hours.',
       ] },
+      { p: '**In Kid mode:** the card on Today has a big **Roll!** button that rolls right there, with **See the map** underneath. Each roll shows a picture and a few words ("+2 coins!"), and today’s two stars fill in as chores get done.' },
       { h: 'Quest Trail for parents' },
       { where: 'Settings → Quest Trail' },
       { ul: [

@@ -1065,7 +1065,7 @@ const Dashboard: React.FC<DashboardProps> = ({
 
   const mainBlocks: Record<TodayOrderId, React.ReactNode> = {
     pendingApprovals: !wide && approvals,
-    quest: shows('quest') && <QuestCard userId={currentUser.id} language={language} refreshKey={data} />,
+    quest: shows('quest') && <QuestCard userId={currentUser.id} language={language} refreshKey={data} kidMode={kidMode} onRolled={onRefresh} />,
     teamups: shows('teamups') && (
       <TeamUpsCard items={data.teamups ?? []} userId={currentUser.id} language={language}
         onDone={(taskId) => onCompleteTask(taskId)} onChanged={() => onRefresh?.()} />

@@ -401,7 +401,7 @@ export const GUIDE_DE: GuideSection[] = [
       { h: 'Abzeichen' },
       { p: 'Eingebaute Abzeichen werden von selbst freigeschaltet. Eltern können unter **Einstellungen → Abzeichen** eigene erstellen (zum Beispiel „Hausaufgaben 4 Wochen in Folge“), mit optionalen Bonusmünzen, und für jedes eingebaute Abzeichen Münzen festlegen. Das Symbol wählst du wie bei einer Aufgabe: Tippe auf den Knopf neben Symbol, um Symbol wählen zu öffnen.' },
       { h: 'Abenteuerpfad' },
-      { where: 'Heute → die Karte 🎲 Abenteuerpfad und ihre Landkarte (Eltern: Einstellungen → Abenteuerpfad)' },
+      { where: 'Heute → die Karte Abenteuerpfad und ihre Landkarte (Eltern: Einstellungen → Abenteuerpfad)' },
       { p: 'Ein Brettspiel, das die ganze Familie einen Monat lang spielt. Alle, bei denen „Nimmt an Aufgaben teil“ an ist, spielen mit, Eltern auch. Jeden Monat gibt es eine neue Karte, und am 1. fangen alle wieder beim Start an.' },
       { ul: [
         '**Sterne:** 1 Stern für jeden Tag, an dem du eine Aufgabe erledigst, und ein Bonusstern, wenn du an dem Tag 3 oder mehr erledigst (höchstens 2 am Tag). Jede Aufgabe zählt einmal am Tag. Eine Aufgabe, die auf die Zustimmung der Eltern wartet, bringt ihren Stern, sobald sie bestätigt ist, für den Tag, an dem sie erledigt wurde.',
@@ -411,6 +411,7 @@ export const GUIDE_DE: GuideSection[] = [
         '**Monatsende:** Sterne, die niemand gewürfelt hat, werden am letzten Tag um Mitternacht für sie gewürfelt. Beim nächsten Öffnen der App siehst du, wer gewonnen hat, und die neue Karte.',
         '**Benachrichtigungen:** „Noch 3 Tage“ kommt am Abend zwei Tage vor Monatsende, die Ergebnisse kommen am 1. mit der Morgenliste. Es sind Anstupser und Zusammenfassungen unter **Einstellungen → Benachrichtigungen**, und sie warten Ruhezeiten ab.',
       ] },
+      { p: '**Im Kindermodus:** Die Karte auf Heute hat einen großen Knopf **Würfeln!**, der direkt dort würfelt, mit **Zur Karte** darunter. Jeder Wurf zeigt ein Bild und ein paar Wörter („+2 Münzen!“), und die zwei Sterne von heute füllen sich mit jeder Aufgabe.' },
       { h: 'Abenteuerpfad für Eltern' },
       { where: 'Einstellungen → Abenteuerpfad' },
       { ul: [

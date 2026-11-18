@@ -7,7 +7,7 @@ import { Toggle } from './Toggle';
 const LENGTHS = { min: 40, max: 120 };
 const label = { display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 700, color: 'var(--warm-text-muted)', flexWrap: 'wrap' } as const;
 const hint = { fontSize: 12, fontWeight: 600, color: 'var(--warm-text-light)' } as const;
-const box = { backgroundColor: 'var(--warm-bg-subtle)', border: 'var(--shape-border-w) solid var(--warm-border)', borderRadius: 12, padding: '10px 12px', display: 'grid', gap: 8 } as const;
+const box = { backgroundColor: 'var(--warm-bg-subtle)', border: 'var(--shape-border-w) solid var(--warm-border)', borderRadius: 12, padding: '10px 12px', display: 'grid', gridTemplateColumns: 'minmax(0, 1fr)', gap: 8 } as const;
 const heading = { fontSize: 12, fontWeight: 800, color: 'var(--warm-text)' } as const;
 
 /** A whole number box that saves when you leave it */
@@ -68,7 +68,7 @@ export function QuestTrailAdmin({ language, onChanged }: { language?: string; on
   const prizeMissing = s.prizeRewardId !== null && !rewards.some((r) => r.id === s.prizeRewardId);
 
   return (
-    <div style={{ display: 'grid', gap: 10 }}>
+    <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr)', gap: 10 }}>
       <div style={hint}>{t('questAdmin.desc')}</div>
       <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
         <div style={{ flex: 1, minWidth: 0, fontSize: 13, fontWeight: 800, color: 'var(--warm-text)' }}>{t('questAdmin.on')}</div>
@@ -100,7 +100,7 @@ export function QuestTrailAdmin({ language, onChanged }: { language?: string; on
             <div style={hint}>{t('questAdmin.prizeDesc')}</div>
             <label style={label}>
               {t('questAdmin.prizeReward')}
-              <select className="tq-input-compact" style={{ flex: '1 1 160px', minWidth: 0, maxWidth: '100%' }} value={s.prizeRewardId ?? ''}
+              <select className="tq-input-compact" style={{ flex: '1 1 160px', minWidth: 0, width: '100%', maxWidth: '100%' }} value={s.prizeRewardId ?? ''}
                 onChange={(e) => save({ prizeRewardId: e.target.value ? Number(e.target.value) : null })}>
                 <option value="">{t('questAdmin.prizeNoReward')}</option>
                 {prizeMissing && <option value={s.prizeRewardId!}>#{s.prizeRewardId}</option>}

@@ -880,7 +880,7 @@ function AppContent() {
           <Route path="/quest" element={
             dashboardData && dashboardData.features?.questTrail === false ? <Navigate to="/" replace /> : (
               <Suspense fallback={<div className="quest-page-loading" aria-busy="true" />}>
-                <QuestTrail userId={user.id} language={user.language || 'en'} coins={user.coins ?? 0} onCoinsChanged={() => { void refreshUser(); }} />
+                <QuestTrail userId={user.id} language={user.language || 'en'} coins={user.coins ?? 0} onCoinsChanged={() => { void refreshUser(); }} kidMode={!!user.kidMode} />
               </Suspense>
             )
           } />

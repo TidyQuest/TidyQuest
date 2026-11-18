@@ -401,7 +401,7 @@ export const GUIDE_ES: GuideSection[] = [
       { h: 'Insignias' },
       { p: 'Las insignias integradas se desbloquean solas. Los padres pueden crear las suyas en **Ajustes → Insignias** (por ejemplo "Deberes 4 semanas seguidas"), con monedas de bonus opcionales, y fijar monedas para cada insignia integrada. Su icono se elige como el de una tarea: toca el botón junto a Icono para abrir Elige un icono.' },
       { h: 'Sendero de aventuras' },
-      { where: 'Hoy → la tarjeta 🎲 Sendero de aventuras y su mapa (padres: Ajustes → Sendero de aventuras)' },
+      { where: 'Hoy → la tarjeta Sendero de aventuras y su mapa (padres: Ajustes → Sendero de aventuras)' },
       { p: 'Un juego de mesa al que juega toda la familia durante un mes. Juegan todos los que tienen «Participa en tareas» activado, padres incluidos. Cada mes se abre un mapa nuevo, y el día 1 todos vuelven a empezar en la Salida.' },
       { ul: [
         '**Estrellas:** 1 estrella por cada día en que haces una tarea, y una estrella extra cuando haces 3 o más ese día (2 al día como máximo). Cada tarea cuenta una vez al día. Una tarea que espera la aprobación de un padre da su estrella cuando se aprueba, para el día en que se hizo.',
@@ -411,6 +411,7 @@ export const GUIDE_ES: GuideSection[] = [
         '**Fin de mes:** las estrellas que nadie tiró se tiran por ellos a medianoche del último día. La próxima vez que abras la app verás quién ganó y el mapa nuevo.',
         '**Avisos:** «Quedan 3 días» llega por la tarde dos días antes de que acabe el mes, y los resultados llegan con la lista de la mañana el día 1. Son Avisos y Resúmenes en **Ajustes → Notificaciones**, y esperan a que acaben las horas de silencio.',
       ] },
+      { p: '**En Modo niño:** la tarjeta de Hoy tiene un botón grande **¡Tirar!** que tira el dado ahí mismo, con **Ver el mapa** debajo. Cada tirada muestra un dibujo y unas pocas palabras («¡+2 monedas!»), y las dos estrellas de hoy se van llenando con las tareas.' },
       { h: 'Sendero de aventuras para padres' },
       { where: 'Ajustes → Sendero de aventuras' },
       { ul: [
