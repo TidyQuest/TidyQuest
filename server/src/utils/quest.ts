@@ -148,10 +148,10 @@ export function saveQuestSettings(change: Partial<QuestSettings>): QuestSettings
 
 // ---- Who plays ----
 
-interface Person { id: number; displayName: string; role: string; language: string | null }
+interface Person { id: number; displayName: string; role: string; language: string | null; avatarColor: string | null; avatarType: string | null; avatarPreset: string | null; avatarPhotoUrl: string | null }
 /** Everyone with "Participates in tasks" on: kids and members always, parents when they've switched it on. */
 function participants(): Person[] {
-  return prepared(`SELECT id, displayName, role, language FROM users
+  return prepared(`SELECT id, displayName, role, language, avatarColor, avatarType, avatarPreset, avatarPhotoUrl FROM users
     WHERE role IN ('child', 'member') OR (role = 'admin' AND isParticipant = 1) ORDER BY id`).all() as Person[];
 }
 
@@ -459,8 +459,9 @@ export function questState(viewerId: number, now: Date = new Date()) {
   const playing = new Map(participants().map((p) => [p.id, p]));
   const players = playersOf(trail.month).filter((p) => playing.has(p.userId)).map((p) => {
     const stars = starsFor(trail, p, now);
+    const who = playing.get(p.userId)!;
     return {
-      userId: p.userId, displayName: playing.get(p.userId)!.displayName, isKid: playing.get(p.userId)!.role === 'child',
+      userId: p.userId, displayName: who.displayName, isKid: who.role === 'child', ...avatarOf(who),
       position: p.position, finishedAt: p.finishedAt, place: p.place, prizeWon: !!p.prizeWon,
       starsLeft: Math.max(0, stars.left),
     };
@@ -481,17 +482,36 @@ export function questState(viewerId: number, now: Date = new Date()) {
   };
 }
 
+const avatarOf = (u: { avatarColor: string | null; avatarType: string | null; avatarPreset: string | null; avatarPhotoUrl: string | null }) =>
+  ({ avatarColor: u.avatarColor, avatarType: u.avatarType, avatarPreset: u.avatarPreset, avatarPhotoUrl: u.avatarPhotoUrl });
+
 /** Last month's results, until the viewer has seen the end-of-month screen. */
 function lastMonthFor(viewerId: number, month: string) {
   const prev = getTrail(prevMonthOf(month));
   if (!prev?.closedAt) return null;
   const me = getPlayer(prev.month, viewerId);
   if (!me || me.endSeenAt) return null;
-  const rows = prepared(`SELECT q.userId, u.displayName, q.position, q.place, q.finishedAt, q.prizeWon FROM quest_players q
+  const rows = prepared(`SELECT q.userId, u.displayName, u.role, u.avatarColor, u.avatarType, u.avatarPreset, u.avatarPhotoUrl, q.position, q.place, q.finishedAt, q.prizeWon FROM quest_players q
       JOIN users u ON u.id = q.userId WHERE q.month = ? ORDER BY q.place IS NULL, q.place, q.position DESC, u.displayName`).all(prev.month) as any[];
+  // The prize as it was won (the settings may have changed since), the viewer's coins and their badges this year
+  const winner = rows.find((r) => r.prizeWon);
+  let prize: { rewardTitle: string | null; coins: number } | null = null;
+  if (winner) {
+    const rolls = prepared('SELECT events FROM quest_rolls WHERE month = ? AND userId = ? ORDER BY id DESC').all(prev.month, winner.userId) as { events: string }[];
+    for (const r of rolls) {
+      const fin = (JSON.parse(r.events) as QuestEvent[]).find((e) => e.t === 'finish') as Extract<QuestEvent, { t: 'finish' }> | undefined;
+      if (fin?.prize) { prize = { rewardTitle: fin.prize.rewardTitle, coins: fin.prize.coins }; break; }
+    }
+  }
+  const myCoins = (prepared('SELECT COALESCE(SUM(coins), 0) AS n FROM quest_rolls WHERE month = ? AND userId = ?').get(prev.month, viewerId) as { n: number }).n;
+  const badges = (prepared("SELECT month FROM quest_players WHERE userId = ? AND finishedAt IS NOT NULL AND month LIKE ? ORDER BY month")
+    .all(viewerId, `${prev.month.slice(0, 4)}-%`) as { month: string }[]).map((r) => r.month);
   return {
-    month: prev.month, world: prev.world, length: prev.length,
-    players: rows.map((r) => ({ userId: r.userId, displayName: r.displayName, position: r.position, place: r.place, finishedAt: r.finishedAt, prizeWon: !!r.prizeWon })),
+    month: prev.month, world: prev.world, length: prev.length, prize, myCoins, badges,
+    players: rows.map((r) => ({
+      userId: r.userId, displayName: r.displayName, isKid: r.role === 'child', ...avatarOf(r),
+      position: r.position, place: r.place, finishedAt: r.finishedAt, prizeWon: !!r.prizeWon,
+    })),
   };
 }
 

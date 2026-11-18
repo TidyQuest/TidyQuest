@@ -32,6 +32,7 @@ import { UndoToast, type UndoState } from '../shared/UndoToast';
 import { BoostDetails } from '../shared/BoostDetails';
 import type { FocusData } from './Focus';
 import { HomeLayoutEditor } from '../shared/HomeLayoutEditor';
+import { QuestCard } from '../quest/QuestCard';
 import { KID_BLOCKS, LEGACY_HIDDEN_KEY, legacyHidden, orderBlocks, placeBlock, TODAY_BLOCKS, TODAY_ORDER, type HomeLayout, type TodayBlockId, type TodayOrderId } from '../../utils/homeLayout';
 import { TimerStartButton } from '../shared/ChoreTimer';
 import { useChoreTimer } from '../../hooks/useChoreTimer';
@@ -525,6 +526,7 @@ const Dashboard: React.FC<DashboardProps> = ({
     usual: t('home.usualTitle'),
     todo: t('todos.title'),
     leaderboard: t('app.leaderboardTitle'),
+    quest: t('quest.title'),
   };
   // This person's hidden parts of Today and the order of its big blocks (saved on the server; the old browser-only
   // hidden set is brought over the first time)
@@ -560,6 +562,7 @@ const Dashboard: React.FC<DashboardProps> = ({
     childrenGoals: isParent && gamificationEnabled && childrenGoals.length > 0,
     pendingApprovals: isParent,
     teamups: data.features?.teamups !== false,
+    quest: data.features?.questTrail !== false,
     focus: !!data.focus,
     usual: data.features?.usual !== false,
     todo: data.features?.todos !== false,
@@ -1062,6 +1065,7 @@ const Dashboard: React.FC<DashboardProps> = ({
 
   const mainBlocks: Record<TodayOrderId, React.ReactNode> = {
     pendingApprovals: !wide && approvals,
+    quest: shows('quest') && <QuestCard userId={currentUser.id} language={language} refreshKey={data} />,
     teamups: shows('teamups') && (
       <TeamUpsCard items={data.teamups ?? []} userId={currentUser.id} language={language}
         onDone={(taskId) => onCompleteTask(taskId)} onChanged={() => onRefresh?.()} />

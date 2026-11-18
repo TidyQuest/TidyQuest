@@ -1,4 +1,5 @@
 import type { Outfit } from '../components/mascot/MascotCard';
+import type { QuestState, QuestTurn } from '../components/quest/types';
 import type { HostedAccount } from '../utils/hosted';
 import { AVATAR_PHOTO, PROOF_PHOTO, shrinkPhoto } from '../utils/photos';
 import { pushOwner, setPushOwner, unsubscribeBrowser } from '../utils/push';
@@ -215,6 +216,8 @@ export interface FeatureFlags {
   webPush: boolean;
   /** "What's new" slides after a big update (NEW-38) */
   whatsNew: boolean;
+  /** Quest Trail, the monthly board game (NEW-40) */
+  questTrail: boolean;
 }
 
 /** Team-ups on a chore in a list: can you start one, and has a team claimed it today? */
@@ -548,6 +551,10 @@ export const api = {
   rescueReroll: () => apiFetch<unknown>('/rescue/reroll', { method: 'POST' }),
   rescueChoose: (taskId: number) => apiFetch<unknown>('/rescue', { method: 'PUT', body: JSON.stringify({ taskId }) }),
   rescueSkip: () => apiFetch<unknown>('/rescue', { method: 'DELETE' }),
+  // Quest Trail (NEW-40): the month's board, a roll (or a star cashed in after the finish), the end-of-month screen seen
+  questState: () => apiFetch<QuestState | { enabled: false }>('/quest'),
+  questRoll: (userId?: number) => apiFetch<QuestTurn>('/quest/roll', { method: 'POST', body: JSON.stringify(userId ? { userId } : {}) }),
+  questEndSeen: () => apiFetch<{ success: boolean }>('/quest/end-seen', { method: 'POST' }),
   // Home: pin to "Your usual", snooze in "Maybe you forgot" (for yourself)
   pinTask: (id: number) => apiFetch<{ pinned: boolean }>(`/tasks/${id}/pin`, { method: 'POST' }),
   unpinTask: (id: number) => apiFetch<{ pinned: boolean }>(`/tasks/${id}/pin`, { method: 'DELETE' }),

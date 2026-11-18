@@ -288,6 +288,27 @@ describe('Quest Trail: the end of the month', () => {
     expect(questState(kid.user.id, at(2030, 3, 1, 9)).lastMonth).not.toBeNull();
   });
 
+  it('tells the end-of-month screen the prize as it was won, your coins and your badges, with everyone\'s avatar', async () => {
+    const { kid, teen, chores } = await family();
+    const reward = db.prepare("INSERT INTO rewards (title, costCoins) VALUES ('Movie night', 50)").run().lastInsertRowid as number;
+    saveQuestSettings({ prizeRewardId: reward, prizeCoins: 5, finisherCoins: 3 });
+    const t = wholeMarch();
+    for (const u of [teen.user.id, kid.user.id]) done(u, chores[0], march(2, 9));
+    moveTo('2030-03', teen.user.id, 79);
+    moveTo('2030-03', kid.user.id, 79);
+    loadDie(1);
+    takeTurn(t, teen.user.id, { rolledBy: teen.user.id, now: march(2, 20) });
+    takeTurn(t, kid.user.id, { rolledBy: kid.user.id, now: march(2, 20) });
+    saveQuestSettings({ prizeRewardId: null, prizeCoins: 0 }); // changed afterwards: the screen keeps what was won
+    ensureTrail(at(2030, 3, 1, 0, 0, 30));
+    const last = questState(kid.user.id, at(2030, 3, 1, 9)).lastMonth!;
+    expect(last).toMatchObject({ prize: { rewardTitle: 'Movie night', coins: 5 }, myCoins: 3, badges: ['2030-02', '2030-03'] }); // wholeMarch() has them finish February too
+    expect(last.players[0]).toMatchObject({ userId: teen.user.id, place: 1, prizeWon: true });
+    expect(Object.keys(last.players[0])).toEqual(expect.arrayContaining(['avatarColor', 'avatarType', 'avatarPreset', 'avatarPhotoUrl', 'isKid']));
+    const now = questState(kid.user.id, at(2030, 3, 1, 9));
+    expect(now.enabled && Object.keys(now.players[0])).toEqual(expect.arrayContaining(['avatarColor', 'avatarType', 'avatarPreset', 'avatarPhotoUrl']));
+  });
+
   it('closes a trail only once', async () => {
     const { kid, chores } = await family();
     const t = wholeMarch();

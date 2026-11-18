@@ -16,8 +16,14 @@ What changed in each release, in plain language, newest first. Releases up to v0
   of the die, and everyone races along a trail to the finish. This part keeps score and plays the game: it makes
   the month's trail, rolls the die on the server, and handles coin spaces, shortcuts, slides, chore cards, mascot
   treats, high fives, the finish and the first-place prize, and it rolls any leftover stars when the month ends. It
-  has a switch under Settings → Features (on by default). The map, the Today card and the settings page come in
-  the next parts, so there's nothing to play in the app yet.
+  has a switch under Settings → Features (on by default).
+- **Quest Trail, part 2: the map, the Today card and the end of the month** (NEW-40). Tap the new Quest Trail card
+  on Today to open the map: the month's world drawn as an adventure map (The Treehouse Woods, The Snowy Summit, The
+  Blossom Trail or Sunny Shores) with everyone's piece showing their own avatar, the die and your stars at the
+  bottom, a map key, and a card saying what each roll did. The Today card shows the stars waiting to be rolled, where
+  everyone is on the trail and today's two stars; Customise can hide or move it. The first time someone opens the app
+  in a new month, a screen shows who won last month, everyone's place, their trail badges and the new world. The
+  parents' settings page (prize, trail length, time of day, fog) comes in part 3; until then the defaults apply.
 - **"Done for someone…"** (FIX-37). A new button in an opened chore lets parents and members pick who did a chore
   before marking it done, assigned or not. The person gets a notification ("Dad marked … done for you"), and Activity
   says "Marked done by Dad".

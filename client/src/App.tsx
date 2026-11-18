@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route, useNavigate, useLocation, useNavigationType, Navigate, useParams, useSearchParams } from 'react-router-dom';
 import { useAuth } from './hooks/useAuth';
 import { taskErrorText } from './utils/taskError';
@@ -52,6 +52,8 @@ import { NotifyCard, type NotifyCardKind } from './components/shared/NotifyCard'
 
 const NO_COSMETICS: Record<number, Cosmetic> = {};
 import { SeasonGreeting, SeasonParticles, SeasonStrip } from './components/shared/SeasonalDecor';
+// Quest Trail's map page carries the map's drawing code, so it loads only when opened (NEW-40)
+const QuestTrail = lazy(() => import('./components/pages/QuestTrail'));
 
 // Opened through a family link (app.tidyquest.org/<code>): this device remembers the family
 takeFamilyLink();
@@ -875,6 +877,13 @@ function AppContent() {
                 onCancel={setupFromSettings ? () => navigate(-1) : undefined} onOpenGuide={() => navigate('/guide', { replace: true })} />
             </>
           )} />
+          <Route path="/quest" element={
+            dashboardData && dashboardData.features?.questTrail === false ? <Navigate to="/" replace /> : (
+              <Suspense fallback={<div className="quest-page-loading" aria-busy="true" />}>
+                <QuestTrail userId={user.id} language={user.language || 'en'} coins={user.coins ?? 0} onCoinsChanged={() => { void refreshUser(); }} />
+              </Suspense>
+            )
+          } />
           <Route path="/achievements" element={
             gamificationEnabled ? (
             <>
