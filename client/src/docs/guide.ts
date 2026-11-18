@@ -427,6 +427,26 @@ export const GUIDE_EN: GuideSection[] = [
       ] },
       { h: 'Badges' },
       { p: 'Built-in badges unlock by themselves. Parents can make their own in **Settings → Badges** (for example "Homework 4 weeks in a row"), with optional bonus coins, and set coins for every built-in badge. Its icon is picked like a chore\'s: tap the button next to Icon to open Choose an icon (Wins & extras is at the top, and Search icons… finds the rest).' },
+      { h: 'Quest Trail' },
+      { where: 'Today → the 🎲 Quest Trail card and its map (parents: Settings → Quest Trail)' },
+      { p: 'A board game the whole family plays over a month. Everyone with "Participates in tasks" on plays, parents included. Each month opens a new map, and on the 1st everyone starts again at Start.' },
+      { ul: [
+        '**Stars:** 1 star for any day you do a chore, and a bonus star when you do 3 or more that day (2 a day at most). Each chore counts once a day. A chore waiting for a parent’s approval gives its star once it’s approved, for the day it was done.',
+        '**Rolling:** each star is one roll of the die, whenever you like. Coin spaces pay +1 to +3 coins, shortcuts jump you ahead, slides take you back a few spaces, a chore card gives an extra star for doing a chore today, and a mascot treat gives the family mascot a free accessory.',
+        '**High five:** landing on someone’s space gives you both a coin. No space can hurt another player.',
+        '**The finish:** the first one there wins the prize a parent picked. Everyone who finishes gets the finisher coins and the month’s badge, and each star after that turns into coins.',
+        '**End of the month:** stars nobody rolled are rolled for them at midnight on the last day. The next time you open the app you see who won and the new map.',
+        '**Alerts:** "3 days left" comes in the evening two days before the month ends, and the results come with the morning list on the 1st. They are Nudges and Summaries in **Settings → Notifications**, and wait out quiet hours.',
+      ] },
+      { h: 'Quest Trail for parents' },
+      { where: 'Settings → Quest Trail' },
+      { ul: [
+        '**Play Quest Trail** switches the game on or off for the family (it’s also in **Settings → Features**).',
+        '**Give a star:** +1 ⭐ next to someone gives them an extra roll, for a good deed the app can’t see.',
+        '**Prize:** a reward, coins, or both, for the first to the finish. Nothing is set until you pick it. **Prize only for kids** gives it to the first kid to finish. Also: coins for everyone who finishes, and coins per star after the finish (2 by default).',
+        '**Trail length:** Automatic starts at 80 spaces and adjusts each month (60 to 100); Fixed is 40 to 120. A change applies from next month. Someone who starts playing partway through a month begins on the same space as whoever is last.',
+        '**The map:** time of day (Day, Sunset or Night), and Fog over the unexplored trail (coins, chore cards, treats, shortcuts and slides still show through).',
+      ] },
     ],
   },
   {
@@ -555,6 +575,16 @@ export const GUIDE_EN: GuideSection[] = [
           '**The line under the chore’s name says why:** "Not assigned" (someone else’s chore), "Waiting for approval" (a parent hasn’t approved your last one yet), "Done by …" (someone already did it today), "Done today / this week" (an anytime chore’s repeat limit), or "🤝 names" (a team has claimed it today).',
           '"Waiting for …" is a Rotating chore on someone else’s turn. When the button shows a day instead of Done ("Tomorrow", "In 3 days"), the chore isn’t due again until then.',
           'If Done gives a "not yet due" message: the chore isn’t due again yet. A parent can turn on "Allow early completion" for daily routines.',
+        ] },
+        { q: 'I did a chore but got no Quest Trail star', a: [
+          'You get at most 2 stars a day: one for the first chore and a bonus at the third. More chores that day give no more stars.',
+          'A chore waiting for a parent’s approval gives its star once it’s approved.',
+          'A Done that was taken back takes back the star that day no longer earns. If it was already rolled, your next star pays it back.',
+          'Only people with "Participates in tasks" on play (**Settings → Family Members**).',
+        ] },
+        { q: 'The Quest Trail card isn’t on Today', a: [
+          'A parent may have switched off **Play Quest Trail** in **Settings → Quest Trail** (or **Settings → Features**).',
+          'You play only with "Participates in tasks" on (**Settings → Family Members**).',
         ] },
         { q: 'A kid’s chore shows ▶ instead of Done', a: [
           'It has a timer (Timer in the chore editor). The kid taps ▶, and Done comes back when the time is up. A parent can tap Done for them, or empty the timer in the chore editor.',

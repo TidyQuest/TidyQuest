@@ -400,6 +400,26 @@ export const GUIDE_FR: GuideSection[] = [
       ] },
       { h: 'Badges' },
       { p: 'Les badges intégrés se débloquent tout seuls. Les parents peuvent créer les leurs dans **Paramètres → Badges** (par exemple « Devoirs 4 semaines de suite »), avec des pièces bonus facultatives, et fixer des pièces pour chaque badge intégré. Son icône se choisit comme celle d\'une tâche : touchez le bouton à côté d\'Icône pour ouvrir Choisir une icône.' },
+      { h: 'Sentier des quêtes' },
+      { where: 'Aujourd’hui → la carte 🎲 Sentier des quêtes et sa carte du monde (parents : Paramètres → Sentier des quêtes)' },
+      { p: 'Un jeu de plateau auquel toute la famille joue pendant un mois. Tous ceux qui ont « Participe aux tâches » activé jouent, parents compris. Chaque mois ouvre une nouvelle carte, et le 1er tout le monde repart du Départ.' },
+      { ul: [
+        '**Étoiles :** 1 étoile pour chaque jour où tu fais une tâche, et une étoile bonus quand tu en fais 3 ou plus ce jour-là (2 par jour au maximum). Chaque tâche compte une fois par jour. Une tâche qui attend l’accord d’un parent donne son étoile une fois approuvée, pour le jour où elle a été faite.',
+        '**Lancer :** chaque étoile est un lancer de dé, quand tu veux. Les cases pièces rapportent +1 à +3 pièces, les raccourcis te font avancer, les glissades te font reculer de quelques cases, une carte de tâche donne une étoile en plus si tu fais une tâche aujourd’hui, et une friandise offre un accessoire à la mascotte de la famille.',
+        '**Tape-m’en cinq :** tomber sur la case de quelqu’un vous donne une pièce chacun. Aucune case ne peut nuire à un autre joueur.',
+        '**L’arrivée :** le premier arrivé gagne le prix choisi par un parent. Tous ceux qui arrivent reçoivent les pièces d’arrivée et le badge du mois, et chaque étoile ensuite se transforme en pièces.',
+        '**Fin du mois :** les étoiles que personne n’a lancées sont lancées à minuit le dernier jour. La prochaine fois que tu ouvres l’appli, tu vois qui a gagné et la nouvelle carte.',
+        '**Alertes :** « Plus que 3 jours » arrive le soir, deux jours avant la fin du mois, et les résultats arrivent avec la liste du matin le 1er. Ce sont des Coups de pouce et des Résumés dans **Paramètres → Notifications**, et elles attendent la fin des heures calmes.',
+      ] },
+      { h: 'Sentier des quêtes pour les parents' },
+      { where: 'Paramètres → Sentier des quêtes' },
+      { ul: [
+        '**Jouer au Sentier des quêtes** active ou désactive le jeu pour la famille (aussi dans **Paramètres → Fonctionnalités**).',
+        '**Donner une étoile :** +1 ⭐ à côté de quelqu’un lui donne un lancer en plus, pour une bonne action que l’appli ne voit pas.',
+        '**Prix :** une récompense, des pièces, ou les deux, pour le premier à l’arrivée. Rien n’est prévu tant que tu ne l’as pas choisi. **Prix réservé aux enfants** le donne au premier enfant arrivé. Aussi : des pièces pour chaque personne qui arrive, et des pièces par étoile après l’arrivée (2 par défaut).',
+        '**Longueur du sentier :** Automatique commence à 80 cases et s’ajuste chaque mois (de 60 à 100) ; Fixe va de 40 à 120. Un changement compte à partir du mois prochain. Quelqu’un qui commence à jouer en cours de mois part de la même case que le dernier.',
+        '**La carte :** le moment de la journée (Jour, Coucher de soleil ou Nuit), et Brouillard sur le sentier inexploré (les pièces, cartes de tâche, friandises, raccourcis et glissades restent visibles).',
+      ] },
     ],
   },
   {
@@ -528,6 +548,16 @@ export const GUIDE_FR: GuideSection[] = [
           'La ligne sous le nom de la tâche dit pourquoi : « Non attribuée » (la tâche de quelqu’un d’autre), « En attente de validation » (un parent n’a pas encore validé ta dernière), « Fait par … » (quelqu’un l’a déjà faite aujourd’hui), « Fait aujourd’hui / Fait cette semaine » (la limite de répétition d’une tâche à tout moment), ou « 🤝 noms » (une équipe l’a prise aujourd’hui).',
           '« En attente de … » : une tâche en Rotation dont c’est le tour de quelqu’un d’autre. Quand le bouton affiche un jour à la place de Fait, la tâche n’est pas à refaire avant ce jour-là.',
           'Si Fait affiche un message « pas encore due » : la tâche n’est pas encore à refaire. Un parent peut activer « Complétion anticipée » pour les routines quotidiennes.',
+        ] },
+        { q: 'J’ai fait une tâche mais je n’ai pas eu d’étoile', a: [
+          'Tu as au plus 2 étoiles par jour : une pour la première tâche et un bonus à la troisième. Les tâches suivantes ce jour-là n’en donnent pas plus.',
+          'Une tâche qui attend l’accord d’un parent donne son étoile une fois approuvée.',
+          'Un « Fait » annulé reprend l’étoile que ce jour ne rapporte plus. Si elle a déjà été lancée, ta prochaine étoile la rembourse.',
+          'Seules les personnes avec « Participe aux tâches » activé jouent (**Paramètres → Membres de la famille**).',
+        ] },
+        { q: 'La carte Sentier des quêtes n’est pas sur Aujourd’hui', a: [
+          'Un parent a peut-être désactivé **Jouer au Sentier des quêtes** dans **Paramètres → Sentier des quêtes** (ou **Paramètres → Fonctionnalités**).',
+          'Tu joues seulement avec « Participe aux tâches » activé (**Paramètres → Membres de la famille**).',
         ] },
         { q: 'La tâche d’un enfant affiche ▶ au lieu de Fait', a: [
           'Elle a un minuteur (Minuteur dans l’éditeur de tâche). L’enfant appuie sur ▶, et Fait revient quand le temps est écoulé. Un parent peut appuyer sur Fait pour lui, ou vider le minuteur dans l’éditeur de tâche.',

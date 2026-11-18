@@ -247,6 +247,15 @@ export interface FeaturesView { features: FeatureFlags; rescueMultiplier: number
   /** Every creature: the active one, resting ones (with their name and stage) and new eggs */
   mascotRoster?: Array<{ creature: string; status: 'active' | 'resting' | 'new'; name: string; stage: string }> }
 
+/** Settings → Quest Trail (server: utils/quest.ts QuestSettings) */
+export interface QuestSettings {
+  length: 'auto' | number; prizeRewardId: number | null; prizeCoins: number; prizeKidsOnly: boolean;
+  finisherCoins: number; coinsPerStar: number; timeOfDay: 'day' | 'sunset' | 'night'; fog: boolean;
+}
+/** The parts of the Quest Trail state the settings card shows */
+export type QuestPlayers = { enabled: false } | { enabled: true; trail: { month: string; length: number };
+  players: Array<{ userId: number; displayName: string; isKid: boolean; position: number; finishedAt: string | null; starsLeft: number }> };
+
 export type NotifyKind = 'taskDue' | 'rewardRequest' | 'achievementUnlocked' | 'choreApproval' | 'coinBoost' | 'rescue' | 'outcome' | 'summary' | 'nudge' | 'reminder' | 'cheer' | 'teamup' | 'openChores';
 
 export interface NotifySettings {
@@ -722,6 +731,11 @@ export const api = {
   /** forUserId: a parent shopping for someone else (ENH-16) gets their rewards, prices and coins */
   getRewards: (forUserId?: number) =>
     apiFetch<{ rewards: Array<{ id: number; title: string; description?: string | null; costCoins: number }>; mine: Array<{ id: number; title: string; costCoins: number; redeemedAt: string; status: string; boughtByName?: string | null; rejectNote?: string | null }>; coins?: number }>(forUserId ? `/rewards?for=${forUserId}` : '/rewards'),
+  // Settings → Quest Trail (NEW-40): the parents' settings, and a star given by hand
+  questSettings: () => apiFetch<QuestSettings>('/quest/settings'),
+  saveQuestSettings: (change: Partial<QuestSettings>) => apiFetch<QuestSettings>('/quest/settings', { method: 'PUT', body: JSON.stringify(change) }),
+  questGiveStar: (userId: number) => apiFetch<QuestPlayers>('/quest/stars', { method: 'POST', body: JSON.stringify({ userId }) }),
+  questPlayers: () => apiFetch<QuestPlayers>('/quest'),
   getRewardsAdmin: () =>
     apiFetch<{ rewards: any[]; redemptions: any[]; rotatingPerWeek?: number; rotatingThisWeek?: number[] }>('/rewards/admin'),
   /** note: an optional one-line reason for the kid, with a rejection */

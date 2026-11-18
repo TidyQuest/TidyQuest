@@ -400,6 +400,26 @@ export const GUIDE_NL: GuideSection[] = [
       ] },
       { h: 'Badges' },
       { p: 'Ingebouwde badges ontgrendelen vanzelf. Ouders kunnen er zelf maken in **Instellingen → Badges** (bijvoorbeeld "4 weken op rij huiswerk"), met optionele bonusmunten, en munten instellen voor elke ingebouwde badge. Het icoon kies je zoals bij een taak: tik op de knop naast Pictogram om Kies een icoon te openen.' },
+      { h: 'Avonturenpad' },
+      { where: 'Vandaag → de kaart 🎲 Avonturenpad en de landkaart (ouders: Instellingen → Avonturenpad)' },
+      { p: 'Een bordspel dat het hele gezin een maand lang speelt. Iedereen met ‘Doet mee aan klusjes’ aan speelt mee, ouders ook. Elke maand gaat er een nieuwe kaart open, en op de 1e begint iedereen weer bij Start.' },
+      { ul: [
+        '**Sterren:** 1 ster voor elke dag dat je een klusje doet, en een bonusster als je er die dag 3 of meer doet (hooguit 2 per dag). Elk klusje telt één keer per dag. Een klusje dat op goedkeuring van een ouder wacht, geeft zijn ster zodra het is goedgekeurd, voor de dag waarop het gedaan is.',
+        '**Gooien:** elke ster is één worp met de dobbelsteen, wanneer je wilt. Muntenvakjes geven +1 tot +3 munten, kortere wegen brengen je vooruit, glijbanen een paar vakjes terug, een klusjeskaart geeft een extra ster als je vandaag een klusje doet, en een traktatie geeft de gezinsmascotte een gratis accessoire.',
+        '**High five:** kom je op iemands vakje, dan krijgen jullie allebei een munt. Geen enkel vakje kan een andere speler schaden.',
+        '**De finish:** wie er als eerste is, wint de prijs die een ouder koos. Iedereen die finisht krijgt de finishmunten en de badge van de maand, en elke ster daarna wordt munten.',
+        '**Einde van de maand:** sterren die niemand gooide, worden om middernacht op de laatste dag voor ze gegooid. De volgende keer dat je de app opent, zie je wie er won en de nieuwe kaart.',
+        '**Meldingen:** ‘Nog 3 dagen’ komt ’s avonds, twee dagen voor het einde van de maand, en de uitslag komt op de 1e met de ochtendlijst. Het zijn Duwtjes en Samenvattingen in **Instellingen → Meldingen**, en ze wachten stille uren af.',
+      ] },
+      { h: 'Avonturenpad voor ouders' },
+      { where: 'Instellingen → Avonturenpad' },
+      { ul: [
+        '**Avonturenpad spelen** zet het spel aan of uit voor het gezin (ook in **Instellingen → Functies**).',
+        '**Een ster geven:** +1 ⭐ naast iemand geeft een extra worp, voor een goede daad die de app niet ziet.',
+        '**Prijs:** een beloning, munten of allebei, voor wie als eerste bij de finish is. Er is niets tot je iets kiest. **Prijs alleen voor kinderen** geeft hem aan het eerste kind bij de finish. Verder: munten voor iedereen die de finish haalt, en munten per ster na de finish (standaard 2).',
+        '**Lengte van het pad:** Automatisch begint met 80 vakjes en past zich elke maand aan (60 tot 100); Vast is 40 tot 120. Een wijziging geldt vanaf volgende maand. Wie halverwege de maand gaat meespelen, begint op hetzelfde vakje als de laatste.',
+        '**De kaart:** tijd van de dag (Dag, Zonsondergang of Nacht) en Mist over het onontdekte pad (munten, klusjeskaarten, traktaties, kortere wegen en glijbanen blijven zichtbaar).',
+      ] },
     ],
   },
   {
@@ -528,6 +548,16 @@ export const GUIDE_NL: GuideSection[] = [
           'De regel onder de naam van het klusje zegt waarom: "Niet toegewezen" (klusje van iemand anders), "Wacht op goedkeuring" (een ouder heeft je vorige nog niet goedgekeurd), "Gedaan door …" (iemand heeft het vandaag al gedaan), "Vandaag gedaan / Deze week gedaan" (de herhaallimiet van een klusje voor op elk moment) of "🤝 namen" (een team heeft het vandaag opgeëist).',
           '"Wachten op …" is een klusje Om de beurt waarbij iemand anders aan de beurt is. Staat er op de knop een dag in plaats van "Klaar!", dan hoeft het klusje pas dan weer.',
           'Als Klaar! een melding "nog niet aan de beurt" geeft: het klusje is nog niet weer aan de beurt. Een ouder kan "Vroegtijdig afronden toestaan" aanzetten voor dagelijkse routines.',
+        ] },
+        { q: 'Ik deed een klusje maar kreeg geen ster', a: [
+          'Je krijgt hooguit 2 sterren per dag: één voor het eerste klusje en een bonus bij het derde. Meer klusjes die dag geven geen extra sterren.',
+          'Een klusje dat op goedkeuring van een ouder wacht, geeft zijn ster zodra het is goedgekeurd.',
+          'Een teruggedraaide Klaar neemt de ster terug die die dag niet meer oplevert. Was hij al gegooid, dan betaalt je volgende ster hem terug.',
+          'Alleen wie ‘Doet mee aan klusjes’ aan heeft, speelt mee (**Instellingen → Gezinsleden**).',
+        ] },
+        { q: 'De kaart Avonturenpad staat niet op Vandaag', a: [
+          'Misschien heeft een ouder **Avonturenpad spelen** uitgezet in **Instellingen → Avonturenpad** (of **Instellingen → Functies**).',
+          'Je speelt alleen mee met ‘Doet mee aan klusjes’ aan (**Instellingen → Gezinsleden**).',
         ] },
         { q: 'Bij het klusje van een kind staat ▶ in plaats van Klaar!', a: [
           'Het heeft een timer (Timer in de klusjes-editor). Het kind tikt op ▶, en Klaar! komt terug als de tijd om is. Een ouder kan voor het kind op Klaar! tikken, of de timer in de klusjes-editor leegmaken.',

@@ -15,6 +15,7 @@ import { ThemePicker } from '../shared/ThemePicker';
 import { isTheme, type Theme } from '../../utils/themes';
 import { CustomBadgesAdmin } from '../shared/CustomBadgesAdmin';
 import { FeaturesAdmin } from '../shared/FeaturesAdmin';
+import { QuestTrailAdmin } from '../shared/QuestTrailAdmin';
 import { LookAdmin } from '../shared/LookAdmin';
 import { NotificationLog, NotifyScheduleAdmin, PeopleNotifyAdmin } from '../shared/NotifyAdmin';
 import { CsvTransfer } from '../shared/CsvTransfer';
@@ -737,6 +738,8 @@ export function Settings({
     ] },
     { title: t('settingsGroups.gameExtras'), rows: !isAdmin ? [] : [
       ...(gamificationEnabled ? [{ id: 'boosts', icon: '⚡', title: t('boosts.title'), summary: t('settingsIndex.boostsSum'), onOpen: go('boosts') }] : []),
+      { id: 'quest', icon: '🎲', title: t('questAdmin.title'), summary: t('questAdmin.indexSum'), onOpen: go('quest'),
+        keywords: [t('questAdmin.prizeTitle'), t('questAdmin.giveTitle'), t('questAdmin.lengthTitle'), t('questAdmin.fog')] },
       { id: 'features', icon: '🧩', title: t('features.title'), summary: t('settingsIndex.featuresSum'), onOpen: go('features') },
       ...(gamificationEnabled ? [{ id: 'badges', icon: '🏅', title: t('badges.adminTitle'), summary: t('settingsIndex.badgesSum'), onOpen: go('badges') }] : []),
     ] },
@@ -1293,6 +1296,12 @@ export function Settings({
             <div className="tq-card tq-card-padded settings-admin-card">
               <h3 className="tq-card-title">🎨 {t('look.title')}</h3>
               <LookAdmin language={user.language} family={family} onChanged={onDataChanged} />
+            </div>
+          )}
+          {cur === 'quest' && isAdmin && (
+            <div className="tq-card tq-card-padded settings-admin-card">
+              <h3 className="tq-card-title">🎲 {t('questAdmin.title')}</h3>
+              <QuestTrailAdmin language={user.language} onChanged={onDataChanged} />
             </div>
           )}
           {cur === 'features' && isAdmin && (

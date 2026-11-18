@@ -400,6 +400,26 @@ export const GUIDE_ES: GuideSection[] = [
       ] },
       { h: 'Insignias' },
       { p: 'Las insignias integradas se desbloquean solas. Los padres pueden crear las suyas en **Ajustes → Insignias** (por ejemplo "Deberes 4 semanas seguidas"), con monedas de bonus opcionales, y fijar monedas para cada insignia integrada. Su icono se elige como el de una tarea: toca el botón junto a Icono para abrir Elige un icono.' },
+      { h: 'Sendero de aventuras' },
+      { where: 'Hoy → la tarjeta 🎲 Sendero de aventuras y su mapa (padres: Ajustes → Sendero de aventuras)' },
+      { p: 'Un juego de mesa al que juega toda la familia durante un mes. Juegan todos los que tienen «Participa en tareas» activado, padres incluidos. Cada mes se abre un mapa nuevo, y el día 1 todos vuelven a empezar en la Salida.' },
+      { ul: [
+        '**Estrellas:** 1 estrella por cada día en que haces una tarea, y una estrella extra cuando haces 3 o más ese día (2 al día como máximo). Cada tarea cuenta una vez al día. Una tarea que espera la aprobación de un padre da su estrella cuando se aprueba, para el día en que se hizo.',
+        '**Tirar:** cada estrella es una tirada del dado, cuando quieras. Las casillas de monedas dan de +1 a +3 monedas, los atajos te hacen avanzar, los toboganes te hacen retroceder unas casillas, una carta de tarea da una estrella extra si haces una tarea hoy, y una golosina regala un accesorio a la mascota de la familia.',
+        '**Choca esos cinco:** caer en la casilla de alguien os da una moneda a cada uno. Ninguna casilla puede perjudicar a otro jugador.',
+        '**La meta:** el primero en llegar gana el premio que eligió un padre. Todos los que llegan reciben las monedas de llegada y la insignia del mes, y cada estrella después se convierte en monedas.',
+        '**Fin de mes:** las estrellas que nadie tiró se tiran por ellos a medianoche del último día. La próxima vez que abras la app verás quién ganó y el mapa nuevo.',
+        '**Avisos:** «Quedan 3 días» llega por la tarde dos días antes de que acabe el mes, y los resultados llegan con la lista de la mañana el día 1. Son Avisos y Resúmenes en **Ajustes → Notificaciones**, y esperan a que acaben las horas de silencio.',
+      ] },
+      { h: 'Sendero de aventuras para padres' },
+      { where: 'Ajustes → Sendero de aventuras' },
+      { ul: [
+        '**Jugar al Sendero de aventuras** activa o desactiva el juego para la familia (también en **Ajustes → Funciones**).',
+        '**Dar una estrella:** +1 ⭐ junto a alguien le da una tirada extra, por una buena acción que la app no ve.',
+        '**Premio:** una recompensa, monedas o las dos cosas, para el primero en llegar a la meta. No hay ninguno hasta que lo elijas. **Premio solo para niños** se lo da al primer niño en llegar. Además: monedas para todos los que llegan a la meta, y monedas por estrella después de la meta (2 por defecto).',
+        '**Longitud del sendero:** Automática empieza en 80 casillas y se ajusta cada mes (de 60 a 100); Fija va de 40 a 120. Un cambio se aplica desde el mes que viene. Quien empieza a jugar a mitad de mes sale de la misma casilla que el último.',
+        '**El mapa:** el momento del día (Día, Atardecer o Noche) y Niebla sobre el sendero sin explorar (las monedas, cartas de tarea, golosinas, atajos y toboganes se siguen viendo).',
+      ] },
     ],
   },
   {
@@ -528,6 +548,16 @@ export const GUIDE_ES: GuideSection[] = [
           'La línea bajo el nombre de la tarea dice por qué: "No asignada" (la tarea de otra persona), "Esperando aprobación" (un padre o una madre aún no ha aprobado tu última), "Hecho por …" (alguien ya la hizo hoy), "Hecho hoy / esta semana" (el límite de repeticiones de una tarea a demanda) o "🤝 nombres" (un equipo la ha reclamado hoy).',
           '"Esperando a …" es una tarea en Rotación en el turno de otra persona. Cuando el botón muestra un día en vez de Hecho, la tarea no vuelve a tocar hasta entonces.',
           'Si Hecho da un mensaje de "todavía no toca": la tarea aún no toca de nuevo. Un padre o una madre puede activar "Completar antes" para rutinas diarias.',
+        ] },
+        { q: 'Hice una tarea pero no me dieron estrella', a: [
+          'Tienes como máximo 2 estrellas al día: una por la primera tarea y una extra en la tercera. Más tareas ese día no dan más estrellas.',
+          'Una tarea que espera la aprobación de un padre da su estrella cuando se aprueba.',
+          'Un Hecho deshecho quita la estrella que ese día ya no gana. Si ya se tiró, tu siguiente estrella la devuelve.',
+          'Solo juegan las personas con «Participa en tareas» activado (**Ajustes → Miembros de la familia**).',
+        ] },
+        { q: 'La tarjeta Sendero de aventuras no está en Hoy', a: [
+          'Puede que un padre haya desactivado **Jugar al Sendero de aventuras** en **Ajustes → Sendero de aventuras** (o **Ajustes → Funciones**).',
+          'Solo juegas con «Participa en tareas» activado (**Ajustes → Miembros de la familia**).',
         ] },
         { q: 'La tarea de un niño muestra ▶ en vez de Hecho', a: [
           'Tiene un temporizador (Temporizador en el editor de la tarea). El niño pulsa ▶, y Hecho vuelve cuando se acaba el tiempo. Un padre puede pulsar Hecho por él, o vaciar el temporizador en el editor de la tarea.',

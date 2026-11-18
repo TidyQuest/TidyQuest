@@ -10,6 +10,7 @@ import { awayNow } from './vacation';
 import { buildBoard } from './board';
 import { weekStartDay } from './periods';
 import { todaysMission } from './rescue';
+import { questMonthOver, questThreeDaysLeft } from './questAlerts';
 
 /**
  * The timed notifications, checked every minute: queued messages after quiet hours, the morning
@@ -203,6 +204,9 @@ export async function runScheduledNotifications(now: Date = new Date()): Promise
     await eveningNudges(now);
     await weeklyRecap(now);
     await taskReminders(now);
+    // Quest Trail (NEW-40): "3 days left" with the evening nudge, last month's results with the morning summary
+    if (inWindow(nowMinutes(now), setting('eveningTime'))) await questThreeDaysLeft(now);
+    if (inWindow(nowMinutes(now), setting('morningTime'))) await questMonthOver(now);
   } finally {
     running = false;
   }

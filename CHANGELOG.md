@@ -30,6 +30,14 @@ What changed in each release, in plain language, newest first. Releases up to v0
 - **A family setting for a grown-up's Done** (FIX-37): Settings → General → "When a grown-up taps Done on a chore
   anyone can do", with *Count it as mine (with Change)* or *Always ask who did it*. Until a parent picks one, families
   with someone who can't log in are always asked, and other families get "Count it as mine".
+- **Quest Trail, part 3: Settings → Quest Trail** (NEW-40). Parents turn the game on or off, give someone a star by
+  hand, pick the first-place prize (a reward, coins or both; "Prize only for kids"), the coins for everyone who
+  finishes and per star after the finish, the trail's length (automatic or fixed), and the map's time of day and fog.
+- **Two Quest Trail alerts** (NEW-40): "3 days left" in the evening two days before the month ends (to everyone still
+  on the way who isn't on vacation), and last month's results with the morning list on the 1st. They come as Nudges
+  and Summaries, so the existing switches and quiet hours apply.
+- **Quest Trail in the guide** (Settings → Guide & help → Game extras), with two troubleshooting answers, in all six
+  languages.
 
 ### Fixed
 

@@ -400,6 +400,26 @@ export const GUIDE_IT: GuideSection[] = [
       ] },
       { h: 'Distintivi' },
       { p: 'I distintivi predefiniti si sbloccano da soli. I genitori possono crearne di propri in **Impostazioni → Distintivi** (per esempio "Compiti per 4 settimane di fila"), con monete bonus facoltative, e impostare le monete per ogni distintivo predefinito. La sua icona si sceglie come quella di un\'attività: tocca il pulsante accanto a Icona per aprire Scegli un\'icona.' },
+      { h: 'Sentiero delle avventure' },
+      { where: 'Oggi → la scheda 🎲 Sentiero delle avventure e la sua mappa (genitori: Impostazioni → Sentiero delle avventure)' },
+      { p: 'Un gioco da tavolo a cui tutta la famiglia gioca per un mese. Gioca chiunque abbia «Partecipa alle attività» attivo, genitori compresi. Ogni mese si apre una nuova mappa, e il 1° tutti ripartono dalla Partenza.' },
+      { ul: [
+        '**Stelle:** 1 stella per ogni giorno in cui svolgi un’attività, e una stella bonus quando ne svolgi 3 o più quel giorno (al massimo 2 al giorno). Ogni attività conta una volta al giorno. Un’attività in attesa dell’approvazione di un genitore dà la sua stella quando viene approvata, per il giorno in cui è stata svolta.',
+        '**Tirare:** ogni stella è un tiro di dado, quando vuoi. Le caselle monete danno da +1 a +3 monete, le scorciatoie ti fanno avanzare, gli scivoli ti fanno tornare indietro di qualche casella, una carta attività dà una stella in più se svolgi un’attività oggi, e un premietto regala un accessorio alla mascotte di famiglia.',
+        '**Batti cinque:** finire sulla casella di qualcuno dà una moneta a entrambi. Nessuna casella può danneggiare un altro giocatore.',
+        '**Il traguardo:** chi arriva per primo vince il premio scelto da un genitore. Chi arriva riceve le monete del traguardo e il distintivo del mese, e ogni stella dopo diventa monete.',
+        '**Fine del mese:** le stelle che nessuno ha tirato vengono tirate per loro a mezzanotte dell’ultimo giorno. La prossima volta che apri l’app vedi chi ha vinto e la nuova mappa.',
+        '**Avvisi:** «Mancano 3 giorni» arriva la sera, due giorni prima della fine del mese, e i risultati arrivano con la lista del mattino il 1°. Sono Spintarelle e Riepiloghi in **Impostazioni → Notifiche**, e aspettano la fine delle ore di silenzio.',
+      ] },
+      { h: 'Sentiero delle avventure per i genitori' },
+      { where: 'Impostazioni → Sentiero delle avventure' },
+      { ul: [
+        '**Gioca al Sentiero delle avventure** accende o spegne il gioco per la famiglia (anche in **Impostazioni → Funzioni**).',
+        '**Dai una stella:** +1 ⭐ accanto a qualcuno gli dà un tiro in più, per una buona azione che l’app non vede.',
+        '**Premio:** una ricompensa, monete o entrambe, per il primo al traguardo. Non c’è nessun premio finché non lo scegli. **Premio solo per i bambini** lo dà al primo bambino che arriva. Inoltre: monete per chi arriva al traguardo, e monete per stella dopo il traguardo (2 di base).',
+        '**Lunghezza del sentiero:** Automatica parte da 80 caselle e si adatta ogni mese (da 60 a 100); Fissa va da 40 a 120. Una modifica vale dal mese prossimo. Chi inizia a giocare a metà mese parte dalla stessa casella dell’ultimo.',
+        '**La mappa:** il momento della giornata (Giorno, Tramonto o Notte) e Nebbia sul sentiero inesplorato (monete, carte attività, premietti, scorciatoie e scivoli restano visibili).',
+      ] },
     ],
   },
   {
@@ -528,6 +548,16 @@ export const GUIDE_IT: GuideSection[] = [
           'La riga sotto il nome della faccenda dice perché: "Non assegnata" (la faccenda è di qualcun altro), "In attesa di approvazione" (un genitore non ha ancora approvato la tua ultima), "Fatto da …" (qualcuno l’ha già fatta oggi), "Fatto oggi / questa settimana" (il limite di ripetizioni di una faccenda libera) o "🤝 nomi" (una squadra l’ha presa oggi).',
           '"In attesa di …" è una faccenda a Rotazione nel turno di qualcun altro. Quando il pulsante mostra un giorno al posto di Fatto, la faccenda non è da rifare fino ad allora.',
           'Se Fatto dà un messaggio "non ancora in scadenza": la faccenda non scade ancora. Un genitore può attivare "Completamento anticipato" per le routine quotidiane.',
+        ] },
+        { q: 'Ho svolto un’attività ma non ho ricevuto la stella', a: [
+          'Ricevi al massimo 2 stelle al giorno: una per la prima attività e un bonus alla terza. Altre attività quel giorno non danno altre stelle.',
+          'Un’attività in attesa dell’approvazione di un genitore dà la sua stella quando viene approvata.',
+          'Un Fatto annullato toglie la stella che quel giorno non guadagna più. Se era già stata tirata, la tua prossima stella la ripaga.',
+          'Giocano solo le persone con «Partecipa alle attività» attivo (**Impostazioni → Membri della famiglia**).',
+        ] },
+        { q: 'La scheda Sentiero delle avventure non c’è in Oggi', a: [
+          'Forse un genitore ha spento **Gioca al Sentiero delle avventure** in **Impostazioni → Sentiero delle avventure** (o **Impostazioni → Funzioni**).',
+          'Giochi solo con «Partecipa alle attività» attivo (**Impostazioni → Membri della famiglia**).',
         ] },
         { q: 'La faccenda di un bambino mostra ▶ invece di Fatto', a: [
           'Ha un timer (Timer nell’editor della faccenda). Il bambino tocca ▶, e Fatto torna quando il tempo è scaduto. Un genitore può toccare Fatto per lui, oppure svuotare il timer nell’editor della faccenda.',

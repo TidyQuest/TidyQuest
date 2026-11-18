@@ -400,6 +400,26 @@ export const GUIDE_DE: GuideSection[] = [
       ] },
       { h: 'Abzeichen' },
       { p: 'Eingebaute Abzeichen werden von selbst freigeschaltet. Eltern können unter **Einstellungen → Abzeichen** eigene erstellen (zum Beispiel „Hausaufgaben 4 Wochen in Folge“), mit optionalen Bonusmünzen, und für jedes eingebaute Abzeichen Münzen festlegen. Das Symbol wählst du wie bei einer Aufgabe: Tippe auf den Knopf neben Symbol, um Symbol wählen zu öffnen.' },
+      { h: 'Abenteuerpfad' },
+      { where: 'Heute → die Karte 🎲 Abenteuerpfad und ihre Landkarte (Eltern: Einstellungen → Abenteuerpfad)' },
+      { p: 'Ein Brettspiel, das die ganze Familie einen Monat lang spielt. Alle, bei denen „Nimmt an Aufgaben teil“ an ist, spielen mit, Eltern auch. Jeden Monat gibt es eine neue Karte, und am 1. fangen alle wieder beim Start an.' },
+      { ul: [
+        '**Sterne:** 1 Stern für jeden Tag, an dem du eine Aufgabe erledigst, und ein Bonusstern, wenn du an dem Tag 3 oder mehr erledigst (höchstens 2 am Tag). Jede Aufgabe zählt einmal am Tag. Eine Aufgabe, die auf die Zustimmung der Eltern wartet, bringt ihren Stern, sobald sie bestätigt ist, für den Tag, an dem sie erledigt wurde.',
+        '**Würfeln:** jeder Stern ist ein Wurf, wann du willst. Münzfelder bringen +1 bis +3 Münzen, Abkürzungen bringen dich nach vorn, Rutschen ein paar Felder zurück, eine Aufgabenkarte gibt einen Extrastern für eine Aufgabe heute, und ein Leckerli schenkt dem Familienmaskottchen ein Accessoire.',
+        '**High Five:** Landest du auf dem Feld von jemandem, bekommt ihr beide eine Münze. Kein Feld kann einem anderen Spieler schaden.',
+        '**Das Ziel:** wer zuerst ankommt, gewinnt den Preis, den die Eltern ausgesucht haben. Alle, die ankommen, bekommen die Zielmünzen und das Abzeichen des Monats, und jeder Stern danach wird zu Münzen.',
+        '**Monatsende:** Sterne, die niemand gewürfelt hat, werden am letzten Tag um Mitternacht für sie gewürfelt. Beim nächsten Öffnen der App siehst du, wer gewonnen hat, und die neue Karte.',
+        '**Benachrichtigungen:** „Noch 3 Tage“ kommt am Abend zwei Tage vor Monatsende, die Ergebnisse kommen am 1. mit der Morgenliste. Es sind Anstupser und Zusammenfassungen unter **Einstellungen → Benachrichtigungen**, und sie warten Ruhezeiten ab.',
+      ] },
+      { h: 'Abenteuerpfad für Eltern' },
+      { where: 'Einstellungen → Abenteuerpfad' },
+      { ul: [
+        '**Abenteuerpfad spielen** schaltet das Spiel für die Familie ein oder aus (auch unter **Einstellungen → Funktionen**).',
+        '**Einen Stern geben:** +1 ⭐ neben jemandem gibt einen Extrawurf, für eine gute Tat, die die App nicht sieht.',
+        '**Preis:** eine Belohnung, Münzen oder beides, für die erste Person im Ziel. Es gibt keinen, bis du einen auswählst. **Preis nur für Kinder** gibt ihn dem ersten Kind im Ziel. Außerdem: Münzen für alle, die das Ziel erreichen, und Münzen pro Stern nach dem Ziel (standardmäßig 2).',
+        '**Länge des Pfads:** Automatisch beginnt mit 80 Feldern und passt sich jeden Monat an (60 bis 100); Fest ist 40 bis 120. Eine Änderung gilt ab dem nächsten Monat. Wer mitten im Monat einsteigt, beginnt auf demselben Feld wie der oder die Letzte.',
+        '**Die Karte:** Tageszeit (Tag, Sonnenuntergang oder Nacht) und Nebel über dem unerforschten Pfad (Münzen, Aufgabenkarten, Leckerlis, Abkürzungen und Rutschen bleiben sichtbar).',
+      ] },
     ],
   },
   {
@@ -528,6 +548,16 @@ export const GUIDE_DE: GuideSection[] = [
           'Die Zeile unter dem Namen der Aufgabe sagt, warum: „Nicht zugewiesen“ (die Aufgabe eines anderen), „Wartet auf Freigabe“ (ein Elternteil hat deine letzte noch nicht freigegeben), „Erledigt von …“ (jemand hat sie heute schon gemacht), „Heute erledigt / Diese Woche erledigt“ (das Limit einer jederzeit machbaren Aufgabe) oder „🤝 Namen“ (ein Team hat sie heute übernommen).',
           '„Warten auf …“ ist eine Aufgabe mit Rotation, bei der jemand anderes an der Reihe ist. Zeigt der Knopf statt Erledigt einen Tag, ist die Aufgabe erst dann wieder fällig.',
           'Wenn Erledigt die Meldung „noch nicht fällig“ zeigt: Die Aufgabe ist noch nicht wieder fällig. Ein Elternteil kann „Frühe Erledigung“ für tägliche Routinen einschalten.',
+        ] },
+        { q: 'Ich habe eine Aufgabe erledigt, aber keinen Stern bekommen', a: [
+          'Du bekommst höchstens 2 Sterne am Tag: einen für die erste Aufgabe und einen Bonus bei der dritten. Weitere Aufgaben an dem Tag bringen keine weiteren Sterne.',
+          'Eine Aufgabe, die auf die Zustimmung der Eltern wartet, bringt ihren Stern, sobald sie bestätigt ist.',
+          'Ein zurückgenommenes Erledigt nimmt den Stern zurück, den der Tag nicht mehr bringt. Wurde er schon gewürfelt, zahlt dein nächster Stern ihn zurück.',
+          'Nur wer „Nimmt an Aufgaben teil“ an hat, spielt mit (**Einstellungen → Familienmitglieder**).',
+        ] },
+        { q: 'Die Karte Abenteuerpfad ist nicht auf Heute', a: [
+          'Vielleicht haben die Eltern **Abenteuerpfad spielen** unter **Einstellungen → Abenteuerpfad** (oder **Einstellungen → Funktionen**) ausgeschaltet.',
+          'Du spielst nur mit, wenn „Nimmt an Aufgaben teil“ an ist (**Einstellungen → Familienmitglieder**).',
         ] },
         { q: 'Bei der Aufgabe eines Kindes steht ▶ statt Erledigt', a: [
           'Sie hat einen Timer (Timer im Aufgaben-Editor). Das Kind tippt auf ▶, und Erledigt kommt zurück, wenn die Zeit um ist. Ein Elternteil kann für das Kind auf Erledigt tippen oder den Timer im Aufgaben-Editor leeren.',
