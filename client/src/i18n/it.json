@@ -1617,7 +1617,9 @@
       "webPush": "📲 Notifiche sul telefono (web push)",
       "webPushDesc": "Ognuno può ricevere le sue notifiche sul proprio telefono o computer, attivandole in Profilo. Serve un indirizzo https://.",
       "whatsNew": "📣 Novità dopo gli aggiornamenti",
-      "whatsNewDesc": "Dopo un aggiornamento importante, ognuno vede alcune schermate su cosa si è spostato la prima volta che apre l'app."
+      "whatsNewDesc": "Dopo un aggiornamento importante, ognuno vede alcune schermate su cosa si è spostato la prima volta che apre l'app.",
+      "questTrail": "Sentiero delle avventure",
+      "questTrailDesc": "Un gioco da tavolo per il mese: ogni giorno con faccende fatte dà stelle, ogni stella è un tiro di dado, e tutti corrono verso il traguardo su una mappa nuova ogni mese."
     },
     "seasons": {
       "halloween": "Halloween",
@@ -2624,6 +2626,14 @@
       "gotIt": "Capito",
       "onKid": "Fatto! Questo telefono ti avvisa quando una faccenda è approvata, quando qualcuno ti fa il tifo e di cosa c'è da fare oggi.",
       "onParent": "Fatto! Questo telefono ti avvisa quando una faccenda o un premio ti aspetta, di cosa c'è da fare oggi e del riepilogo settimanale."
+    },
+    "quest": {
+      "coinsReason": "Sentiero delle avventure: casella monete",
+      "highFiveReason": "Sentiero delle avventure: batti il cinque con {name}",
+      "starCoinsReason": "Sentiero delle avventure: una stella dopo il traguardo",
+      "finisherReason": "Sentiero delle avventure: traguardo raggiunto",
+      "prizeReason": "Sentiero delle avventure: primo al traguardo",
+      "treatReason": "Sentiero delle avventure: premio per la mascotte"
     }
   }
 }

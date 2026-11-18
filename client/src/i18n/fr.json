@@ -1617,7 +1617,9 @@
       "webPush": "📲 Notifications sur le téléphone (web push)",
       "webPushDesc": "Chacun peut recevoir ses notifications sur son propre téléphone ou ordinateur, à activer dans Profil. Nécessite une adresse https://.",
       "whatsNew": "📣 Nouveautés après les mises à jour",
-      "whatsNewDesc": "Après une grosse mise à jour, chacun voit quelques diapositives sur ce qui a changé de place, la première fois qu'il ouvre l'appli."
+      "whatsNewDesc": "Après une grosse mise à jour, chacun voit quelques diapositives sur ce qui a changé de place, la première fois qu'il ouvre l'appli.",
+      "questTrail": "Sentier des quêtes",
+      "questTrailDesc": "Un jeu de plateau sur le mois : chaque jour avec des tâches faites rapporte des étoiles, chaque étoile est un lancer de dé, et tout le monde fait la course jusqu'à l'arrivée sur une nouvelle carte chaque mois."
     },
     "seasons": {
       "halloween": "Halloween",
@@ -2624,6 +2626,14 @@
       "gotIt": "Compris",
       "onKid": "C'est fait ! Ce téléphone te prévient quand une tâche est approuvée, quand quelqu'un t'encourage, et de ce qui est à faire aujourd'hui.",
       "onParent": "C'est fait ! Ce téléphone vous prévient quand une tâche ou une récompense vous attend, de ce qui est à faire aujourd'hui, et du bilan de la semaine."
+    },
+    "quest": {
+      "coinsReason": "Sentier des quêtes : case pièces",
+      "highFiveReason": "Sentier des quêtes : tope là avec {name}",
+      "starCoinsReason": "Sentier des quêtes : une étoile après l'arrivée",
+      "finisherReason": "Sentier des quêtes : arrivée atteinte",
+      "prizeReason": "Sentier des quêtes : premier à l'arrivée",
+      "treatReason": "Sentier des quêtes : friandise pour la mascotte"
     }
   }
 }

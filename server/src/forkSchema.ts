@@ -224,6 +224,57 @@ const NEW_TABLES: string[] = [
     seenAt TEXT NOT NULL DEFAULT (datetime('now')),
     PRIMARY KEY (userId, itemId)
   )`,
+  // Quest Trail (NEW-40, utils/quest.ts): one trail a month ('YYYY-MM'), its spaces as JSON so a month's board
+  // never changes once it's made
+  `CREATE TABLE IF NOT EXISTS quest_trails (
+    month TEXT PRIMARY KEY,
+    world TEXT NOT NULL,
+    length INTEGER NOT NULL,
+    spaces TEXT NOT NULL,
+    startDay TEXT NOT NULL,
+    closedAt TEXT,
+    createdAt TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
+  )`,
+  // Each player's piece on a month's trail (the stars they have left are worked out from their chores)
+  `CREATE TABLE IF NOT EXISTS quest_players (
+    month TEXT NOT NULL,
+    userId INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    position INTEGER NOT NULL DEFAULT 0,
+    joinDay TEXT NOT NULL,
+    finishedAt TEXT,
+    place INTEGER,
+    prizeWon INTEGER NOT NULL DEFAULT 0,
+    endSeenAt TEXT,
+    PRIMARY KEY (month, userId)
+  )`,
+  // Every roll (and, after the finish, every star turned into coins): roll 0 = a star cashed in
+  `CREATE TABLE IF NOT EXISTS quest_rolls (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    month TEXT NOT NULL,
+    userId INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    roll INTEGER NOT NULL,
+    fromPos INTEGER NOT NULL,
+    toPos INTEGER NOT NULL,
+    events TEXT NOT NULL DEFAULT '[]',
+    coins INTEGER NOT NULL DEFAULT 0,
+    auto INTEGER NOT NULL DEFAULT 0,
+    rolledBy INTEGER REFERENCES users(id) ON DELETE SET NULL,
+    createdAt TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
+  )`,
+  `CREATE INDEX IF NOT EXISTS idx_quest_rolls_player ON quest_rolls(month, userId)`,
+  // Stars that don't come from the day's chores: a parent's gift, a chore card (counts once a chore is done
+  // after it), a day on your own vacation. One card and one vacation star a day at most.
+  `CREATE TABLE IF NOT EXISTS quest_stars (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    month TEXT NOT NULL,
+    userId INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    day TEXT NOT NULL,
+    kind TEXT NOT NULL,
+    createdBy INTEGER REFERENCES users(id) ON DELETE SET NULL,
+    createdAt TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
+  )`,
+  `CREATE UNIQUE INDEX IF NOT EXISTS idx_quest_stars_daily ON quest_stars(userId, day, kind) WHERE kind IN ('card', 'vacation')`,
+  `CREATE INDEX IF NOT EXISTS idx_quest_stars_player ON quest_stars(month, userId)`,
 ];
 
 /** Columns added to existing tables (ignored when they already exist). */
@@ -379,6 +430,11 @@ export const BACKUP_TABLES: Array<{ key: string; table: string }> = [
   { key: 'dueReminders', table: 'task_due_notifications' },
   // Who has seen which "What's new" (NEW-38), so a restore doesn't show them again
   { key: 'whatsNewSeen', table: 'whats_new_seen' },
+  // Quest Trail (NEW-40): the month's trail, the pieces, the rolls and the extra stars
+  { key: 'questTrails', table: 'quest_trails' },
+  { key: 'questPlayers', table: 'quest_players' },
+  { key: 'questRolls', table: 'quest_rolls' },
+  { key: 'questStars', table: 'quest_stars' },
 ];
 
 export function applyForkSchema(instance: InstanceType<typeof Database>) {

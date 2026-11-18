@@ -9,6 +9,16 @@ What changed in each release, in plain language, newest first. Releases up to v0
 
 ## Unreleased
 
+### Added
+
+- **Quest Trail, part 1: the game's rules on the server** (NEW-40). Quest Trail is a board game the family plays over
+  a month: each day you do a chore earns a star (and a bonus star for 3 or more chores that day), each star is a roll
+  of the die, and everyone races along a trail to the finish. This part keeps score and plays the game: it makes
+  the month's trail, rolls the die on the server, and handles coin spaces, shortcuts, slides, chore cards, mascot
+  treats, high fives, the finish and the first-place prize, and it rolls any leftover stars when the month ends. It
+  has a switch under Settings → Features (on by default). The map, the Today card and the settings page come in
+  the next parts, so there's nothing to play in the app yet.
+
 ## v0.19.0 (2026-11-17)
 
 ### Added

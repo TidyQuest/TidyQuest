@@ -1617,7 +1617,9 @@
       "webPush": "📲 Phone notifications (web push)",
       "webPushDesc": "Everyone can get their notifications on their own phone or computer, turned on in Profile. Needs an https:// address.",
       "whatsNew": "📣 What's new after updates",
-      "whatsNewDesc": "After a big update, each person gets a few slides about what moved, the first time they open the app."
+      "whatsNewDesc": "After a big update, each person gets a few slides about what moved, the first time they open the app.",
+      "questTrail": "Quest Trail",
+      "questTrailDesc": "A board game for the month: each day with chores done earns stars, each star is a roll of the die, and everyone races to the finish on a new map each month."
     },
     "seasons": {
       "halloween": "Halloween",
@@ -2624,6 +2626,14 @@
       "gotIt": "Got it",
       "onKid": "All set! This phone now tells you when a chore is approved, when someone cheers you, and what's due today.",
       "onParent": "All set! This phone now tells you when a chore or reward is waiting for you, what's due today, and the weekly recap."
+    },
+    "quest": {
+      "coinsReason": "Quest Trail: coin space",
+      "highFiveReason": "Quest Trail: high five with {name}",
+      "starCoinsReason": "Quest Trail: a star after the finish",
+      "finisherReason": "Quest Trail: reached the finish",
+      "prizeReason": "Quest Trail: first to the finish",
+      "treatReason": "Quest Trail: mascot treat"
     }
   }
 }

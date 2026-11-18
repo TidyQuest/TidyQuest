@@ -1617,7 +1617,9 @@
       "webPush": "📲 Meldingen op je telefoon (web push)",
       "webPushDesc": "Iedereen kan zijn meldingen op zijn eigen telefoon of computer krijgen, aan te zetten in Profiel. Werkt alleen via een https://-adres.",
       "whatsNew": "📣 Wat is er nieuw na updates",
-      "whatsNewDesc": "Na een grote update ziet iedereen de eerste keer dat de app opent een paar dia's over wat er verplaatst is."
+      "whatsNewDesc": "Na een grote update ziet iedereen de eerste keer dat de app opent een paar dia's over wat er verplaatst is.",
+      "questTrail": "Avonturenpad",
+      "questTrailDesc": "Een bordspel voor de hele maand: elke dag met klusjes gedaan levert sterren op, elke ster is een worp met de dobbelsteen, en iedereen racet naar de finish op elke maand een nieuwe kaart."
     },
     "seasons": {
       "halloween": "Halloween",
@@ -2624,6 +2626,14 @@
       "gotIt": "Begrepen",
       "onKid": "Klaar! Deze telefoon laat je nu weten wanneer een klus is goedgekeurd, wanneer iemand je aanmoedigt en wat er vandaag moet.",
       "onParent": "Klaar! Deze telefoon laat je nu weten wanneer een klus of beloning op je wacht, wat er vandaag moet, en geeft het weekoverzicht."
+    },
+    "quest": {
+      "coinsReason": "Avonturenpad: muntenvakje",
+      "highFiveReason": "Avonturenpad: high five met {name}",
+      "starCoinsReason": "Avonturenpad: een ster na de finish",
+      "finisherReason": "Avonturenpad: finish gehaald",
+      "prizeReason": "Avonturenpad: als eerste bij de finish",
+      "treatReason": "Avonturenpad: traktatie voor de mascotte"
     }
   }
 }

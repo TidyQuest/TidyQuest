@@ -1617,7 +1617,9 @@
       "webPush": "📲 Notificaciones en el móvil (web push)",
       "webPushDesc": "Cada uno puede recibir sus notificaciones en su propio móvil u ordenador, activándolas en Perfil. Necesita una dirección https://.",
       "whatsNew": "📣 Novedades tras las actualizaciones",
-      "whatsNewDesc": "Tras una actualización grande, cada persona ve unas diapositivas sobre lo que cambió de sitio la primera vez que abre la app."
+      "whatsNewDesc": "Tras una actualización grande, cada persona ve unas diapositivas sobre lo que cambió de sitio la primera vez que abre la app.",
+      "questTrail": "Sendero de aventuras",
+      "questTrailDesc": "Un juego de mesa para el mes: cada día con tareas hechas da estrellas, cada estrella es una tirada del dado, y todos corren hasta la meta en un mapa nuevo cada mes."
     },
     "seasons": {
       "halloween": "Halloween",
@@ -2624,6 +2626,14 @@
       "gotIt": "Entendido",
       "onKid": "¡Listo! Este teléfono te avisa cuando aprueban una tarea, cuando alguien te anima y de lo que toca hoy.",
       "onParent": "¡Listo! Este teléfono te avisa cuando una tarea o recompensa te espera, de lo que toca hoy y del resumen semanal."
+    },
+    "quest": {
+      "coinsReason": "Sendero de aventuras: casilla de monedas",
+      "highFiveReason": "Sendero de aventuras: chócala con {name}",
+      "starCoinsReason": "Sendero de aventuras: una estrella tras la meta",
+      "finisherReason": "Sendero de aventuras: llegada a la meta",
+      "prizeReason": "Sendero de aventuras: primero en la meta",
+      "treatReason": "Sendero de aventuras: premio para la mascota"
     }
   }
 }

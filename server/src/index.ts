@@ -23,6 +23,7 @@ import notifyRoutes from './routes/notify';
 import todosRoutes from './routes/todos';
 import setupRoutes from './routes/setup';
 import rescueRoutes from './routes/rescue';
+import questRoutes from './routes/quest';
 import shieldsRoutes from './routes/shields';
 import featuresRoutes from './routes/features';
 import cheersRoutes from './routes/cheers';
@@ -41,6 +42,7 @@ import { endDueVacations } from './utils/vacation';
 import { snapshotOverdueChores } from './utils/insights';
 import { resumeDuePauses } from './utils/pause';
 import { expireTrash } from './utils/trash';
+import { questJob } from './utils/quest';
 import insightsRoutes from './routes/insights';
 import { countRequests, isHosted } from './hosted/context';
 import { closeAllFamilies, startHosted } from './hosted/families';
@@ -125,6 +127,7 @@ export function createApp() {
   app.use('/api/todos', todosRoutes);
   app.use('/api/setup', setupRoutes);
   app.use('/api/rescue', rescueRoutes);
+  app.use('/api/quest', questRoutes);
   app.use('/api/shields', shieldsRoutes);
   app.use('/api/insights', insightsRoutes);
   app.use('/api/features', featuresRoutes);
@@ -159,6 +162,7 @@ export const backgroundJobs: Job[] = [
   snapshotOverdueChores,
   resumeDuePauses,
   expireTrash,
+  questJob, // after the vacations end: today's vacation stars go to who's still away
 ];
 
 /**

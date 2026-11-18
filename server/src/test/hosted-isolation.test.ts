@@ -119,6 +119,11 @@ async function seed(familyId: string, db: Db, m: string): Promise<Family> {
   db.prepare('INSERT INTO task_due_notifications (taskId, dueDate) VALUES (?, ?)').run(ids.tasks, day(0));
   db.prepare('INSERT INTO user_achievement_notifications (userId, achievementId) VALUES (?, ?)').run(k, `${m} achievement`);
   db.prepare('INSERT INTO mascot_purchases (userId, itemId, price) VALUES (?, ?, 5)').run(k, `${m} item`);
+  // Quest Trail (NEW-40): an old month's trail, B's kid on it, a roll and a star
+  db.prepare("INSERT INTO quest_trails (month, world, length, spaces, startDay, closedAt) VALUES ('2020-01', ?, 80, '{}', '2020-01-01', '2020-02-01')").run(`${m} world`);
+  db.prepare("INSERT INTO quest_players (month, userId, position, joinDay) VALUES ('2020-01', ?, 4, '2020-01-01')").run(k);
+  db.prepare("INSERT INTO quest_rolls (month, userId, roll, fromPos, toPos) VALUES ('2020-01', ?, 4, 0, 4)").run(k);
+  db.prepare("INSERT INTO quest_stars (month, userId, day, kind) VALUES ('2020-01', ?, '2020-01-02', 'gift')").run(k);
 
   return { id: familyId, db, code: familyCodeOf(familyId), marker: m, admin, kid, teen, ids };
 }

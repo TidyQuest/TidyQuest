@@ -1617,7 +1617,9 @@
       "webPush": "📲 Benachrichtigungen aufs Handy (Web-Push)",
       "webPushDesc": "Jeder kann seine Benachrichtigungen auf dem eigenen Handy oder Computer bekommen, eingeschaltet im Profil. Braucht eine https://-Adresse.",
       "whatsNew": "📣 Neuigkeiten nach Updates",
-      "whatsNewDesc": "Nach einem großen Update sieht jeder beim ersten Öffnen der App ein paar Folien dazu, was sich verschoben hat."
+      "whatsNewDesc": "Nach einem großen Update sieht jeder beim ersten Öffnen der App ein paar Folien dazu, was sich verschoben hat.",
+      "questTrail": "Abenteuerpfad",
+      "questTrailDesc": "Ein Brettspiel für den Monat: Jeder Tag mit erledigten Aufgaben bringt Sterne, jeder Stern ist ein Würfelwurf, und alle laufen um die Wette ins Ziel – jeden Monat auf einer neuen Karte."
     },
     "seasons": {
       "halloween": "Halloween",
@@ -2624,6 +2626,14 @@
       "gotIt": "Verstanden",
       "onKid": "Fertig! Dieses Handy sagt dir jetzt, wenn eine Aufgabe genehmigt ist, wenn dich jemand anfeuert und was heute fällig ist.",
       "onParent": "Fertig! Dieses Handy sagt dir jetzt, wenn eine Aufgabe oder Belohnung auf dich wartet, was heute fällig ist, und bringt den Wochenrückblick."
+    },
+    "quest": {
+      "coinsReason": "Abenteuerpfad: Münzfeld",
+      "highFiveReason": "Abenteuerpfad: High five mit {name}",
+      "starCoinsReason": "Abenteuerpfad: ein Stern nach dem Ziel",
+      "finisherReason": "Abenteuerpfad: Ziel erreicht",
+      "prizeReason": "Abenteuerpfad: als Erste(r) im Ziel",
+      "treatReason": "Abenteuerpfad: Leckerli fürs Maskottchen"
     }
   }
 }
