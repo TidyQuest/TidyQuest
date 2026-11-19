@@ -30,8 +30,11 @@ export interface QuestState {
   enabled: true;
   trail: { month: string; world: WorldKey; length: number; startDay: string; endDay: string; spaces: Record<number, MapSpace> };
   players: QuestPlayer[];
-  me: { starsLeft: number; owed: number; today: { chores: number; stars: number; card: 'none' | 'open' | 'done' }; bonusAt: number } | null;
-  prize: { rewardId: number | null; rewardTitle: string | null; coins: number; kidsOnly: boolean };
+  /** today: chores done, chores waiting for a parent's OK (Strict Mode), today's two stars, the chore card */
+  me: { starsLeft: number; today: { chores: number; pending: number; stars: number; card: 'none' | 'open' | 'done' }; bonusAt: number } | null;
+  /** won: who won it this month, and what (the sign at the finish then says so) */
+  prize: { rewardId: number | null; rewardTitle: string | null; coins: number; kidsOnly: boolean;
+    won: { userId: number; displayName: string; rewardTitle: string | null; coins: number } | null };
   finisherCoins: number;
   coinsPerStar: number;
   timeOfDay: 'day' | 'sunset' | 'night';

@@ -2925,7 +2925,15 @@
       "villageRegion5": "Lebkuchenreihe",
       "villageWater1": "Kühler Bach",
       "villageWater2": "Schlittschuhbach",
-      "mapOnward": "Auf in den {month}"
+      "mapOnward": "Auf in den {month}",
+      "todayWaiting": "Der Stern des Tages kommt, wenn ein Erwachsener OK sagt.",
+      "todayPending": "⏳ {n} warten auf das OK eines Erwachsenen",
+      "hintWaiting": "Wartet auf das OK eines Erwachsenen",
+      "cardLeaderDone": "{name} ist im Ziel",
+      "prizeWonBy": "{name} hat ihn gewonnen: {prize}",
+      "prizeWonYou": "Du hast ihn gewonnen: {prize}",
+      "rollingFor": "Würfeln für {name}",
+      "backToMine": "Zurück zu deinem Zug"
     },
     "doneFor": {
       "countedYours": "„{task}“ zählt für dich",
@@ -2974,7 +2982,10 @@
       "night": "Nacht",
       "fog": "Nebel über dem unerforschten Pfad",
       "fogDesc": "Münzen, Aufgabenkarten, Leckerlis, Abkürzungen und Rutschen bleiben sichtbar.",
-      "thisMonth": "Diesen Monat: {length} Felder"
+      "thisMonth": "Diesen Monat: {length} Felder",
+      "roll": "🎲 Würfeln",
+      "rollDesc": "🎲 Würfeln öffnet die Karte und würfelt die Sterne gemeinsam mit der Person, für alle, die sich nicht anmelden.",
+      "hiddenReward": "{title} (im Shop ausgeblendet)"
     }
   }
 }

@@ -311,7 +311,8 @@ export function buildTrail(key: WorldKey, N: number, spaces: Record<number, MapS
   const r = rng(T.seed);
   const pick = (v: any) => Array.isArray(v) ? v[Math.floor(r() * v.length)] : v;
   const TP = THEMES[prevKey], TN = THEMES[nextKey];
-      const Y0 = 400, Y1 = Y0 + Math.round(3364 * N / 80), H = Y1 + 300, K = 2 * Math.PI / 470;
+      // Y0: the start, far enough below the map key that a crowd of pieces on Start stays clear of it
+      const Y0 = 440, Y1 = Y0 + Math.round(3364 * N / 80), H = Y1 + 300, K = 2 * Math.PI / 470;
   const fx = (y: any) => 195 + T.amp * Math.sin(K * (y - Y0) + T.phase) + 9 * Math.sin(2.6 * K * (y - Y0) + T.phase * 1.7);
 
   // The trail, with the spaces spread evenly along it
@@ -599,25 +600,30 @@ export function buildTrail(key: WorldKey, N: number, spaces: Record<number, MapS
     if (g.artAt) rects.push({ x1: g.artAt.x - 14, y1: g.artAt.y - 10, x2: g.artAt.x + 14, y2: g.artAt.y + 8 });
   });
 
-  // Name tags for the shortcuts and slides, on their line but never over a space
+  // Name tags for the shortcuts and slides, on their line but never over a space or its number. On a short,
+  // crowded trail with no free spot: the spot with the least in the way.
+  const numberBoxes: any[] = [];
+  for (let i = 1; i < N; i++) if (kindOf(i) !== 'plain') numberBoxes.push({ x1: sp[i].x - 13, y1: sp[i].y + rad[i] + 2, x2: sp[i].x + 13, y2: sp[i].y + rad[i] + 22 });
+  const overlaps = (q: any, b: any) => q.x1 < b.x2 && q.x2 > b.x1 && q.y1 < b.y2 && q.y2 > b.y1;
+  const discBox = (i: number, m: number) => ({ x1: sp[i].x - rad[i] - m, y1: sp[i].y - rad[i] - m, x2: sp[i].x + rad[i] + m, y2: sp[i].y + rad[i] + m });
+  const inTheWay = (b: any) => 3 * sp.filter((_p, i) => overlaps(discBox(i, 5), b)).length + 2 * numberBoxes.filter((q) => overlaps(q, b)).length + rects.filter((q) => overlaps(q, b)).length;
   const pills: any[] = [];
   routes.forEach((R) => {
     const text = W.pill(R.kind, R.to);
     const w = text.length * 6.6 + 30, h = 24;
-    let spot = null;
-    for (const off of [0, 15, -15, 28, -28]) {
+    let spot: any = null, best: any = null;
+    for (const off of [0, 15, -15, 28, -28, 42, -42]) {
       for (const t of [0.56, 0.48, 0.64, 0.4, 0.72, 0.32, 0.8]) {
         const p = along(R.D, R.tot * t);
         const cx = Math.max(w / 2 + 6, Math.min(384 - w / 2, p.x + p.nx * off)), cy = p.y + p.ny * off;
         const b = { x1: cx - w / 2, y1: cy - h / 2, x2: cx + w / 2, y2: cy + h / 2 };
-        if (!hitRect(b) && !hitDisc(b, 5)) { spot = { cx, cy, b }; break; }
+        const cost = inTheWay(b);
+        if (cost === 0) { spot = { cx, cy, b }; break; }
+        if (!best || cost < best.cost) best = { cx, cy, b, cost };
       }
       if (spot) break;
     }
-    if (!spot) {
-      const p = along(R.D, R.tot * 0.56), cx = Math.max(w / 2 + 6, Math.min(384 - w / 2, p.x));
-      spot = { cx, cy: p.y, b: { x1: cx - w / 2, y1: p.y - h / 2, x2: cx + w / 2, y2: p.y + h / 2 } };
-    }
+    spot = spot ?? best;
     rects.push(spot.b);
     pills.push({ left: f1(spot.cx), top: f1(spot.cy), text, fg: R.kind === 'go' ? '#2B7A3A' : '#C92A2A', icon: R.kind === 'go' ? IC.up : IC.down });
   });

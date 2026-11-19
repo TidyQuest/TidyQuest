@@ -10,9 +10,9 @@ import { awayNow } from './vacation';
  * Quest Trail (NEW-40): a board game the family plays over a month. Doing chores earns stars, each star is
  * one roll of the die, and everyone races along a trail on a new world's map each month.
  *
- * Stars are worked out from the chores themselves, never stored as a running count, so taking back a Done or
- * a parent turning a chore down takes its star back by itself. A star already rolled stays rolled: the stars
- * left go below zero and the next star earned pays it back.
+ * Stars are worked out from the chores themselves, never stored as a running count, so taking back a Done
+ * takes back a star that hasn't been rolled with yet. Each roll keeps the stars earned so far (quest_kept):
+ * a Done taken back after a roll takes nothing back, and nothing is ever owed.
  * - 1 star for a day with any chore done (each chore counts once a day), 1 more for 3 or more that day.
  *   In Strict Mode a chore counts once it's approved, for the day it was done. "Log it late" counts for
  *   the day it was logged for.
@@ -21,7 +21,8 @@ import { awayNow } from './vacation';
  * - A chore card (landed on) gives a star once a chore is done after it that day. Parents can give stars.
  *
  * The die is rolled here, on the server. Stars nobody rolled are rolled for them when the month is over
- * (the first time the server looks after midnight). After the finish, each star is cashed in for coins.
+ * (the first time the server looks after midnight), in a random order each round. After the finish, each
+ * star is cashed in for coins.
  */
 
 // ---- The trail ----
@@ -172,10 +173,14 @@ export interface StarCount {
   earned: number;
   /** Rolls (and cash-ins) so far */
   used: number;
-  /** earned − used; below zero when a star already rolled was taken back */
+  /** earned − used */
   left: number;
-  today: { chores: number; stars: number; card: 'none' | 'open' | 'done' };
+  /** Today's chores done, those still waiting for a parent's OK (Strict Mode), today's two stars, the chore card */
+  today: { chores: number; pending: number; stars: number; card: 'none' | 'open' | 'done' };
 }
+
+/** A day's stars: the chores' (0–2, or the vacation star) and the chore card's (0–1) */
+interface DayStars { stars: number; card: number }
 
 /** A month's dates as ISO bounds with room for any time zone (the exact day is checked by daySql). */
 function monthBounds(month: string): [string, string] {
@@ -183,39 +188,64 @@ function monthBounds(month: string): [string, string] {
   return [new Date(Date.UTC(y, m - 1, -1)).toISOString().slice(0, 10), new Date(Date.UTC(y, m, 2)).toISOString().slice(0, 10)];
 }
 
-export function starsFor(trail: Trail, player: Player, now: Date = new Date()): StarCount {
+/** Each day's stars as the chores give them now, never below what a roll has kept */
+function count(trail: Trail, player: Player, now: Date): { stars: StarCount; days: Map<string, DayStars> } {
   const today = dateStr(now);
   const [from, to] = monthBounds(trail.month);
   // Each chore once a day: distinct chores by day
-  const days = new Map<string, number>();
+  const chores = new Map<string, number>();
   for (const r of prepared(`SELECT ${daySql('completedAt')} AS day, COUNT(DISTINCT taskId) AS n FROM task_completions
       WHERE userId = ? AND status = 'approved' AND completedAt >= ? AND completedAt < ? GROUP BY day`)
     .all(player.userId, from, to) as { day: string; n: number }[]) {
-    if (r.day.startsWith(trail.month) && r.day >= player.joinDay && r.day <= today) days.set(r.day, r.n);
+    if (r.day.startsWith(trail.month) && r.day >= player.joinDay && r.day <= today) chores.set(r.day, r.n);
   }
   const extras = prepared('SELECT id, day, kind, createdAt FROM quest_stars WHERE month = ? AND userId = ?')
     .all(trail.month, player.userId) as { id: number; day: string; kind: string; createdAt: string }[];
   const away = new Set(extras.filter((e) => e.kind === 'vacation').map((e) => e.day));
+  const kept = new Map((prepared('SELECT day, stars, card FROM quest_kept WHERE month = ? AND userId = ?')
+    .all(trail.month, player.userId) as ({ day: string } & DayStars)[]).map((k) => [k.day, k]));
   const cardDone = prepared(`SELECT 1 FROM task_completions WHERE userId = ? AND status = 'approved'
       AND julianday(completedAt) >= julianday(?) AND ${daySql('completedAt')} = ? LIMIT 1`);
 
-  let earned = 0;
-  const dayStars = (day: string) => {
-    const n = days.get(day) ?? 0;
-    return (n >= 1 || away.has(day) ? 1 : 0) + (n >= 3 ? 1 : 0);
+  const days = new Map<string, DayStars>();
+  const dayOf = (day: string) => {
+    if (!days.has(day)) days.set(day, { stars: 0, card: 0 });
+    return days.get(day)!;
   };
-  for (const day of new Set([...days.keys(), ...away])) earned += dayStars(day);
+  for (const day of new Set([...chores.keys(), ...away, ...kept.keys()])) {
+    const n = chores.get(day) ?? 0;
+    dayOf(day).stars = Math.max((n >= 1 || away.has(day) ? 1 : 0) + (n >= 3 ? 1 : 0), kept.get(day)?.stars ?? 0);
+  }
+  let earned = 0;
   let card: StarCount['today']['card'] = 'none';
   for (const e of extras) {
     if (e.kind === 'gift') earned += 1;
     if (e.kind === 'card') {
-      const done = !!cardDone.get(player.userId, e.createdAt, e.day);
-      if (done) earned += 1;
+      const done = !!cardDone.get(player.userId, e.createdAt, e.day) || (kept.get(e.day)?.card ?? 0) > 0;
+      if (done) dayOf(e.day).card = 1;
       if (e.day === today) card = done ? 'done' : 'open';
     }
   }
+  for (const d of days.values()) earned += d.stars + d.card;
   const used = (prepared('SELECT COUNT(*) AS n FROM quest_rolls WHERE month = ? AND userId = ?').get(trail.month, player.userId) as { n: number }).n;
-  return { earned, used, left: earned - used, today: { chores: days.get(today) ?? 0, stars: dayStars(today), card } };
+  // Today's chores still waiting for a parent's OK (Strict Mode): their star comes with the approval
+  const pending = today.startsWith(trail.month)
+    ? (prepared(`SELECT COUNT(DISTINCT taskId) AS n FROM task_completions WHERE userId = ? AND status = 'pending'
+        AND completedAt >= ? AND completedAt < ? AND ${daySql('completedAt')} = ?`).get(player.userId, from, to, today) as { n: number }).n
+    : 0;
+  return {
+    stars: { earned, used, left: earned - used, today: { chores: chores.get(today) ?? 0, pending, stars: days.get(today)?.stars ?? 0, card } },
+    days,
+  };
+}
+
+export const starsFor = (trail: Trail, player: Player, now: Date = new Date()): StarCount => count(trail, player, now).stars;
+
+/** A roll keeps every star earned so far, so a Done taken back afterwards takes nothing back */
+function keep(trail: Trail, userId: number, days: Map<string, DayStars>): void {
+  const up = prepared(`INSERT INTO quest_kept (month, userId, day, stars, card) VALUES (?, ?, ?, ?, ?)
+    ON CONFLICT (month, userId, day) DO UPDATE SET stars = MAX(stars, excluded.stars), card = MAX(card, excluded.card)`);
+  for (const [day, d] of days) if (d.stars > 0 || d.card > 0) up.run(trail.month, userId, day, d.stars, d.card);
 }
 
 // ---- The month's trail ----
@@ -294,14 +324,29 @@ export function ensureTrail(now: Date = new Date()): Trail | null {
   })();
 }
 
-/** The month is over: every star nobody rolled is rolled for them, one round of turns at a time. */
+/** Tests can fix the month-end order (each round is shuffled with this) */
+let pick = (n: number) => randomInt(n);
+export function setQuestOrder(fn?: (n: number) => number) { pick = fn ?? ((n: number) => randomInt(n)); }
+const shuffled = <T>(list: T[]): T[] => {
+  const a = [...list];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = pick(i + 1);
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+};
+
+/**
+ * The month is over: every star nobody rolled is rolled for them, one round of turns at a time, each round in
+ * a random order (so nobody always goes first at the finish).
+ */
 export function closeTrail(trail: Trail, now: Date = new Date()): void {
   db.transaction(() => {
     if ((getTrail(trail.month) as Trail).closedAt) return;
     let rolled = true;
     while (rolled) {
       rolled = false;
-      for (const p of playersOf(trail.month)) {
+      for (const p of shuffled(playersOf(trail.month))) {
         if (starsFor(trail, p, now).left < 1) continue;
         const r = takeTurn(trail, p.userId, { auto: true, rolledBy: null, now });
         if (!('error' in r)) rolled = true;
@@ -350,8 +395,9 @@ export function takeTurn(trail: Trail, userId: number, opts: { auto?: boolean; r
   return db.transaction((): TurnResult | { error: string } => {
     const p = getPlayer(trail.month, userId);
     if (!p) return { error: 'not_playing' };
-    const stars = starsFor(trail, p, now);
+    const { stars, days } = count(trail, p, now);
     if (stars.left < 1) return { error: 'no_stars' };
+    keep(trail, userId, days);
     const s = questSettings();
     const record = (roll: number, to: number, events: QuestEvent[], coins: number) =>
       prepared('INSERT INTO quest_rolls (month, userId, roll, fromPos, toPos, events, coins, auto, rolledBy, createdAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)')
@@ -425,8 +471,9 @@ function finish(trail: Trail, userId: number, now: Date, s: QuestSettings, event
   let prize: Extract<QuestEvent, { t: 'finish' }>['prize'] = null;
   const role = (prepared('SELECT role FROM users WHERE id = ?').get(userId) as { role: string }).role;
   const taken = !!prepared('SELECT 1 FROM quest_players WHERE month = ? AND prizeWon = 1').get(trail.month);
+  // A reward hidden from the shop can still be the prize (one kept just for the Quest Trail)
   const reward = s.prizeRewardId
-    ? prepared('SELECT id, title FROM rewards WHERE id = ? AND isActive = 1 AND deletedAt IS NULL').get(s.prizeRewardId) as { id: number; title: string } | undefined
+    ? prepared('SELECT id, title FROM rewards WHERE id = ? AND deletedAt IS NULL').get(s.prizeRewardId) as { id: number; title: string } | undefined
     : undefined;
   if (!taken && (!s.prizeKidsOnly || role === 'child') && (reward || s.prizeCoins > 0)) {
     prepared('UPDATE quest_players SET prizeWon = 1 WHERE month = ? AND userId = ?').run(trail.month, userId);
@@ -469,14 +516,17 @@ export function questState(viewerId: number, now: Date = new Date()) {
   const mine = getPlayer(trail.month, viewerId);
   const myStars = mine && playing.has(viewerId) ? starsFor(trail, mine, now) : null;
   const reward = s.prizeRewardId ? prepared('SELECT id, title FROM rewards WHERE id = ? AND deletedAt IS NULL').get(s.prizeRewardId) as { id: number; title: string } | undefined : undefined;
+  const won = prizeWonIn(trail.month);
   return {
     enabled: true as const,
     trail: { month: trail.month, world: trail.world, length: trail.length, startDay: trail.startDay, endDay: `${trail.month}-${daysIn(trail.month)}`, spaces: spacesOf(trail) },
     players,
-    me: myStars ? {
-      starsLeft: Math.max(0, myStars.left), owed: Math.max(0, -myStars.left), today: myStars.today, bonusAt: 3,
-    } : null,
-    prize: { rewardId: reward?.id ?? null, rewardTitle: reward?.title ?? null, coins: s.prizeCoins, kidsOnly: s.prizeKidsOnly },
+    me: myStars ? { starsLeft: Math.max(0, myStars.left), today: myStars.today, bonusAt: 3 } : null,
+    prize: {
+      rewardId: reward?.id ?? null, rewardTitle: reward?.title ?? null, coins: s.prizeCoins, kidsOnly: s.prizeKidsOnly,
+      // Once someone has won it, the sign at the finish says who (and what they won)
+      won: won ? { userId: won.userId, displayName: won.displayName, rewardTitle: won.prize?.rewardTitle ?? null, coins: won.prize?.coins ?? 0 } : null,
+    },
     finisherCoins: s.finisherCoins, coinsPerStar: s.coinsPerStar, timeOfDay: s.timeOfDay, fog: s.fog,
     lastMonth: lastMonthFor(viewerId, trail.month),
   };
@@ -484,6 +534,18 @@ export function questState(viewerId: number, now: Date = new Date()) {
 
 const avatarOf = (u: { avatarColor: string | null; avatarType: string | null; avatarPreset: string | null; avatarPhotoUrl: string | null }) =>
   ({ avatarColor: u.avatarColor, avatarType: u.avatarType, avatarPreset: u.avatarPreset, avatarPhotoUrl: u.avatarPhotoUrl });
+
+/** Who won a month's prize, and the prize as it was won (the settings may have changed since) */
+function prizeWonIn(month: string): { userId: number; displayName: string; prize: { rewardTitle: string | null; coins: number } | null } | null {
+  const winner = prepared('SELECT q.userId, u.displayName FROM quest_players q JOIN users u ON u.id = q.userId WHERE q.month = ? AND q.prizeWon = 1')
+    .get(month) as { userId: number; displayName: string } | undefined;
+  if (!winner) return null;
+  for (const r of prepared('SELECT events FROM quest_rolls WHERE month = ? AND userId = ? ORDER BY id DESC').all(month, winner.userId) as { events: string }[]) {
+    const fin = (JSON.parse(r.events) as QuestEvent[]).find((e) => e.t === 'finish') as Extract<QuestEvent, { t: 'finish' }> | undefined;
+    if (fin?.prize) return { ...winner, prize: { rewardTitle: fin.prize.rewardTitle, coins: fin.prize.coins } };
+  }
+  return { ...winner, prize: null };
+}
 
 /** Last month's results, until the viewer has seen the end-of-month screen. */
 function lastMonthFor(viewerId: number, month: string) {
@@ -493,16 +555,8 @@ function lastMonthFor(viewerId: number, month: string) {
   if (!me || me.endSeenAt) return null;
   const rows = prepared(`SELECT q.userId, u.displayName, u.role, u.avatarColor, u.avatarType, u.avatarPreset, u.avatarPhotoUrl, q.position, q.place, q.finishedAt, q.prizeWon FROM quest_players q
       JOIN users u ON u.id = q.userId WHERE q.month = ? ORDER BY q.place IS NULL, q.place, q.position DESC, u.displayName`).all(prev.month) as any[];
-  // The prize as it was won (the settings may have changed since), the viewer's coins and their badges this year
-  const winner = rows.find((r) => r.prizeWon);
-  let prize: { rewardTitle: string | null; coins: number } | null = null;
-  if (winner) {
-    const rolls = prepared('SELECT events FROM quest_rolls WHERE month = ? AND userId = ? ORDER BY id DESC').all(prev.month, winner.userId) as { events: string }[];
-    for (const r of rolls) {
-      const fin = (JSON.parse(r.events) as QuestEvent[]).find((e) => e.t === 'finish') as Extract<QuestEvent, { t: 'finish' }> | undefined;
-      if (fin?.prize) { prize = { rewardTitle: fin.prize.rewardTitle, coins: fin.prize.coins }; break; }
-    }
-  }
+  // The prize as it was won, the viewer's coins and their badges this year
+  const prize = prizeWonIn(prev.month)?.prize ?? null;
   const myCoins = (prepared('SELECT COALESCE(SUM(coins), 0) AS n FROM quest_rolls WHERE month = ? AND userId = ?').get(prev.month, viewerId) as { n: number }).n;
   const badges = (prepared("SELECT month FROM quest_players WHERE userId = ? AND finishedAt IS NOT NULL AND month LIKE ? ORDER BY month")
     .all(viewerId, `${prev.month.slice(0, 4)}-%`) as { month: string }[]).map((r) => r.month);

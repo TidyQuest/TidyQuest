@@ -404,11 +404,11 @@ export const GUIDE_FR: GuideSection[] = [
       { where: 'Aujourd’hui → la carte Sentier des quêtes et sa carte du monde (parents : Paramètres → Sentier des quêtes)' },
       { p: 'Un jeu de plateau auquel toute la famille joue pendant un mois. Tous ceux qui ont « Participe aux tâches » activé jouent, parents compris. Chaque mois a son propre monde, du Sommet Enneigé en janvier au Village d’Hiver en décembre, et le 1er tout le monde repart du Départ. Le haut et le bas de chaque carte se fondent dans le mois d’avant et celui d’après.' },
       { ul: [
-        '**Étoiles :** 1 étoile pour chaque jour où tu fais une tâche, et une étoile bonus quand tu en fais 3 ou plus ce jour-là (2 par jour au maximum). Chaque tâche compte une fois par jour. Une tâche qui attend l’accord d’un parent donne son étoile une fois approuvée, pour le jour où elle a été faite.',
+        '**Étoiles :** 1 étoile pour chaque jour où tu fais une tâche, et une étoile bonus quand tu en fais 3 ou plus ce jour-là (2 par jour au maximum). Chaque tâche compte une fois par jour. Une tâche qui attend l’accord d’un parent donne son étoile une fois approuvée, pour le jour où elle a été faite (la carte Sentier des quêtes montre ⏳ pour celles qui attendent). Chaque lancer garde les étoiles gagnées jusque-là : un « Fait » annulé ensuite ne reprend rien.',
         '**Lancer :** chaque étoile est un lancer de dé, quand tu veux. Les cases pièces rapportent +1 à +3 pièces, les raccourcis te font avancer, les glissades te font reculer de quelques cases, une carte de tâche donne une étoile en plus si tu fais une tâche aujourd’hui, et une friandise offre un accessoire à la mascotte de la famille.',
         '**Tape-m’en cinq :** tomber sur la case de quelqu’un vous donne une pièce chacun. Aucune case ne peut nuire à un autre joueur.',
-        '**L’arrivée :** le premier arrivé gagne le prix choisi par un parent. Tous ceux qui arrivent reçoivent les pièces d’arrivée et le badge du mois, et chaque étoile ensuite se transforme en pièces.',
-        '**Fin du mois :** les étoiles que personne n’a lancées sont lancées à minuit le dernier jour. La prochaine fois que tu ouvres l’appli, tu vois qui a gagné et la nouvelle carte.',
+        '**L’arrivée :** le premier arrivé gagne le prix choisi par un parent, et le panneau de l’arrivée montre ensuite qui l’a gagné. Tous ceux qui arrivent reçoivent les pièces d’arrivée et le badge du mois, et chaque étoile ensuite se transforme en pièces.',
+        '**Fin du mois :** les étoiles que personne n’a lancées sont lancées à minuit le dernier jour, un lancer chacun à tour de rôle, dans un ordre au hasard. La prochaine fois que tu ouvres l’appli, tu vois qui a gagné et la nouvelle carte.',
         '**Alertes :** « Plus que 3 jours » arrive le soir, deux jours avant la fin du mois, et les résultats arrivent avec la liste du matin le 1er. Ce sont des Coups de pouce et des Résumés dans **Paramètres → Notifications**, et elles attendent la fin des heures calmes.',
       ] },
       { p: '**En Mode enfant :** la carte sur Aujourd’hui a un grand bouton **Lancer !** qui lance le dé sur place, avec **Voir la carte** en dessous. Chaque lancer montre une image et quelques mots (« +2 pièces ! »), et les deux étoiles du jour se remplissent au fil des tâches.' },
@@ -416,8 +416,8 @@ export const GUIDE_FR: GuideSection[] = [
       { where: 'Paramètres → Sentier des quêtes' },
       { ul: [
         '**Jouer au Sentier des quêtes** active ou désactive le jeu pour la famille (aussi dans **Paramètres → Fonctionnalités**).',
-        '**Donner une étoile :** +1 ⭐ à côté de quelqu’un lui donne un lancer en plus, pour une bonne action que l’appli ne voit pas.',
-        '**Prix :** une récompense, des pièces, ou les deux, pour le premier à l’arrivée. Rien n’est prévu tant que tu ne l’as pas choisi. **Prix réservé aux enfants** le donne au premier enfant arrivé. Aussi : des pièces pour chaque personne qui arrive, et des pièces par étoile après l’arrivée (2 par défaut).',
+        '**Donner une étoile :** +1 ⭐ à côté de quelqu’un lui donne un lancer en plus, pour une bonne action que l’appli ne voit pas. **🎲 Lancer** à côté de quelqu’un qui a des étoiles ouvre la carte et lance ses étoiles avec cette personne, pour quelqu’un qui ne se connecte pas : son pion avance sous ses yeux.',
+        '**Prix :** une récompense (une récompense masquée dans la boutique marche aussi, comme prix rien que pour le Sentier des quêtes), des pièces, ou les deux, pour le premier à l’arrivée. Rien n’est prévu tant que tu ne l’as pas choisi. **Prix réservé aux enfants** le donne au premier enfant arrivé. Aussi : des pièces pour chaque personne qui arrive, et des pièces par étoile après l’arrivée (2 par défaut).',
         '**Longueur du sentier :** Automatique commence à 80 cases et s’ajuste chaque mois (de 60 à 100) ; Fixe va de 40 à 120. Un changement compte à partir du mois prochain. Quelqu’un qui commence à jouer en cours de mois part de la même case que le dernier.',
         '**La carte :** le moment de la journée (Jour, Coucher de soleil ou Nuit), et Brouillard sur le sentier inexploré (les pièces, cartes de tâche, friandises, raccourcis et glissades restent visibles).',
       ] },
@@ -552,8 +552,8 @@ export const GUIDE_FR: GuideSection[] = [
         ] },
         { q: 'J’ai fait une tâche mais je n’ai pas eu d’étoile', a: [
           'Tu as au plus 2 étoiles par jour : une pour la première tâche et un bonus à la troisième. Les tâches suivantes ce jour-là n’en donnent pas plus.',
-          'Une tâche qui attend l’accord d’un parent donne son étoile une fois approuvée.',
-          'Un « Fait » annulé reprend l’étoile que ce jour ne rapporte plus. Si elle a déjà été lancée, ta prochaine étoile la rembourse.',
+          'Une tâche qui attend l’accord d’un parent donne son étoile une fois approuvée. La carte Sentier des quêtes montre ⏳ avec le nombre en attente.',
+          'Un « Fait » annulé avant ton prochain lancer reprend son étoile. Une fois que tu as lancé, les étoiles que tu avais restent à toi, et rien n’est repris sur les étoiles suivantes.',
           'Seules les personnes avec « Participe aux tâches » activé jouent (**Paramètres → Membres de la famille**).',
         ] },
         { q: 'La carte Sentier des quêtes n’est pas sur Aujourd’hui', a: [

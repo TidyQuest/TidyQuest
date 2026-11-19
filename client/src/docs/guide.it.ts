@@ -404,11 +404,11 @@ export const GUIDE_IT: GuideSection[] = [
       { where: 'Oggi → la scheda Sentiero delle avventure e la sua mappa (genitori: Impostazioni → Sentiero delle avventure)' },
       { p: 'Un gioco da tavolo a cui tutta la famiglia gioca per un mese. Gioca chiunque abbia «Partecipa alle attività» attivo, genitori compresi. Ogni mese ha il suo mondo, dalla Vetta Innevata a gennaio al Villaggio d’Inverno a dicembre, e il 1° tutti ripartono dalla Partenza. La parte alta e quella bassa di ogni mappa sfumano nel mese prima e in quello dopo.' },
       { ul: [
-        '**Stelle:** 1 stella per ogni giorno in cui svolgi un’attività, e una stella bonus quando ne svolgi 3 o più quel giorno (al massimo 2 al giorno). Ogni attività conta una volta al giorno. Un’attività in attesa dell’approvazione di un genitore dà la sua stella quando viene approvata, per il giorno in cui è stata svolta.',
+        '**Stelle:** 1 stella per ogni giorno in cui svolgi un’attività, e una stella bonus quando ne svolgi 3 o più quel giorno (al massimo 2 al giorno). Ogni attività conta una volta al giorno. Un’attività in attesa dell’approvazione di un genitore dà la sua stella quando viene approvata, per il giorno in cui è stata svolta (la scheda Sentiero delle avventure mostra ⏳ per quelle in attesa). Ogni tiro conserva le stelle guadagnate fin lì: un Fatto annullato dopo non toglie niente.',
         '**Tirare:** ogni stella è un tiro di dado, quando vuoi. Le caselle monete danno da +1 a +3 monete, le scorciatoie ti fanno avanzare, gli scivoli ti fanno tornare indietro di qualche casella, una carta attività dà una stella in più se svolgi un’attività oggi, e un premietto regala un accessorio alla mascotte di famiglia.',
         '**Batti cinque:** finire sulla casella di qualcuno dà una moneta a entrambi. Nessuna casella può danneggiare un altro giocatore.',
-        '**Il traguardo:** chi arriva per primo vince il premio scelto da un genitore. Chi arriva riceve le monete del traguardo e il distintivo del mese, e ogni stella dopo diventa monete.',
-        '**Fine del mese:** le stelle che nessuno ha tirato vengono tirate per loro a mezzanotte dell’ultimo giorno. La prossima volta che apri l’app vedi chi ha vinto e la nuova mappa.',
+        '**Il traguardo:** chi arriva per primo vince il premio scelto da un genitore, e il cartello al traguardo mostra poi chi l’ha vinto. Chi arriva riceve le monete del traguardo e il distintivo del mese, e ogni stella dopo diventa monete.',
+        '**Fine del mese:** le stelle che nessuno ha tirato vengono tirate per loro a mezzanotte dell’ultimo giorno, un tiro a testa a turno, in ordine casuale. La prossima volta che apri l’app vedi chi ha vinto e la nuova mappa.',
         '**Avvisi:** «Mancano 3 giorni» arriva la sera, due giorni prima della fine del mese, e i risultati arrivano con la lista del mattino il 1°. Sono Spintarelle e Riepiloghi in **Impostazioni → Notifiche**, e aspettano la fine delle ore di silenzio.',
       ] },
       { p: '**In Modalità bambino:** la scheda in Oggi ha un grande pulsante **Tira!** che tira il dado lì, con **Vedi la mappa** sotto. Ogni tiro mostra un’immagine e poche parole («+2 monete!»), e le due stelle di oggi si riempiono con le attività.' },
@@ -416,8 +416,8 @@ export const GUIDE_IT: GuideSection[] = [
       { where: 'Impostazioni → Sentiero delle avventure' },
       { ul: [
         '**Gioca al Sentiero delle avventure** accende o spegne il gioco per la famiglia (anche in **Impostazioni → Funzioni**).',
-        '**Dai una stella:** +1 ⭐ accanto a qualcuno gli dà un tiro in più, per una buona azione che l’app non vede.',
-        '**Premio:** una ricompensa, monete o entrambe, per il primo al traguardo. Non c’è nessun premio finché non lo scegli. **Premio solo per i bambini** lo dà al primo bambino che arriva. Inoltre: monete per chi arriva al traguardo, e monete per stella dopo il traguardo (2 di base).',
+        '**Dai una stella:** +1 ⭐ accanto a qualcuno gli dà un tiro in più, per una buona azione che l’app non vede. **🎲 Tira** accanto a qualcuno con delle stelle apre la mappa e tira le sue stelle insieme a questa persona, per chi non accede: la pedina avanza mentre guarda.',
+        '**Premio:** una ricompensa (va bene anche una nascosta nel negozio, come premio solo per il Sentiero delle avventure), monete o entrambe, per il primo al traguardo. Non c’è nessun premio finché non lo scegli. **Premio solo per i bambini** lo dà al primo bambino che arriva. Inoltre: monete per chi arriva al traguardo, e monete per stella dopo il traguardo (2 di base).',
         '**Lunghezza del sentiero:** Automatica parte da 80 caselle e si adatta ogni mese (da 60 a 100); Fissa va da 40 a 120. Una modifica vale dal mese prossimo. Chi inizia a giocare a metà mese parte dalla stessa casella dell’ultimo.',
         '**La mappa:** il momento della giornata (Giorno, Tramonto o Notte) e Nebbia sul sentiero inesplorato (monete, carte attività, premietti, scorciatoie e scivoli restano visibili).',
       ] },
@@ -552,8 +552,8 @@ export const GUIDE_IT: GuideSection[] = [
         ] },
         { q: 'Ho svolto un’attività ma non ho ricevuto la stella', a: [
           'Ricevi al massimo 2 stelle al giorno: una per la prima attività e un bonus alla terza. Altre attività quel giorno non danno altre stelle.',
-          'Un’attività in attesa dell’approvazione di un genitore dà la sua stella quando viene approvata.',
-          'Un Fatto annullato toglie la stella che quel giorno non guadagna più. Se era già stata tirata, la tua prossima stella la ripaga.',
+          'Un’attività in attesa dell’approvazione di un genitore dà la sua stella quando viene approvata. La scheda Sentiero delle avventure mostra ⏳ con quante sono in attesa.',
+          'Un Fatto annullato prima del tuo prossimo tiro si porta via la sua stella. Dopo un tiro, le stelle che avevi restano tue, e non viene tolto niente dalle stelle successive.',
           'Giocano solo le persone con «Partecipa alle attività» attivo (**Impostazioni → Membri della famiglia**).',
         ] },
         { q: 'La scheda Sentiero delle avventure non c’è in Oggi', a: [

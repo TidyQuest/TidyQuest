@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { api } from '../../hooks/useApi';
 import { useTranslation } from '../../hooks/useTranslation';
 import { UserAvatar } from '../shared/UserAvatar';
@@ -12,6 +12,7 @@ import type { QuestState } from '../quest/types';
 /**
  * Quest Trail's map page (NEW-40): the month's adventure map with everyone's piece, the die at the bottom, and a
  * card saying what each roll did. The die is rolled on the server; the page only walks the piece to where it landed.
+ * A parent can roll for someone who doesn't sign in: Settings → Quest Trail → Roll opens /quest?for=<their id>.
  */
 
 interface Props {
@@ -21,6 +22,8 @@ interface Props {
   onCoinsChanged: () => void;
   /** Kid mode: results are a big picture and two or three words, and the small hints go */
   kidMode?: boolean;
+  /** Parents can roll for someone else (?for=<userId>) */
+  isAdmin?: boolean;
 }
 
 const sleep = (ms: number) => new Promise<void>((r) => { window.setTimeout(r, ms); });
@@ -36,9 +39,10 @@ function follow(userId: number, smooth: boolean) {
   window.scrollTo({ top: Math.max(0, top), behavior: smooth && !calm() ? 'smooth' : 'auto' });
 }
 
-const QuestTrail: React.FC<Props> = ({ userId, language, coins, onCoinsChanged, kidMode }) => {
+const QuestTrail: React.FC<Props> = ({ userId, language, coins, onCoinsChanged, kidMode, isAdmin }) => {
   const { t } = useTranslation(language);
   const navigate = useNavigate();
+  const [search] = useSearchParams();
   const [state, setState] = useState<QuestState | null>(null);
   const [failed, setFailed] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -67,30 +71,37 @@ const QuestTrail: React.FC<Props> = ({ userId, language, coins, onCoinsChanged, 
     return () => ro.disconnect();
   }, []);
 
-  // Open on your own piece (or the leader's when you're watching)
+  const me = state?.players.find((p) => p.userId === userId) ?? null;
+  // Whose die it is: yours, or (a parent's) someone else's from Settings → Quest Trail → Roll
+  const forId = Number(search.get('for'));
+  const other = isAdmin && forId && forId !== userId ? state?.players.find((p) => p.userId === forId) ?? null : null;
+  const turnOf = other ?? me;
+  const turnId = turnOf?.userId ?? null;
+  const activePos = walkPos ?? turnOf?.position ?? 0;
+  const posOf = (p: { userId: number; position: number }) => (p.userId === turnId ? activePos : p.position);
+  const texts = useMemo(() => (state ? mapTexts(t, language, state, userId, me?.position ?? 0) : null), [state, t, language, userId, me?.position]);
+
+  // Open on the piece whose turn it is (or the leader's when you're watching)
   useEffect(() => {
     if (!state || scrolled.current) return;
     scrolled.current = true;
     const lead = [...state.players].sort((a, b) => b.position - a.position)[0];
-    const who = state.players.some((p) => p.userId === userId) ? userId : lead?.userId;
+    const who = turnId ?? lead?.userId;
     if (who != null) requestAnimationFrame(() => follow(who, false));
-  }, [state, userId]);
-
-  const me = state?.players.find((p) => p.userId === userId) ?? null;
-  const myPos = walkPos ?? me?.position ?? 0;
-  const texts = useMemo(() => (state ? mapTexts(t, language, state, userId, me?.position ?? 0) : null), [state, t, language, userId, me?.position]);
+  }, [state, turnId]);
 
   const roll = async () => {
-    if (!state || !me || busy || !state.me || state.me.starsLeft < 1) return;
+    if (!state || !turnOf || busy || turnOf.starsLeft < 1) return;
+    const who = turnOf.userId;
     setBusy(true);
     setResult(null);
     setShowKey(false);
-    setWalkPos(me.position);
-    follow(userId, true);
+    setWalkPos(turnOf.position);
+    follow(who, true);
     const tumble = window.setInterval(() => setFace(1 + Math.floor(Math.random() * 6)), 75);
     let turn;
     try {
-      [turn] = await Promise.all([api.questRoll(), sleep(calm() ? 0 : 600)]);
+      [turn] = await Promise.all([api.questRoll(other ? who : undefined), sleep(calm() ? 0 : 600)]);
     } catch {
       window.clearInterval(tumble);
       setWalkPos(null);
@@ -107,7 +118,7 @@ const QuestTrail: React.FC<Props> = ({ userId, language, coins, onCoinsChanged, 
       if (move && move.t === 'move') {
         for (let p = move.from + 1; p <= move.to; p++) {
           setWalkPos(p);
-          window.setTimeout(() => follow(userId, true), 40);
+          window.setTimeout(() => follow(who, true), 40);
           await sleep(step);
         }
       }
@@ -122,7 +133,7 @@ const QuestTrail: React.FC<Props> = ({ userId, language, coins, onCoinsChanged, 
         }
         setJump(null);
         setWalkPos(link.to);
-        window.setTimeout(() => follow(userId, true), 60);
+        window.setTimeout(() => follow(who, true), 60);
       }
     }
     const names = new Map(state.players.map((p) => [p.userId, p.displayName]));
@@ -130,28 +141,33 @@ const QuestTrail: React.FC<Props> = ({ userId, language, coins, onCoinsChanged, 
     await load();
     setWalkPos(null);
     setBusy(false);
-    if (turn.coins > 0) onCoinsChanged();
+    // Your coins (a high five pays you too when you roll for someone)
+    if (turn.coins > 0 || other) onCoinsChanged();
   };
+  // Back to where you came from, or Today when the page was opened by itself (nothing to go back to)
+  const back = () => { if ((window.history.state?.idx ?? 0) > 0) navigate(-1); else navigate('/'); };
 
   if (failed && !state) return <div className="tq-card tq-card-padded" role="alert">{t('quest.loadFailed')}</div>;
   if (!state || !texts) return <div className="quest-page-loading" aria-busy="true" />;
 
   const world = state.trail.world, T = THEMES[world];
   const left = daysLeft(state.trail.endDay);
-  const stars = state.me?.starsLeft ?? 0;
-  const finished = !!me?.finishedAt;
-  const canRoll = !!me && !busy && stars > 0;
+  const stars = turnOf?.starsLeft ?? 0;
+  const finished = !!turnOf?.finishedAt;
+  const canRoll = !!turnOf && !busy && stars > 0;
+  const waiting = !other && stars === 0 && (state.me?.today.pending ?? 0) > 0;
   const sorted = [...state.players].sort((a, b) => (a.place ?? 99) - (b.place ?? 99) || b.position - a.position);
   const len = state.trail.length;
   const rollLabel = busy ? t('quest.rolling') : finished ? (stars > 0 ? fill(t('quest.cashIn'), { n: state.coinsPerStar }) : t('quest.finished')) : stars > 0 ? t('quest.roll') : t('quest.noStars');
-  const hint = finished ? fill(t('quest.hintFinished'), { n: state.coinsPerStar }) : stars > 0 ? t('quest.hintRoll') : t('quest.hintEarn');
+  const hint = finished ? fill(t('quest.hintFinished'), { n: state.coinsPerStar }) : stars > 0 ? t('quest.hintRoll') : t(waiting ? 'quest.hintWaiting' : 'quest.hintEarn');
+  const myPos = me ? posOf(me) : 0;
   const tile = result ? META[result.kind === 'finish' ? 'start' : result.kind] : null;
 
   return (
     <div className="quest-page">
       <header className="quest-head">
         <div className="quest-head-row">
-          <button type="button" className="quest-icon-btn" aria-label={t('quest.back')} onClick={() => navigate(-1)}>
+          <button type="button" className="quest-icon-btn" aria-label={t('quest.back')} onClick={back}>
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6" /></svg>
           </button>
           <div className="quest-head-title">
@@ -169,7 +185,7 @@ const QuestTrail: React.FC<Props> = ({ userId, language, coins, onCoinsChanged, 
               aria-label={fill(t('quest.chipAria'), { place: i + 1, name: p.displayName, pos: p.position })}>
               <UserAvatar userId={p.userId} name={p.displayName} color={p.avatarColor || '#6B5A4B'} size={26}
                 avatarType={p.avatarType ?? undefined} avatarPreset={p.avatarPreset} avatarPhotoUrl={p.avatarPhotoUrl} />
-              {p.finishedAt ? '🏁' : (p.userId === userId ? myPos : p.position)}
+              {p.finishedAt ? '🏁' : posOf(p)}
             </button>
           ))}
         </nav>
@@ -206,7 +222,7 @@ const QuestTrail: React.FC<Props> = ({ userId, language, coins, onCoinsChanged, 
             <span className="quest-rail-track" />
             <span className="quest-rail-done" style={{ height: `${(100 * myPos) / len}%` }} />
             {state.players.map((p) => {
-              const mine = p.userId === userId, pos = mine ? myPos : p.position;
+              const mine = p.userId === userId, pos = posOf(p);
               return (
                 <button key={p.userId} type="button" tabIndex={-1} className={`quest-rail-dot${mine ? ' you' : ''}`} style={{ top: `${(100 * pos) / len}%` }} onClick={() => follow(p.userId, true)}>
                   <UserAvatar name={p.displayName} color={p.avatarColor || '#6B5A4B'} size={mine ? 22 : 16} avatarType={p.avatarType ?? undefined} avatarPreset={p.avatarPreset} avatarPhotoUrl={p.avatarPhotoUrl} />
@@ -217,7 +233,7 @@ const QuestTrail: React.FC<Props> = ({ userId, language, coins, onCoinsChanged, 
         </div>
         <div className="quest-map" style={{ zoom }}>
           <TrailMap world={world} month={state.trail.month} length={len} spaces={state.trail.spaces} players={state.players} meId={me ? userId : null}
-            myPos={myPos} jump={jump} reach={canRoll && !finished} timeOfDay={state.timeOfDay} fog={state.fog} texts={texts} />
+            activeId={turnId} activePos={activePos} jump={jump} reach={canRoll && !finished} timeOfDay={state.timeOfDay} fog={state.fog} texts={texts} />
         </div>
       </div>
 
@@ -236,7 +252,17 @@ const QuestTrail: React.FC<Props> = ({ userId, language, coins, onCoinsChanged, 
             </button>
           </div>
         )}
-        {me ? (
+        {other && (
+          <div className="quest-for tq-card">
+            <UserAvatar userId={other.userId} name={other.displayName} color={other.avatarColor || '#6B5A4B'} size={26}
+              avatarType={other.avatarType ?? undefined} avatarPreset={other.avatarPreset} avatarPhotoUrl={other.avatarPhotoUrl} />
+            <b>{fill(t('quest.rollingFor'), { name: other.displayName })}</b>
+            <button type="button" className="quest-icon-btn" aria-label={t('quest.backToMine')} disabled={busy} onClick={() => navigate('/quest', { replace: true })}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" /></svg>
+            </button>
+          </div>
+        )}
+        {turnOf ? (
           <div className="quest-diebar tq-card">
             <div className={`quest-die${busy ? ' busy' : ''}`} role="img" aria-label={fill(t('quest.dieAria'), { n: face })}>
               {Array.from({ length: 9 }, (_, n) => <span key={n} className={(FACES[face] ?? []).includes(n) ? 'on' : ''} />)}

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { api, type QuestPlayers, type QuestSettings } from '../../hooks/useApi';
 import { useTranslation } from '../../hooks/useTranslation';
 import { serverErrorText } from '../../utils/serverError';
@@ -27,22 +28,25 @@ function NumberBox({ value, min, max, onSave, ariaLabel, width = 80 }: { value: 
 }
 
 /**
- * Settings → Quest Trail (NEW-40): on/off, a star by hand, the first-place prize, finisher coins, coins per star
- * after the finish, the trail's length, and the map's look. Each change saves straight away.
+ * Settings → Quest Trail (NEW-40): on/off, a star by hand, rolling for someone (on the map), the first-place prize,
+ * finisher coins, coins per star after the finish, the trail's length, and the map's look. Each change saves straight away.
  */
-export function QuestTrailAdmin({ language, onChanged }: { language?: string; onChanged?: () => void }) {
+export function QuestTrailAdmin({ language, userId, onChanged }: { language?: string; userId?: number; onChanged?: () => void }) {
   const { t } = useTranslation(language);
+  const navigate = useNavigate();
   const [on, setOn] = useState<boolean | null>(null);
   const [s, setS] = useState<QuestSettings | null>(null);
   const [state, setState] = useState<QuestPlayers | null>(null);
-  const [rewards, setRewards] = useState<Array<{ id: number; title: string }>>([]);
+  const [rewards, setRewards] = useState<Array<{ id: number; title: string; hidden: boolean }>>([]);
   const [message, setMessage] = useState('');
 
   const loadGame = () => api.questPlayers().then(setState).catch(() => {});
   useEffect(() => {
     api.getFeatures().then((f) => setOn(f.features.questTrail !== false)).catch(() => {});
     api.questSettings().then(setS).catch(() => {});
-    api.getRewardsAdmin().then((r) => setRewards(((r.rewards ?? []) as Array<{ id: number; title: string; deletedAt?: string | null }>).filter((x) => !x.deletedAt).map((x) => ({ id: x.id, title: x.title })))).catch(() => {});
+    // Rewards hidden from the shop can be the prize too (one kept just for the Quest Trail)
+    api.getRewardsAdmin().then((r) => setRewards(((r.rewards ?? []) as Array<{ id: number; title: string; isActive?: number | boolean; deletedAt?: string | null }>)
+      .filter((x) => !x.deletedAt).map((x) => ({ id: x.id, title: x.title, hidden: !x.isActive })))).catch(() => {});
     loadGame();
   }, []);
 
@@ -80,7 +84,7 @@ export function QuestTrailAdmin({ language, onChanged }: { language?: string; on
         <>
           <div style={box}>
             <div style={heading}>⭐ {t('questAdmin.giveTitle')}</div>
-            <div style={hint}>{t('questAdmin.giveDesc')}</div>
+            <div style={hint}>{t('questAdmin.giveDesc')} {t('questAdmin.rollDesc')}</div>
             {game && game.players.length === 0 && <div style={hint}>{t('questAdmin.noPlayers')}</div>}
             {game?.players.map((p) => (
               <div key={p.userId} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -90,6 +94,9 @@ export function QuestTrailAdmin({ language, onChanged }: { language?: string; on
                     {p.finishedAt ? t('questAdmin.finished') : `${p.position}/${game.trail.length}`} · {t('questAdmin.starsLeft').replace('{n}', String(p.starsLeft))}
                   </span>
                 </div>
+                {p.userId !== userId && p.starsLeft > 0 && (
+                  <button className="tq-btn tq-btn-secondary tq-btn-sm" onClick={() => navigate(`/quest?for=${p.userId}`)}>{t('questAdmin.roll')}</button>
+                )}
                 <button className="tq-btn tq-btn-secondary tq-btn-sm" onClick={() => give(p.userId, p.displayName)}>{t('questAdmin.give')}</button>
               </div>
             ))}
@@ -104,7 +111,7 @@ export function QuestTrailAdmin({ language, onChanged }: { language?: string; on
                 onChange={(e) => save({ prizeRewardId: e.target.value ? Number(e.target.value) : null })}>
                 <option value="">{t('questAdmin.prizeNoReward')}</option>
                 {prizeMissing && <option value={s.prizeRewardId!}>#{s.prizeRewardId}</option>}
-                {rewards.map((r) => <option key={r.id} value={r.id}>{r.title}</option>)}
+                {rewards.map((r) => <option key={r.id} value={r.id}>{r.hidden ? t('questAdmin.hiddenReward').replace('{title}', r.title) : r.title}</option>)}
               </select>
             </label>
             <label style={label}>

@@ -404,11 +404,11 @@ export const GUIDE_ES: GuideSection[] = [
       { where: 'Hoy → la tarjeta Sendero de aventuras y su mapa (padres: Ajustes → Sendero de aventuras)' },
       { p: 'Un juego de mesa al que juega toda la familia durante un mes. Juegan todos los que tienen «Participa en tareas» activado, padres incluidos. Cada mes tiene su propio mundo, de la Cumbre Nevada en enero al Pueblo de Invierno en diciembre, y el día 1 todos vuelven a empezar en la Salida. La parte de arriba y la de abajo de cada mapa se funden con el mes anterior y el siguiente.' },
       { ul: [
-        '**Estrellas:** 1 estrella por cada día en que haces una tarea, y una estrella extra cuando haces 3 o más ese día (2 al día como máximo). Cada tarea cuenta una vez al día. Una tarea que espera la aprobación de un padre da su estrella cuando se aprueba, para el día en que se hizo.',
+        '**Estrellas:** 1 estrella por cada día en que haces una tarea, y una estrella extra cuando haces 3 o más ese día (2 al día como máximo). Cada tarea cuenta una vez al día. Una tarea que espera la aprobación de un padre da su estrella cuando se aprueba, para el día en que se hizo (la tarjeta Sendero de aventuras muestra ⏳ para las que esperan). Cada tirada guarda las estrellas ganadas hasta entonces: deshacer un Hecho después no quita nada.',
         '**Tirar:** cada estrella es una tirada del dado, cuando quieras. Las casillas de monedas dan de +1 a +3 monedas, los atajos te hacen avanzar, los toboganes te hacen retroceder unas casillas, una carta de tarea da una estrella extra si haces una tarea hoy, y una golosina regala un accesorio a la mascota de la familia.',
         '**Choca esos cinco:** caer en la casilla de alguien os da una moneda a cada uno. Ninguna casilla puede perjudicar a otro jugador.',
-        '**La meta:** el primero en llegar gana el premio que eligió un padre. Todos los que llegan reciben las monedas de llegada y la insignia del mes, y cada estrella después se convierte en monedas.',
-        '**Fin de mes:** las estrellas que nadie tiró se tiran por ellos a medianoche del último día. La próxima vez que abras la app verás quién ganó y el mapa nuevo.',
+        '**La meta:** el primero en llegar gana el premio que eligió un padre, y el cartel de la meta muestra después quién lo ganó. Todos los que llegan reciben las monedas de llegada y la insignia del mes, y cada estrella después se convierte en monedas.',
+        '**Fin de mes:** las estrellas que nadie tiró se tiran por ellos a medianoche del último día, una tirada cada uno por turnos, en orden aleatorio. La próxima vez que abras la app verás quién ganó y el mapa nuevo.',
         '**Avisos:** «Quedan 3 días» llega por la tarde dos días antes de que acabe el mes, y los resultados llegan con la lista de la mañana el día 1. Son Avisos y Resúmenes en **Ajustes → Notificaciones**, y esperan a que acaben las horas de silencio.',
       ] },
       { p: '**En Modo niño:** la tarjeta de Hoy tiene un botón grande **¡Tirar!** que tira el dado ahí mismo, con **Ver el mapa** debajo. Cada tirada muestra un dibujo y unas pocas palabras («¡+2 monedas!»), y las dos estrellas de hoy se van llenando con las tareas.' },
@@ -416,8 +416,8 @@ export const GUIDE_ES: GuideSection[] = [
       { where: 'Ajustes → Sendero de aventuras' },
       { ul: [
         '**Jugar al Sendero de aventuras** activa o desactiva el juego para la familia (también en **Ajustes → Funciones**).',
-        '**Dar una estrella:** +1 ⭐ junto a alguien le da una tirada extra, por una buena acción que la app no ve.',
-        '**Premio:** una recompensa, monedas o las dos cosas, para el primero en llegar a la meta. No hay ninguno hasta que lo elijas. **Premio solo para niños** se lo da al primer niño en llegar. Además: monedas para todos los que llegan a la meta, y monedas por estrella después de la meta (2 por defecto).',
+        '**Dar una estrella:** +1 ⭐ junto a alguien le da una tirada extra, por una buena acción que la app no ve. **🎲 Tirar** junto a alguien con estrellas abre el mapa y tira sus estrellas con esa persona, para quien no inicia sesión: su ficha avanza mientras mira.',
+        '**Premio:** una recompensa (también sirve una oculta en la tienda, como premio solo para el Sendero de aventuras), monedas o las dos cosas, para el primero en llegar a la meta. No hay ninguno hasta que lo elijas. **Premio solo para niños** se lo da al primer niño en llegar. Además: monedas para todos los que llegan a la meta, y monedas por estrella después de la meta (2 por defecto).',
         '**Longitud del sendero:** Automática empieza en 80 casillas y se ajusta cada mes (de 60 a 100); Fija va de 40 a 120. Un cambio se aplica desde el mes que viene. Quien empieza a jugar a mitad de mes sale de la misma casilla que el último.',
         '**El mapa:** el momento del día (Día, Atardecer o Noche) y Niebla sobre el sendero sin explorar (las monedas, cartas de tarea, golosinas, atajos y toboganes se siguen viendo).',
       ] },
@@ -552,8 +552,8 @@ export const GUIDE_ES: GuideSection[] = [
         ] },
         { q: 'Hice una tarea pero no me dieron estrella', a: [
           'Tienes como máximo 2 estrellas al día: una por la primera tarea y una extra en la tercera. Más tareas ese día no dan más estrellas.',
-          'Una tarea que espera la aprobación de un padre da su estrella cuando se aprueba.',
-          'Un Hecho deshecho quita la estrella que ese día ya no gana. Si ya se tiró, tu siguiente estrella la devuelve.',
+          'Una tarea que espera la aprobación de un padre da su estrella cuando se aprueba. La tarjeta Sendero de aventuras muestra ⏳ con cuántas esperan.',
+          'Un Hecho deshecho antes de tu siguiente tirada se lleva su estrella. Una vez que has tirado, las estrellas que tenías siguen siendo tuyas, y no se descuenta nada de las siguientes.',
           'Solo juegan las personas con «Participa en tareas» activado (**Ajustes → Miembros de la familia**).',
         ] },
         { q: 'La tarjeta Sendero de aventuras no está en Hoy', a: [

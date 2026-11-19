@@ -2925,7 +2925,15 @@
       "villageRegion5": "Allée du Pain d'épice",
       "villageWater1": "Ruisseau Frisquet",
       "villageWater2": "Ru des Patineurs",
-      "mapOnward": "Vers {month}"
+      "mapOnward": "Vers {month}",
+      "todayWaiting": "L'étoile du jour arrive quand un adulte dit OK.",
+      "todayPending": "⏳ {n} en attente de l'OK d'un adulte",
+      "hintWaiting": "En attente de l'OK d'un adulte",
+      "cardLeaderDone": "{name} a fini",
+      "prizeWonBy": "{name} l'a gagné : {prize}",
+      "prizeWonYou": "Tu l'as gagné : {prize}",
+      "rollingFor": "Lancer pour {name}",
+      "backToMine": "Revenir à ton tour"
     },
     "doneFor": {
       "countedYours": "« {task} » compté pour toi",
@@ -2974,7 +2982,10 @@
       "night": "Nuit",
       "fog": "Brouillard sur le sentier inexploré",
       "fogDesc": "Les pièces, cartes de tâche, friandises, raccourcis et glissades restent visibles.",
-      "thisMonth": "Ce mois-ci : {length} cases"
+      "thisMonth": "Ce mois-ci : {length} cases",
+      "roll": "🎲 Lancer",
+      "rollDesc": "🎲 Lancer ouvre la carte et lance ses étoiles avec cette personne, pour quelqu'un qui ne se connecte pas.",
+      "hiddenReward": "{title} (masquée dans la boutique)"
     }
   }
 }

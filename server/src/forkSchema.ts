@@ -275,6 +275,16 @@ const NEW_TABLES: string[] = [
   )`,
   `CREATE UNIQUE INDEX IF NOT EXISTS idx_quest_stars_daily ON quest_stars(userId, day, kind) WHERE kind IN ('card', 'vacation')`,
   `CREATE INDEX IF NOT EXISTS idx_quest_stars_player ON quest_stars(month, userId)`,
+  // The stars each roll kept, by day (the chores' 0–2 and the chore card's 0–1): a Done taken back after a roll
+  // takes nothing back
+  `CREATE TABLE IF NOT EXISTS quest_kept (
+    month TEXT NOT NULL,
+    userId INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    day TEXT NOT NULL,
+    stars INTEGER NOT NULL DEFAULT 0,
+    card INTEGER NOT NULL DEFAULT 0,
+    PRIMARY KEY (month, userId, day)
+  )`,
 ];
 
 /** Columns added to existing tables (ignored when they already exist). */
@@ -439,6 +449,7 @@ export const BACKUP_TABLES: Array<{ key: string; table: string }> = [
   { key: 'questPlayers', table: 'quest_players' },
   { key: 'questRolls', table: 'quest_rolls' },
   { key: 'questStars', table: 'quest_stars' },
+  { key: 'questKept', table: 'quest_kept' },
 ];
 
 export function applyForkSchema(instance: InstanceType<typeof Database>) {

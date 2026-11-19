@@ -2,15 +2,15 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../../hooks/useApi';
 import { useTranslation } from '../../hooks/useTranslation';
-import { UserAvatar } from '../shared/UserAvatar';
 import { ICONS, META } from './trailBuild';
+import { QuestRail } from './QuestRail';
 import { fill, turnMessage, type TurnMessage } from './questText';
 import type { QuestState } from './types';
 
 /**
  * Quest Trail's Today card in kid mode (NEW-40 part 3): few words for a new reader. A big Roll button rolls right
- * here, the result is a picture and two or three words, today's progress is two big stars that fill in, and
- * "See the map" sits underneath.
+ * here, the result is a picture and two or three words, today's progress is two big stars that fill in (with a
+ * line when chores are waiting for a parent's OK), and "See the map" sits underneath.
  */
 
 interface Props {
@@ -74,17 +74,7 @@ export const KidQuestCard: React.FC<Props> = ({ state, userId, language, onRolle
           </span>
         )}
       </span>
-      <span className="quest-card-rail" aria-hidden="true">
-        <span className="quest-card-track" />
-        {me && <span className="quest-card-done" style={{ width: `${(100 * me.position) / len}%` }} />}
-        {state.players.map((p) => (
-          <span key={p.userId} className={`quest-card-dot${p.userId === userId ? ' you' : ''}`} style={{ left: `${(100 * p.position) / len}%` }}>
-            <UserAvatar name={p.displayName} color={p.avatarColor || '#6B5A4B'} size={p.userId === userId ? 24 : 16}
-              avatarType={p.avatarType ?? undefined} avatarPreset={p.avatarPreset} avatarPhotoUrl={p.avatarPhotoUrl} />
-          </span>
-        ))}
-        <span className="quest-card-finish">🏆</span>
-      </span>
+      <QuestRail players={state.players} userId={userId} length={len} youSize={24} />
       {today && !finished && (
         <span className="quest-kid-today">
           {[0, 1].map((i) => {
@@ -98,6 +88,7 @@ export const KidQuestCard: React.FC<Props> = ({ state, userId, language, onRolle
           })}
         </span>
       )}
+      {today && !finished && today.pending > 0 && <span className="quest-kid-waiting">{fill(t('quest.todayPending'), { n: today.pending })}</span>}
       {result && tile && (
         <span className="quest-kid-result" role="status">
           <span className="quest-result-tile" style={{ background: tile.bg, color: tile.fg }}>

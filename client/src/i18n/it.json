@@ -2925,7 +2925,15 @@
       "villageRegion5": "Vicolo del Pan di Zenzero",
       "villageWater1": "Ruscello Gelido",
       "villageWater2": "Torrente dei Pattinatori",
-      "mapOnward": "Verso {month}"
+      "mapOnward": "Verso {month}",
+      "todayWaiting": "La stella del giorno arriva quando un adulto dice OK.",
+      "todayPending": "⏳ {n} in attesa dell'OK di un adulto",
+      "hintWaiting": "In attesa dell'OK di un adulto",
+      "cardLeaderDone": "{name} ha finito",
+      "prizeWonBy": "{name} l'ha vinto: {prize}",
+      "prizeWonYou": "L'hai vinto tu: {prize}",
+      "rollingFor": "Tiri per {name}",
+      "backToMine": "Torna al tuo turno"
     },
     "doneFor": {
       "countedYours": "«{task}» contato come tuo",
@@ -2974,7 +2982,10 @@
       "night": "Notte",
       "fog": "Nebbia sul sentiero inesplorato",
       "fogDesc": "Monete, carte attività, premietti, scorciatoie e scivoli restano visibili.",
-      "thisMonth": "Questo mese: {length} caselle"
+      "thisMonth": "Questo mese: {length} caselle",
+      "roll": "🎲 Tira",
+      "rollDesc": "🎲 Tira apre la mappa e tira le sue stelle insieme a questa persona, per chi non accede.",
+      "hiddenReward": "{title} (nascosta nel negozio)"
     }
   }
 }

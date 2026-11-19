@@ -431,11 +431,11 @@ export const GUIDE_EN: GuideSection[] = [
       { where: 'Today → the Quest Trail card and its map (parents: Settings → Quest Trail)' },
       { p: 'A board game the whole family plays over a month. Everyone with "Participates in tasks" on plays, parents included. Each month has its own world, from the Snowy Summit in January to the Winter Village in December, and on the 1st everyone starts again at Start. The top and bottom of each map blend into the months before and after it.' },
       { ul: [
-        '**Stars:** 1 star for any day you do a chore, and a bonus star when you do 3 or more that day (2 a day at most). Each chore counts once a day. A chore waiting for a parent’s approval gives its star once it’s approved, for the day it was done.',
+        '**Stars:** 1 star for any day you do a chore, and a bonus star when you do 3 or more that day (2 a day at most). Each chore counts once a day. A chore waiting for a parent’s approval gives its star once it’s approved, for the day it was done (the Quest Trail card shows ⏳ for the ones waiting). Every roll keeps the stars you’ve earned so far: taking back a Done afterwards takes nothing back.',
         '**Rolling:** each star is one roll of the die, whenever you like. Coin spaces pay +1 to +3 coins, shortcuts jump you ahead, slides take you back a few spaces, a chore card gives an extra star for doing a chore today, and a mascot treat gives the family mascot a free accessory.',
         '**High five:** landing on someone’s space gives you both a coin. No space can hurt another player.',
-        '**The finish:** the first one there wins the prize a parent picked. Everyone who finishes gets the finisher coins and the month’s badge, and each star after that turns into coins.',
-        '**End of the month:** stars nobody rolled are rolled for them at midnight on the last day. The next time you open the app you see who won and the new map.',
+        '**The finish:** the first one there wins the prize a parent picked, and the sign at the finish then shows who won it. Everyone who finishes gets the finisher coins and the month’s badge, and each star after that turns into coins.',
+        '**End of the month:** stars nobody rolled are rolled for them at midnight on the last day, one roll each at a time in a random order. The next time you open the app you see who won and the new map.',
         '**Alerts:** "3 days left" comes in the evening two days before the month ends, and the results come with the morning list on the 1st. They are Nudges and Summaries in **Settings → Notifications**, and wait out quiet hours.',
       ] },
       { p: '**In Kid mode:** the card on Today has a big **Roll!** button that rolls right there, with **See the map** underneath. Each roll shows a picture and a few words ("+2 coins!"), and today’s two stars fill in as chores get done.' },
@@ -443,8 +443,8 @@ export const GUIDE_EN: GuideSection[] = [
       { where: 'Settings → Quest Trail' },
       { ul: [
         '**Play Quest Trail** switches the game on or off for the family (it’s also in **Settings → Features**).',
-        '**Give a star:** +1 ⭐ next to someone gives them an extra roll, for a good deed the app can’t see.',
-        '**Prize:** a reward, coins, or both, for the first to the finish. Nothing is set until you pick it. **Prize only for kids** gives it to the first kid to finish. Also: coins for everyone who finishes, and coins per star after the finish (2 by default).',
+        '**Give a star:** +1 ⭐ next to someone gives them an extra roll, for a good deed the app can’t see. **🎲 Roll** next to someone with stars opens the map and rolls their stars with them, for someone who doesn’t sign in: their piece walks while they watch.',
+        '**Prize:** a reward (one hidden in the shop works too, as a prize just for the Quest Trail), coins, or both, for the first to the finish. Nothing is set until you pick it. **Prize only for kids** gives it to the first kid to finish. Also: coins for everyone who finishes, and coins per star after the finish (2 by default).',
         '**Trail length:** Automatic starts at 80 spaces and adjusts each month (60 to 100); Fixed is 40 to 120. A change applies from next month. Someone who starts playing partway through a month begins on the same space as whoever is last.',
         '**The map:** time of day (Day, Sunset or Night), and Fog over the unexplored trail (coins, chore cards, treats, shortcuts and slides still show through).',
       ] },
@@ -579,8 +579,8 @@ export const GUIDE_EN: GuideSection[] = [
         ] },
         { q: 'I did a chore but got no Quest Trail star', a: [
           'You get at most 2 stars a day: one for the first chore and a bonus at the third. More chores that day give no more stars.',
-          'A chore waiting for a parent’s approval gives its star once it’s approved.',
-          'A Done that was taken back takes back the star that day no longer earns. If it was already rolled, your next star pays it back.',
+          'A chore waiting for a parent’s approval gives its star once it’s approved. The Quest Trail card shows ⏳ with how many are waiting.',
+          'A Done taken back before your next roll takes its star with it. Once you’ve rolled, the stars you had stay yours, and nothing comes off later stars.',
           'Only people with "Participates in tasks" on play (**Settings → Family Members**).',
         ] },
         { q: 'The Quest Trail card isn’t on Today', a: [

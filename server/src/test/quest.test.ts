@@ -3,7 +3,7 @@ import { createTestApp, createAdmin, createUser, homeToday } from './setup';
 import type supertest from 'supertest';
 import type Database from 'better-sqlite3';
 import { at, dateStr } from '../utils/clock';
-import { closeTrail, ensureTrail, layoutFor, questState, saveQuestSettings, setQuestDie, starsFor, takeTurn, WORLDS, worldFor, type Trail } from '../utils/quest';
+import { closeTrail, ensureTrail, layoutFor, questState, saveQuestSettings, setQuestDie, setQuestOrder, starsFor, takeTurn, WORLDS, worldFor, type Trail } from '../utils/quest';
 
 // Quest Trail (NEW-40). Most tests play a month in 2030 on its own clock, so they don't depend on today's date.
 let agent: supertest.Agent;
@@ -12,7 +12,7 @@ let db: InstanceType<typeof Database>;
 beforeEach(() => {
   ({ agent, db } = createTestApp());
 });
-afterEach(() => setQuestDie());
+afterEach(() => { setQuestDie(); setQuestOrder(); });
 
 const auth = (token: string) => ({ Authorization: `Bearer ${token}` });
 /** A moment in March 2030 on the family's clock */
@@ -72,22 +72,34 @@ describe('Quest Trail: stars', () => {
     expect(stars(id, march(4, 20)).earned).toBe(3);
   });
 
-  it('counts a chore through the app, and taking the Done back takes the star back (paid back by the next one if rolled)', async () => {
+  it('counts a chore through the app; taking the Done back takes back a star not rolled yet, and nothing after a roll', async () => {
     const { admin, kid, chores } = await family();
     const now = homeToday(0, 12);
     const month = dateStr(now).slice(0, 7);
-    const c = await agent.post(`/api/tasks/${chores[0]}/complete`).set(auth(kid.token)).send({});
-    expect(c.status).toBe(200);
-    const state = (await agent.get('/api/quest').set(auth(kid.token))).body;
-    expect(state.enabled).toBe(true);
-    expect(state.me).toMatchObject({ starsLeft: 1, owed: 0, today: { chores: 1, stars: 1 } });
+    const complete = async (i: number) => {
+      expect((await agent.post(`/api/tasks/${chores[i]}/complete`).set(auth(kid.token)).send({})).status).toBe(200);
+      return (db.prepare('SELECT id FROM task_completions WHERE userId = ? AND taskId = ? ORDER BY id DESC').get(kid.user.id, chores[i]) as { id: number }).id;
+    };
+    const me = async () => (await agent.get('/api/quest').set(auth(kid.token))).body.me;
+    const takeBack = (id: number) => agent.delete(`/api/completions/${id}`).set(auth(admin.token)).expect(200);
+    // Not rolled yet: the star goes with its Done
+    await takeBack(await complete(0));
+    expect(await me()).toMatchObject({ starsLeft: 0, today: { chores: 0, stars: 0 } });
+    const first = await complete(0);
+    expect(await me()).toMatchObject({ starsLeft: 1, today: { chores: 1, stars: 1 } });
+    expect((await me()).owed).toBeUndefined();
     loadDie(2);
     expect((await agent.post('/api/quest/roll').set(auth(kid.token)).send({})).body).toMatchObject({ roll: 2, starsLeft: 0 });
-    const completionId = db.prepare('SELECT id FROM task_completions WHERE userId = ?').get(kid.user.id) as { id: number };
-    await agent.delete(`/api/completions/${completionId.id}`).set(auth(admin.token)).expect(200);
-    expect((await agent.get('/api/quest').set(auth(kid.token))).body.me).toMatchObject({ starsLeft: 0, owed: 1 });
+    // Rolled: taking the Done back takes nothing back, and today's star stays given
+    await takeBack(first);
+    expect(await me()).toMatchObject({ starsLeft: 0, today: { chores: 0, stars: 1 } });
     expect((await agent.post('/api/quest/roll').set(auth(kid.token)).send({})).status).toBe(409);
-    expect(player(month, kid.user.id).position).toBe(2); // a roll already made stays made
+    expect(player(month, kid.user.id).position).toBe(2);
+    await complete(1);
+    expect(await me()).toMatchObject({ starsLeft: 0, today: { chores: 1, stars: 1 } }); // the same day's star, not a new one
+    await complete(2);
+    await complete(3);
+    expect(await me()).toMatchObject({ starsLeft: 1, today: { chores: 3, stars: 2 } }); // the bonus is a new star, nothing to pay back
   });
 
   it('in Strict Mode waits for the approval, then counts the day the chore was done', async () => {
@@ -97,6 +109,15 @@ describe('Quest Trail: stars', () => {
     expect(stars(kid.user.id, march(6, 9)).earned).toBe(0);
     db.prepare("UPDATE task_completions SET status = 'approved' WHERE id = ?").run(id);
     expect(stars(kid.user.id, march(6, 9))).toMatchObject({ earned: 1, today: { stars: 0 } });
+  });
+
+  it('counts today\'s chores still waiting for a parent\'s OK, so the card can say so', async () => {
+    const { kid, chores } = await family();
+    wholeMarch();
+    done(kid.user.id, chores[0], march(5, 9), 'pending');
+    done(kid.user.id, chores[1], march(5, 10), 'pending');
+    done(kid.user.id, chores[2], march(4, 10), 'pending'); // yesterday's doesn't count for today
+    expect(stars(kid.user.id, march(5, 12)).today).toMatchObject({ chores: 0, pending: 2, stars: 0 });
   });
 
   it('gives the day\'s star on your own vacation, but not when everyone is away', async () => {
@@ -250,6 +271,21 @@ describe('Quest Trail: rolling', () => {
     expect(db.prepare('SELECT rewardId, costCoins, status FROM reward_redemptions WHERE userId = ?').all(teen.user.id)).toEqual([{ rewardId: reward, costCoins: 0, status: 'requested' }]);
     expect(takeTurn(t, kid.user.id, { rolledBy: kid.user.id, now: march(3, 20) })).toMatchObject({ events: [{ t: 'move' }, { t: 'finish', place: 2, coins: 3, prize: null }] });
     expect(takeTurn(t, teen.user.id, { rolledBy: teen.user.id, now: march(3, 20) })).toMatchObject({ roll: 0, coins: 2, events: [{ t: 'cashIn', coins: 2 }] });
+    // The sign at the finish now says who won it, and what
+    expect(questState(kid.user.id, march(3, 21))).toMatchObject({ prize: { won: { userId: teen.user.id, displayName: 'Teen', rewardTitle: 'Movie night', coins: 5 } } });
+  });
+
+  it('hands over a reward hidden from the shop as the prize', async () => {
+    const { kid, chores } = await family();
+    const reward = db.prepare("INSERT INTO rewards (title, costCoins, isActive) VALUES ('Quest cake', 50, 0)").run().lastInsertRowid as number;
+    saveQuestSettings({ prizeRewardId: reward });
+    const t = wholeMarch();
+    expect(questState(kid.user.id, march(2, 8))).toMatchObject({ prize: { rewardTitle: 'Quest cake', won: null } });
+    done(kid.user.id, chores[0], march(2, 9));
+    moveTo('2030-03', kid.user.id, 79);
+    loadDie(1);
+    expect(takeTurn(t, kid.user.id, { rolledBy: kid.user.id, now: march(2, 20) })).toMatchObject({ events: [{ t: 'move' }, { t: 'finish', place: 1, prize: { rewardId: reward, rewardTitle: 'Quest cake' } }] });
+    expect(db.prepare('SELECT rewardId, status FROM reward_redemptions WHERE userId = ?').all(kid.user.id)).toEqual([{ rewardId: reward, status: 'requested' }]);
   });
 
   it('with "Prize only for kids" gives the prize to the first kid to finish', async () => {
@@ -312,6 +348,22 @@ describe('Quest Trail: the end of the month', () => {
     expect(Object.keys(last.players[0])).toEqual(expect.arrayContaining(['avatarColor', 'avatarType', 'avatarPreset', 'avatarPhotoUrl', 'isKid']));
     const now = questState(kid.user.id, at(2030, 3, 1, 9));
     expect(now.enabled && Object.keys(now.players[0])).toEqual(expect.arrayContaining(['avatarColor', 'avatarType', 'avatarPreset', 'avatarPhotoUrl']));
+  });
+
+  it('takes the month-end turns in a random order, not always the same one first', async () => {
+    const { kid, teen, chores } = await family();
+    saveQuestSettings({ prizeCoins: 10 });
+    const t = wholeMarch();
+    for (const u of [teen.user.id, kid.user.id]) done(u, chores[0], march(2, 9));
+    moveTo('2030-03', teen.user.id, 79);
+    moveTo('2030-03', kid.user.id, 79);
+    loadDie(1);
+    // The kid joined first (lower id); this shuffle puts the teen first
+    expect(kid.user.id).toBeLessThan(teen.user.id);
+    setQuestOrder(() => 0);
+    closeTrail(t, at(2030, 3, 1, 0, 0, 30));
+    expect(player('2030-03', teen.user.id)).toMatchObject({ place: 1, prizeWon: 1 });
+    expect(player('2030-03', kid.user.id)).toMatchObject({ place: 2, prizeWon: 0 });
   });
 
   it('closes a trail only once', async () => {

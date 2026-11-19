@@ -2925,7 +2925,15 @@
       "villageRegion5": "Peperkoekrij",
       "villageWater1": "Kille Beek",
       "villageWater2": "Schaatsersbeek",
-      "mapOnward": "Op naar {month}"
+      "mapOnward": "Op naar {month}",
+      "todayWaiting": "De ster van vandaag komt als een volwassene OK zegt.",
+      "todayPending": "⏳ {n} wacht op het OK van een volwassene",
+      "hintWaiting": "Wacht op het OK van een volwassene",
+      "cardLeaderDone": "{name} is bij de finish",
+      "prizeWonBy": "{name} heeft hem gewonnen: {prize}",
+      "prizeWonYou": "Jij hebt hem gewonnen: {prize}",
+      "rollingFor": "Gooien voor {name}",
+      "backToMine": "Terug naar je eigen beurt"
     },
     "doneFor": {
       "countedYours": "„{task}” telt voor jou",
@@ -2974,7 +2982,10 @@
       "night": "Nacht",
       "fog": "Mist over het onontdekte pad",
       "fogDesc": "Munten, klusjeskaarten, traktaties, kortere wegen en glijbanen blijven zichtbaar.",
-      "thisMonth": "Deze maand: {length} vakjes"
+      "thisMonth": "Deze maand: {length} vakjes",
+      "roll": "🎲 Gooien",
+      "rollDesc": "🎲 Gooien opent de kaart en gooit hun sterren samen met hen, voor wie niet inlogt.",
+      "hiddenReward": "{title} (verborgen in de winkel)"
     }
   }
 }

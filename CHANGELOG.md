@@ -46,10 +46,32 @@ What changed in each release, in plain language, newest first. Releases up to v0
   the map page, results are a big picture and a few words.
 - **Quest Trail in the guide** (Settings → Guide & help → Game extras), with two troubleshooting answers, in all six
   languages.
+- **Roll for someone who doesn't sign in** (Quest Trail, NEW-40): **🎲 Roll** next to them in Settings → Quest Trail
+  opens the map with their die, and their piece walks while they watch.
+- **Quest Trail shows chores waiting for a parent's OK** (NEW-40): under Strict Mode the Today card (and Kid mode's)
+  says "⏳ 2 waiting for a grown-up's OK", so a kid can see their chores counted.
+
+### Changed
+
+- **Quest Trail never takes a star back after a roll** (NEW-40): every roll keeps the stars earned so far, so a Done
+  taken back afterwards takes nothing back (before, the next star paid it back). A Done taken back before the next
+  roll still takes its star with it.
+- **Leftover Quest Trail stars at the end of the month are rolled in a random order each round** (NEW-40), so the same
+  person doesn't always reach the finish first.
 
 ### Fixed
 
 - **The Quest Trail map no longer scrolls sideways on a 390-pixel phone** (NEW-40): it was 5 pixels too wide.
+- **A reward hidden in the shop can be the Quest Trail prize** (NEW-40): the winner used to get only the coins. Settings
+  marks it "(hidden in the shop)", for a prize kept just for the Quest Trail.
+- **The prize sign at the Quest Trail finish says who won it** (NEW-40) instead of still offering the prize.
+- **Quest Trail pieces point at their own space** (NEW-40): the pin rests on the space, people sharing a space stand
+  close in two rows, everyone on Start stays clear of the map key, and the shortcut and slide names and the next-roll
+  die faces keep off the spaces and their numbers.
+- **The Quest Trail card on Today** keeps whoever finished in sight by the 🏆, puts people on the same space side by
+  side, and says "Cylis has finished" instead of "Cylis is 24 ahead".
+- **The back arrow on the Quest Trail map** goes to Today when the page was opened by itself (it did nothing).
+- **No holiday leaves or snow fall over the Quest Trail map**, which has its own.
 - **A parent ticking off a chore anyone can do for a kid no longer has to keep the coins** (FIX-37). Done still counts
   as the grown-up's, but a bar now says "… counted as yours" with **Change** for about 10 seconds (longer while
   you're on it). Change gives the chore to whoever really did it: coins, streak, turn and any badge that Done earned

@@ -1301,7 +1301,7 @@ export function Settings({
           {cur === 'quest' && isAdmin && (
             <div className="tq-card tq-card-padded settings-admin-card">
               <h3 className="tq-card-title">🎲 {t('questAdmin.title')}</h3>
-              <QuestTrailAdmin language={user.language} onChanged={onDataChanged} />
+              <QuestTrailAdmin language={user.language} userId={user.id} onChanged={onDataChanged} />
             </div>
           )}
           {cur === 'features' && isAdmin && (

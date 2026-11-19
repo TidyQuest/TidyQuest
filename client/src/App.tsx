@@ -562,7 +562,8 @@ function AppContent() {
           onOpenGuide={() => { closeWhatsNew(); navigate('/guide'); }}
           onOpenLook={() => { closeWhatsNew(); navigate('/settings/look'); }} />
       )}
-      {season && <SeasonParticles season={season} />}
+      {/* Not over the Quest Trail map: it has its own falling leaves, snow and petals (NEW-40) */}
+      {season && location.pathname !== '/quest' && <SeasonParticles season={season} />}
 
       {searchOpen && (
         <SearchOverlay
@@ -880,7 +881,7 @@ function AppContent() {
           <Route path="/quest" element={
             dashboardData && dashboardData.features?.questTrail === false ? <Navigate to="/" replace /> : (
               <Suspense fallback={<div className="quest-page-loading" aria-busy="true" />}>
-                <QuestTrail userId={user.id} language={user.language || 'en'} coins={user.coins ?? 0} onCoinsChanged={() => { void refreshUser(); }} kidMode={!!user.kidMode} />
+                <QuestTrail userId={user.id} language={user.language || 'en'} coins={user.coins ?? 0} onCoinsChanged={() => { void refreshUser(); }} kidMode={!!user.kidMode} isAdmin={user.role === 'admin'} />
               </Suspense>
             )
           } />

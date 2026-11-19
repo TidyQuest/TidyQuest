@@ -2436,6 +2436,9 @@ html[data-look='calm'] .today-tabs button.on { background: var(--warm-card); }
 .quest-roll { min-height: 48px; min-width: 92px; border: 0; border-radius: 14px; background: var(--warm-accent); color: #FFFFFF; font: inherit; font-size: 17px; font-weight: 800; padding: 0 16px; cursor: pointer; box-shadow: 0 3px 0 var(--warm-accent-hover); }
 .quest-roll:disabled { background: var(--warm-border); color: var(--warm-text-secondary); box-shadow: none; cursor: default; }
 .quest-watch { font-size: 14px; font-weight: 700; color: var(--warm-text-secondary); }
+/* A parent rolling for someone else: whose die it is, and the way back to your own */
+.quest-for { display: flex; align-items: center; gap: 10px; padding: 4px 4px 4px 12px; box-shadow: 0 6px 24px rgba(42,32,23,.22); }
+.quest-for b { flex: 1; min-width: 0; font-size: 15px; font-weight: 800; color: var(--warm-text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 .quest-card { display: flex; flex-direction: column; align-items: stretch; gap: 10px; width: 100%; text-align: left; font: inherit; color: var(--warm-text); cursor: pointer; padding: 14px 16px; border: 0; margin-bottom: 14px; }
 .quest-card-row { display: flex; align-items: center; gap: 12px; }
@@ -2444,21 +2447,24 @@ html[data-look='calm'] .today-tabs button.on { background: var(--warm-card); }
 .quest-card-text b { font-size: 17px; font-weight: 800; }
 .quest-card-text span { font-size: 14px; color: var(--warm-text-secondary); }
 .quest-card-play { min-height: 40px; display: flex; align-items: center; padding: 0 16px; border-radius: 12px; background: var(--warm-accent); color: #FFFFFF; font-weight: 800; font-size: 15px; flex-shrink: 0; }
-.quest-card-rail { position: relative; height: 26px; display: flex; align-items: center; margin: 0 12px 0 10px; }
+.quest-card-rail { position: relative; height: 26px; display: flex; align-items: center; margin: 0 30px 0 12px; }
 .quest-card-track, .quest-card-done { position: absolute; left: 0; height: 6px; border-radius: 3px; }
 .quest-card-track { right: 0; background: var(--warm-border); }
 .quest-card-done { background: #1971C2; }
 .quest-card-dot { position: absolute; top: 50%; transform: translate(-50%, -50%); display: flex; }
 .quest-card-dot > * { border-radius: 50%; background: #FFFFFF; box-shadow: 0 0 0 2px #FFFFFF, 0 1px 3px rgba(0,0,0,.25); }
 .quest-card-dot.you { z-index: 1; }
-.quest-card-finish { position: absolute; right: -12px; font-size: 16px; }
+/* Past the end of the track, so whoever finished stays in sight */
+.quest-card-finish { position: absolute; right: -28px; font-size: 16px; }
 .quest-card-race { font-size: 13px; font-weight: 700; color: var(--warm-text-secondary); }
 .quest-card-today { display: flex; align-items: center; gap: 10px; padding-top: 10px; border-top: 1px solid var(--warm-border-subtle); font-size: 14px; line-height: 1.4; color: var(--warm-text-secondary); }
 .quest-card-today > span:first-child { flex: 1; min-width: 0; }
 .quest-card-stars { display: flex; gap: 4px; flex-shrink: 0; }
+.quest-card-waiting { display: block; margin-top: 4px; font-weight: 700; color: var(--warm-text-secondary); }
 .quest-kid { cursor: default; }
 .quest-kid-count { display: flex; align-items: center; gap: 4px; font-size: 22px; font-weight: 800; color: var(--warm-text); }
 .quest-kid-today { display: flex; justify-content: center; gap: 12px; }
+.quest-kid-waiting { text-align: center; font-size: 16px; font-weight: 700; color: var(--warm-text-secondary); }
 .quest-kid-result { display: flex; align-items: center; gap: 12px; animation: quest-rise .32s ease-out; }
 .quest-kid-result .quest-result-tile { width: 60px; height: 60px; border-radius: 16px; }
 .quest-kid-result strong { font-size: 22px; font-weight: 800; line-height: 1.2; color: var(--warm-text); min-width: 0; overflow-wrap: anywhere; }

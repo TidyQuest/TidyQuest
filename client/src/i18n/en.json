@@ -2925,7 +2925,15 @@
       "villageRegion5": "Gingerbread Row",
       "villageWater1": "Chilly Creek",
       "villageWater2": "Skater's Stream",
-      "mapOnward": "On to {month}"
+      "mapOnward": "On to {month}",
+      "todayWaiting": "Today's star comes when a grown-up says OK.",
+      "todayPending": "⏳ {n} waiting for a grown-up's OK",
+      "hintWaiting": "Waiting for a grown-up's OK",
+      "cardLeaderDone": "{name} has finished",
+      "prizeWonBy": "{name} won it: {prize}",
+      "prizeWonYou": "You won it: {prize}",
+      "rollingFor": "Rolling for {name}",
+      "backToMine": "Back to your own turn"
     },
     "doneFor": {
       "countedYours": "“{task}” counted as yours",
@@ -2974,7 +2982,10 @@
       "night": "Night",
       "fog": "Fog over the unexplored trail",
       "fogDesc": "Coins, chore cards, treats, shortcuts and slides still show through.",
-      "thisMonth": "This month: {length} spaces"
+      "thisMonth": "This month: {length} spaces",
+      "roll": "🎲 Roll",
+      "rollDesc": "🎲 Roll opens the map and rolls their stars with them, for someone who doesn't sign in.",
+      "hiddenReward": "{title} (hidden in the shop)"
     }
   }
 }

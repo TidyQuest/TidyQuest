@@ -2,15 +2,16 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../../hooks/useApi';
 import { useTranslation } from '../../hooks/useTranslation';
-import { UserAvatar } from '../shared/UserAvatar';
 import { KidQuestCard } from './KidQuestCard';
 import { MonthEnd } from './MonthEnd';
+import { QuestRail } from './QuestRail';
 import { daysLeft, fill } from './questText';
-import type { QuestState } from './types';
+import type { QuestPlayer, QuestState } from './types';
 
 /**
  * Quest Trail's card on Today (NEW-40): stars waiting to be rolled, where everyone is on the trail, and today's two
- * stars (one for any chore, a bonus at three). Opens the map. Also shows last month's results once, on the 1st.
+ * stars (one for any chore, a bonus at three), with any chores still waiting for a parent's OK. Opens the map. Also
+ * shows last month's results once, on the 1st.
  */
 
 interface Props {
@@ -54,15 +55,22 @@ export const QuestCard: React.FC<Props> = ({ userId, language, refreshKey, kidMo
     : me.finishedAt
       ? fill(t('quest.cardFinished'), { n: state.coinsPerStar })
       : stars > 0 ? fill(t(stars === 1 ? 'quest.cardStarOne' : 'quest.cardStars'), { n: stars }) : t('quest.cardNoStars');
+  const lead = (p: QuestPlayer) => fill(t(p.finishedAt ? 'quest.cardLeaderDone' : 'quest.cardLeader'), { name: p.displayName });
   const race = [
-    me && !me.finishedAt ? (ahead ? fill(t('quest.cardAhead'), { name: ahead.displayName, n: ahead.position - me.position }) : others.some((p) => p.position === me.position) ? '' : t('quest.cardLead')) : '',
-    !me && leader ? fill(t('quest.cardLeader'), { name: leader.displayName }) : '',
+    me && !me.finishedAt
+      ? (ahead ? (ahead.finishedAt ? lead(ahead) : fill(t('quest.cardAhead'), { name: ahead.displayName, n: ahead.position - me.position }))
+        : others.some((p) => p.position === me.position) ? '' : t('quest.cardLead'))
+      : '',
+    !me && leader ? lead(leader) : '',
     left > 0 ? fill(t(left === 1 ? 'quest.dayLeft' : 'quest.daysLeft'), { n: left }) : t('quest.lastDay'),
   ].filter(Boolean).join(' · ');
-  const bonusLeft = today ? Math.max(0, (state.me?.bonusAt ?? 3) - today.chores) : 0;
-  const todayLine = !today || me?.finishedAt ? '' : today.chores === 0
-    ? t('quest.todayFirst')
-    : bonusLeft === 0 ? t('quest.todayBoth') : fill(t(bonusLeft === 1 ? 'quest.todayBonusOne' : 'quest.todayBonusMany'), { n: bonusLeft });
+  // Today's two stars, and chores still waiting for a parent's OK (Strict Mode): their star comes with the approval
+  const bonusLeft = today ? Math.max(1, (state.me?.bonusAt ?? 3) - today.chores) : 0;
+  const todayLine = !today || me?.finishedAt ? '' : today.stars >= 2
+    ? t('quest.todayBoth')
+    : today.stars === 0 ? t(today.pending > 0 ? 'quest.todayWaiting' : 'quest.todayFirst')
+      : fill(t(bonusLeft === 1 ? 'quest.todayBonusOne' : 'quest.todayBonusMany'), { n: bonusLeft });
+  const waiting = today && today.pending > 0 && !me?.finishedAt ? fill(t('quest.todayPending'), { n: today.pending }) : '';
 
   const monthEnd = state.lastMonth && !endSeen && (
     <MonthEnd last={state.lastMonth} current={state} userId={userId} language={language || 'en'}
@@ -83,21 +91,14 @@ export const QuestCard: React.FC<Props> = ({ userId, language, refreshKey, kidMo
           </span>
           <span className="quest-card-play">{me && stars > 0 && !me.finishedAt ? t('quest.play') : t('quest.seeMap')}</span>
         </span>
-        <span className="quest-card-rail" aria-hidden="true">
-          <span className="quest-card-track" />
-          {me && <span className="quest-card-done" style={{ width: `${(100 * me.position) / len}%` }} />}
-          {[...others, ...(me ? [me] : [])].map((p) => (
-            <span key={p.userId} className={`quest-card-dot${p.userId === userId ? ' you' : ''}`} style={{ left: `${(100 * p.position) / len}%` }}>
-              <UserAvatar name={p.displayName} color={p.avatarColor || '#6B5A4B'} size={p.userId === userId ? 22 : 16}
-                avatarType={p.avatarType ?? undefined} avatarPreset={p.avatarPreset} avatarPhotoUrl={p.avatarPhotoUrl} />
-            </span>
-          ))}
-          <span className="quest-card-finish">🏆</span>
-        </span>
+        <QuestRail players={state.players} userId={userId} length={len} />
         <small className="quest-card-race">{race}</small>
         {today && todayLine && (
           <span className="quest-card-today">
-            <span>{todayLine}{today.card === 'open' ? ` ${t('quest.todayCard')}` : ''}</span>
+            <span>
+              {todayLine}{today.card === 'open' ? ` ${t('quest.todayCard')}` : ''}
+              {waiting && <span className="quest-card-waiting">{waiting}</span>}
+            </span>
             <span className="quest-card-stars">
               {[0, 1].map((i) => {
                 const got = today.stars > i;

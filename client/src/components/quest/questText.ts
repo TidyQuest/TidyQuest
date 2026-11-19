@@ -52,6 +52,11 @@ export function mapTexts(t: Tr, lang: string, s: QuestState, meId: number | null
     },
   };
   const prize = prizeText(t, s.prize);
+  // Once someone has won the prize, the sign at the finish says who (and what they won)
+  const won = s.prize.won;
+  const prizeSign = won
+    ? fill(t(won.userId === meId ? 'quest.prizeWonYou' : 'quest.prizeWonBy'), { name: won.displayName, prize: prizeText(t, won) ?? prize ?? '' })
+    : prize ? fill(t(s.prize.kidsOnly ? 'quest.prizeFirstKid' : 'quest.prizeFirst'), { place: finishPlace(t, w), prize }) : null;
   const title = worldTitle(t, w);
   const playing = s.players.some((p) => p.userId === meId);
   return {
@@ -61,10 +66,7 @@ export function mapTexts(t: Tr, lang: string, s: QuestState, meId: number | null
     sub: esc(fill(t('quest.mapSub'), { n: s.trail.length, date: shortDate(lang, s.trail.endDay) })),
     keyTitle: e('keyTitle'),
     fogTitle: e('fogTitle'), fogSub: e('fogSub'),
-    prize: prize ? {
-      label: e('prizeLabel'),
-      text: esc(fill(t(s.prize.kidsOnly ? 'quest.prizeFirstKid' : 'quest.prizeFirst'), { place: finishPlace(t, w), prize })),
-    } : null,
+    prize: prizeSign ? { label: e('prizeLabel'), text: esc(prizeSign) } : null,
     you: t('quest.you'),
     aria: playing ? fill(t('quest.mapAria'), { title, pos: myPos, n: s.trail.length }) : fill(t('quest.mapAriaWatch'), { title, n: s.trail.length }),
   };

@@ -2925,7 +2925,15 @@
       "villageRegion5": "Hilera de Jengibre",
       "villageWater1": "Arroyo Gélido",
       "villageWater2": "Arroyo de los Patinadores",
-      "mapOnward": "Hacia {month}"
+      "mapOnward": "Hacia {month}",
+      "todayWaiting": "La estrella del día llega cuando un adulto da el OK.",
+      "todayPending": "⏳ {n} esperando el OK de un adulto",
+      "hintWaiting": "Esperando el OK de un adulto",
+      "cardLeaderDone": "{name} ya ha llegado",
+      "prizeWonBy": "{name} lo ha ganado: {prize}",
+      "prizeWonYou": "Lo has ganado tú: {prize}",
+      "rollingFor": "Tirando por {name}",
+      "backToMine": "Volver a tu turno"
     },
     "doneFor": {
       "countedYours": "«{task}» contó como tuya",
@@ -2974,7 +2982,10 @@
       "night": "Noche",
       "fog": "Niebla sobre el sendero sin explorar",
       "fogDesc": "Las monedas, cartas de tarea, golosinas, atajos y toboganes se siguen viendo.",
-      "thisMonth": "Este mes: {length} casillas"
+      "thisMonth": "Este mes: {length} casillas",
+      "roll": "🎲 Tirar",
+      "rollDesc": "🎲 Tirar abre el mapa y tira sus estrellas con esa persona, para quien no inicia sesión.",
+      "hiddenReward": "{title} (oculta en la tienda)"
     }
   }
 }
