@@ -8,21 +8,23 @@ import { useChoreTimer } from '../../hooks/useChoreTimer';
 
 /**
  * "What's new" after a big update (NEW-38): a few click-through slides the first time someone opens the app after a
- * change we picked (the list is in utils/whatsNew.ts). Button names come from the app's own labels, so every
- * language says what's on screen.
+ * change we picked (the list is in utils/whatsNew.ts). Someone who missed more than one sees them one after the other,
+ * oldest first. Button names come from the app's own labels, so every language says what's on screen.
  */
 interface Slide { key: string; title: string; lead: string; steps: string[]; mock: ReactNode }
 
-export function WhatsNew({ user, gamificationEnabled, features, auto, onClose, onOpenGuide, onOpenLook }: {
+export function WhatsNew({ user, gamificationEnabled, features, ids, auto, onClose, onOpen }: {
   user: User;
   gamificationEnabled: boolean;
   /** The family's switches, so More's list matches the menu (Quest Trail shows only while it's on) */
   features?: Partial<FeatureFlags>;
+  /** The announcements to show, oldest first (utils/whatsNew.ts) */
+  ids: string[];
   /** Opened by itself after an update (not from the guide): it waits for another day while a chore timer runs */
   auto?: boolean;
   onClose: () => void;
-  onOpenGuide: () => void;
-  onOpenLook: () => void;
+  /** Close it and go to one of the app's pages (the buttons under the last slide) */
+  onOpen: (path: string) => void;
 }) {
   const { t, taskName } = useTranslation(user.language);
   const [slide, setSlide] = useState(0);
@@ -41,6 +43,9 @@ export function WhatsNew({ user, gamificationEnabled, features, auto, onClose, o
     '{settings}': t('settings.title'), '{searchSettings}': t('settingsIndex.search'), '{look}': t('look.title'),
     '{fresh}': t('look.fresh'), '{quest}': t('look.quest'), '{calm}': t('look.calm'), '{nextUp}': t('today.nextUp'),
     '{doneBig}': t('today.doneBig'), '{pickAnother}': t('today.pickAnother'),
+    '{questTrail}': t('quest.title'), '{play}': t('quest.play'), '{roll}': t('quest.roll'), '{seeMap}': t('quest.seeMap'),
+    '{finish}': t('quest.mapFinish'), '{prize}': t('questAdmin.prizeTitle'), '{give}': t('questAdmin.give'),
+    '{trailLength}': t('questAdmin.lengthTitle'), '{playQuest}': t('questAdmin.on'),
   };
   const fill = (text: string) => Object.entries(names).reduce((out, [k, v]) => out.split(k).join(v), text);
   const lines = (key: string) => fill(t(key)).split('\n').filter(Boolean);
@@ -54,7 +59,7 @@ export function WhatsNew({ user, gamificationEnabled, features, auto, onClose, o
 
   const tabBar = row(...tabs.map((i) => chip(t(navLabelKey(i, true)))), chip(`⋯ ${t('nav.more')}`, true));
   const choreRow = row(name(counters, `${t('today.today')}`), chip('5 🪙'), chip('✓', true));
-  const SLIDES: Slide[] = kid ? [
+  const newLook: Slide[] = kid ? [
     make('kidTabs', tabBar),
     make('kidNext', <>{row(name(`🧹 ${taskName('10-minute room tidy', 'starter.room_tidy')}`, t('today.nextUp')))}{row(chip(`✓ ${t('today.doneBig')}`, true), chip(t('today.pickAnother')))}</>),
     make('kidRows', choreRow),
@@ -65,7 +70,23 @@ export function WhatsNew({ user, gamificationEnabled, features, auto, onClose, o
     make('top', row(name(t('nav.rooms')), chip('🪙 120'), chip('🔍', true), ...(isAdmin ? [chip('+', true)] : [])), isAdmin ? 'whatsNew.topStepsAdmin' : 'whatsNew.topSteps'),
     ...(isAdmin ? [make('settings', <>{row(name(t('settingsGroups.household')))}{row(name(`🎨 ${t('look.title')}`, t('look.fresh')), chip(t('look.quest')), chip(t('look.calm')))}</>)] : []),
   ];
-  if (held) return null;
+
+  // NEW-40: the monthly board game. The mock is the card on Today, with the button this person's card has.
+  const questCard = row(name(`🎲 ${t('quest.title')}`, t('quest.cardStars').replace('{n}', '2')), chip(kid ? t('quest.roll') : t('quest.play'), true));
+  const spaces = row(chip('🪙 +2'), chip('🃏'), chip('⤴'), chip('⤵'), chip('🙌'));
+  const questTrail: Slide[] = kid ? [
+    make('kidQuest', questCard),
+    make('kidQuestMap', spaces),
+  ] : [
+    make('quest', questCard),
+    make('questStars', <>{row(chip('⭐'), chip('⭐'), chip(`🎲 ${t('quest.play')}`, true))}{spaces}</>),
+    make('questFinish', row(name(`🏁 ${t('quest.mapFinish')}`, t('quest.prizeLabel')), chip('🏆', true))),
+    ...(isAdmin ? [make('questAdmin', <>{row(name(`🎲 ${t('questAdmin.title')}`, t('questAdmin.indexSum')))}{row(chip(t('questAdmin.prizeReward'), true), chip(t('questAdmin.prizeCoins')), chip(t('questAdmin.give')))}</>)] : []),
+  ];
+
+  const decks: Record<string, Slide[]> = { 'new-look': newLook, 'quest-trail': questTrail };
+  const SLIDES = ids.flatMap((id) => decks[id] ?? []);
+  if (held || !SLIDES.length) return null;
   const s = SLIDES[slide];
   const last = slide === SLIDES.length - 1;
 
@@ -94,8 +115,9 @@ export function WhatsNew({ user, gamificationEnabled, features, auto, onClose, o
         </div>
         {last && (
           <div className="whats-new-more">
-            {isAdmin && !kid && <button type="button" className="tq-btn tq-btn-sm tq-btn-secondary" onClick={onOpenLook}>🎨 {t('look.title')}</button>}
-            <button type="button" className="tq-btn tq-btn-sm tq-btn-secondary" onClick={onOpenGuide}>📖 {t('guide.title')}</button>
+            {ids.includes('quest-trail') && <button type="button" className="tq-btn tq-btn-sm tq-btn-secondary" onClick={() => onOpen('/quest')}>🗺️ {t('quest.seeMap')}</button>}
+            {ids.includes('new-look') && isAdmin && !kid && <button type="button" className="tq-btn tq-btn-sm tq-btn-secondary" onClick={() => onOpen('/settings/look')}>🎨 {t('look.title')}</button>}
+            <button type="button" className="tq-btn tq-btn-sm tq-btn-secondary" onClick={() => onOpen('/guide')}>📖 {t('guide.title')}</button>
           </div>
         )}
       </div>

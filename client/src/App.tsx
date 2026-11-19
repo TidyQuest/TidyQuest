@@ -31,7 +31,7 @@ import { Profile } from './components/pages/Profile';
 import { Guide } from './components/pages/Guide';
 import { SetupWizard } from './components/pages/SetupWizard';
 import { WhatsNew } from './components/shared/WhatsNew';
-import { latestWhatsNew } from './utils/whatsNew';
+import { replayWhatsNew, unseenWhatsNew as unseenWhatsNewIds } from './utils/whatsNew';
 import { Login } from './components/pages/Login';
 import { Register } from './components/pages/Register';
 import { SignUp } from './components/pages/SignUp';
@@ -528,13 +528,13 @@ function AppContent() {
   const focusData: FocusData | null = dashboardData?.focus ?? null;
   const focusIsHome = focusData?.mode === 'home' && !new URLSearchParams(location.search).has('all');
   // Shown by itself on opening the app, but not over Focus, the setup wizard or the guide
-  const unseenWhatsNew = whatsNewClosedBy === user.id ? null : latestWhatsNew(dashboardData?.whatsNew);
-  const autoWhatsNew = !!unseenWhatsNew && !focusIsHome && !['/focus', '/setup', '/guide'].includes(location.pathname);
+  const unseenWhatsNew = whatsNewClosedBy === user.id ? [] : unseenWhatsNewIds(dashboardData?.whatsNew);
+  const autoWhatsNew = unseenWhatsNew.length > 0 && !focusIsHome && !['/focus', '/setup', '/guide'].includes(location.pathname);
   const closeWhatsNew = () => {
     setWhatsNewReplay(false);
     setWhatsNewClosedBy(user.id);
     // Skipping counts as seen, and so does watching it from the guide
-    if (unseenWhatsNew) api.whatsNewSeen([unseenWhatsNew]).catch(() => {});
+    if (unseenWhatsNew.length) api.whatsNewSeen(unseenWhatsNew).catch(() => {});
   };
   const notifyCardKind: NotifyCardKind | null = !user || notifyCardGoneFor === user.id ? null
     : notifyCardHeld?.userId === user.id ? notifyCardHeld.kind : dashboardData?.notifyCard ?? null;
@@ -559,8 +559,8 @@ function AppContent() {
       <ConfettiEffect show={confetti} season={season} celebration={dashboardData?.cosmetics?.[user.id]?.celebration} />
       {(autoWhatsNew || whatsNewReplay) && (
         <WhatsNew user={user} gamificationEnabled={gamificationEnabled} features={dashboardData?.features} auto={!whatsNewReplay} onClose={closeWhatsNew}
-          onOpenGuide={() => { closeWhatsNew(); navigate('/guide'); }}
-          onOpenLook={() => { closeWhatsNew(); navigate('/settings/look'); }} />
+          ids={whatsNewReplay ? replayWhatsNew(dashboardData?.features) : unseenWhatsNew}
+          onOpen={(path) => { closeWhatsNew(); navigate(path); }} />
       )}
       {/* Not over the Quest Trail map: it has its own falling leaves, snow and petals (NEW-40) */}
       {season && location.pathname !== '/quest' && <SeasonParticles season={season} />}

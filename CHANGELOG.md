@@ -50,6 +50,10 @@ What changed in each release, in plain language, newest first. Releases up to v0
   opens the map with their die, and their piece walks while they watch.
 - **Quest Trail shows chores waiting for a parent's OK** (NEW-40): under Strict Mode the Today card (and Kid mode's)
   says "⏳ 2 waiting for a grown-up's OK", so a kid can see their chores counted.
+- **What's new: Quest Trail** (NEW-40). After the update, everyone gets a few slides introducing the Quest Trail
+  the first time they open the app: where to find it, how stars and rolls work, and who wins. Parents get one more
+  slide about Settings → Quest Trail, and kids in Kid mode get a shorter set. They only show while the family has the
+  game switched on. Someone who missed the new-look slides too sees both, one after the other.
 
 ### Changed
 
