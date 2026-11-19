@@ -428,7 +428,7 @@ export const GUIDE_EN: GuideSection[] = [
       { h: 'Badges' },
       { p: 'Built-in badges unlock by themselves. Parents can make their own in **Settings → Badges** (for example "Homework 4 weeks in a row"), with optional bonus coins, and set coins for every built-in badge. Its icon is picked like a chore\'s: tap the button next to Icon to open Choose an icon (Wins & extras is at the top, and Search icons… finds the rest).' },
       { h: 'Quest Trail' },
-      { where: 'Today → the Quest Trail card and its map (parents: Settings → Quest Trail)' },
+      { where: 'Today → the Quest Trail card, or Quest Trail in the menu (on a phone, under More); parents: Settings → Quest Trail' },
       { p: 'A board game the whole family plays over a month. Everyone with "Participates in tasks" on plays, parents included. Each month has its own world, from the Snowy Summit in January to the Winter Village in December, and on the 1st everyone starts again at Start. The top and bottom of each map blend into the months before and after it.' },
       { ul: [
         '**Stars:** 1 star for any day you do a chore, and a bonus star when you do 3 or more that day (2 a day at most). Each chore counts once a day. A chore waiting for a parent’s approval gives its star once it’s approved, for the day it was done (the Quest Trail card shows ⏳ for the ones waiting). Every roll keeps the stars you’ve earned so far: taking back a Done afterwards takes nothing back.',
@@ -586,6 +586,7 @@ export const GUIDE_EN: GuideSection[] = [
         { q: 'The Quest Trail card isn’t on Today', a: [
           'A parent may have switched off **Play Quest Trail** in **Settings → Quest Trail** (or **Settings → Features**).',
           'You play only with "Participates in tasks" on (**Settings → Family Members**).',
+          '**It may be hidden:** open Customise (the button at the bottom of Today) and tap the 🚫 next to Quest Trail to show it again. Quest Trail in the menu (on a phone, under More) opens the map either way.',
         ] },
         { q: 'A kid’s chore shows ▶ instead of Done', a: [
           'It has a timer (Timer in the chore editor). The kid taps ▶, and Done comes back when the time is up. A parent can tap Done for them, or empty the timer in the chore editor.',

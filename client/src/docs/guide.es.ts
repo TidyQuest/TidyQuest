@@ -401,7 +401,7 @@ export const GUIDE_ES: GuideSection[] = [
       { h: 'Insignias' },
       { p: 'Las insignias integradas se desbloquean solas. Los padres pueden crear las suyas en **Ajustes → Insignias** (por ejemplo "Deberes 4 semanas seguidas"), con monedas de bonus opcionales, y fijar monedas para cada insignia integrada. Su icono se elige como el de una tarea: toca el botón junto a Icono para abrir Elige un icono.' },
       { h: 'Sendero de aventuras' },
-      { where: 'Hoy → la tarjeta Sendero de aventuras y su mapa (padres: Ajustes → Sendero de aventuras)' },
+      { where: 'Hoy → la tarjeta Sendero de aventuras o Sendero de aventuras en el menú (en el móvil, en Más); padres: Ajustes → Sendero de aventuras' },
       { p: 'Un juego de mesa al que juega toda la familia durante un mes. Juegan todos los que tienen «Participa en tareas» activado, padres incluidos. Cada mes tiene su propio mundo, de la Cumbre Nevada en enero al Pueblo de Invierno en diciembre, y el día 1 todos vuelven a empezar en la Salida. La parte de arriba y la de abajo de cada mapa se funden con el mes anterior y el siguiente.' },
       { ul: [
         '**Estrellas:** 1 estrella por cada día en que haces una tarea, y una estrella extra cuando haces 3 o más ese día (2 al día como máximo). Cada tarea cuenta una vez al día. Una tarea que espera la aprobación de un padre da su estrella cuando se aprueba, para el día en que se hizo (la tarjeta Sendero de aventuras muestra ⏳ para las que esperan). Cada tirada guarda las estrellas ganadas hasta entonces: deshacer un Hecho después no quita nada.',
@@ -559,6 +559,7 @@ export const GUIDE_ES: GuideSection[] = [
         { q: 'La tarjeta Sendero de aventuras no está en Hoy', a: [
           'Puede que un padre haya desactivado **Jugar al Sendero de aventuras** en **Ajustes → Sendero de aventuras** (o **Ajustes → Funciones**).',
           'Solo juegas con «Participa en tareas» activado (**Ajustes → Miembros de la familia**).',
+          '**Puede estar oculta:** abre Personalizar (el botón al final de Hoy) y toca el 🚫 junto a Sendero de aventuras para volver a mostrarla. Sendero de aventuras en el menú (en el móvil, en Más) abre el mapa de todos modos.',
         ] },
         { q: 'La tarea de un niño muestra ▶ en vez de Hecho', a: [
           'Tiene un temporizador (Temporizador en el editor de la tarea). El niño pulsa ▶, y Hecho vuelve cuando se acaba el tiempo. Un padre puede pulsar Hecho por él, o vaciar el temporizador en el editor de la tarea.',

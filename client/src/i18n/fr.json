@@ -369,7 +369,8 @@
       "badges": "Succès",
       "hi": "Salut, {name}",
       "tabs": "Pages principales",
-      "back": "Retour"
+      "back": "Retour",
+      "quest": "Sentier des quêtes"
     },
     "app": {
       "roomsConfigured": "pièces configurées",

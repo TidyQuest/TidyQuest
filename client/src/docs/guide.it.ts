@@ -401,7 +401,7 @@ export const GUIDE_IT: GuideSection[] = [
       { h: 'Distintivi' },
       { p: 'I distintivi predefiniti si sbloccano da soli. I genitori possono crearne di propri in **Impostazioni → Distintivi** (per esempio "Compiti per 4 settimane di fila"), con monete bonus facoltative, e impostare le monete per ogni distintivo predefinito. La sua icona si sceglie come quella di un\'attività: tocca il pulsante accanto a Icona per aprire Scegli un\'icona.' },
       { h: 'Sentiero delle avventure' },
-      { where: 'Oggi → la scheda Sentiero delle avventure e la sua mappa (genitori: Impostazioni → Sentiero delle avventure)' },
+      { where: 'Oggi → la scheda Sentiero delle avventure o Sentiero delle avventure nel menu (sul telefono, in Altro); genitori: Impostazioni → Sentiero delle avventure' },
       { p: 'Un gioco da tavolo a cui tutta la famiglia gioca per un mese. Gioca chiunque abbia «Partecipa alle attività» attivo, genitori compresi. Ogni mese ha il suo mondo, dalla Vetta Innevata a gennaio al Villaggio d’Inverno a dicembre, e il 1° tutti ripartono dalla Partenza. La parte alta e quella bassa di ogni mappa sfumano nel mese prima e in quello dopo.' },
       { ul: [
         '**Stelle:** 1 stella per ogni giorno in cui svolgi un’attività, e una stella bonus quando ne svolgi 3 o più quel giorno (al massimo 2 al giorno). Ogni attività conta una volta al giorno. Un’attività in attesa dell’approvazione di un genitore dà la sua stella quando viene approvata, per il giorno in cui è stata svolta (la scheda Sentiero delle avventure mostra ⏳ per quelle in attesa). Ogni tiro conserva le stelle guadagnate fin lì: un Fatto annullato dopo non toglie niente.',
@@ -559,6 +559,7 @@ export const GUIDE_IT: GuideSection[] = [
         { q: 'La scheda Sentiero delle avventure non c’è in Oggi', a: [
           'Forse un genitore ha spento **Gioca al Sentiero delle avventure** in **Impostazioni → Sentiero delle avventure** (o **Impostazioni → Funzioni**).',
           'Giochi solo con «Partecipa alle attività» attivo (**Impostazioni → Membri della famiglia**).',
+          '**Potrebbe essere nascosta:** apri Personalizza (il pulsante in fondo a Oggi) e tocca il 🚫 accanto a Sentiero delle avventure per mostrarla di nuovo. Sentiero delle avventure nel menu (sul telefono, in Altro) apre comunque la mappa.',
         ] },
         { q: 'La faccenda di un bambino mostra ▶ invece di Fatto', a: [
           'Ha un timer (Timer nell’editor della faccenda). Il bambino tocca ▶, e Fatto torna quando il tempo è scaduto. Un genitore può toccare Fatto per lui, oppure svuotare il timer nell’editor della faccenda.',

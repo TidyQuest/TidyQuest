@@ -1,6 +1,7 @@
 import type { ComponentType } from 'react';
-import { HomeIcon, RoomsIcon, TasksIcon, TrophyIcon, CalendarIcon, ActivityIcon, AchievementsIcon, SettingsIcon, RewardsIcon, InsightsIcon } from '../icons/NavIcons';
+import { HomeIcon, RoomsIcon, TasksIcon, TrophyIcon, CalendarIcon, ActivityIcon, AchievementsIcon, SettingsIcon, RewardsIcon, InsightsIcon, QuestIcon } from '../icons/NavIcons';
 import type { User } from '../../hooks/useAuth';
+import type { FeatureFlags } from '../../hooks/useApi';
 
 export interface NavItem {
   to: string;
@@ -8,6 +9,8 @@ export interface NavItem {
   label: string;
   Icon: ComponentType<{ active: boolean }>;
   adminOnly?: boolean;
+  /** Listed only while this switch (Settings → Features) is on */
+  feature?: keyof FeatureFlags;
 }
 
 /** Every page in the menu, in the side menu's order */
@@ -21,14 +24,18 @@ export const navItems: NavItem[] = [
   { to: '/insights', label: 'Insights', Icon: InsightsIcon, adminOnly: true },
   { to: '/rewards', label: 'Rewards', Icon: RewardsIcon },
   { to: '/achievements', label: 'Achievements', Icon: AchievementsIcon },
+  // The map, also behind the Today card: still one tap away when Customise hides the card (NEW-40)
+  { to: '/quest', label: 'Quest', Icon: QuestIcon, feature: 'questTrail' },
   { to: '/settings', label: 'Settings', Icon: SettingsIcon },
 ];
 
 const GAMIFICATION_ROUTES = new Set(['/leaderboard', '/rewards', '/achievements']);
 
-/** The pages this person can open */
-export function visibleNav(user: Pick<User, 'role'>, gamificationEnabled: boolean): NavItem[] {
-  return navItems.filter((item) => (gamificationEnabled || !GAMIFICATION_ROUTES.has(item.to)) && (!item.adminOnly || user.role === 'admin'));
+/** The pages this person can open. `features` is the family's switches (dashboardData.features): a page with a
+ *  switch shows until it says off, like its route. */
+export function visibleNav(user: Pick<User, 'role'>, gamificationEnabled: boolean, features?: Partial<FeatureFlags>): NavItem[] {
+  return navItems.filter((item) => (gamificationEnabled || !GAMIFICATION_ROUTES.has(item.to)) && (!item.adminOnly || user.role === 'admin')
+    && (!item.feature || features?.[item.feature] !== false));
 }
 
 // The phone's bottom bar has four pages and More (ENH-24). Kids get their badges instead of Rooms. The spares fill
@@ -42,8 +49,8 @@ export function isKidNav(user: Pick<User, 'role' | 'kidMode'>): boolean {
 }
 
 /** The phone's bottom bar: the four pages on it, and the rest, which More lists */
-export function phoneNav(user: Pick<User, 'role' | 'kidMode'>, gamificationEnabled: boolean): { tabs: NavItem[]; more: NavItem[] } {
-  const all = visibleNav(user, gamificationEnabled);
+export function phoneNav(user: Pick<User, 'role' | 'kidMode'>, gamificationEnabled: boolean, features?: Partial<FeatureFlags>): { tabs: NavItem[]; more: NavItem[] } {
+  const all = visibleNav(user, gamificationEnabled, features);
   const tabs: NavItem[] = [];
   for (const to of [...(isKidNav(user) ? KID_TABS : PARENT_TABS), ...SPARE_TABS]) {
     const item = all.find((i) => i.to === to);

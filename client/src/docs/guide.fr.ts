@@ -401,7 +401,7 @@ export const GUIDE_FR: GuideSection[] = [
       { h: 'Badges' },
       { p: 'Les badges intégrés se débloquent tout seuls. Les parents peuvent créer les leurs dans **Paramètres → Badges** (par exemple « Devoirs 4 semaines de suite »), avec des pièces bonus facultatives, et fixer des pièces pour chaque badge intégré. Son icône se choisit comme celle d\'une tâche : touchez le bouton à côté d\'Icône pour ouvrir Choisir une icône.' },
       { h: 'Sentier des quêtes' },
-      { where: 'Aujourd’hui → la carte Sentier des quêtes et sa carte du monde (parents : Paramètres → Sentier des quêtes)' },
+      { where: 'Aujourd’hui → la carte Sentier des quêtes ou Sentier des quêtes dans le menu (sur téléphone, dans Plus) ; parents : Paramètres → Sentier des quêtes' },
       { p: 'Un jeu de plateau auquel toute la famille joue pendant un mois. Tous ceux qui ont « Participe aux tâches » activé jouent, parents compris. Chaque mois a son propre monde, du Sommet Enneigé en janvier au Village d’Hiver en décembre, et le 1er tout le monde repart du Départ. Le haut et le bas de chaque carte se fondent dans le mois d’avant et celui d’après.' },
       { ul: [
         '**Étoiles :** 1 étoile pour chaque jour où tu fais une tâche, et une étoile bonus quand tu en fais 3 ou plus ce jour-là (2 par jour au maximum). Chaque tâche compte une fois par jour. Une tâche qui attend l’accord d’un parent donne son étoile une fois approuvée, pour le jour où elle a été faite (la carte Sentier des quêtes montre ⏳ pour celles qui attendent). Chaque lancer garde les étoiles gagnées jusque-là : un « Fait » annulé ensuite ne reprend rien.',
@@ -559,6 +559,7 @@ export const GUIDE_FR: GuideSection[] = [
         { q: 'La carte Sentier des quêtes n’est pas sur Aujourd’hui', a: [
           'Un parent a peut-être désactivé **Jouer au Sentier des quêtes** dans **Paramètres → Sentier des quêtes** (ou **Paramètres → Fonctionnalités**).',
           'Tu joues seulement avec « Participe aux tâches » activé (**Paramètres → Membres de la famille**).',
+          '**Elle est peut-être masquée :** ouvre Personnaliser (le bouton en bas d’Aujourd\'hui) et touche le 🚫 à côté de Sentier des quêtes pour la réafficher. Sentier des quêtes dans le menu (sur téléphone, dans Plus) ouvre la carte du monde dans tous les cas.',
         ] },
         { q: 'La tâche d’un enfant affiche ▶ au lieu de Fait', a: [
           'Elle a un minuteur (Minuteur dans l’éditeur de tâche). L’enfant appuie sur ▶, et Fait revient quand le temps est écoulé. Un parent peut appuyer sur Fait pour lui, ou vider le minuteur dans l’éditeur de tâche.',

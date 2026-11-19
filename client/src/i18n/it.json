@@ -369,7 +369,8 @@
       "badges": "Obiettivi",
       "hi": "Ciao, {name}",
       "tabs": "Pagine principali",
-      "back": "Indietro"
+      "back": "Indietro",
+      "quest": "Sentiero delle avventure"
     },
     "app": {
       "roomsConfigured": "stanze configurate",

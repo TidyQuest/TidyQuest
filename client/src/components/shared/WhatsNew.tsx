@@ -2,6 +2,7 @@ import { useState, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from '../../hooks/useTranslation';
 import type { User } from '../../hooks/useAuth';
+import type { FeatureFlags } from '../../hooks/useApi';
 import { navLabelKey, phoneNav } from '../layout/navItems';
 import { useChoreTimer } from '../../hooks/useChoreTimer';
 
@@ -12,9 +13,11 @@ import { useChoreTimer } from '../../hooks/useChoreTimer';
  */
 interface Slide { key: string; title: string; lead: string; steps: string[]; mock: ReactNode }
 
-export function WhatsNew({ user, gamificationEnabled, auto, onClose, onOpenGuide, onOpenLook }: {
+export function WhatsNew({ user, gamificationEnabled, features, auto, onClose, onOpenGuide, onOpenLook }: {
   user: User;
   gamificationEnabled: boolean;
+  /** The family's switches, so More's list matches the menu (Quest Trail shows only while it's on) */
+  features?: Partial<FeatureFlags>;
   /** Opened by itself after an update (not from the guide): it waits for another day while a chore timer runs */
   auto?: boolean;
   onClose: () => void;
@@ -29,7 +32,7 @@ export function WhatsNew({ user, gamificationEnabled, auto, onClose, onOpenGuide
   const isAdmin = user.role === 'admin';
   const kid = !!user.kidMode;
 
-  const { tabs, more } = phoneNav(user, gamificationEnabled);
+  const { tabs, more } = phoneNav(user, gamificationEnabled, features);
   const names: Record<string, string> = {
     '{more}': t('nav.more'), '{moreList}': more.map((i) => t(navLabelKey(i))).join(', '), '{home}': t('nav.home'),
     '{overdue}': t('today.overdue'), '{todayList}': t('today.today'), '{anytime}': t('today.anytime'), '{mine}': t('dashboard.myTasks'),

@@ -209,3 +209,16 @@ export function InsightsIcon({ active }: NavIconProps) {
     </svg>
   );
 }
+
+/** Quest Trail (NEW-40): a dotted trail from the start to the finish flag */
+export function QuestIcon({ active }: NavIconProps) {
+  const color = active ? "var(--warm-accent)" : "var(--warm-text-light)";
+  return (
+    <svg width="26" height="26" viewBox="0 0 26 26" fill="none">
+      <circle cx="5" cy="21" r="2.7" fill={color} />
+      <path d="M10 21C14.5 21 10 15 14.5 15H16" stroke={color} strokeWidth="2.9" strokeLinecap="round" strokeDasharray="0.1 4.2" />
+      <path d="M19.5 17V3.5" stroke={color} strokeWidth="2" strokeLinecap="round" />
+      <path d="M19.5 4L24.8 6.9L19.5 9.8" fill={active ? color : "none"} stroke={color} strokeWidth="2" strokeLinejoin="round" />
+    </svg>
+  );
+}

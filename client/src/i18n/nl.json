@@ -369,7 +369,8 @@
       "badges": "Medailles",
       "hi": "Hoi, {name}",
       "tabs": "Hoofdpagina's",
-      "back": "Terug"
+      "back": "Terug",
+      "quest": "Avonturenpad"
     },
     "app": {
       "roomsConfigured": "kamers ingesteld",

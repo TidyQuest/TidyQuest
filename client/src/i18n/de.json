@@ -369,7 +369,8 @@
       "badges": "Erfolge",
       "hi": "Hallo, {name}",
       "tabs": "Hauptseiten",
-      "back": "Zurück"
+      "back": "Zurück",
+      "quest": "Abenteuerpfad"
     },
     "app": {
       "roomsConfigured": "Räume konfiguriert",

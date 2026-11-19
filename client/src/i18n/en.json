@@ -369,7 +369,8 @@
       "badges": "Badges",
       "hi": "Hi, {name}",
       "tabs": "Main pages",
-      "back": "Back"
+      "back": "Back",
+      "quest": "Quest Trail"
     },
     "app": {
       "roomsConfigured": "rooms configured",

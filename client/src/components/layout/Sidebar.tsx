@@ -6,16 +6,19 @@ import { formatCoins } from '../../utils/format';
 import { UserTitle } from '../shared/UserTitle';
 import { navLabelKey, visibleNav } from './navItems';
 import type { User } from '../../hooks/useAuth';
+import type { FeatureFlags } from '../../hooks/useApi';
 
 interface SidebarProps {
   user: User;
   gamificationEnabled?: boolean;
+  /** The family's switches: a page behind one (Quest Trail) is listed only while it's on */
+  features?: Partial<FeatureFlags>;
   collapsed?: boolean;
   onToggle?: () => void;
 }
 
 /** The side menu on computers and tablets. Phones get the bottom bar instead (TabBar, ENH-24). */
-export function Sidebar({ user, gamificationEnabled = true, collapsed = false, onToggle }: SidebarProps) {
+export function Sidebar({ user, gamificationEnabled = true, features, collapsed = false, onToggle }: SidebarProps) {
   const navigate = useNavigate();
   const { t } = useTranslation(user.language);
   const effectiveCollapsed = collapsed;
@@ -104,7 +107,7 @@ export function Sidebar({ user, gamificationEnabled = true, collapsed = false, o
         </div>
 
         <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', overscrollBehavior: 'contain', display: 'flex', flexDirection: 'column', gap: 2, padding: effectiveCollapsed ? '0 8px' : '0 12px' }}>
-          {visibleNav(user, gamificationEnabled).map((item) => (
+          {visibleNav(user, gamificationEnabled, features).map((item) => (
             <NavLink
               key={item.to}
               to={item.to}

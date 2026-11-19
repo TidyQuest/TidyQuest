@@ -558,7 +558,7 @@ function AppContent() {
     <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: 'var(--warm-bg)' }}>
       <ConfettiEffect show={confetti} season={season} celebration={dashboardData?.cosmetics?.[user.id]?.celebration} />
       {(autoWhatsNew || whatsNewReplay) && (
-        <WhatsNew user={user} gamificationEnabled={gamificationEnabled} auto={!whatsNewReplay} onClose={closeWhatsNew}
+        <WhatsNew user={user} gamificationEnabled={gamificationEnabled} features={dashboardData?.features} auto={!whatsNewReplay} onClose={closeWhatsNew}
           onOpenGuide={() => { closeWhatsNew(); navigate('/guide'); }}
           onOpenLook={() => { closeWhatsNew(); navigate('/settings/look'); }} />
       )}
@@ -631,6 +631,7 @@ function AppContent() {
       <Sidebar
         user={user}
         gamificationEnabled={gamificationEnabled}
+        features={dashboardData?.features}
         collapsed={sidebarCollapsed}
         onToggle={() => setSidebarCollapsed(prev => !prev)}
       />
@@ -777,7 +778,7 @@ function AppContent() {
           <Route path="/more" element={
             <>
               <PageHeader title={t('nav.more')} subtitle="" user={user} onCoinsClick={() => navigate('/rewards')} onStreakClick={() => navigate('/achievements')} onPointsClick={handlePointsClick} userPoints={myPoints} pointsPeriodLabel={pointsPeriodLabel} gamificationEnabled={gamificationEnabled} shieldsOn={!!dashboardData?.shields} />
-              <More user={user} gamificationEnabled={gamificationEnabled} />
+              <More user={user} gamificationEnabled={gamificationEnabled} features={dashboardData?.features} />
             </>
           } />
 

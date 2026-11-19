@@ -401,7 +401,7 @@ export const GUIDE_DE: GuideSection[] = [
       { h: 'Abzeichen' },
       { p: 'Eingebaute Abzeichen werden von selbst freigeschaltet. Eltern können unter **Einstellungen → Abzeichen** eigene erstellen (zum Beispiel „Hausaufgaben 4 Wochen in Folge“), mit optionalen Bonusmünzen, und für jedes eingebaute Abzeichen Münzen festlegen. Das Symbol wählst du wie bei einer Aufgabe: Tippe auf den Knopf neben Symbol, um Symbol wählen zu öffnen.' },
       { h: 'Abenteuerpfad' },
-      { where: 'Heute → die Karte Abenteuerpfad und ihre Landkarte (Eltern: Einstellungen → Abenteuerpfad)' },
+      { where: 'Heute → die Karte Abenteuerpfad oder Abenteuerpfad im Menü (auf dem Handy unter Mehr); Eltern: Einstellungen → Abenteuerpfad' },
       { p: 'Ein Brettspiel, das die ganze Familie einen Monat lang spielt. Alle, bei denen „Nimmt an Aufgaben teil“ an ist, spielen mit, Eltern auch. Jeder Monat hat seine eigene Welt, vom Schneegipfel im Januar bis zum Winterdorf im Dezember, und am 1. fangen alle wieder beim Start an. Oben und unten geht jede Karte in den Monat davor und danach über.' },
       { ul: [
         '**Sterne:** 1 Stern für jeden Tag, an dem du eine Aufgabe erledigst, und ein Bonusstern, wenn du an dem Tag 3 oder mehr erledigst (höchstens 2 am Tag). Jede Aufgabe zählt einmal am Tag. Eine Aufgabe, die auf die Zustimmung der Eltern wartet, bringt ihren Stern, sobald sie bestätigt ist, für den Tag, an dem sie erledigt wurde (die Karte Abenteuerpfad zeigt ⏳ für die wartenden). Jeder Wurf behält die bis dahin verdienten Sterne: Ein danach zurückgenommenes Erledigt nimmt nichts zurück.',
@@ -559,6 +559,7 @@ export const GUIDE_DE: GuideSection[] = [
         { q: 'Die Karte Abenteuerpfad ist nicht auf Heute', a: [
           'Vielleicht haben die Eltern **Abenteuerpfad spielen** unter **Einstellungen → Abenteuerpfad** (oder **Einstellungen → Funktionen**) ausgeschaltet.',
           'Du spielst nur mit, wenn „Nimmt an Aufgaben teil“ an ist (**Einstellungen → Familienmitglieder**).',
+          '**Sie ist vielleicht ausgeblendet:** Öffne Anpassen (der Knopf unten auf Heute) und tippe auf das 🚫 neben Abenteuerpfad, um sie wieder einzublenden. Abenteuerpfad im Menü (auf dem Handy unter Mehr) öffnet die Landkarte so oder so.',
         ] },
         { q: 'Bei der Aufgabe eines Kindes steht ▶ statt Erledigt', a: [
           'Sie hat einen Timer (Timer im Aufgaben-Editor). Das Kind tippt auf ▶, und Erledigt kommt zurück, wenn die Zeit um ist. Ein Elternteil kann für das Kind auf Erledigt tippen oder den Timer im Aufgaben-Editor leeren.',

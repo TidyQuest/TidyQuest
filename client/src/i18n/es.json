@@ -369,7 +369,8 @@
       "badges": "Logros",
       "hi": "Hola, {name}",
       "tabs": "Páginas principales",
-      "back": "Volver"
+      "back": "Volver",
+      "quest": "Sendero de aventuras"
     },
     "app": {
       "roomsConfigured": "habitaciones configuradas",

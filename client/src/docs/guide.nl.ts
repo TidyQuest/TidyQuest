@@ -401,7 +401,7 @@ export const GUIDE_NL: GuideSection[] = [
       { h: 'Badges' },
       { p: 'Ingebouwde badges ontgrendelen vanzelf. Ouders kunnen er zelf maken in **Instellingen → Badges** (bijvoorbeeld "4 weken op rij huiswerk"), met optionele bonusmunten, en munten instellen voor elke ingebouwde badge. Het icoon kies je zoals bij een taak: tik op de knop naast Pictogram om Kies een icoon te openen.' },
       { h: 'Avonturenpad' },
-      { where: 'Vandaag → de kaart Avonturenpad en de landkaart (ouders: Instellingen → Avonturenpad)' },
+      { where: 'Vandaag → de kaart Avonturenpad of Avonturenpad in het menu (op een telefoon onder Meer); ouders: Instellingen → Avonturenpad' },
       { p: 'Een bordspel dat het hele gezin een maand lang speelt. Iedereen met ‘Doet mee aan klusjes’ aan speelt mee, ouders ook. Elke maand heeft een eigen wereld, van de Besneeuwde Top in januari tot het Winterdorp in december, en op de 1e begint iedereen weer bij Start. De boven- en onderkant van elke kaart lopen over in de maand ervoor en erna.' },
       { ul: [
         '**Sterren:** 1 ster voor elke dag dat je een klusje doet, en een bonusster als je er die dag 3 of meer doet (hooguit 2 per dag). Elk klusje telt één keer per dag. Een klusje dat op goedkeuring van een ouder wacht, geeft zijn ster zodra het is goedgekeurd, voor de dag waarop het gedaan is (de kaart Avonturenpad toont ⏳ voor de wachtende). Elke worp houdt de sterren die je tot dan verdiende: een Klaar die daarna wordt teruggedraaid, neemt niets terug.',
@@ -559,6 +559,7 @@ export const GUIDE_NL: GuideSection[] = [
         { q: 'De kaart Avonturenpad staat niet op Vandaag', a: [
           'Misschien heeft een ouder **Avonturenpad spelen** uitgezet in **Instellingen → Avonturenpad** (of **Instellingen → Functies**).',
           'Je speelt alleen mee met ‘Doet mee aan klusjes’ aan (**Instellingen → Gezinsleden**).',
+          '**Hij is misschien verborgen:** open Aanpassen (de knop onderaan Vandaag) en tik op de 🚫 naast Avonturenpad om hem weer te tonen. Avonturenpad in het menu (op een telefoon onder Meer) opent de landkaart hoe dan ook.',
         ] },
         { q: 'Bij het klusje van een kind staat ▶ in plaats van Klaar!', a: [
           'Het heeft een timer (Timer in de klusjes-editor). Het kind tikt op ▶, en Klaar! komt terug als de tijd om is. Een ouder kan voor het kind op Klaar! tikken, of de timer in de klusjes-editor leegmaken.',
