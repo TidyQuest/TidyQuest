@@ -112,6 +112,7 @@ const FIRST_THEMES: Record<string, any> = {
     lifeKinds: ['reeds', 'fish', 'reeds'],
     bugs: 'fireflies',
     amp: 118, phase: 0.5,
+    zig: { m: 2.2, R: 54, wave: [10, 290] },
     ground: '#DDE4BA', patch: '#CCD6A2', ink: '#45311F', muted: '#6B5440', accent: '#D9480F', accentInk: '#A8380B',
     banner: '#FFF7E6', edge: '#B98E5A', edgeDark: '#8C6638', trail: '#ECD3A3', dash: '#C9A672', stone: '#FFF8EA',
     water: '#5FA8C6', waterLight: '#8FCBE0', ripple: '#FFFFFF', flowVals: '0;-46', plank: '#A0703F', rail: '#6B4423',
@@ -147,6 +148,7 @@ const FIRST_THEMES: Record<string, any> = {
     lifeKinds: [],
     bugs: 'stars',
     amp: 122, phase: -0.7,
+    zig: { m: 1.7, R: 40, swing: 0.94, wave: [3, 300] },
     ground: '#E3EBF4', patch: '#F7FAFD', ink: '#24405C', muted: '#4C6580', accent: '#1F6FB2', accentInk: '#1F5F99',
     banner: '#F8FBFF', edge: '#93AEC9', edgeDark: '#6D8CAB', trail: '#FFFFFF', dash: '#C9D8E6', stone: '#FFFFFF',
     water: '#A9D4EE', waterLight: '#DDF0FB', ripple: '#FFFFFF', flowVals: '0;0', plank: '#8A6A4F', rail: '#5E4632',
@@ -182,6 +184,7 @@ const FIRST_THEMES: Record<string, any> = {
     lifeKinds: ['lilypad', 'reeds', 'fish', 'lilypad'],
     bugs: 'fireflies',
     amp: 116, phase: 2.1,
+    zig: { m: 2.3, R: 58, dbl: [0, 0.5], drop: 16, wave: [5, 330] },
     ground: '#CFE8B7', patch: '#BEDFA0', ink: '#2C4A2E', muted: '#4D6B45', accent: '#D6336C', accentInk: '#B02A64',
     banner: '#FFFDF5', edge: '#C7A77A', edgeDark: '#9C7E52', trail: '#F7ECD5', dash: '#DCC7A0', stone: '#FFFDF6',
     water: '#62B8E0', waterLight: '#9FD6EF', ripple: '#FFFFFF', flowVals: '0;-46', plank: '#C08552', rail: '#8B5E34',
@@ -216,6 +219,7 @@ const FIRST_THEMES: Record<string, any> = {
     lifeKinds: ['fish', 'fish'],
     bugs: 'fireflies',
     amp: 120, phase: 1.2,
+    zig: { m: 2.5, R: 74, wave: [10, 380] },
     ground: '#F6E4B5', patch: '#F0D58F', ink: '#0E4F57', muted: '#5B4A2A', accent: '#0E8A96', accentInk: '#0E7C86',
     banner: '#FFFBEF', edge: '#D2A562', edgeDark: '#A67C3D', trail: '#FFF5DD', dash: '#E4C489', stone: '#FFFDF4',
     water: '#34B3C2', waterLight: '#79D5DE', ripple: '#FFFFFF', flowVals: '0;-46', plank: '#B07A45', rail: '#7A4E26',
@@ -325,25 +329,60 @@ export function buildTrail(key: WorldKey, N: number, spaces: Record<number, MapS
   let fx = (y: any) => 195 + T.amp * Math.sin(K * (y - Y0) + T.phase) + 9 * Math.sin(2.6 * K * (y - Y0) + T.phase * 1.7);
   const bends: Pt[] = [];
   if (wide) {
-    const R = 54, m = 2.2, th = Math.atan(m), sT = Math.sin(th), cT = Math.cos(th);
-    const edge = 96 + mapW * 0.03, xL = edge, xR = mapW - edge, D = xR - xL - 2 * R * (1 - cT), P = D / m + 2 * R * sT;
-    // Start at a bend (right or left, by world), heading straight down
-    const off = T.phase >= 0 ? P + R * sT : R * sT;
-    fx = (y: any) => {
-      let u = (y - Y0 + off) % (2 * P);
-      if (u < 0) u += 2 * P;
-      let x;
-      if (u < 2 * R * sT) x = xR - R + Math.sqrt(Math.max(0, R * R - (u - R * sT) ** 2));
-      else if (u < P) x = xR - R * (1 - cT) - m * (u - 2 * R * sT);
-      else if (u < P + 2 * R * sT) x = xL + R - Math.sqrt(Math.max(0, R * R - (u - P - R * sT) ** 2));
-      else x = xL + R * (1 - cT) + m * (u - P - 2 * R * sT);
-      return x + 6 * Math.sin(2 * Math.PI * (y - Y0) / 330 + T.phase * 1.7);
+    // Each world zigzags its own way (THEMES zig): m how far a run goes sideways for each step down (m2 for the runs
+    // to the right, if different), R how round the bends, swing how much of the width the runs cover, wave a gentle
+    // sway [size, length], dbl now and then a double bend part way along a run (where along it, run after run; 0 for
+    // none) with a short straight drop in the middle
+    const Z = { m: 2.2, R: 54, swing: 1, wave: [6, 330], dbl: [0], drop: 0, ...T.zig };
+    const half = (mid - 96 - mapW * 0.03) * Z.swing, xL = mid - half, xR = mid + half;
+    const slope = (dir: number) => (dir > 0 && Z.m2) || Z.m;
+    const sc = (m: number) => [Math.sin(Math.atan(m)), Math.cos(Math.atan(m))];
+    // The trail as parts down the map, each giving x for a y: arcs, runs and drops
+    const parts: { y0: number; y1: number; x: (y: number) => number }[] = [];
+    // From straight down onto a run heading dir (-1 left, 1 right), from a run onto straight down, a run, a drop
+    const leave = (x: number, y: number, dir: number, r: number, m: number) => {
+      const [sT, cT] = sc(m), cx = x + dir * r;
+      parts.push({ y0: y, y1: y + r * sT, x: (v) => cx - dir * Math.sqrt(Math.max(0, r * r - (v - y) ** 2)) });
+      return [x + dir * r * (1 - cT), y + r * sT];
     };
-    for (let k = -1; k < 400; k++) {
-      const y = Y0 - off + R * sT + k * P;
-      if (y > Y0 + 60) bends.push({ x: k % 2 ? xL : xR, y });
-      if (bends.length > 60) break;
+    const arrive = (x: number, y: number, dir: number, r: number, m: number) => {
+      const [sT, cT] = sc(m), ax = x + dir * r * (1 - cT), ay = y + r * sT, cx = ax - dir * r;
+      parts.push({ y0: y, y1: ay, x: (v) => cx + dir * Math.sqrt(Math.max(0, r * r - (v - ay) ** 2)) });
+      return [ax, ay];
+    };
+    const run = (x: number, y: number, dir: number, dx: number, m: number) => {
+      parts.push({ y0: y, y1: y + dx / m, x: (v) => x + dir * m * (v - y) });
+      return [x + dir * dx, y + dx / m];
+    };
+    const drop = (x: number, y: number, h: number) => { parts.push({ y0: y, y1: y + h, x: () => x }); return [x, y + h]; };
+    // Start at a bend (right or left, by world), heading straight down; then run after run until well past the finish
+    let dir = T.phase >= 0 ? 1 : -1, x = dir > 0 ? xL : xR, y = Y0;
+    const apexes = [Y0];
+    [x, y] = leave(x, y, dir, Z.R, slope(dir));
+    for (let k = 0; y < Y0 + 60 * N + 400; k++) {
+      const m = slope(dir), end = (dir > 0 ? xR : xL) - dir * Z.R * (1 - sc(m)[1]), at = Z.dbl[k % Z.dbl.length];
+      if (at > 0) {
+        const r = Z.R * 0.6, span = Math.abs(end - x) - 2 * r * (1 - sc(m)[1]);
+        [x, y] = run(x, y, dir, span * at, m);
+        [x, y] = arrive(x, y, dir, r, m);
+        [x, y] = drop(x, y, Z.drop);
+        [x, y] = leave(x, y, dir, r, m);
+      }
+      [x, y] = run(x, y, dir, Math.abs(end - x), m);
+      [x, y] = arrive(x, y, dir, Z.R, m);
+      apexes.push(y);
+      if (y > Y0 + 60) bends.push({ x, y });
+      dir = -dir;
+      [x, y] = leave(x, y, dir, Z.R, slope(dir));
     }
+    // The sway fades out at the bends, so the trail runs straight down where a stream crosses
+    let pi = 0;
+    fx = (y: any) => {
+      while (pi > 0 && y < parts[pi].y0) pi--;
+      while (pi < parts.length - 1 && y >= parts[pi].y1) pi++;
+      const fade = smooth(Math.min(...apexes.map((a) => Math.abs(y - a))) / 70);
+      return parts[pi].x(y) + fade * Z.wave[0] * Math.sin(2 * Math.PI * (y - Y0) / Z.wave[1] + T.phase * 1.7);
+    };
   }
   // Samples down the trail: every 4 px on a phone, every 2 px on a wide map (its runs cover more ground)
   const STEP = wide ? 2 : 4, WIN = wide ? 80 : 24;
@@ -449,6 +488,10 @@ export function buildTrail(key: WorldKey, N: number, spaces: Record<number, MapS
   const inMap = (b: any) => b.x1 >= 4 && b.x2 <= mapW - 4 && b.y1 >= 4 && b.y2 <= H - 4;
   const free = (b: any, o: any) => inMap(b) && !hitRect(b) && !hitDisc(b, o.disc) && !(o.trail != null && hitTrail(b, o.trail)) &&
     !(o.line != null && hitLine(b, o.line)) && !(o.water != null && hitWater(b, o.water));
+  // Signs (place names, signposts, "On to …") keep about a sign's height apart, so two never read as one double sign.
+  // signRoom: the room to the nearest sign, 1 or more when it's enough (14 px beside it, 26 px above or below).
+  const signRects: any[] = [];
+  const signRoom = (b: any) => signRects.reduce((m, q) => Math.min(m, Math.max(Math.max(q.x1 - b.x2, b.x1 - q.x2) / 14, Math.max(q.y1 - b.y2, b.y1 - q.y2) / 26)), Infinity);
 
   // The title banner (top left), the compass (top right) and the map key: under the banner on a phone, beside the
   // compass on a wide map
@@ -484,7 +527,7 @@ export function buildTrail(key: WorldKey, N: number, spaces: Record<number, MapS
       const right = [finX + 92 + w / 2, finX + 104 + w / 2], left = [finX - 92 - w / 2, finX - 104 - w / 2];
       for (const cx of finX < mid ? right.concat(left) : left.concat(right)) {
         const b = { x1: cx - w / 2, y1: Y1 + dy - 30, x2: cx + w / 2, y2: Y1 + dy + 34 };
-        if (inMap(b) && !hitRect(b) && !hitDisc(b, 4)) { rects.push(b); onward = { left: f1(b.x1), top: f1(b.y1), w: f1(w), text: W.onward }; break; }
+        if (inMap(b) && !hitRect(b) && !hitDisc(b, 4)) { rects.push(b); signRects.push(b); onward = { left: f1(b.x1), top: f1(b.y1), w: f1(w), text: W.onward }; break; }
       }
       if (onward) break;
     }
@@ -665,50 +708,69 @@ export function buildTrail(key: WorldKey, N: number, spaces: Record<number, MapS
     if (g.artAt) rects.push({ x1: g.artAt.x - 14, y1: g.artAt.y - 10, x2: g.artAt.x + 14, y2: g.artAt.y + 8 });
   });
 
-  // Name tags for the shortcuts and slides, on their line but never over a space or its number. On a short,
-  // crowded trail with no free spot: the spot with the least in the way.
+  // Name tags for the shortcuts and slides, on their line or close beside it, never over a space, its number or
+  // another tag. With no spot clear of everything else as well: the one with the least in the way.
   const numberBoxes: any[] = [];
   for (let i = 1; i < N; i++) if (kindOf(i) !== 'plain') numberBoxes.push({ x1: sp[i].x - 13, y1: sp[i].y + rad[i] + 2, x2: sp[i].x + 13, y2: sp[i].y + rad[i] + 22 });
   const overlaps = (q: any, b: any) => q.x1 < b.x2 && q.x2 > b.x1 && q.y1 < b.y2 && q.y2 > b.y1;
   const discBox = (i: number, m: number) => ({ x1: sp[i].x - rad[i] - m, y1: sp[i].y - rad[i] - m, x2: sp[i].x + rad[i] + m, y2: sp[i].y + rad[i] + m });
   const inTheWay = (b: any) => 3 * sp.filter((_p, i) => overlaps(discBox(i, 5), b)).length + 2 * numberBoxes.filter((q) => overlaps(q, b)).length + rects.filter((q) => overlaps(q, b)).length;
   const pills: any[] = [], pillRects: any[] = [];
+  // Points along the line (as a share of it) and distances out from it. A phone tries the middle of the line close
+  // by first, as it always has, so only tags that found no room there move.
+  const offs = [0, 15, -15, 28, -28, 42, -42, 56, -56, 70, -70, 84, -84, 98, -98, 112, -112, 126, -126, 140, -140], ts = [0.56, 0.48, 0.64, 0.4, 0.72, 0.32, 0.8, 0.24, 0.88];
+  const tries = (o: number[], t: number[]) => o.flatMap((off) => t.map((tt) => [off, tt]));
+  const tagTries = wide ? tries(offs, ts) : tries(offs.slice(0, 7), ts.slice(0, 7)).concat(tries(offs, ts));
+  // Round a very short line with no spot beside it clear of the spaces and tags: the nearest one to its middle.
+  // Failing that too, the spot with the least in the way, spaces included.
+  const ring: number[][] = [];
+  for (let dx = -200; dx <= 200; dx += 10) for (let dy = -160; dy <= 160; dy += 8) ring.push([dx, dy]);
+  ring.sort((a, b) => Math.hypot(a[0], a[1]) - Math.hypot(b[0], b[1]));
   routes.forEach((R) => {
     const text = W.pill(R.kind, R.to);
     const w = text.length * 6.6 + 30, h = 24;
-    let spot: any = null, best: any = null;
-    const offs = wide ? [0, 15, -15, 28, -28, 42, -42, 56, -56, 70, -70, 84, -84, 98, -98] : [0, 15, -15, 28, -28, 42, -42];
-    const ts = wide ? [0.56, 0.48, 0.64, 0.4, 0.72, 0.32, 0.8, 0.24, 0.88] : [0.56, 0.48, 0.64, 0.4, 0.72, 0.32, 0.8];
-    for (const off of offs) {
-      for (const t of ts) {
-        const p = along(R.D, R.tot * t);
-        const cx = Math.max(w / 2 + 6, Math.min(mapW - 6 - w / 2, p.x + p.nx * off)), cy = p.y + p.ny * off;
-        const b = { x1: cx - w / 2, y1: cy - h / 2, x2: cx + w / 2, y2: cy + h / 2 };
-        const cost = inTheWay(b) + (wide ? 8 * pillRects.filter((q) => overlaps(q, b)).length : 0);
-        if (cost === 0) { spot = { cx, cy, b }; break; }
-        if (!best || cost < best.cost) best = { cx, cy, b, cost };
+    let spot: any = null, best: any = null, last: any = null;
+    const tryAt = (x: number, y: number) => {
+      const cx = Math.max(w / 2 + 6, Math.min(mapW - 6 - w / 2, x)), cy = y;
+      const b = { x1: cx - w / 2, y1: cy - h / 2, x2: cx + w / 2, y2: cy + h / 2 };
+      const onTag = pillRects.some((q) => overlaps(q, b));
+      if (onTag || sp.some((_p, i) => overlaps(discBox(i, 5), b)) || numberBoxes.some((q) => overlaps(q, b))) {
+        const cost = inTheWay(b) + (onTag ? 8 : 0);
+        if (!last || cost < last.cost) last = { cx, cy, b, cost };
+        return false;
       }
-      if (spot) break;
-    }
-    spot = spot ?? best;
+      const cost = rects.filter((q) => overlaps(q, b)).length;
+      if (cost === 0) spot = { cx, cy, b };
+      else if (!best || cost < best.cost) best = { cx, cy, b, cost };
+      return cost === 0;
+    };
+    for (const [off, t] of tagTries) { const p = along(R.D, R.tot * t); if (tryAt(p.x + p.nx * off, p.y + p.ny * off)) break; }
+    if (!spot && !best) { const m = along(R.D, R.tot / 2); for (const [dx, dy] of ring) if (tryAt(m.x + dx, m.y + dy)) break; }
+    spot = spot ?? best ?? last;
     rects.push(spot.b);
     pillRects.push(spot.b);
     pills.push({ left: f1(spot.cx), top: f1(spot.cy), text, fg: R.kind === 'go' ? '#2B7A3A' : '#C92A2A', icon: R.kind === 'go' ? IC.up : IC.down });
   });
 
-  // Place names and stream names, in open ground beside the trail
+  // Place names and stream names, in open ground beside the trail: the first spot with room from the other signs, or
+  // with none, the spot with the most
   const labels: any[] = [], spots: any[] = [];
   const placeLabel = (name: any, cands: any) => {
     const w = name.length * 8.4 + 34, h = 34;
+    let pick: any = null;
     for (const c of cands) {
       const cx = Math.max(w / 2 + 6, Math.min(mapW - 6 - w / 2, c.x)), cy = c.y;
       const b = { x1: cx - w / 2, y1: cy - h / 2, x2: cx + w / 2, y2: cy + h / 2 + 4 };
       if (!free(b, { disc: 6, trail: 2, line: 7, water: 2 })) continue;
-      rects.push(b);
-      labels.push({ name, left: f1(cx - 90), top: f1(cy - 13) });
-      return { x: cx, y: cy };
+      const room = signRoom(b);
+      if (!pick || room > pick.room) pick = { cx, cy, b, room };
+      if (room >= 1) break;
     }
-    return null;
+    if (!pick) return null;
+    rects.push(pick.b);
+    signRects.push(pick.b);
+    labels.push({ name, left: f1(pick.cx - 90), top: f1(pick.cy - 13) });
+    return { x: pick.cx, y: pick.cy };
   };
   T.regions.forEach((rg: any) => {
     const p = at(len * rg.f), side = p.x < mid ? 1 : -1, cands: any[] = [];
@@ -717,12 +779,18 @@ export function buildTrail(key: WorldKey, N: number, spaces: Record<number, MapS
       for (const d of [78, 100, 124, 150]) for (const s of [1, -1]) for (const t of [0, 40, -40, 80, -80]) cands.push({ x: p.x + s * nx * d + (q.x - p.x) / L * t, y: p.y + s * ny * d + (q.y - p.y) / L * t - 12 });
     }
     for (const dy of [0, -26, 26, -52, 52, -78, 78, -104, 104, -130, 130]) for (const s of [side, -side]) for (const d of [128, 104, 152]) cands.push({ x: p.x + s * d, y: p.y - 12 + dy });
+    // Then further up and down the trail, for a short, crowded one
+    for (const dy of [-156, 156, -182, 182, -208, 208]) for (const s of [side, -side]) for (const d of [128, 104, 152]) cands.push({ x: p.x + s * d, y: p.y - 12 + dy });
     const o = placeLabel(rg.name, cands);
     if (o) spots.push({ rg, x: o.x, y: o.y });
   });
   streams.forEach((s: any) => {
-    const xs = (s.bx < mid ? [292, 262, 322, 232, 202] : [98, 128, 68, 158, 188]).map((x) => x * kx), cands: any[] = [];
+    // Away from the bridge first; then the bridge's side and a little further from the water
+    const far = [292, 262, 322, 232, 202], near = [98, 128, 68, 158, 188], cands: any[] = [];
+    const xs = (s.bx < mid ? far : near).map((x) => x * kx), xs2 = (s.bx < mid ? near : far).map((x) => x * kx);
     [-46, 46, -60, 60, -74, 74].forEach((dy) => { xs.forEach((x) => { cands.push({ x, y: s.fy(x) + dy }); }); });
+    [-46, 46, -60, 60, -74, 74].forEach((dy) => { xs2.forEach((x) => { cands.push({ x, y: s.fy(x) + dy }); }); });
+    [-88, 88, -102, 102].forEach((dy) => { xs.concat(xs2).forEach((x) => { cands.push({ x, y: s.fy(x) + dy }); }); });
     placeLabel(s.name, cands);
   });
 
@@ -775,10 +843,12 @@ export function buildTrail(key: WorldKey, N: number, spaces: Record<number, MapS
     });
   });
 
-  // Signposts a quarter, half and three quarters of the way
+  // Signposts a quarter, half and three quarters of the way, clear of the spaces and their numbers: the first spot
+  // with room from the other signs, or with none, the spot with the most
   const signs: any[] = [];
   [Math.round(N / 4), Math.round(N / 2), Math.round(3 * N / 4)].forEach((target) => {
-    for (const i of [target, target + 1, target - 1, target + 2, target - 2]) {
+    let pick: any = null;
+    search: for (const i of [target, target + 1, target - 1, target + 2, target - 2]) {
       const p = sp[i], q = sp[Math.min(N, i + 1)], o = sp[Math.max(0, i - 1)];
       const tx = q.x - o.x, ty = q.y - o.y, L = Math.hypot(tx, ty) || 1, nx = -ty / L, ny = tx / L;
       const text = target === Math.round(N / 2) ? W.halfway : W.toGo(N - i);
@@ -787,14 +857,18 @@ export function buildTrail(key: WorldKey, N: number, spaces: Record<number, MapS
           for (const dy of [0, -16, 16, -32, 32, -48, 48]) {
             const cx = p.x + nx * s * d, foot = p.y + ny * s * d + 22 + dy;
             const b = { x1: cx - 44, y1: foot - 50, x2: cx + 44, y2: foot };
-            if (!free(b, { disc: 4, trail: -4, line: 6, water: 0 }) || (wide && numberBoxes.some((q) => overlaps(q, b)))) continue;
-            rects.push(b);
-            signs.push({ text, left: f1(cx - 44), top: f1(foot - 50) });
-            return;
+            if (!free(b, { disc: 4, trail: -4, line: 6, water: 0 }) || numberBoxes.some((q) => overlaps(q, b))) continue;
+            const room = signRoom(b);
+            if (!pick || room > pick.room) pick = { text, b, room };
+            if (room >= 1) break search;
           }
         }
       }
     }
+    if (!pick) return;
+    rects.push(pick.b);
+    signRects.push(pick.b);
+    signs.push({ text: pick.text, left: f1(pick.b.x1), top: f1(pick.b.y1) });
   });
 
   // Big landscape features fill the largest open pockets beside the trail

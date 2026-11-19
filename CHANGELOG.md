@@ -68,6 +68,11 @@ What changed in each release, in plain language, newest first. Releases up to v0
   roll still takes its star with it.
 - **Leftover Quest Trail stars at the end of the month are rolled in a random order each round** (NEW-40), so the same
   person doesn't always reach the finish first.
+- **Each Quest Trail world winds its own way on a computer or tablet** (ENH-35). The wide map used to zigzag the same
+  way every month. Now the trail climbs the Snowy Summit in tight hairpins, sweeps round the Frozen Lake in wide
+  curves, meanders through the Rainy Meadow, leans with the wind on the Kite Hills and runs long and flat along Sunny
+  Shores, and some worlds take a double bend now and then. Streams still cross where the trail turns. Phones keep
+  the map exactly as it was.
 
 ### Fixed
 
@@ -85,6 +90,14 @@ What changed in each release, in plain language, newest first. Releases up to v0
   side, and says "Cylis has finished" instead of "Cylis is 24 ahead".
 - **The back arrow on the Quest Trail map** goes to Today when the page was opened by itself (it did nothing).
 - **No holiday leaves or snow fall over the Quest Trail map**, which has its own.
+- **Quest Trail shortcut and slide names stay off the spaces** (BUG-59). On a phone a name like "Mud slide to 29" could
+  sit partly under a space or its number, most often on a short trail. It now looks further along and beside its line,
+  and never covers a space, a number or another name.
+- **Quest Trail signposts stay off the spaces' numbers on a phone** (BUG-60): "Halfway!" and "29 to go" no longer cover
+  the small number under a coloured space.
+- **Quest Trail signs no longer stand on top of each other** (FIX-38): a place name and a signpost (like "Moss Hollow"
+  over "Halfway!") could look like one double sign. Signs now keep about a sign's height apart wherever there's room,
+  and stream names have more places to go, so on a phone they're missing less often.
 - **A parent ticking off a chore anyone can do for a kid no longer has to keep the coins** (FIX-37). Done still counts
   as the grown-up's, but a bar now says "… counted as yours" with **Change** for about 10 seconds (longer while
   you're on it). Change gives the chore to whoever really did it: coins, streak, turn and any badge that Done earned
