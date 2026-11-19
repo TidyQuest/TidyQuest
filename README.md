@@ -1,540 +1,148 @@
 # 🏠 TidyQuest
 
-> Transform household chores into an epic family adventure
+> Turn household chores into a family game
 
-**TidyQuest** is a self-hosted web application that gamifies housework using RPG mechanics. Complete tasks, earn coins, unlock achievements, and compete with your family on the leaderboard.
+**TidyQuest** is a self-hosted web app for sharing out the housework. Chores come due on a schedule, everyone earns
+coins for doing them, and the coins buy real-life rewards your family picks.
 
 [![Version](https://img.shields.io/github/v/release/TidyQuest/TidyQuest)](https://github.com/TidyQuest/TidyQuest/releases)
 ![Docker](https://img.shields.io/badge/docker-ready-brightgreen.svg)
 ![License](https://img.shields.io/badge/license-AGPL--3.0-blue.svg)
 
----
-
 > [!WARNING]
-> **Early-stage project** — TidyQuest is under active development. You may encounter bugs, incomplete features, or breaking changes between versions. Back up your data regularly and feel free to [open an issue](https://github.com/TidyQuest/TidyQuest/issues) if something breaks.
+> **Early-stage project.** TidyQuest changes quickly. Back up your data before updating, and
+> [open an issue](https://github.com/TidyQuest/TidyQuest/issues) if something breaks.
 
 ---
 
-## ✨ What is TidyQuest?
+## ✨ What it does
 
-TidyQuest turns boring chores into quests:
-- **🎯 Health Bars**: Each task has a visual health indicator that decays over time
-- **💰 Coins & Rewards**: Earn coins by completing tasks, redeem for family rewards
-- **🔥 Streaks**: Build daily/weekly streaks to stay motivated
-- **🏆 Leaderboard**: Compete with family members for top position
-- **🎖️ Achievements**: Unlock badges for milestones (100 tasks, 30-day streak, etc.)
-- **📅 Calendar View**: See upcoming due dates at a glance
-- **🌍 Multilingual**: English, French, German, Spanish, Italian
-- **📱 Notifications**: Optional reminders as phone notifications from the app itself (web push), or via Telegram, ntfy or Home Assistant
+- **🧹 Chores that come due.** Every few days, on set weekdays, monthly ("first Saturday"), or once as a to-do.
+  Each chore has a health bar that drops until someone does it. Rooms, zones, icons and a countdown timer.
+- **💰 Coins and rewards.** Coins for every chore, a reward shop with your own prices, weekly goals with a bonus, and parents'
+  OK for kids' purchases. Chores can be shared or split between people.
+- **🎮 Game extras.** Streaks and streak shields, levels and badges, a family leaderboard, team-ups, cheers, double
+  coins, a daily Rescue Mission, and a house mascot that grows as the family earns.
+- **👨‍👩‍👧 Made for families.** Parent, member and child roles, a simpler Kid mode, Strict Mode (a parent approves
+  kids' chores, with an optional proof photo), vacation pauses, and family members who don't log in.
+- **📊 Insights for parents.** Who does what, when chores get done, and which ones keep slipping.
+- **🔔 Notifications.** On each person's own phone (web push), or through Telegram, ntfy or Home Assistant, with
+  quiet hours.
+- **📱 Phone first.** Add it to the home screen and it opens like an app. Six languages (English, French, German,
+  Spanish, Italian, Dutch), color themes, and a built-in guide (Settings → Guide & help).
 
-Perfect for families who want to:
-- Make chores fun for kids
-- Track household responsibilities
-- Encourage teamwork with gamification
-- Build consistent cleaning habits
-
----
+Every extra can be switched off in **Settings → Features**, so a family can keep it as simple or as playful as it
+likes.
 
 ## 📸 Screenshots
 
 <details>
 <summary>Click to view screenshots</summary>
 
-### Dashboard
-![Dashboard](screenshots/dashboard.jpg)
-*Main dashboard showing task overview, streaks, and quick stats*
+### Today
+![Today](screenshots/dashboard.jpg)
+*Today's chores for the whole family, level progress, house health and this week's leaders*
 
-### Rooms & Tasks
+### Rooms
 ![Rooms](screenshots/rooms.jpg)
-*Room view with task health bars and completion tracking*
+*Every room's health at a glance, neediest first*
 
 ### Leaderboard
 ![Leaderboard](screenshots/leaderboard.jpg)
-*Family competition with weekly/monthly rankings*
+*Family rankings for this week, last week, the month, the quarter or the year*
 
 ### Rewards
 ![Rewards](screenshots/rewards.jpg)
-*Reward catalog and redemption system*
+*Spend coins on real-life rewards; kids' requests wait for a parent's OK*
 
 ### Achievements
 ![Achievements](screenshots/achievements.jpg)
-*Unlock badges for completing milestones*
+*Levels, and badges that grow from bronze to silver and beyond*
 
 </details>
 
 ---
 
-## 🚀 Quick Start
+## 🚀 Install
 
-### Prerequisites
-- Docker & Docker Compose
-- 100MB disk space
-- Port 3020 available
+You need Docker. TidyQuest is one container with its data in one folder.
 
-### Installation
+**Docker Compose.** Save this as `docker-compose.yml`:
 
-**Choose your deployment method:**
-
-#### Option A: Unraid Community Applications (Easiest)
-
-If you're running Unraid, TidyQuest is available directly from the **Community Applications** catalog:
-
-1. Open Community Applications in your Unraid dashboard
-2. Search for **TidyQuest**
-3. Click **Install** and fill in your `JWT_SECRET`
-4. Done!
-
-#### Option B: Docker Compose — Docker Hub Image (Recommended)
-
-Fastest way to get started on any Linux server using the pre-built multi-platform image:
-
-1. **Create project directory**
-   ```bash
-   mkdir tidyquest && cd tidyquest
-   ```
-
-2. **Create docker-compose.yml**
-   ```yaml
-   services:
-     tidyquest:
-       image: tidyquest/tidyquest:latest
-       container_name: tidyquest
-       ports:
-         - "3020:3000"
-       environment:
-         - NODE_ENV=production
-         - JWT_SECRET=CHANGE_THIS_TO_SECURE_RANDOM_STRING_MIN_32_CHARS
-       volumes:
-         - ./data:/app/data
-       restart: unless-stopped
-   ```
-
-3. **Generate secure JWT_SECRET**
-   ```bash
-   openssl rand -base64 32
-   # Copy output and replace JWT_SECRET in docker-compose.yml
-   ```
-
-4. **Launch**
-   ```bash
-   docker compose up -d
-   ```
-
-   Access at **http://localhost:3020**
-
-   The same image is on GitHub as `ghcr.io/tidyquest/tidyquest:latest`, if you'd rather pull from there.
-
-#### Option C: Build from Source
-
-For development or customization:
-
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/TidyQuest/TidyQuest.git
-   cd TidyQuest
-   ```
-
-2. **Configure environment**
-   ```bash
-   cp .env.example .env
-   # Edit .env and set a secure JWT_SECRET
-   # Generate one: openssl rand -base64 32
-   ```
-
-3. **Build and launch**
-   ```bash
-   docker compose up -d --build
-   ```
-
-   Access at **http://localhost:3020**
-
-### First Login
-On first launch, the database is empty. Create an admin account via the **Register** page.
-
----
-
-## 🎮 Features
-
-### For Everyone
-- ✅ **Complete Tasks**: Mark chores as done, earn coins
-- 💎 **Redeem Rewards**: Request rewards like "Movie Night Pick" or "Extra Game Time"
-- 📊 **Track Progress**: See your current streak, coins, and achievements
-- 🏠 **Room Management**: Organize tasks by room (Kitchen, Bedroom, Bathroom, etc.)
-
-### For Admins
-- 👥 **User Management**: Create family members (admin/member/child roles)
-- 📝 **Task CRUD**: Create, edit, delete tasks with custom frequencies (1-365 days)
-- 🎁 **Reward System**: Approve/reject reward requests, manage and customize catalog
-- ⚙️ **Global Settings**: Configure coins-per-effort, notifications (Telegram, ntfy or Home Assistant)
-- 🏖️ **Vacation Mode**: Pause task health decay globally or per member, with individual return dates
-- 📤 **Backup/Restore**: Export full database as JSON
-- 👤 **Task Assignment**: Assign tasks to specific users with three modes:
-  - **First** — first person to complete earns all coins
-  - **Shared** — each assignee completes once; coins split equally
-  - **Custom** — define a custom coin percentage per assignee (e.g. 70% / 30%)
-- ✅ **Strict Mode**: Require admin approval before task completions count
-- 💑 **Couple Mode**: Disable gamification (coins, streaks, leaderboard) for simpler tracking
-- 🔑 **Password Recovery**: Reset admin password via environment variable
-
-### Built-in Defaults
-- **8 Room Types**: Kitchen, Bedroom, Bathroom, Living Room, Office, Garage, Laundry, Garden
-- **60+ Predefined Tasks**: Common household chores with realistic frequencies
-- **10 Preset Rewards**: Movie night, ice cream, stay up late, game time, etc.
-- **12 Achievements**: Unlocked automatically based on activity
-- **6 Languages**: English, French, German, Spanish, Italian and Dutch
-
----
-
-## 🛠️ Tech Stack
-
-| Layer | Technology |
-|-------|-----------|
-| **Frontend** | React 19 + Vite + TypeScript |
-| **Backend** | Node.js + Express + TypeScript |
-| **Database** | SQLite3 (with WAL mode) |
-| **Auth** | JWT + bcrypt |
-| **Deployment** | Docker (single container, ~300MB) |
-| **Routing** | React Router v7 |
-| **Styling** | Custom design system with CSS custom properties |
-
-**Zero external dependencies** for core functionality. Optional Telegram, ntfy or Home Assistant integration for notifications.
-
----
-
-## 📂 Project Structure
-
-```
-TidyQuest/
-├── client/           # React frontend
-│   ├── src/
-│   │   ├── components/  # UI components
-│   │   ├── hooks/       # useAuth, useApi, useTranslation
-│   │   ├── i18n/        # Translation files (EN/FR/DE/ES/IT)
-│   │   └── App.tsx
-│   └── package.json
-├── server/           # Express backend
-│   ├── src/
-│   │   ├── routes/      # API endpoints
-│   │   ├── middleware/  # JWT auth
-│   │   ├── utils/       # Health calculation, notifications
-│   │   └── database.ts  # SQLite setup
-│   └── package.json
-├── data/             # Persistent storage (Docker volume)
-│   ├── tidyquest.db     # SQLite database
-│   └── avatars/         # User-uploaded photos
-├── Dockerfile        # Multi-stage build
-├── docker-compose.yml
-├── .env.example      # Configuration template
-├── SECURITY.md       # Security best practices
-└── API.md            # API documentation
+```yaml
+services:
+  tidyquest:
+    image: tidyquest/tidyquest:latest   # or ghcr.io/tidyquest/tidyquest:latest
+    container_name: tidyquest
+    ports:
+      - "3020:3000"
+    environment:
+      - JWT_SECRET=CHANGE_ME   # a long random string: openssl rand -base64 32
+    volumes:
+      - ./data:/app/data
+    restart: unless-stopped
 ```
 
----
+Then run `docker compose up -d` and open **http://localhost:3020**.
+
+**Unraid.** Search for **TidyQuest** in Community Applications, fill in `JWT_SECRET`, and install.
+
+**From source.** `git clone` this repository, copy `.env.example` to `.env`, set `JWT_SECRET`, and run
+`docker compose up -d --build`.
+
+**First login.** The first account you register is the family's parent (admin). A setup wizard then helps you add
+rooms, chores and family members.
+
+> [!IMPORTANT]
+> Put TidyQuest behind an HTTPS reverse proxy (Caddy, Nginx Proxy Manager…) before opening it to the internet.
+> Phone notifications and "add to home screen" also need `https://`. See [SECURITY.md](SECURITY.md).
 
 ## 🔧 Configuration
 
-### Environment Variables
+Most settings live in the app. The environment variables you're most likely to need:
 
-See `.env.example` for all options. Key variables:
+| Variable | What it's for |
+|----------|---------------|
+| `JWT_SECRET` | **Required.** Signs logins. At least 32 random characters |
+| `TRUST_PROXY` | Behind a reverse proxy: its addresses (e.g. `loopback, 172.16.0.0/12`) or a hop count like `1` |
+| `TZ` | Fallback time zone. The family's zone is set in Settings → General → Time zone |
+| `ADMIN_RESET_PASSWORD` | Forgot the parent password? Set it, restart, then remove it and restart again |
+| `SOURCE_URL` | If you run a changed copy: where people can get your code (the AGPL asks for this) |
 
-| Variable | Required | Description |
-|----------|----------|-------------|
-| `JWT_SECRET` | **Yes** (prod) | Secret for signing JWT tokens (min 32 chars) |
-| `NODE_ENV` | No | `production` or `development` |
-| `TZ` | No | Only a fallback. The family's time zone is set in the app (Settings → General → Time zone); a new install takes it from the first parent's browser. `TZ` (e.g. `Europe/Paris`, default UTC) is used until a zone is picked, which matters for installs that existed before the setting |
-| `PORT` | No | Server port (default: 3000) |
-| `TRUST_PROXY` | Behind a reverse proxy | Addresses of the proxy in front (e.g. `loopback, 172.16.0.0/12` for nginx or Nginx Proxy Manager on the same host or in Docker), or a hop count such as `1`. The login limit then counts each visitor's own address instead of the proxy's. Leave it unset without a proxy: the `X-Forwarded-For` header is ignored, since anyone can send it |
-| `ADMIN_RESET_PASSWORD` | No | One-shot admin password recovery. Set, restart, then remove. |
-| `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY` | No | The keys that sign phone notifications (web push). Without them the server makes a pair on first use and keeps it in the data folder (`vapid-keys.json`): back it up with the database. With new keys, each device signs up again the next time the app opens. |
-| `VAPID_SUBJECT` | No | How a push service can contact you about this server's messages: `mailto:you@example.org` or an `https://` address. Default: this project's GitHub page. |
-| `SOURCE_URL` | If you changed the code | Where the **Source code** link (login page and Settings → General) points. By default it's this repository at the tag (or `:main` commit) you run. If you run code you changed, set it to where people can get your copy: the AGPL asks for that |
+The full list, and setup steps for Telegram, ntfy and Home Assistant notifications, are in
+[docs/configuration.md](docs/configuration.md).
 
-### Hosted mode (`HOSTED=1`)
+## 🔄 Updating and backups
 
-`HOSTED=1` is how tidyquest.org runs. It works, but it isn't supported, and you're responsible for the data of the
-families you host.
-
-It runs many families on one server, each with its own database and folder, with sign-up, email sign-in for parents
-and an operator page at `/operator`. Billing is optional: with no `PAYMENT_KEY` there's no billing and families never
-expire. The code is in `server/src/hosted/`. To run TidyQuest for your own family, leave `HOSTED` unset.
-
-Hosted mode sends emails (confirm an address, reset a password, change the sign-in email) through any SMTP server.
-Without `SMTP_HOST` they go to the server log, links and all, which is fine for testing only. The log says at startup
-whether the mail server accepted the login.
-
-| Variable | Description |
-|----------|-------------|
-| `SMTP_HOST` | The mail server, e.g. your mailbox host or Postmark, Amazon SES or Resend |
-| `SMTP_PORT` | Default `465` (TLS from the start). Other ports such as `587` must offer STARTTLS before a password is sent |
-| `SMTP_USER`, `SMTP_PASS` | The login, often the mailbox's full address and its password |
-| `EMAIL_FROM` | The sender, e.g. `TidyQuest <noreply@example.org>` (no quotes needed). Default: TidyQuest at `SMTP_USER` |
-| `EMAIL_REPLY_TO` | Optional: where replies go, e.g. a support mailbox |
-
-### Notifications (Optional)
-
-TidyQuest supports three notification providers (configure in Settings → General → Notifications, admin only).
-Each can be a family channel everyone gets, and each person can also get their own (ntfy topic, Telegram chat or
-Home Assistant phone) under *Who gets what*.
-
-**Phone notifications (web push)**
-
-Nothing to set up on the server. Once notifications are on, each person opens **Profile → My notifications** on
-their own phone or computer and taps **Turn on for this device**. It needs the app opened at an `https://` address
-(a reverse proxy with a certificate, e.g. Nginx Proxy Manager); on iPhone and iPad (iOS 16.4+) TidyQuest has to be
-added to the Home Screen first. Messages go through the browser's push service (Google, Apple, Mozilla or
-Microsoft), encrypted end to end. Parents see each person's devices under *Who gets what*; **Settings → Features**
-can switch it off.
-
-**Telegram**
-1. Create a Telegram bot via [@BotFather](https://t.me/botfather)
-2. Get your chat ID via [@userinfobot](https://t.me/userinfobot)
-3. Enter bot token and chat ID in Settings
-
-**ntfy**
-1. Use [ntfy.sh](https://ntfy.sh) or your own ntfy server
-2. Enter the server URL and topic in Settings
-3. Subscribe to the topic on your phone
-
-**Home Assistant** (home servers only, not on tidyquest.org)
-
-Messages go to phones through the Home Assistant Companion app.
-1. In Home Assistant, open your profile (bottom left) → **Security** → **Long-lived access tokens** → **Create token**,
-   and copy it (it's shown only once).
-2. In TidyQuest's Home Assistant box, enter the **Home Assistant URL** as the TidyQuest server reaches it, e.g.
-   `http://homeassistant.local:8123` or `http://192.168.1.20:8123` (inside Docker, `.local` names often don't
-   resolve: use the IP address), and paste the token.
-3. Optional: a **family notify service** for messages everyone gets, e.g. `notify.family` (a
-   [notify group](https://www.home-assistant.io/integrations/group/#notify-groups) you made in Home Assistant). Save.
-4. Under **Who gets what**, give each person their phone's service, e.g. `notify.mobile_app_alexs_phone`. Home
-   Assistant lists them under **Developer tools → Actions** (type `notify.`); a phone appears there once the
-   Companion app is signed in on it. The `notify.` prefix is optional; only lowercase letters, numbers and
-   underscores are allowed.
-5. Tap **Send test notification** next to that person. If it fails, the message says why: "Could not reach Home
-   Assistant" (wrong URL or not reachable from the server), "returned 401" (wrong or deleted token), "returned 400"
-   (no notify service by that name). The *Notification log* shows every send and any error.
-
-TidyQuest calls `POST <url>/api/services/notify/<service>` with `{"title": "TidyQuest", "message": ...}`. This is
-separate from the [Home Assistant integration](#-home-assistant-integration) below, which shows chores as sensors in
-Home Assistant.
-
-Notification types:
-- 🕐 **Daily Due Tasks**: Sent at configured time (default 09:00)
-- 🎁 **Reward Requests**: Notify admin when child requests reward
-- 🎖️ **Achievements**: Celebrate unlocked achievements
-
----
-
-## 📖 Usage
-
-### Creating Rooms
-1. Go to **Rooms** page
-2. Click **Add Room**
-3. Select room type (e.g., Kitchen)
-4. Choose from 60+ default tasks or create custom ones
-
-### Completing Tasks
-1. Open a room
-2. Click ✅ on a task row
-3. Earn coins (5-25 based on effort level 1-5)
-4. Health bar resets to 100%
-
-### Redeeming Rewards
-1. Go to **Rewards** page
-2. Click **Redeem** on a reward (coins deducted immediately)
-3. Admin approves/rejects request
-4. If rejected, coins are refunded
-
-### Vacation Mode
-Admin can enable vacation mode in **Settings**:
-- **Global**: Pause health decay for the entire family
-- **Per member**: Toggle vacation individually with separate return dates
-
-Vacation freezes task health and protects streaks while members are away.
-
-### Admin Password Recovery
-
-If an admin forgets their password:
-
-1. Add the environment variable to your container:
-   ```yaml
-   environment:
-     - ADMIN_RESET_PASSWORD=your-new-password
-   ```
-2. Restart the container — the first admin's password is reset, and they're signed out on every device (phones and computers already logged in as them have to log in again with the new password)
-3. **Remove the variable immediately** and restart again
-
----
-
-## 🔒 Security
-
-**Before exposing publicly**, review `SECURITY.md` for:
-- Setting strong JWT_SECRET
-- Using HTTPS reverse proxy (Caddy/Nginx)
-- Database backup strategy
-- Telegram token protection
-
-⚠️ **Never expose TidyQuest directly to the internet over HTTP**.
-
----
-
-## 🔄 Updating
-
-### Using Docker Hub Image
 ```bash
-docker compose pull
-docker compose up -d
+docker compose pull && docker compose up -d
 ```
 
-### Moving from `mellowfox/tidyquest`
-TidyQuest moved to the [TidyQuest organization](https://github.com/TidyQuest) in November 2026, and new versions
-are published as `tidyquest/tidyquest`. The old `mellowfox/tidyquest` image stays at 0.6.3 and gets no updates.
+Your data stays in `./data` and updates itself on start. Before updating, take a backup: **Settings → Export Data**
+(a JSON file you can load back with Import Data), or copy the `data` folder.
 
-1. Back up first: Admin → Settings → Export Data, or copy the `data` folder.
-2. In `docker-compose.yml`, change `image: mellowfox/tidyquest:latest` to `image: tidyquest/tidyquest:latest`.
-3. `docker compose pull && docker compose up -d`. Your data stays in `./data` and updates itself on start.
+Still on the old `mellowfox/tidyquest` image? It stopped at 0.6.3. Change the image to `tidyquest/tidyquest:latest`
+(on Unraid, the container's *Repository*) and pull. What changed in each version: [CHANGELOG.md](CHANGELOG.md).
 
-On Unraid, edit the container and change *Repository* to `tidyquest/tidyquest`.
+## 🏠 Home Assistant
 
-### Using Source Build
-```bash
-cd TidyQuest
-git pull
-docker compose down
-docker compose up -d --build
-```
+The integration in [`custom_components/tidyquest`](custom_components/tidyquest/README.md) shows each chore as a
+sensor and adds services to complete, reset, create and edit chores from dashboards and automations.
 
-Your data persists in the `./data` volume.
+## 🛠️ For developers
 
----
-
-## 🗄️ Backup & Restore
-
-### Manual Backup (via UI)
-Admin → Settings → Export Data → Download JSON
-
-### File System Backup
-```bash
-cp data/tidyquest.db backups/tidyquest-$(date +%Y%m%d).db
-```
-
-### Restore
-Admin → Settings → Import Data → Upload JSON
-
----
-
-## 🌐 API Documentation
-
-See `API.md` for full endpoint documentation with examples.
-
-Quick overview:
-- **Auth**: `/api/auth/register`, `/api/auth/login`
-- **Rooms**: `/api/rooms` (CRUD)
-- **Tasks**: `/api/rooms/:id/tasks` (CRUD + complete)
-- **Dashboard**: `/api/dashboard` (aggregated view)
-- **Leaderboard**: `/api/leaderboard?period=week|month|quarter|year`
-- **Rewards**: `/api/rewards` (CRUD + redeem)
-- **Achievements**: `/api/achievements`
-
-All endpoints require `Authorization: Bearer <token>` (except auth routes).
-
----
-
-## 🏠 Home Assistant Integration
-
-TidyQuest includes a custom Home Assistant integration that exposes tasks as sensors and allows you to complete or manage them from dashboards and automations.
-
-### Install
-
-1. Copy `custom_components/tidyquest/` into your Home Assistant `config/custom_components/` directory
-2. Restart Home Assistant
-3. Go to **Settings → Devices & Services → Add Integration** and search for **TidyQuest**
-4. Enter your TidyQuest URL and credentials (admin or member account)
-
-### Entities
-
-Each task becomes a `sensor` whose state is the task's current health (0–100). Attributes include `room_name`, `effort`, `is_due`, `assigned_users`, `assignment_mode`, and more.
-
-### Services
-
-| Service | Description |
-|---------|-------------|
-| `tidyquest.complete_task` | Mark a task as done. HA user is automatically matched to a TidyQuest user by display name |
-| `tidyquest.reset_task` | Reset a task to due/dirty (removes today's completion) |
-| `tidyquest.create_task` | Create a new task in a room |
-| `tidyquest.update_task` | Update task properties (frequency, effort, etc.) |
-| `tidyquest.delete_task` | Delete a task |
-| `tidyquest.refresh` | Force immediate sensor refresh |
-
-### Example — Complete a task from a dashboard button
-
-```yaml
-service: tidyquest.complete_task
-target:
-  entity_id: sensor.kitchen_wash_dishes_health
-```
-
-### Example — Automation when a task is overdue
-
-```yaml
-automation:
-  trigger:
-    platform: numeric_state
-    entity_id: sensor.kitchen_wash_dishes_health
-    below: 20
-  action:
-    service: notify.mobile_app
-    data:
-      message: "The dishes need doing!"
-```
-
-> **User matching**: HA user names are automatically matched to TidyQuest `displayName` (case-insensitive). Override with `user_name` or `tidyquest_user_id` in service data.
-
-See `custom_components/tidyquest/README.md` for full documentation.
-
----
-
-## 🤝 Contributing
-
-Contributions are welcome! Please:
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
----
+React 19 + Vite on the front, Node.js + Express + TypeScript and SQLite on the back, in a single Docker image. The
+API is described in [API.md](API.md). Contributions are welcome: fork, make a branch, and open a pull request.
 
 ## 📜 License
 
-This project is licensed under the **GNU Affero General Public License v3.0 (AGPL-3.0)**.
+[AGPL-3.0](LICENSE). You can use, change and share TidyQuest freely. If you run a changed copy for other people,
+even privately, you must share your changed code with them.
 
-**What this means:**
-- ✅ You can use, modify, and distribute TidyQuest freely
-- ✅ You can run it commercially (for your business/family)
-- ⚠️ If you modify and **host** TidyQuest as a service (even privately), you **must** share your source code
-- ⚠️ Any derivative work must also be licensed under AGPL-3.0
+## 🙏 Thanks
 
-**Why AGPL?** To ensure TidyQuest remains free and open-source forever, preventing proprietary SaaS forks.
+Created by [mellow-fox](https://github.com/mellow-fox) and moved to the TidyQuest organization in November 2026.
+Uses the [Nunito](https://fonts.google.com/specimen/Nunito) font.
 
-See the `LICENSE` file for full details.
-
----
-
-## 🙏 Acknowledgments
-
-- Created by [mellow-fox](https://github.com/mellow-fox), and moved to the TidyQuest organization in November 2026
-- Inspired by RPG mechanics from classic games
-- Built with love for families who want to make chores fun
-- Uses [Nunito](https://fonts.google.com/specimen/Nunito) font (bundled locally)
-
----
-
-## 📞 Support
-
-- 🐛 **Bug Reports**: [GitHub Issues](https://github.com/TidyQuest/TidyQuest/issues)
-- 💬 **Discussions**: [GitHub Discussions](https://github.com/TidyQuest/TidyQuest/discussions)
-- 🔒 **Security Issues**: See `SECURITY.md` for responsible disclosure
-
----
-
-Made with ❤️ for families everywhere
+**Help:** [Issues](https://github.com/TidyQuest/TidyQuest/issues) ·
+[Discussions](https://github.com/TidyQuest/TidyQuest/discussions) · security reports: see [SECURITY.md](SECURITY.md)
