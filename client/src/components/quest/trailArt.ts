@@ -8,7 +8,7 @@ export function baseHtml(V: any): string {
   return `${(patches).map((g: any) => `
 <div style="position: absolute; left: ${g.x}px; top: ${g.y}px; width: ${g.w}px; height: ${g.h}px; border-radius: 50%; background: ${g.c}; opacity: ${g.o}"></div>
 `).join('')}
-<svg width="390" height="${H}" viewBox="0 0 390 ${H}" style="position: absolute; left: 0; top: 0" aria-hidden="true">
+<svg width="${V.MW}" height="${H}" viewBox="0 0 ${V.MW} ${H}" style="position: absolute; left: 0; top: 0" aria-hidden="true">
 ${V.trailDefs}
 <path d="${land.l1}" fill="${landC.l1}"></path>
 <path d="${land.l2}" fill="${landC.l2}"></path>
@@ -104,7 +104,7 @@ ${(show.gate) ? `
 ${V.gateSvg}
 </div>
 ` : ''}
-<svg width="390" height="${H}" viewBox="0 0 390 ${H}" style="position: absolute; left: 0; top: 0" aria-hidden="true">
+<svg width="${V.MW}" height="${H}" viewBox="0 0 ${V.MW} ${H}" style="position: absolute; left: 0; top: 0" aria-hidden="true">
 <path d="${con.back.line}" fill="none" stroke="${T.backS.halo.c}" stroke-width="${T.backS.halo.w}" stroke-opacity="${T.backS.halo.o}" stroke-dasharray="${T.backS.halo.d}" stroke-linecap="round" stroke-linejoin="round"><animate attributeName="stroke-dashoffset" values="${T.backS.halo.a}" dur="1.4s" repeatCount="indefinite"></animate></path>
 <path d="${con.back.line}" fill="none" stroke="${T.backS.base.c}" stroke-width="${T.backS.base.w}" stroke-opacity="${T.backS.base.o}" stroke-dasharray="${T.backS.base.d}" stroke-linecap="round" stroke-linejoin="round"><animate attributeName="stroke-dashoffset" values="${T.backS.base.a}" dur="1.4s" repeatCount="indefinite"></animate></path>
 <path d="${con.back.line}" fill="none" stroke="${T.backS.top.c}" stroke-width="${T.backS.top.w}" stroke-opacity="${T.backS.top.o}" stroke-dasharray="${T.backS.top.d}" stroke-linecap="round" stroke-linejoin="round"><animate attributeName="stroke-dashoffset" values="${T.backS.top.a}" dur="1.4s" repeatCount="indefinite"></animate></path>
@@ -126,9 +126,6 @@ ${V.finSvg}
 ${V.extra}
 ${(show.party) ? `
 <div style="position: absolute; left: ${party.lineLeft}px; top: ${party.lineTop}px; width: 54px; height: 10px; transform: rotate(${party.lineRot}deg); background: repeating-conic-gradient(#2A2017 0% 25%, #FFFFFF 0% 50%) 0 0 / 10px 10px; box-shadow: 0 1px 2px rgba(0,0,0,.25)"></div>
-<div style="position: absolute; left: ${party.bx}px; top: ${party.by}px; width: 44px; height: 74px">
-<svg width="44" height="74" viewBox="0 0 44 74" aria-hidden="true"><g><animateTransform attributeName="transform" type="translate" values="0 0;0 -3;0 0" dur="3s" repeatCount="indefinite"></animateTransform><path d="M11 24 Q16 48 22 72 M22 21 Q22 46 22 72 M33 27 Q28 48 22 72" stroke="#6B5A4B" stroke-width="1" fill="none"></path><ellipse cx="11" cy="13" rx="8" ry="10" fill="#FF6B6B"></ellipse><path d="M9.5 22.5 L11 25 L12.5 22.5 Z" fill="#FF6B6B"></path><ellipse cx="33" cy="16" rx="8" ry="10" fill="#4DABF7"></ellipse><path d="M31.5 25.5 L33 28 L34.5 25.5 Z" fill="#4DABF7"></path><ellipse cx="22" cy="10" rx="8" ry="10" fill="#FCC419"></ellipse><path d="M20.5 19.5 L22 22 L23.5 19.5 Z" fill="#FCC419"></path><ellipse cx="8.5" cy="9" rx="2" ry="3" fill="#FFFFFF" opacity=".55"></ellipse><ellipse cx="19.5" cy="6" rx="2" ry="3" fill="#FFFFFF" opacity=".55"></ellipse><ellipse cx="30.5" cy="12" rx="2" ry="3" fill="#FFFFFF" opacity=".55"></ellipse></g></svg>
-</div>
 ${(party.confetti).map((q: any) => `
 <div style="position: absolute; left: ${q.x}px; top: ${q.y}px; width: 1px; height: 1px; pointer-events: none">
 <svg width="12" height="12" viewBox="-6 -6 12 12" overflow="visible" style="position: absolute; left: 0; top: 0; overflow: visible" aria-hidden="true"><g><animateTransform attributeName="transform" type="translate" values="${q.move}" dur="${q.dur}" begin="${q.begin}" repeatCount="indefinite"></animateTransform><path d="M-2.6 -1.4 H2.6 V1.4 H-2.6 Z" fill="${q.c}"><animate attributeName="opacity" values="0;1;1;0" dur="${q.dur}" begin="${q.begin}" repeatCount="indefinite"></animate><animateTransform attributeName="transform" type="rotate" values="${q.spin}" dur="${q.dur}" begin="${q.begin}" repeatCount="indefinite"></animateTransform></path></g></svg>
@@ -136,14 +133,14 @@ ${(party.confetti).map((q: any) => `
 `).join('')}
 ` : ''}
 ${(show.clouds) ? `
-<svg width="390" height="${H}" viewBox="0 0 390 ${H}" style="position: absolute; left: 0; top: 0; pointer-events: none" aria-hidden="true">
+<svg width="${V.MW}" height="${H}" viewBox="0 0 ${V.MW} ${H}" style="position: absolute; left: 0; top: 0; pointer-events: none" aria-hidden="true">
 <defs><radialGradient id="tqCloudShade"><stop offset="0" stop-color="#1E2A3A" stop-opacity=".14"></stop><stop offset="1" stop-color="#1E2A3A" stop-opacity="0"></stop></radialGradient></defs>
 <g fill="url(#tqCloudShade)">
-<g><animateTransform attributeName="transform" type="translate" values="-240 760;560 760" dur="80s" begin="-30s" repeatCount="indefinite"></animateTransform><ellipse cx="0" cy="0" rx="92" ry="46"></ellipse><ellipse cx="56" cy="-16" rx="68" ry="38"></ellipse><ellipse cx="-58" cy="-6" rx="58" ry="32"></ellipse></g>
-<g><animateTransform attributeName="transform" type="translate" values="560 1380;-240 1380" dur="95s" begin="-10s" repeatCount="indefinite"></animateTransform><ellipse cx="0" cy="0" rx="100" ry="48"></ellipse><ellipse cx="-60" cy="-14" rx="64" ry="36"></ellipse><ellipse cx="62" cy="-4" rx="54" ry="30"></ellipse></g>
-<g><animateTransform attributeName="transform" type="translate" values="-240 2020;560 2020" dur="85s" begin="-55s" repeatCount="indefinite"></animateTransform><ellipse cx="0" cy="0" rx="88" ry="44"></ellipse><ellipse cx="54" cy="-18" rx="66" ry="36"></ellipse><ellipse cx="-56" cy="-8" rx="52" ry="30"></ellipse></g>
-<g><animateTransform attributeName="transform" type="translate" values="560 2640;-240 2640" dur="90s" begin="-40s" repeatCount="indefinite"></animateTransform><ellipse cx="0" cy="0" rx="96" ry="46"></ellipse><ellipse cx="-58" cy="-16" rx="62" ry="34"></ellipse><ellipse cx="60" cy="-6" rx="56" ry="30"></ellipse></g>
-<g><animateTransform attributeName="transform" type="translate" values="-240 3280;560 3280" dur="100s" begin="-70s" repeatCount="indefinite"></animateTransform><ellipse cx="0" cy="0" rx="90" ry="44"></ellipse><ellipse cx="56" cy="-14" rx="64" ry="36"></ellipse><ellipse cx="-56" cy="-6" rx="54" ry="30"></ellipse></g>
+<g><animateTransform attributeName="transform" type="translate" values="-240 760;${V.MW + 170} 760" dur="80s" begin="-30s" repeatCount="indefinite"></animateTransform><ellipse cx="0" cy="0" rx="92" ry="46"></ellipse><ellipse cx="56" cy="-16" rx="68" ry="38"></ellipse><ellipse cx="-58" cy="-6" rx="58" ry="32"></ellipse></g>
+<g><animateTransform attributeName="transform" type="translate" values="${V.MW + 170} 1380;-240 1380" dur="95s" begin="-10s" repeatCount="indefinite"></animateTransform><ellipse cx="0" cy="0" rx="100" ry="48"></ellipse><ellipse cx="-60" cy="-14" rx="64" ry="36"></ellipse><ellipse cx="62" cy="-4" rx="54" ry="30"></ellipse></g>
+<g><animateTransform attributeName="transform" type="translate" values="-240 2020;${V.MW + 170} 2020" dur="85s" begin="-55s" repeatCount="indefinite"></animateTransform><ellipse cx="0" cy="0" rx="88" ry="44"></ellipse><ellipse cx="54" cy="-18" rx="66" ry="36"></ellipse><ellipse cx="-56" cy="-8" rx="52" ry="30"></ellipse></g>
+<g><animateTransform attributeName="transform" type="translate" values="${V.MW + 170} 2640;-240 2640" dur="90s" begin="-40s" repeatCount="indefinite"></animateTransform><ellipse cx="0" cy="0" rx="96" ry="46"></ellipse><ellipse cx="-58" cy="-16" rx="62" ry="34"></ellipse><ellipse cx="60" cy="-6" rx="56" ry="30"></ellipse></g>
+<g><animateTransform attributeName="transform" type="translate" values="-240 3280;${V.MW + 170} 3280" dur="100s" begin="-70s" repeatCount="indefinite"></animateTransform><ellipse cx="0" cy="0" rx="90" ry="44"></ellipse><ellipse cx="56" cy="-14" rx="64" ry="36"></ellipse><ellipse cx="-56" cy="-6" rx="54" ry="30"></ellipse></g>
 </g>
 </svg>
 ` : ''}
@@ -156,8 +153,8 @@ ${(v.butterflies) ? `<svg width="2" height="2" overflow="visible" style="positio
 `).join('')}
 ` : ''}
 ${(dusk.on) ? `
-<div style="position: absolute; left: 0; top: 0; width: 390px; height: ${H}px; background: ${dusk.tint}; mix-blend-mode: multiply; pointer-events: none"></div>
-<svg width="390" height="${H}" viewBox="0 0 390 ${H}" style="position: absolute; left: 0; top: 0; pointer-events: none" aria-hidden="true"><path d="${svg.trail}" fill="none" stroke="#FFF4CC" stroke-opacity="${dusk.pathO}" stroke-width="64" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+<div style="position: absolute; left: 0; top: 0; width: ${V.MW}px; height: ${H}px; background: ${dusk.tint}; mix-blend-mode: multiply; pointer-events: none"></div>
+<svg width="${V.MW}" height="${H}" viewBox="0 0 ${V.MW} ${H}" style="position: absolute; left: 0; top: 0; pointer-events: none" aria-hidden="true"><path d="${svg.trail}" fill="none" stroke="#FFF4CC" stroke-opacity="${dusk.pathO}" stroke-width="64" stroke-linecap="round" stroke-linejoin="round"></path></svg>
 ${(glows).map((w: any) => `
 <div style="position: absolute; left: ${w.left}px; top: ${w.top}px; width: ${w.size}px; height: ${w.size}px; border-radius: 50%; background: ${w.bg}; pointer-events: none"></div>
 `).join('')}
@@ -240,17 +237,29 @@ ${(signs).map((g: any) => `
 `).join('')}`;
 }
 
+/** The finish balloons: drawn above the fog, so the finish stays in sight as the goal */
+export function balloonsHtml(V: any): string {
+  const { party, show } = V;
+  return `${(show.party) ? `
+<div style="position: absolute; left: ${party.bx}px; top: ${party.by}px; width: 44px; height: 74px">
+<svg width="44" height="74" viewBox="0 0 44 74" aria-hidden="true"><g><animateTransform attributeName="transform" type="translate" values="0 0;0 -3;0 0" dur="3s" repeatCount="indefinite"></animateTransform><path d="M11 24 Q16 48 22 72 M22 21 Q22 46 22 72 M33 27 Q28 48 22 72" stroke="#6B5A4B" stroke-width="1" fill="none"></path><ellipse cx="11" cy="13" rx="8" ry="10" fill="#FF6B6B"></ellipse><path d="M9.5 22.5 L11 25 L12.5 22.5 Z" fill="#FF6B6B"></path><ellipse cx="33" cy="16" rx="8" ry="10" fill="#4DABF7"></ellipse><path d="M31.5 25.5 L33 28 L34.5 25.5 Z" fill="#4DABF7"></path><ellipse cx="22" cy="10" rx="8" ry="10" fill="#FCC419"></ellipse><path d="M20.5 19.5 L22 22 L23.5 19.5 Z" fill="#FCC419"></path><ellipse cx="8.5" cy="9" rx="2" ry="3" fill="#FFFFFF" opacity=".55"></ellipse><ellipse cx="19.5" cy="6" rx="2" ry="3" fill="#FFFFFF" opacity=".55"></ellipse><ellipse cx="30.5" cy="12" rx="2" ry="3" fill="#FFFFFF" opacity=".55"></ellipse></g></svg>
+</div>
+` : ''}`;
+}
+
 export function fogHtml(V: any): string {
   const { T, fog } = V;
   return `${(fog.on) ? `
-<div style="position: absolute; left: 0; top: ${fog.top}px; width: 390px; height: ${fog.h}px; background: ${fog.bg}; pointer-events: none"></div>
+<div style="position: absolute; left: 0; top: ${fog.top}px; width: ${V.MW}px; height: ${fog.h}px; background: ${fog.bg}; pointer-events: none"></div>
 ${(fog.puffs).map((f: any) => `
-<div style="position: absolute; left: ${f.left}px; top: ${f.top}px; width: ${f.s}px; height: ${f.s}px; border-radius: 50%; background: ${fog.c}; box-shadow: 0 0 28px 12px ${fog.c}; pointer-events: none"></div>
+<div style="position: absolute; left: ${f.left}px; top: ${f.top}px; width: ${f.s}px; height: ${f.s}px; border-radius: 50%; background: ${fog.c}; box-shadow: 0 0 ${f.g ?? 28}px ${f.g ? 6 : 12}px ${fog.c}; pointer-events: none"></div>
 `).join('')}
-<div style="position: absolute; left: 0; top: ${fog.textTop}px; width: 390px; display: flex; flex-direction: column; align-items: center; gap: 2px; pointer-events: none">
+${(fog.textTop != null) ? `
+<div style="position: absolute; left: 0; top: ${fog.textTop}px; width: ${V.MW}px; display: flex; flex-direction: column; align-items: center; gap: 2px; pointer-events: none">
 <span style="font-family: Fredoka, Nunito, sans-serif; font-size: 20px; font-weight: 600; color: ${T.ink}">${fog.title}</span>
 <span style="font-size: 13px; font-weight: 700; color: ${T.muted}">${fog.sub}</span>
 </div>
+` : ''}
 ${(fog.peek).map((d: any) => `
 <div style="position: absolute; left: ${d.left}px; top: ${d.top}px; width: ${d.size}px; height: ${d.size}px; box-sizing: border-box; border-radius: 50%; background: ${d.bg}; border: ${d.bw}px solid ${d.fg}; box-shadow: 0 0 0 4px rgba(255,255,255,.75), 0 0 16px 8px rgba(255,255,255,.85); display: flex; align-items: center; justify-content: center; color: ${d.fg}; opacity: .9">
 ${(d.hasIcon) ? `<svg width="${d.iconSize}" height="${d.iconSize}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${d.icon}"></path></svg>` : ''}
@@ -267,7 +276,7 @@ export function topHtml(V: any): string {
 <div style="font-family: Fredoka, Nunito, sans-serif; font-weight: 600; font-size: ${T.titleSize}px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.1; margin-top: 2px; color: ${T.ink}">${T.title}</div>
 <div style="font-size: 13px; font-weight: 700; margin-top: 6px; color: ${T.muted}">${T.sub}</div>
 </div>
-<div style="position: absolute; left: 16px; top: 146px; width: 358px; box-sizing: border-box; padding: 12px 14px 14px; border-radius: 18px; background: ${T.banner}; border: 2px solid ${T.edge}; box-shadow: 0 4px 0 ${T.edge}">
+<div style="position: absolute; left: ${V.keyAt.left}px; top: ${V.keyAt.top}px; width: 358px; box-sizing: border-box; padding: 12px 14px 14px; border-radius: 18px; background: ${T.banner}; border: 2px solid ${T.edge}; box-shadow: 0 4px 0 ${T.edge}">
 <div style="font-size: 12px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: ${T.accentInk}">${T.keyTitle}</div>
 <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 12px; margin-top: 10px">
 ${(mapKey).map((k: any) => `
@@ -306,6 +315,6 @@ export function particlesHtml(V: any): string {
 </div>
 `).join('')}
 ${(show.frame) ? `
-<div style="position: absolute; left: 0; top: 0; width: 390px; height: ${H}px; pointer-events: none; box-shadow: inset 0 0 0 4px ${T.edgeDark}, inset 0 0 0 8px ${T.banner}, inset 0 0 0 10px ${T.edge}, inset 0 0 70px rgba(60, 40, 10, .22)"></div>
+<div style="position: absolute; left: 0; top: 0; width: ${V.MW}px; height: ${H}px; pointer-events: none; box-shadow: inset 0 0 0 4px ${T.edgeDark}, inset 0 0 0 8px ${T.banner}, inset 0 0 0 10px ${T.edge}, inset 0 0 70px rgba(60, 40, 10, .22)"></div>
 ` : ''}`;
 }

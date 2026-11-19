@@ -28,6 +28,8 @@ interface Props {
 
 const sleep = (ms: number) => new Promise<void>((r) => { window.setTimeout(r, ms); });
 const calm = () => typeof window !== 'undefined' && !!window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+/** From this page width the map is drawn as wide as the page (up to WIDEST), its trail zigzagging across it */
+const WIDE_FROM = 600, WIDEST = 1000;
 const FACES: Record<number, number[]> = { 1: [4], 2: [0, 8], 3: [0, 4, 8], 4: [0, 2, 6, 8], 5: [0, 2, 4, 6, 8], 6: [0, 2, 3, 5, 6, 8] };
 const KEY_ITEMS = [['keyCoins', 'keyCoinsWhat', 'coins'], ['keyCard', 'keyCardWhat', 'card'], ['keyTreat', 'keyTreatWhat', 'treat'], ['', 'keyUpWhat', 'up'], ['', 'keyDownWhat', 'down'], ['keyHigh', 'keyHighWhat', 'high']] as const;
 
@@ -52,6 +54,9 @@ const QuestTrail: React.FC<Props> = ({ userId, language, coins, onCoinsChanged, 
   const [result, setResult] = useState<TurnMessage | null>(null);
   const [showKey, setShowKey] = useState(false);
   const [zoom, setZoom] = useState(1);
+  /** The map's width: null until the page is measured */
+  const [mapW, setMapW] = useState<number | null>(null);
+  const widthRef = useRef<number | null>(null);
   const scrolled = useRef(false);
 
   const load = useCallback(() => api.questState()
@@ -63,12 +68,25 @@ const QuestTrail: React.FC<Props> = ({ userId, language, coins, onCoinsChanged, 
     .catch(() => setFailed(true)), [navigate]);
   useEffect(() => { void load(); }, [load]);
 
-  // The map is drawn 390 px wide: narrower phones shrink it to fit, so nothing scrolls sideways
+  // On a phone the map is drawn 390 px wide, and narrower phones shrink it to fit, so nothing scrolls sideways. A
+  // wider page gets a map as wide as itself. After the first measure, resizing redraws it once the window settles.
   const columnRef = useCallback((el: HTMLDivElement | null) => {
-    if (!el || typeof ResizeObserver === 'undefined') return;
-    const ro = new ResizeObserver(([e]) => setZoom(Math.min(1, e.contentRect.width / MAP_WIDTH)));
+    if (!el) return;
+    const apply = (w: number) => {
+      const wide = w >= WIDE_FROM, next = wide ? Math.min(WIDEST, Math.floor(w)) : MAP_WIDTH;
+      setZoom(wide ? 1 : Math.min(1, w / MAP_WIDTH));
+      widthRef.current = next;
+      setMapW(next);
+    };
+    if (typeof ResizeObserver === 'undefined') { apply(el.clientWidth); return; }
+    let timer = 0;
+    const ro = new ResizeObserver(([e]) => {
+      window.clearTimeout(timer);
+      const w = e.contentRect.width;
+      if (widthRef.current == null) apply(w); else timer = window.setTimeout(() => apply(w), 200);
+    });
     ro.observe(el);
-    return () => ro.disconnect();
+    return () => { ro.disconnect(); window.clearTimeout(timer); };
   }, []);
 
   const me = state?.players.find((p) => p.userId === userId) ?? null;
@@ -81,14 +99,17 @@ const QuestTrail: React.FC<Props> = ({ userId, language, coins, onCoinsChanged, 
   const posOf = (p: { userId: number; position: number }) => (p.userId === turnId ? activePos : p.position);
   const texts = useMemo(() => (state ? mapTexts(t, language, state, userId, me?.position ?? 0) : null), [state, t, language, userId, me?.position]);
 
-  // Open on the piece whose turn it is (or the leader's when you're watching)
+  // Open on the piece whose turn it is (or the leader's when you're watching), and find it again when the map is
+  // redrawn for a new width
+  const drawnW = useRef<number | null>(null);
   useEffect(() => {
-    if (!state || scrolled.current) return;
+    if (!state || mapW == null || (scrolled.current && drawnW.current === mapW)) return;
     scrolled.current = true;
+    drawnW.current = mapW;
     const lead = [...state.players].sort((a, b) => b.position - a.position)[0];
     const who = turnId ?? lead?.userId;
     if (who != null) requestAnimationFrame(() => follow(who, false));
-  }, [state, turnId]);
+  }, [state, turnId, mapW]);
 
   const roll = async () => {
     if (!state || !turnOf || busy || turnOf.starsLeft < 1) return;
@@ -232,8 +253,8 @@ const QuestTrail: React.FC<Props> = ({ userId, language, coins, onCoinsChanged, 
           </div>
         </div>
         <div className="quest-map" style={{ zoom }}>
-          <TrailMap world={world} month={state.trail.month} length={len} spaces={state.trail.spaces} players={state.players} meId={me ? userId : null}
-            activeId={turnId} activePos={activePos} jump={jump} reach={canRoll && !finished} timeOfDay={state.timeOfDay} fog={state.fog} texts={texts} />
+          {mapW != null && <TrailMap width={mapW} world={world} month={state.trail.month} length={len} spaces={state.trail.spaces} players={state.players} meId={me ? userId : null}
+            activeId={turnId} activePos={activePos} jump={jump} reach={canRoll && !finished} timeOfDay={state.timeOfDay} fog={state.fog} texts={texts} />}
         </div>
       </div>
 

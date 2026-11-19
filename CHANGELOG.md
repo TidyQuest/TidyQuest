@@ -50,10 +50,16 @@ What changed in each release, in plain language, newest first. Releases up to v0
   opens the map with their die, and their piece walks while they watch.
 - **Quest Trail shows chores waiting for a parent's OK** (NEW-40): under Strict Mode the Today card (and Kid mode's)
   says "⏳ 2 waiting for a grown-up's OK", so a kid can see their chores counted.
+
 - **What's new: Quest Trail** (NEW-40). After the update, everyone gets a few slides introducing the Quest Trail
   the first time they open the app: where to find it, how stars and rolls work, and who wins. Parents get one more
   slide about Settings → Quest Trail, and kids in Kid mode get a shorter set. They only show while the family has the
   game switched on. Someone who missed the new-look slides too sees both, one after the other.
+- **The Quest Trail map fills a computer or tablet screen** (NEW-40). On a page wider than a phone the map is drawn
+  as wide as the page (up to 1000 pixels), with the trail zigzagging from side to side in long, gently sloping runs,
+  so about twice as much of the month fits on screen. The streams cross where the trail turns, the title, map key and
+  compass sit in one row along the top, and the die stays a phone-sized bar in the middle. Resizing the window redraws
+  it. Phones keep the map exactly as it was.
 
 ### Changed
 
@@ -65,6 +71,9 @@ What changed in each release, in plain language, newest first. Releases up to v0
 
 ### Fixed
 
+- **The Quest Trail fog covers the whole trail ahead** (NEW-40). It used to lift six or more spaces before the finish,
+  so on a short trail only a band in the middle was hidden. Now it reaches down to the finish line; the finish, its
+  sign and its balloons stay in sight as the goal.
 - **The Quest Trail map no longer scrolls sideways on a 390-pixel phone** (NEW-40): it was 5 pixels too wide.
 - **A reward hidden in the shop can be the Quest Trail prize** (NEW-40): the winner used to get only the coins. Settings
   marks it "(hidden in the shop)", for a prize kept just for the Quest Trail.

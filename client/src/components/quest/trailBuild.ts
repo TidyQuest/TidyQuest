@@ -245,7 +245,7 @@ const FIRST_THEMES: Record<string, any> = {
 
 export const THEMES: Record<WorldKey, any> = { ...FIRST_THEMES, ...NEW_THEMES } as Record<WorldKey, any>;
 
-function drawLand(kind: string, p: { x: number; y: number; R: number }, L: Record<string, string[]>): void {
+function drawLand(kind: string, p: { x: number; y: number; R: number }, L: Record<string, string[]>, mid = 195): void {
   const x = p.x, y = p.y, R = p.R;
   if (kind === 'hills') {
     const mound = (mx: any, base: any, w: any, h: any) => 'M' + f1(mx - w) + ',' + f1(base) + 'C' + f1(mx - w * 0.55) + ',' + f1(base - h * 1.3) + ' ' + f1(mx + w * 0.55) + ',' + f1(base - h * 1.3) + ' ' + f1(mx + w) + ',' + f1(base) + 'Z';
@@ -284,7 +284,7 @@ function drawLand(kind: string, p: { x: number; y: number; R: number }, L: Recor
       rows[k % 3].push('M' + f1(x - w1) + ',' + f1(yy) + 'L' + f1(x + w1) + ',' + f1(yy) + 'L' + f1(x + w2) + ',' + f1(y2) + 'L' + f1(x - w2) + ',' + f1(y2) + 'Z');
     }
   } else if (kind === 'bays') {
-    const side = x < 150 ? -1 : (x > 240 ? 1 : 0), cx = x + side * R * 0.4, rx = side ? R * 1.3 : R * 0.95, ry = R * 0.66;
+    const side = x < mid - 45 ? -1 : (x > mid + 45 ? 1 : 0), cx = x + side * R * 0.4, rx = side ? R * 1.3 : R * 0.95, ry = R * 0.66;
     L.l1.push(ell(cx, y, rx + 8, ry + 7, 0));
     L.l2.push(ell(cx, y, rx, ry, 0));
     L.l3.push(ell(cx + side * rx * 0.15, y + 2, rx * 0.62, ry * 0.55, 0));
@@ -300,10 +300,14 @@ function drawLand(kind: string, p: { x: number; y: number; R: number }, L: Recor
   }
 }
 
-export function buildTrail(key: WorldKey, N: number, spaces: Record<number, MapSpace>, W: MapWords, landOn = true, around?: { prev: WorldKey; next: WorldKey }): Built {
+/**
+ * mapW: the map's width. Phones get 390 px. A wider screen gets a wider map: the trail zigzags across it in long,
+ * gently sloping runs, so more of it fits on screen. At 390 everything below works out exactly as it always has.
+ */
+export function buildTrail(key: WorldKey, N: number, spaces: Record<number, MapSpace>, W: MapWords, landOn = true, around?: { prev: WorldKey; next: WorldKey }, mapW = 390): Built {
   const S: Record<number, MapSpace> = { ...spaces, 0: { t: 'start' }, [N]: { t: 'finish' } };
   const idx = WORLDS.indexOf(key), prevKey = around?.prev ?? WORLDS[(idx + 11) % 12], nextKey = around?.next ?? WORLDS[(idx + 1) % 12];
-  const ck = [key, prevKey, nextKey, N, JSON.stringify(spaces), JSON.stringify(W), landOn].join('|');
+  const ck = [key, prevKey, nextKey, N, JSON.stringify(spaces), JSON.stringify(W), landOn, mapW].join('|');
   const hit = CACHE.get(ck);
   if (hit) return hit;
   const T0 = THEMES[key];
@@ -311,14 +315,51 @@ export function buildTrail(key: WorldKey, N: number, spaces: Record<number, MapS
   const r = rng(T.seed);
   const pick = (v: any) => Array.isArray(v) ? v[Math.floor(r() * v.length)] : v;
   const TP = THEMES[prevKey], TN = THEMES[nextKey];
-      // Y0: the start, far enough below the map key that a crowd of pieces on Start stays clear of it
-      const Y0 = 440, Y1 = Y0 + Math.round(3364 * N / 80), H = Y1 + 300, K = 2 * Math.PI / 470;
-  const fx = (y: any) => 195 + T.amp * Math.sin(K * (y - Y0) + T.phase) + 9 * Math.sin(2.6 * K * (y - Y0) + T.phase * 1.7);
+  const wide = mapW > 390, mid = mapW / 2, kx = mapW / 390;
+  // The title banner, the map key and the compass: stacked on a phone, side by side when the map is wide enough
+  const row = mapW >= 770;
+  // Y0: the start, far enough below the map key that a crowd of pieces on Start stays clear of it
+  const Y0 = row ? 310 : 440, K = 2 * Math.PI / 470;
+  // A phone's trail winds gently down the middle. A wide map's zigzags between its sides: straight runs sloping
+  // gently down, joined by round bends where the trail runs straight down for a moment (where the streams cross).
+  let fx = (y: any) => 195 + T.amp * Math.sin(K * (y - Y0) + T.phase) + 9 * Math.sin(2.6 * K * (y - Y0) + T.phase * 1.7);
+  const bends: Pt[] = [];
+  if (wide) {
+    const R = 54, m = 2.2, th = Math.atan(m), sT = Math.sin(th), cT = Math.cos(th);
+    const edge = 96 + mapW * 0.03, xL = edge, xR = mapW - edge, D = xR - xL - 2 * R * (1 - cT), P = D / m + 2 * R * sT;
+    // Start at a bend (right or left, by world), heading straight down
+    const off = T.phase >= 0 ? P + R * sT : R * sT;
+    fx = (y: any) => {
+      let u = (y - Y0 + off) % (2 * P);
+      if (u < 0) u += 2 * P;
+      let x;
+      if (u < 2 * R * sT) x = xR - R + Math.sqrt(Math.max(0, R * R - (u - R * sT) ** 2));
+      else if (u < P) x = xR - R * (1 - cT) - m * (u - 2 * R * sT);
+      else if (u < P + 2 * R * sT) x = xL + R - Math.sqrt(Math.max(0, R * R - (u - P - R * sT) ** 2));
+      else x = xL + R * (1 - cT) + m * (u - P - 2 * R * sT);
+      return x + 6 * Math.sin(2 * Math.PI * (y - Y0) / 330 + T.phase * 1.7);
+    };
+    for (let k = -1; k < 400; k++) {
+      const y = Y0 - off + R * sT + k * P;
+      if (y > Y0 + 60) bends.push({ x: k % 2 ? xL : xR, y });
+      if (bends.length > 60) break;
+    }
+  }
+  // Samples down the trail: every 4 px on a phone, every 2 px on a wide map (its runs cover more ground)
+  const STEP = wide ? 2 : 4, WIN = wide ? 80 : 24;
+  let Y1 = Y0 + Math.round(3364 * N / 80);
+  if (wide) {
+    // As long as the trail needs to be for about 60 px a space
+    let s = 0, y = Y0, x = fx(Y0);
+    while (s < 60 * N) { const x2 = fx(y + STEP); s += Math.hypot(x2 - x, STEP); x = x2; y += STEP; }
+    Y1 = y;
+  }
+  const H = Y1 + 300;
 
   // The trail, with the spaces spread evenly along it
   const pts: any[] = [];
   let len = 0;
-  for (let y = Y0; y <= Y1 + 0.001; y += 4) {
+  for (let y = Y0; y <= Y1 + 0.001; y += STEP) {
     const p = { x: fx(y), y: y, s: 0 };
     if (pts.length) { const q = pts[pts.length - 1]; len += Math.hypot(p.x - q.x, p.y - q.y); }
     p.s = len;
@@ -337,9 +378,9 @@ export function buildTrail(key: WorldKey, N: number, spaces: Record<number, MapS
   const kindOf = (i: any) => (S[i] || { t: 'plain' }).t;
   const rad = sp.map((_p, i) => kindOf(i) === 'plain' ? 15 : (kindOf(i) === 'start' || kindOf(i) === 'finish' ? 23 : 20));
   const dist = (x: any, y: any) => {
-    const i = Math.round((y - Y0) / 4);
+    const i = Math.round((y - Y0) / STEP);
     let best = Infinity;
-    for (let j = Math.max(0, i - 24); j <= Math.min(pts.length - 1, i + 24); j++) {
+    for (let j = Math.max(0, i - WIN); j <= Math.min(pts.length - 1, i + WIN); j++) {
       const p = pts[j], d = (p.x - x) * (p.x - x) + (p.y - y) * (p.y - y);
       if (d < best) best = d;
     }
@@ -351,27 +392,46 @@ export function buildTrail(key: WorldKey, N: number, spaces: Record<number, MapS
   };
 
   // Two streams, each with a bridge where the trail crosses it
+  const usedBends: Pt[] = [], streamYs: number[] = [];
   const streams = T.waters.map((w: any, wi: any) => {
-    const wy0 = Y0 + w.f * (Y1 - Y0);
-    const fy = (x: any) => wy0 + 12 * Math.sin(x / 46 + T.phase + wi * 2.3) + (x - 195) * w.tilt;
+    let wy0 = Y0 + w.f * (Y1 - Y0);
+    let fy = (x: any) => wy0 + 12 * Math.sin(x / 46 + T.phase + wi * 2.3) + (x - 195) * w.tilt;
+    if (wide) {
+      // On a wide map: at the bend nearest its place, where the trail runs straight down. A short trail may have too
+      // few bends: then as far as can be from the other stream, the start and the finish, its bridge on a run.
+      const bend = bends.filter((b) => b.y < Y1 - 110 && !usedBends.includes(b)).sort((a, b) => Math.abs(a.y - wy0) - Math.abs(b.y - wy0))[0];
+      if (bend) { usedBends.push(bend); wy0 = bend.y; } else {
+        let best = -1;
+        for (let y = Y0 + 100; y <= Y1 - 120; y += 10) {
+          const room = Math.min(y - Y0, Y1 - y, ...streamYs.map((v) => Math.abs(v - y)));
+          if (room > best) { best = room; wy0 = y; }
+        }
+      }
+      streamYs.push(wy0);
+      const bx = bend ? bend.x : fx(wy0);
+      fy = (x: any) => wy0 + 7 * Math.sin((x - bx) / 52 + T.phase + wi * 2.3) + (x - bx) * w.tilt * 0.3;
+    }
     const wp: any[] = [];
-    for (let x = -20; x <= 410; x += 10) wp.push(f1(x) + ',' + f1(fy(x)));
+    for (let x = -20; x <= mapW + 20; x += 10) wp.push(f1(x) + ',' + f1(fy(x)));
     let bi = 0, bd = Infinity;
     pts.forEach((p, i) => {
-      if (Math.abs(p.y - wy0) > 160) return;
+      if (Math.abs(p.y - wy0) > (wide ? 110 : 160)) return;
       const d = Math.abs(p.y - fy(p.x));
       if (d < bd) { bd = d; bi = i; }
     });
     const bp = pts[bi], b2 = pts[Math.min(pts.length - 1, bi + 2)], b0 = pts[Math.max(0, bi - 2)];
     const bang = Math.atan2(b2.y - b0.y, b2.x - b0.x) * 180 / Math.PI;
-    return { fy, name: w.name, critter: w.critter, bx: bp.x, d: 'M' + wp.join('L'), bridge: 'translate(' + f1(bp.x) + ' ' + f1(bp.y) + ') rotate(' + f1(bang) + ')' };
+    // A bridge on a slanting run gets longer, to reach across the water
+    const cross = Math.abs(Math.sin(Math.atan2(b2.y - b0.y, b2.x - b0.x) - Math.atan2(fy(bp.x + 5) - fy(bp.x - 5), 10)));
+    const stretch = wide ? Math.min(2.2, Math.max(1, (36 / Math.max(0.3, cross) + 18) / 62)) : 1;
+    return { fy, name: w.name, critter: w.critter, bx: bp.x, d: 'M' + wp.join('L'), bridge: 'translate(' + f1(bp.x) + ' ' + f1(bp.y) + ') rotate(' + f1(bang) + ')' + (stretch > 1.02 ? ' scale(' + stretch.toFixed(2) + ' 1)' : '') };
   });
   const end = pts[pts.length - 1];
-  const finX = Math.max(100, Math.min(290, end.x));
+  const finX = Math.max(100, Math.min(mapW - 100, end.x));
   // The trail comes in from the top edge (last month's map) and leaves past the finish at the bottom (next month's)
   const p0 = pts[0];
-  const trailD = 'M195,-30C195,' + f1(Y0 - 200) + ' ' + f1(p0.x) + ',' + f1(Y0 - 160) + ' ' + f1(p0.x) + ',' + f1(Y0) + 'L' + pts.filter((_p, i) => i % 2 === 0).map((p) => f1(p.x) + ',' + f1(p.y)).join('L') +
-    'L' + f1(end.x) + ',' + f1(end.y) + 'Q' + f1(end.x) + ',' + (Y1 + 70) + ' ' + f1(finX) + ',' + (Y1 + 140) + 'Q' + f1(finX) + ',' + (Y1 + 250) + ' 195,' + (H + 30);
+  const trailD = 'M' + mid + ',-30C' + mid + ',' + f1(Y0 - 200) + ' ' + f1(p0.x) + ',' + f1(Y0 - 160) + ' ' + f1(p0.x) + ',' + f1(Y0) + 'L' + pts.filter((_p, i) => i % 2 === 0).map((p) => f1(p.x) + ',' + f1(p.y)).join('L') +
+    'L' + f1(end.x) + ',' + f1(end.y) + 'Q' + f1(end.x) + ',' + (Y1 + 70) + ' ' + f1(finX) + ',' + (Y1 + 140) + 'Q' + f1(finX) + ',' + (Y1 + 250) + ' ' + mid + ',' + (H + 30);
 
   // Everything placed on the map keeps clear of the spaces, the lines and each other
   const rects: any[] = [];
@@ -386,18 +446,23 @@ export function buildTrail(key: WorldKey, N: number, spaces: Record<number, MapS
   };
   const hitTrail = (b: any, m: any) => grid(b, (x: any, y: any) => dist(x, y) < 23 + m);
   const hitWater = (b: any, m: any) => grid(b, (x: any, y: any) => streams.some((s: any) => Math.abs(y - s.fy(x)) < 18 + m));
-  const inMap = (b: any) => b.x1 >= 4 && b.x2 <= 386 && b.y1 >= 4 && b.y2 <= H - 4;
+  const inMap = (b: any) => b.x1 >= 4 && b.x2 <= mapW - 4 && b.y1 >= 4 && b.y2 <= H - 4;
   const free = (b: any, o: any) => inMap(b) && !hitRect(b) && !hitDisc(b, o.disc) && !(o.trail != null && hitTrail(b, o.trail)) &&
     !(o.line != null && hitLine(b, o.line)) && !(o.water != null && hitWater(b, o.water));
 
+  // The title banner (top left), the compass (top right) and the map key: under the banner on a phone, beside the
+  // compass on a wide map
+  const keyAt = row ? { left: mapW - 96 - 358, top: 22 } : { left: 16, top: 146 };
   rects.push({ x1: 8, y1: 12, x2: 298, y2: 136 });
-  rects.push({ x1: 298, y1: 8, x2: 390, y2: 122 });
-  rects.push({ x1: 8, y1: 136, x2: 382, y2: 336 });
+  rects.push({ x1: mapW - 92, y1: 8, x2: mapW, y2: 122 });
+  rects.push(row ? { x1: keyAt.left - 8, y1: 12, x2: keyAt.left + 366, y2: 232 } : { x1: 8, y1: 136, x2: 382, y2: 336 });
   rects.push({ x1: finX - 88, y1: Y1 + 30, x2: finX + 88, y2: Y1 + 206 });
-  const prizeLeft = Math.max(14, Math.min(56, finX - 160));
+  const prizeLeft = Math.max(14, Math.min(wide ? mapW - 334 : 56, finX - 160));
   rects.push({ x1: prizeLeft - 4, y1: Y1 + 208, x2: prizeLeft + 324, y2: Y1 + 296 });
   const mark = (i: any, text: any, w: any) => {
-    const p = sp[i], left = p.x < 195 ? p.x + rad[i] + 24 : p.x - rad[i] - 24 - w;
+    // On a wide map the trail can meet Start or the finish from the side: the tag goes on the side away from it
+    const p = sp[i], q = sp[i === 0 ? 1 : i - 1], away = wide && Math.abs(q.x - p.x) > rad[i] ? q.x < p.x : p.x < mid;
+    const left = away ? p.x + rad[i] + 24 : p.x - rad[i] - 24 - w;
     rects.push({ x1: left - 2, y1: p.y - 15, x2: left + w + 2, y2: p.y + 15 });
     return { text, left: f1(left), top: f1(p.y - 13) };
   };
@@ -409,7 +474,7 @@ export function buildTrail(key: WorldKey, N: number, spaces: Record<number, MapS
   let lookBack: any = null, onward: any = null;
   if (prevKey !== key) {
     for (const dx of [-112, 112, -140, 140, -84, 84]) {
-      const cx = sp[0].x + dx, b = { x1: cx - 34, y1: Math.max(340, sp[0].y - 62), x2: cx + 34, y2: Math.max(340, sp[0].y - 62) + 64 };
+      const cx = sp[0].x + dx, top = Math.max(row ? 238 : 340, sp[0].y - 62), b = { x1: cx - 34, y1: top, x2: cx + 34, y2: top + 64 };
       if (inMap(b) && !hitRect(b) && !hitDisc(b, 6) && !hitTrail(b, 2)) { rects.push(b); lookBack = { left: f1(b.x1), top: f1(b.y1), key: prevKey }; break; }
     }
   }
@@ -417,7 +482,7 @@ export function buildTrail(key: WorldKey, N: number, spaces: Record<number, MapS
     const w = Math.max(84, W.onward.replace(/&[a-z#0-9]+;/g, 'x').length * 7.2 + 30);
     for (const dy of [120, 150, 90, 170]) {
       const right = [finX + 92 + w / 2, finX + 104 + w / 2], left = [finX - 92 - w / 2, finX - 104 - w / 2];
-      for (const cx of finX < 195 ? right.concat(left) : left.concat(right)) {
+      for (const cx of finX < mid ? right.concat(left) : left.concat(right)) {
         const b = { x1: cx - w / 2, y1: Y1 + dy - 30, x2: cx + w / 2, y2: Y1 + dy + 34 };
         if (inMap(b) && !hitRect(b) && !hitDisc(b, 4)) { rects.push(b); onward = { left: f1(b.x1), top: f1(b.y1), w: f1(w), text: W.onward }; break; }
       }
@@ -430,7 +495,7 @@ export function buildTrail(key: WorldKey, N: number, spaces: Record<number, MapS
     lineRot: f1(Math.atan2(pf2.y - pf.y, pf2.x - pf.x) * 180 / Math.PI + 90),
     bx: 0, by: 0, confetti: [] as any[]
   };
-  const sides = fp.x < 195 ? [-77, -96, 31, 50] : [31, 50, -77, -96];
+  const sides = fp.x < mid ? [-77, -96, 31, 50] : [31, 50, -77, -96];
   let spot = null;
   for (const dy of [-74, -96, -50, -120]) {
     for (const dx of sides) {
@@ -469,7 +534,7 @@ export function buildTrail(key: WorldKey, N: number, spaces: Record<number, MapS
       return { A: toward(P, C1, rad[a] + 2), C1, C2, Z: toward(Q, C2, rad[b] + 9) };
     };
     const clear = (q: any) => {
-      if (q.x < 16 || q.x > 374) return false;
+      if (q.x < 16 || q.x > mapW - 16) return false;
       for (let j = lo; j <= hi; j++) {
         if (j === a || j === b) continue;
         const dx = q.x - sp[j].x, dy = q.y - sp[j].y, mm = rad[j] + 12;
@@ -607,17 +672,19 @@ export function buildTrail(key: WorldKey, N: number, spaces: Record<number, MapS
   const overlaps = (q: any, b: any) => q.x1 < b.x2 && q.x2 > b.x1 && q.y1 < b.y2 && q.y2 > b.y1;
   const discBox = (i: number, m: number) => ({ x1: sp[i].x - rad[i] - m, y1: sp[i].y - rad[i] - m, x2: sp[i].x + rad[i] + m, y2: sp[i].y + rad[i] + m });
   const inTheWay = (b: any) => 3 * sp.filter((_p, i) => overlaps(discBox(i, 5), b)).length + 2 * numberBoxes.filter((q) => overlaps(q, b)).length + rects.filter((q) => overlaps(q, b)).length;
-  const pills: any[] = [];
+  const pills: any[] = [], pillRects: any[] = [];
   routes.forEach((R) => {
     const text = W.pill(R.kind, R.to);
     const w = text.length * 6.6 + 30, h = 24;
     let spot: any = null, best: any = null;
-    for (const off of [0, 15, -15, 28, -28, 42, -42]) {
-      for (const t of [0.56, 0.48, 0.64, 0.4, 0.72, 0.32, 0.8]) {
+    const offs = wide ? [0, 15, -15, 28, -28, 42, -42, 56, -56, 70, -70, 84, -84, 98, -98] : [0, 15, -15, 28, -28, 42, -42];
+    const ts = wide ? [0.56, 0.48, 0.64, 0.4, 0.72, 0.32, 0.8, 0.24, 0.88] : [0.56, 0.48, 0.64, 0.4, 0.72, 0.32, 0.8];
+    for (const off of offs) {
+      for (const t of ts) {
         const p = along(R.D, R.tot * t);
-        const cx = Math.max(w / 2 + 6, Math.min(384 - w / 2, p.x + p.nx * off)), cy = p.y + p.ny * off;
+        const cx = Math.max(w / 2 + 6, Math.min(mapW - 6 - w / 2, p.x + p.nx * off)), cy = p.y + p.ny * off;
         const b = { x1: cx - w / 2, y1: cy - h / 2, x2: cx + w / 2, y2: cy + h / 2 };
-        const cost = inTheWay(b);
+        const cost = inTheWay(b) + (wide ? 8 * pillRects.filter((q) => overlaps(q, b)).length : 0);
         if (cost === 0) { spot = { cx, cy, b }; break; }
         if (!best || cost < best.cost) best = { cx, cy, b, cost };
       }
@@ -625,6 +692,7 @@ export function buildTrail(key: WorldKey, N: number, spaces: Record<number, MapS
     }
     spot = spot ?? best;
     rects.push(spot.b);
+    pillRects.push(spot.b);
     pills.push({ left: f1(spot.cx), top: f1(spot.cy), text, fg: R.kind === 'go' ? '#2B7A3A' : '#C92A2A', icon: R.kind === 'go' ? IC.up : IC.down });
   });
 
@@ -633,7 +701,7 @@ export function buildTrail(key: WorldKey, N: number, spaces: Record<number, MapS
   const placeLabel = (name: any, cands: any) => {
     const w = name.length * 8.4 + 34, h = 34;
     for (const c of cands) {
-      const cx = Math.max(w / 2 + 6, Math.min(384 - w / 2, c.x)), cy = c.y;
+      const cx = Math.max(w / 2 + 6, Math.min(mapW - 6 - w / 2, c.x)), cy = c.y;
       const b = { x1: cx - w / 2, y1: cy - h / 2, x2: cx + w / 2, y2: cy + h / 2 + 4 };
       if (!free(b, { disc: 6, trail: 2, line: 7, water: 2 })) continue;
       rects.push(b);
@@ -643,13 +711,17 @@ export function buildTrail(key: WorldKey, N: number, spaces: Record<number, MapS
     return null;
   };
   T.regions.forEach((rg: any) => {
-    const p = at(len * rg.f), side = p.x < 195 ? 1 : -1, cands: any[] = [];
+    const p = at(len * rg.f), side = p.x < mid ? 1 : -1, cands: any[] = [];
+    if (wide) {
+      const q = at(len * rg.f + 4), L = Math.hypot(q.x - p.x, q.y - p.y) || 1, nx = -(q.y - p.y) / L, ny = (q.x - p.x) / L;
+      for (const d of [78, 100, 124, 150]) for (const s of [1, -1]) for (const t of [0, 40, -40, 80, -80]) cands.push({ x: p.x + s * nx * d + (q.x - p.x) / L * t, y: p.y + s * ny * d + (q.y - p.y) / L * t - 12 });
+    }
     for (const dy of [0, -26, 26, -52, 52, -78, 78, -104, 104, -130, 130]) for (const s of [side, -side]) for (const d of [128, 104, 152]) cands.push({ x: p.x + s * d, y: p.y - 12 + dy });
     const o = placeLabel(rg.name, cands);
     if (o) spots.push({ rg, x: o.x, y: o.y });
   });
   streams.forEach((s: any) => {
-    const xs = s.bx < 195 ? [292, 262, 322, 232, 202] : [98, 128, 68, 158, 188], cands: any[] = [];
+    const xs = (s.bx < mid ? [292, 262, 322, 232, 202] : [98, 128, 68, 158, 188]).map((x) => x * kx), cands: any[] = [];
     [-46, 46, -60, 60, -74, 74].forEach((dy) => { xs.forEach((x) => { cands.push({ x, y: s.fy(x) + dy }); }); });
     placeLabel(s.name, cands);
   });
@@ -679,7 +751,7 @@ export function buildTrail(key: WorldKey, N: number, spaces: Record<number, MapS
   streams.forEach((s: any) => {
     if (!s.critter) return;
     const size = 40, sink = ({ duck: 8, frog: 12, turtle: 20 } as Record<string, number>)[s.critter] || 10;
-    for (const x of [56, 334, 96, 294, 136, 254, 36, 354, 176, 214]) {
+    for (const x of [56, 334, 96, 294, 136, 254, 36, 354, 176, 214].map((v) => v * kx)) {
       const y = s.fy(x) + sink, b = { x1: x - size / 2, y1: y - size, x2: x + size / 2, y2: y };
       if (!inMap(b) || hitRect(b) || hitDisc(b, 6) || hitTrail(b, 12) || hitLine(b, 8)) continue;
       addArt(s.critter, b);
@@ -690,7 +762,7 @@ export function buildTrail(key: WorldKey, N: number, spaces: Record<number, MapS
   streams.forEach((s: any) => {
     const used: any[] = [];
     (T.lifeKinds || []).forEach((kind: any) => {
-      for (const x of [30, 360, 70, 320, 110, 280, 150, 240, 190]) {
+      for (const x of [30, 360, 70, 320, 110, 280, 150, 240, 190].map((v) => v * kx)) {
         if (used.some((u) => Math.abs(u - x) < 46)) continue;
         const size = kind === 'reeds' ? 34 : 40, sink = kind === 'reeds' ? -12 : (kind === 'lilypad' ? 14 : 10);
         const y = s.fy(x) + sink, b = { x1: x - size / 2, y1: y - size, x2: x + size / 2, y2: y };
@@ -715,7 +787,7 @@ export function buildTrail(key: WorldKey, N: number, spaces: Record<number, MapS
           for (const dy of [0, -16, 16, -32, 32, -48, 48]) {
             const cx = p.x + nx * s * d, foot = p.y + ny * s * d + 22 + dy;
             const b = { x1: cx - 44, y1: foot - 50, x2: cx + 44, y2: foot };
-            if (!free(b, { disc: 4, trail: -4, line: 6, water: 0 })) continue;
+            if (!free(b, { disc: 4, trail: -4, line: 6, water: 0 }) || (wide && numberBoxes.some((q) => overlaps(q, b)))) continue;
             rects.push(b);
             signs.push({ text, left: f1(cx - 44), top: f1(foot - 50) });
             return;
@@ -738,15 +810,15 @@ export function buildTrail(key: WorldKey, N: number, spaces: Record<number, MapS
       return R;
     };
     const cands: any[] = [];
-    for (let y = 440; y < Math.min(Y1 - 40, H - BLEND - 60); y += 18) for (let x = 28; x <= 362; x += 18) { const R = room(x, y); if (R >= 54) cands.push({ x, y, R }); }
+    for (let y = Y0; y < Math.min(Y1 - 40, H - BLEND - 60); y += 18) for (let x = 28; x <= mapW - 28; x += 18) { const R = room(x, y); if (R >= 54) cands.push({ x, y, R }); }
     cands.sort((a, b) => b.R - a.R);
     for (const c of cands) {
-      if (pockets.length >= 8) break;
+      if (pockets.length >= (wide ? Math.round(8 * kx) : 8)) break;
       const R = Math.min(96, room(c.x, c.y));
       if (R >= 54) pockets.push({ x: c.x, y: c.y, R });
     }
     pockets.forEach((p) => {
-      drawLand(T.land.kind, p, land);
+      drawLand(T.land.kind, p, land, mid);
       rects.push({ x1: p.x - p.R * 0.95, y1: p.y - p.R * 0.95, x2: p.x + p.R * 0.95, y2: p.y + p.R * 0.95 });
     });
   }
@@ -797,7 +869,7 @@ export function buildTrail(key: WorldKey, N: number, spaces: Record<number, MapS
   const defsPrev = defsOf(TP), defsNext = defsOf(TN);
   const worldAt = (y: number) => { const b = blendAt(y, H), v = r(); return v < b.prev ? 'prev' : v < b.prev + b.next ? 'next' : 'own'; };
   for (let gy = 130; gy < H; gy += 40) {
-    for (let gx = 10; gx < 392; gx += 40) {
+    for (let gx = 10; gx < mapW + 2; gx += 40) {
       const x = gx + (r() - 0.5) * 26, y = gy + (r() - 0.5) * 26;
       const from = worldAt(y), TT = from === 'prev' ? TP : from === 'next' ? TN : T;
       if (r() > TT.density) continue;
@@ -809,8 +881,8 @@ export function buildTrail(key: WorldKey, N: number, spaces: Record<number, MapS
   items.sort((a, b) => a.y - b.y);
 
   const patches: any[] = [];
-  for (let i = 0; i < 28; i++) {
-    const px = -60 + r() * 400, py = 120 + r() * (H - 160), pw = 90 + r() * 120, ph = 50 + r() * 70;
+  for (let i = 0, n = wide ? Math.round(28 * kx * 0.8) : 28; i < n; i++) {
+    const px = -60 + r() * (mapW + 10), py = 120 + r() * (H - 160), pw = 90 + r() * 120, ph = 50 + r() * 70;
     patches.push({ x: f1(px), y: f1(py), w: f1(pw), h: f1(ph), c: mixAt(T.patch, TP.patch, TN.patch, py + ph / 2, H), o: (0.5 + r() * 0.4).toFixed(2) });
   }
 
@@ -823,9 +895,9 @@ export function buildTrail(key: WorldKey, N: number, spaces: Record<number, MapS
     seed: 'M0 -6L0.5 -0.5L6 0L0.5 0.5L0 6L-0.5 0.5L-6 0L-0.5 -0.5Z M-1.4 0a1.4 1.4 0 1 0 2.8 0a1.4 1.4 0 1 0 -2.8 0Z'
   };
   const particles: any[] = [];
-  for (let i = 0; i < 60; i++) {
+  for (let i = 0, n = wide ? Math.round(60 * kx * 0.8) : 60; i < n; i++) {
     const dx = Math.round((10 + r() * 30) * (r() < 0.5 ? -1 : 1));
-    const x = 8 + r() * 374, y = 350 + r() * (H - 450), from = worldAt(y);
+    const x = 8 + r() * (mapW - 16), y = 350 + r() * (H - 450), from = worldAt(y);
     const PT = (from === 'prev' ? TP : from === 'next' ? TN : T).particle, type = PT.type, fall = type !== 'sparkle';
     particles.push({
       x: f1(x), y: f1(y), size: Math.round(14 + r() * 8),
@@ -891,9 +963,9 @@ export function buildTrail(key: WorldKey, N: number, spaces: Record<number, MapS
   });
   const glowsNight = lights.map((l) => glow(l, 0.7, 1)), glowsDusk = lights.map((l) => glow(l, 0.35, 0.8));
   const bugs = [], starry = T.bugs === 'stars';
-  for (let i = 0; i < 44; i++) {
+  for (let i = 0, n = wide ? Math.round(44 * kx * 0.8) : 44; i < n; i++) {
     bugs.push({
-      x: f1(10 + r() * 370), y: f1(440 + r() * (H - 560)),
+      x: f1(10 + r() * (mapW - 20)), y: f1(Y0 + r() * (H - Y0 - 120)),
       d: starry ? 'M0 -4.5L1.1 -1.1L4.5 0L1.1 1.1L0 4.5L-1.1 1.1L-4.5 0L-1.1 -1.1Z' : 'M-2.2 0a2.2 2.2 0 1 0 4.4 0a2.2 2.2 0 1 0 -4.4 0Z',
       c: starry ? '#FFFFFF' : '#FFF29A', glow: starry ? '#CFE3FF' : '#FFE066',
       dur: (1.8 + r() * 2.4).toFixed(1) + 's', begin: '-' + (r() * 4).toFixed(1) + 's'
@@ -904,7 +976,9 @@ export function buildTrail(key: WorldKey, N: number, spaces: Record<number, MapS
     const back = i % 2 === 1;
     return {
       y, birds: !flutter, butterflies: flutter, c: T.flock.c, flip: back ? 'scale(-1 1)' : 'scale(1 1)',
-      move: flutter ? (back ? '450 0;340 -16;240 8;140 -14;40 6;-60 -8' : '-60 0;40 -16;140 8;240 -14;340 6;450 -8') : (back ? '470 0;-90 34' : '-90 0;470 -34'),
+      move: wide
+        ? (flutter ? [0, -16, 8, -14, 6, -8].map((dy, k) => Math.round(-60 + ((back ? 5 - k : k) / 5) * (mapW + 120)) + ' ' + dy).join(';') : back ? (mapW + 80) + ' 0;-90 34' : '-90 0;' + (mapW + 80) + ' -34')
+        : flutter ? (back ? '450 0;340 -16;240 8;140 -14;40 6;-60 -8' : '-60 0;40 -16;140 8;240 -14;340 6;450 -8') : (back ? '470 0;-90 34' : '-90 0;470 -34'),
       dur: (flutter ? 26 + i * 4 : 20 + i * 5) + 's', begin: '-' + (3 + i * 6) + 's'
     };
   });
@@ -935,8 +1009,8 @@ export function buildTrail(key: WorldKey, N: number, spaces: Record<number, MapS
     fin: { left: f1(finX - 85), top: Y1 + 40 },
     prize: { left: f1(prizeLeft), top: Y1 + 214 },
     discsStone, numbers, shadows, surfOn, surfOff, glowsNight, glowsDusk, bugs, flocks, party, gate, land: landPaths,
-    lmsNoLife: lms.filter((m) => !m.life), Y1,
-    blend: blendLayers(T, TP, TN, H, r), lookBack, onward, prevKey, nextKey
+    lmsNoLife: lms.filter((m) => !m.life), Y1, MW: mapW, keyAt,
+    blend: blendLayers(T, TP, TN, H, r, mapW), lookBack, onward, prevKey, nextKey
   };
   CACHE.set(ck, B);
   return B;
@@ -946,7 +1020,7 @@ export function buildTrail(key: WorldKey, N: number, spaces: Record<number, MapS
  * How the map fades into the months on either side: the ground as a gradient, the trail's colours as SVG gradient
  * stops, and any northern lights or fog, each masked to where its world shows.
  */
-function blendLayers(T: any, TP: any, TN: any, H: number, r: () => number) {
+function blendLayers(T: any, TP: any, TN: any, H: number, r: () => number, mapW = 390) {
   const ys: number[] = [];
   for (let y = 0; y <= BLEND; y += 65) ys.push(y);
   for (let y = H - BLEND; y <= H; y += 65) ys.push(y);
@@ -970,18 +1044,20 @@ function blendLayers(T: any, TP: any, TN: any, H: number, r: () => number) {
     if (TT.overlay === 'aurora') {
       for (let y = y0 + 60; y < y1; y += 340) {
         const rot = f1((r() - 0.5) * 16), hgt = Math.round(60 + r() * 40);
-        parts.push(`<div style="position: absolute; left: -60px; top: ${f1(y)}px; width: 510px; height: ${hgt}px; border-radius: 50%; transform: rotate(${rot}deg); ` +
+        parts.push(`<div style="position: absolute; left: -60px; top: ${f1(y)}px; width: ${mapW + 120}px; height: ${hgt}px; border-radius: 50%; transform: rotate(${rot}deg); ` +
           `background: linear-gradient(90deg, rgba(99,230,190,0) 0%, rgba(99,230,190,.34) 30%, rgba(151,117,250,.3) 70%, rgba(151,117,250,0) 100%); filter: blur(10px)"></div>`);
       }
     } else if (TT.overlay === 'fog') {
       for (let y = y0 + 40; y < y1; y += 70) {
-        const x = -40 + r() * 400, w = 160 + r() * 160, hgt = 60 + r() * 50;
-        parts.push(`<div style="position: absolute; left: ${f1(x - w / 2)}px; top: ${f1(y)}px; width: ${f1(w)}px; height: ${f1(hgt)}px; border-radius: 50%; ` +
-          `background: radial-gradient(closest-side, rgba(250,250,247,.62), rgba(250,250,247,0))"></div>`);
+        for (let k = 0, n = mapW > 390 ? Math.round(mapW / 390) : 1; k < n; k++) {
+          const x = -40 + r() * (mapW + 10), w = 160 + r() * 160, hgt = 60 + r() * 50;
+          parts.push(`<div style="position: absolute; left: ${f1(x - w / 2)}px; top: ${f1(y)}px; width: ${f1(w)}px; height: ${f1(hgt)}px; border-radius: 50%; ` +
+            `background: radial-gradient(closest-side, rgba(250,250,247,.62), rgba(250,250,247,0))"></div>`);
+        }
       }
     }
     const m = mask(which);
-    layers.push(`<div style="position: absolute; left: 0; top: 0; width: 390px; height: ${H}px; pointer-events: none; overflow: hidden; -webkit-mask-image: ${m}; mask-image: ${m}">${parts.join('')}</div>`);
+    layers.push(`<div style="position: absolute; left: 0; top: 0; width: ${mapW}px; height: ${H}px; pointer-events: none; overflow: hidden; -webkit-mask-image: ${m}; mask-image: ${m}">${parts.join('')}</div>`);
   });
   return { ground, defs, overlays: layers.join('') };
 }

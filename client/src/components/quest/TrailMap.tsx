@@ -2,12 +2,12 @@ import React, { memo, useMemo } from 'react';
 import { UserAvatar } from '../shared/UserAvatar';
 import { buildTrail, circ, ell, f1, monthPlus, pips, rng, THEMES, worldFor, type MapSpace, type MapWords, type WorldKey } from './trailBuild';
 import { FINISHES, GATES } from './worldArt';
-import { baseHtml, discsHtml, fogHtml, marksHtml, particlesHtml, prizeHtml, reachDiceHtml, reachRingsHtml, topHtml } from './trailArt';
+import { balloonsHtml, baseHtml, discsHtml, fogHtml, marksHtml, particlesHtml, prizeHtml, reachDiceHtml, reachRingsHtml, topHtml } from './trailArt';
 import type { QuestPlayer } from './types';
 
 /**
- * The month's adventure map (Quest Trail, NEW-40), as drawn in the mock-ups: 390 px wide and as tall as the trail
- * needs. The world is built once (trailBuild.ts) and drawn as HTML layers (trailArt.ts); the pieces, footprints,
+ * The month's adventure map (Quest Trail, NEW-40), as drawn in the mock-ups: 390 px wide on a phone (wider on a
+ * bigger screen, `width`) and as tall as the trail needs. The world is built once (trailBuild.ts) and drawn as HTML layers (trailArt.ts); the pieces, footprints,
  * the next-roll glow and the fog are drawn on top from the players' positions.
  */
 
@@ -27,6 +27,8 @@ export interface MapTexts {
 }
 
 interface Props {
+  /** The map's width: MAP_WIDTH on a phone, the page's width on a bigger screen (the trail zigzags across it) */
+  width: number;
   world: WorldKey;
   /** The trail's month ('2026-12'): its top blends into last month's world and its bottom into next month's */
   month: string;
@@ -48,9 +50,9 @@ interface Props {
   texts: MapTexts;
 }
 
-const layer: React.CSSProperties = { position: 'absolute', left: 0, top: 0, width: MAP_WIDTH, pointerEvents: 'none' };
-const Html = memo(function Html({ html, h }: { html: string; h: number }) {
-  return <div style={{ ...layer, height: h }} dangerouslySetInnerHTML={{ __html: html }} />;
+const layer = (w: number, h: number): React.CSSProperties => ({ position: 'absolute', left: 0, top: 0, width: w, height: h, pointerEvents: 'none' });
+const Html = memo(function Html({ html, w, h }: { html: string; w: number; h: number }) {
+  return <div style={layer(w, h)} dangerouslySetInnerHTML={{ __html: html }} />;
 });
 
 const look = (st: Record<string, unknown>) => {
@@ -61,9 +63,10 @@ const look = (st: Record<string, unknown>) => {
   return { halo: l(st.halo), base: l(st.base), top: l(st.top), deco: st.decoC || 'none', art: st.artC || 'none', art2: st.art2C || 'none', arrow: st.arrow };
 };
 
-function TrailMapImpl({ world, month, length, spaces, players, meId, activeId: activeProp, activePos, jump, reach, timeOfDay, fog: fogOn, texts }: Props) {
-  const B = useMemo(() => buildTrail(world, length, spaces, texts.words, true, { prev: worldFor(monthPlus(month, -1)), next: worldFor(monthPlus(month, 1)) }),
-    [world, month, length, spaces, texts.words]);
+function TrailMapImpl({ width, world, month, length, spaces, players, meId, activeId: activeProp, activePos, jump, reach, timeOfDay, fog: fogOn, texts }: Props) {
+  const B = useMemo(() => buildTrail(world, length, spaces, texts.words, true, { prev: worldFor(monthPlus(month, -1)), next: worldFor(monthPlus(month, 1)) }, width),
+    [world, month, length, spaces, texts.words, width]);
+  const MW: number = B.MW;
   const T0 = THEMES[world];
 
   // The parts that never move: drawn once per world, length, language and time of day
@@ -78,7 +81,7 @@ function TrailMapImpl({ world, month, length, spaces, players, meId, activeId: a
     };
     const L = T0.land.c;
     const V = {
-      T, H: B.H, patches: B.patches,
+      T, H: B.H, MW: B.MW, keyAt: B.keyAt, patches: B.patches,
       svg: { water1: B.water1, water2: B.water2, trail: B.trailD, bridge1: B.bridge1, bridge2: B.bridge2 },
       con: B.con, scenery: B.scenery, lms: B.lms, labels: B.labels, pills: B.pills, fin: B.fin, party: B.party, gate: B.gate,
       land: B.land, landC: { l1: L[0], l2: L[1], l3: L[2], l4: L[3], l5: L[4], l6: L[5], l7: L[6] },
@@ -100,7 +103,7 @@ function TrailMapImpl({ world, month, length, spaces, players, meId, activeId: a
     };
     return {
       T,
-      base: baseHtml(V), discs: discsHtml(V), marks: marksHtml(V), top: topHtml(V), particles: particlesHtml(V),
+      base: baseHtml(V), discs: discsHtml(V), marks: marksHtml(V), balloons: balloonsHtml(V), top: topHtml(V), particles: particlesHtml(V),
       prize: texts.prize ? prizeHtml(V) : '',
     };
   }, [B, T0, world, timeOfDay, texts]);
@@ -126,11 +129,11 @@ function TrailMapImpl({ world, month, length, spaces, players, meId, activeId: a
     return parts.join('');
   }, [B, active, you]);
 
-  // The name tags of the shortcuts and slides, so the die faces below never cover one
-  const pillBoxes = useMemo(() => B.pills.map((q: { left: number | string; top: number | string; text: string }) => {
+  // The name tags of the shortcuts and slides and the finish balloons, so the die faces below never cover one
+  const pillBoxes = useMemo(() => [...B.pills.map((q: { left: number | string; top: number | string; text: string }) => {
     const w = q.text.length * 6.6 + 30, x = Number(q.left), y = Number(q.top);
     return { x1: x - w / 2, y1: y - 12, x2: x + w / 2, y2: y + 12 };
-  }), [B]);
+  }), { x1: Number(B.party.bx), y1: Number(B.party.by), x2: Number(B.party.bx) + 44, y2: Number(B.party.by) + 74 }], [B]);
 
   // The six spaces the next roll can reach, each with its die face (beside the space, wherever no tag is)
   const reachLayers = useMemo(() => {
@@ -148,24 +151,31 @@ function TrailMapImpl({ world, month, length, spaces, players, meId, activeId: a
     return { rings: reachRingsHtml({ reachRings: rings }), dice: reachDiceHtml({ reachDice: dice }) };
   }, [B, reach, jumping, active, you, pillBoxes]);
 
-  // Fog over the trail past whoever is furthest ahead, lifting above the finish; special spaces show through
+  // Fog over the trail past whoever is furthest ahead, all the way down to the finish line. Special spaces show
+  // through, and the finish stays in sight as the goal (its balloons are drawn above the fog).
   const lead = Math.max(you + 6, ...players.map((p) => p.position)) + 3;
   const fogHtmlStr = useMemo(() => {
-    if (!fogOn || lead >= B.N - 6) return '';
-    const top = B.discs[lead].y - 30, bottom = B.Y1 - 230;
-    if (bottom - top <= 260) return '';
+    if (!fogOn || lead >= B.N - 1) return '';
+    const F = B.discs[B.N], top = B.discs[lead].y - 30, h = F.y - 36 - top;
+    if (h < 120) return '';
     const c = T0.fogC, rnd = rng(T0.seed + 7);
     const puffs = [];
-    for (let x = -10; x <= 400; x += 34) { const s = 56 + rnd() * 40; puffs.push({ left: f1(x - s / 2), top: f1(top + 50 + rnd() * 36 - s / 2), s: f1(s) }); }
-    const peek = B.discs.filter((d: { y: number }, i: number) => spaces[i] && d.y > top + 60 && d.y < bottom - 30 && (d.y < top + 118 || d.y > top + 230));
+    for (let x = -10; x <= MW + 10; x += 34) { const s = 56 + rnd() * 40; puffs.push({ left: f1(x - s / 2), top: f1(top + 50 + rnd() * 36 - s / 2), s: f1(s) }); }
+    // A lower, softer bank just above the finish: it hides the last spaces but not the finish
+    for (let x = -10; x <= MW + 10; x += 30) { const s = 40 + rnd() * 16; puffs.push({ left: f1(x - s / 2), top: f1(F.y - 66 + rnd() * 8 - s / 2), s: f1(s), g: 16 }); }
+    // On a wide map the trail can reach the finish from the side: a puff on each last space that's as low as it
+    for (let i = Math.max(1, lead); i < B.N; i++) { const d = B.discs[i]; if (d.y > F.y - 56) puffs.push({ left: f1(d.x - 27), top: f1(d.y - 27), s: 54, g: 16 }); }
+    // "Unexplored" needs a tall enough stretch of fog; no space shows through behind it
+    const text = h >= 340;
+    const peek = B.discs.filter((d: { y: number }, i: number) => spaces[i] && i < B.N && d.y > top + 60 && (!text || d.y < top + 118 || d.y > top + 230));
     return fogHtml({
-      T: statics.T,
+      T: statics.T, MW,
       fog: {
-        on: true, top: f1(top), h: f1(bottom - top), c: `rgb(${c})`, puffs, textTop: f1(top + 150), peek, title: texts.fogTitle, sub: texts.fogSub,
-        bg: `linear-gradient(to bottom, rgba(${c},0) 0px, rgba(${c},.96) 110px, rgba(${c},.96) calc(100% - 110px), rgba(${c},0) 100%)`,
+        on: true, top: f1(top), h: f1(h), c: `rgb(${c})`, puffs, textTop: text ? f1(top + 150) : null, peek, title: texts.fogTitle, sub: texts.fogSub,
+        bg: `linear-gradient(to bottom, rgba(${c},0) 0px, rgba(${c},.96) ${f1(Math.min(110, h * 0.4))}px, rgba(${c},.96) calc(100% - 34px), rgba(${c},0) 100%)`,
       },
     });
-  }, [B, T0, fogOn, lead, spaces, statics.T, texts.fogTitle, texts.fogSub]);
+  }, [B, MW, T0, fogOn, lead, spaces, statics.T, texts.fogTitle, texts.fogSub]);
 
   // People on the same space crowd round it in two rows, close enough that every pin still points at it. Start
   // and the finish have room for everyone side by side.
@@ -179,24 +189,25 @@ function TrailMapImpl({ world, month, length, spaces, players, meId, activeId: a
 
   return (
     <div role="img" aria-label={texts.aria}
-      style={{ position: 'relative', width: MAP_WIDTH, height: B.H, overflow: 'hidden', background: B.blend.ground, fontFamily: 'Nunito, system-ui, sans-serif', color: T0.ink }}>
-      <Html html={statics.base} h={B.H} />
+      style={{ position: 'relative', width: MW, height: B.H, overflow: 'hidden', background: B.blend.ground, fontFamily: 'Nunito, system-ui, sans-serif', color: T0.ink }}>
+      <Html html={statics.base} w={MW} h={B.H} />
       {steps && (
-        <svg width={MAP_WIDTH} height={B.H} style={{ ...layer, height: B.H }} aria-hidden="true">
+        <svg width={MW} height={B.H} style={layer(MW, B.H)} aria-hidden="true">
           <path d={steps} fill="#1971C2" fillOpacity=".5" />
         </svg>
       )}
-      {statics.prize && <Html html={statics.prize} h={B.H} />}
-      {reachLayers && <Html html={reachLayers.rings} h={B.H} />}
-      <Html html={statics.discs} h={B.H} />
-      {reachLayers && <Html html={reachLayers.dice} h={B.H} />}
-      <Html html={statics.marks} h={B.H} />
-      {fogHtmlStr && <Html html={fogHtmlStr} h={B.H} />}
+      {statics.prize && <Html html={statics.prize} w={MW} h={B.H} />}
+      {reachLayers && <Html html={reachLayers.rings} w={MW} h={B.H} />}
+      <Html html={statics.discs} w={MW} h={B.H} />
+      {reachLayers && <Html html={reachLayers.dice} w={MW} h={B.H} />}
+      <Html html={statics.marks} w={MW} h={B.H} />
+      {fogHtmlStr && <Html html={fogHtmlStr} w={MW} h={B.H} />}
+      <Html html={statics.balloons} w={MW} h={B.H} />
       {placed.map(({ p, pos }) => {
         const mine = p.userId === meId;
         const d = B.discs[Math.min(B.N, pos)], at = spot(p.userId, pos);
         // The pin's tip rests on the space (a little higher for the back row), kept inside the map
-        let x = Math.max(24, Math.min(MAP_WIDTH - 24, d.x + at.dx)), foot = d.y - 4 - (at.back ? 14 : 0);
+        let x = Math.max(24, Math.min(MW - 24, d.x + at.dx)), foot = d.y - 4 - (at.back ? 14 : 0);
         if (p.userId === activeId && jumping && jump) {
           const R = B.routes.find((q) => q.from === jump.from && q.to === jump.to);
           if (R) {
@@ -207,8 +218,8 @@ function TrailMapImpl({ world, month, length, spaces, players, meId, activeId: a
         }
         return <Piece key={p.userId} player={p} mine={mine} label={mine ? texts.you : p.displayName} x={x} foot={foot} back={at.back} crowd={at.crowd} />;
       })}
-      <Html html={statics.top} h={B.H} />
-      <Html html={statics.particles} h={B.H} />
+      <Html html={statics.top} w={MW} h={B.H} />
+      <Html html={statics.particles} w={MW} h={B.H} />
     </div>
   );
 }
