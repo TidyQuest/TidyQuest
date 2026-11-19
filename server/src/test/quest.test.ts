@@ -88,6 +88,8 @@ describe('Quest Trail: stars', () => {
     const first = await complete(0);
     expect(await me()).toMatchObject({ starsLeft: 1, today: { chores: 1, stars: 1 } });
     expect((await me()).owed).toBeUndefined();
+    // Plain spaces, so the roll lands on no chore card whatever today's trail length is
+    db.prepare("UPDATE quest_trails SET spaces = '{}' WHERE month = ?").run(month);
     loadDie(2);
     expect((await agent.post('/api/quest/roll').set(auth(kid.token)).send({})).body).toMatchObject({ roll: 2, starsLeft: 0 });
     // Rolled: taking the Done back takes nothing back, and today's star stays given
