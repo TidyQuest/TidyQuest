@@ -402,7 +402,7 @@ export const GUIDE_NL: GuideSection[] = [
       { p: 'Ingebouwde badges ontgrendelen vanzelf. Ouders kunnen er zelf maken in **Instellingen → Badges** (bijvoorbeeld "4 weken op rij huiswerk"), met optionele bonusmunten, en munten instellen voor elke ingebouwde badge. Het icoon kies je zoals bij een taak: tik op de knop naast Pictogram om Kies een icoon te openen.' },
       { h: 'Avonturenpad' },
       { where: 'Vandaag → de kaart Avonturenpad en de landkaart (ouders: Instellingen → Avonturenpad)' },
-      { p: 'Een bordspel dat het hele gezin een maand lang speelt. Iedereen met ‘Doet mee aan klusjes’ aan speelt mee, ouders ook. Elke maand gaat er een nieuwe kaart open, en op de 1e begint iedereen weer bij Start.' },
+      { p: 'Een bordspel dat het hele gezin een maand lang speelt. Iedereen met ‘Doet mee aan klusjes’ aan speelt mee, ouders ook. Elke maand heeft een eigen wereld, van de Besneeuwde Top in januari tot het Winterdorp in december, en op de 1e begint iedereen weer bij Start. De boven- en onderkant van elke kaart lopen over in de maand ervoor en erna.' },
       { ul: [
         '**Sterren:** 1 ster voor elke dag dat je een klusje doet, en een bonusster als je er die dag 3 of meer doet (hooguit 2 per dag). Elk klusje telt één keer per dag. Een klusje dat op goedkeuring van een ouder wacht, geeft zijn ster zodra het is goedgekeurd, voor de dag waarop het gedaan is.',
         '**Gooien:** elke ster is één worp met de dobbelsteen, wanneer je wilt. Muntenvakjes geven +1 tot +3 munten, kortere wegen brengen je vooruit, glijbanen een paar vakjes terug, een klusjeskaart geeft een extra ster als je vandaag een klusje doet, en een traktatie geeft de gezinsmascotte een gratis accessoire.',

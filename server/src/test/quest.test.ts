@@ -3,7 +3,7 @@ import { createTestApp, createAdmin, createUser, homeToday } from './setup';
 import type supertest from 'supertest';
 import type Database from 'better-sqlite3';
 import { at, dateStr } from '../utils/clock';
-import { closeTrail, ensureTrail, layoutFor, questState, saveQuestSettings, setQuestDie, starsFor, takeTurn, type Trail } from '../utils/quest';
+import { closeTrail, ensureTrail, layoutFor, questState, saveQuestSettings, setQuestDie, starsFor, takeTurn, WORLDS, worldFor, type Trail } from '../utils/quest';
 
 // Quest Trail (NEW-40). Most tests play a month in 2030 on its own clock, so they don't depend on today's date.
 let agent: supertest.Agent;
@@ -140,6 +140,11 @@ describe('Quest Trail: stars', () => {
 });
 
 describe('Quest Trail: players and the trail', () => {
+  it('gives every month its own world', () => {
+    expect(new Set(WORLDS).size).toBe(12);
+    expect(['2030-01', '2030-02', '2030-04', '2030-10', '2030-12'].map(worldFor)).toEqual(['summit', 'frozen', 'blossom', 'woods', 'village']);
+  });
+
   it('plays everyone who participates; parents only with it switched on', async () => {
     const { admin, kid, teen } = await family();
     wholeMarch();

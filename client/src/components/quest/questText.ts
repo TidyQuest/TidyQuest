@@ -1,5 +1,5 @@
 import type { MapTexts } from './TrailMap';
-import type { MapWords, WorldKey } from './trailBuild';
+import { monthPlus, type MapWords, type WorldKey } from './trailBuild';
 import type { QuestEvent, QuestState } from './types';
 
 type Tr = (key: string) => string;
@@ -45,6 +45,7 @@ export function mapTexts(t: Tr, lang: string, s: QuestState, meId: number | null
     pill: (kind, n) => esc(fill(t('quest.mapPill'), { name: kind === 'go' ? go : back, n })),
     regions: [1, 2, 3, 4, 5].map((i) => e(`${w}Region${i}`)),
     waters: [1, 2].map((i) => e(`${w}Water${i}`)),
+    onward: esc(fill(t('quest.mapOnward'), { month: monthName(lang, monthPlus(s.trail.month, 1)) })),
     key: {
       coins: e('keyCoins'), coinsWhat: e('keyCoinsWhat'), card: e('keyCard'), cardWhat: e('keyCardWhat'), treat: e('keyTreat'), treatWhat: e('keyTreatWhat'),
       upWhat: e('keyUpWhat'), downWhat: e('keyDownWhat'), high: e('keyHigh'), highWhat: e('keyHighWhat'),

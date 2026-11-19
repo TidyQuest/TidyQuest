@@ -70,8 +70,8 @@ export function layoutFor(length: number): Record<number, Space> {
   return out;
 }
 
-/** Each month's world (the client draws them). Months without their own world yet borrow the season's. */
-export const WORLDS = ['summit', 'summit', 'blossom', 'blossom', 'blossom', 'shores', 'shores', 'shores', 'woods', 'woods', 'woods', 'summit'] as const;
+/** Each month's world, January to December (the client draws them; each map blends into the months beside it) */
+export const WORLDS = ['summit', 'frozen', 'rainy', 'blossom', 'kites', 'camp', 'shores', 'prairie', 'orchard', 'woods', 'misty', 'village'] as const;
 export const worldFor = (month: string) => WORLDS[Number(month.slice(5, 7)) - 1];
 
 const daysIn = (month: string) => new Date(Date.UTC(Number(month.slice(0, 4)), Number(month.slice(5, 7)), 0)).getUTCDate();

@@ -18,12 +18,17 @@ What changed in each release, in plain language, newest first. Releases up to v0
   treats, high fives, the finish and the first-place prize, and it rolls any leftover stars when the month ends. It
   has a switch under Settings → Features (on by default).
 - **Quest Trail, part 2: the map, the Today card and the end of the month** (NEW-40). Tap the new Quest Trail card
-  on Today to open the map: the month's world drawn as an adventure map (The Treehouse Woods, The Snowy Summit, The
-  Blossom Trail or Sunny Shores) with everyone's piece showing their own avatar, the die and your stars at the
+  on Today to open the map: the month's world drawn as an adventure map with everyone's piece showing their own avatar, the die and your stars at the
   bottom, a map key, and a card saying what each roll did. The Today card shows the stars waiting to be rolled, where
   everyone is on the trail and today's two stars; Customise can hide or move it. The first time someone opens the app
   in a new month, a screen shows who won last month, everyone's place, their trail badges and the new world.
   Parents set the prize, trail length, time of day and fog in Settings → Quest Trail (part 3).
+- **A Quest Trail world for every month** (NEW-40): the Snowy Summit (January), the Frozen Lake, the Rainy Meadow,
+  the Blossom Trail, the Kite Hills, Lakeside Camp, Sunny Shores, the Sunflower Prairie, the Apple Orchard, the
+  Treehouse Woods, the Misty Hollow and the Winter Village (December), each with its own scenery, weather, finish,
+  shortcut and slide. The top and bottom of each map blend into the months before and after it: the ground colour,
+  scenery, weather and trail fade from one world into the next, last month's finish shows in the distance behind
+  the start, and an "On to December" sign stands past the finish.
 - **"Done for someone…"** (FIX-37). A new button in an opened chore lets parents and members pick who did a chore
   before marking it done, assigned or not. The person gets a notification ("Dad marked … done for you"), and Activity
   says "Marked done by Dad".

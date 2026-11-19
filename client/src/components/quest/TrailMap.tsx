@@ -1,6 +1,7 @@
 import React, { memo, useMemo } from 'react';
 import { UserAvatar } from '../shared/UserAvatar';
-import { buildTrail, circ, ell, f1, pips, rng, THEMES, type MapSpace, type MapWords, type WorldKey } from './trailBuild';
+import { buildTrail, circ, ell, f1, monthPlus, pips, rng, THEMES, worldFor, type MapSpace, type MapWords, type WorldKey } from './trailBuild';
+import { FINISHES, GATES } from './worldArt';
 import { baseHtml, discsHtml, fogHtml, marksHtml, particlesHtml, prizeHtml, reachDiceHtml, reachRingsHtml, topHtml } from './trailArt';
 import type { QuestPlayer } from './types';
 
@@ -27,6 +28,8 @@ export interface MapTexts {
 
 interface Props {
   world: WorldKey;
+  /** The trail's month ('2026-12'): its top blends into last month's world and its bottom into next month's */
+  month: string;
   length: number;
   spaces: Record<number, MapSpace>;
   players: QuestPlayer[];
@@ -55,15 +58,16 @@ const look = (st: Record<string, unknown>) => {
   return { halo: l(st.halo), base: l(st.base), top: l(st.top), deco: st.decoC || 'none', art: st.artC || 'none', art2: st.art2C || 'none', arrow: st.arrow };
 };
 
-function TrailMapImpl({ world, length, spaces, players, meId, myPos, jump, reach, timeOfDay, fog: fogOn, texts }: Props) {
-  const B = useMemo(() => buildTrail(world, length, spaces, texts.words), [world, length, spaces, texts.words]);
+function TrailMapImpl({ world, month, length, spaces, players, meId, myPos, jump, reach, timeOfDay, fog: fogOn, texts }: Props) {
+  const B = useMemo(() => buildTrail(world, length, spaces, texts.words, true, { prev: worldFor(monthPlus(month, -1)), next: worldFor(monthPlus(month, 1)) }),
+    [world, month, length, spaces, texts.words]);
   const T0 = THEMES[world];
 
   // The parts that never move: drawn once per world, length, language and time of day
   const statics = useMemo(() => {
     const g = T0.ground;
     const T = {
-      ...T0, isAutumn: world === 'woods', isWinter: world === 'summit', isSpring: world === 'blossom', isSummer: world === 'shores',
+      ...T0,
       halo: `0 0 2px ${g}, 0 0 5px ${g}, 0 0 9px ${g}`, goS: look(T0.goS), backS: look(T0.backS),
       kicker: texts.kicker, title: texts.title, sub: texts.sub, keyTitle: texts.keyTitle,
       // The banner is 250 px wide inside: long world names (and other languages) get a smaller size
@@ -83,6 +87,13 @@ function TrailMapImpl({ world, length, spaces, players, meId, myPos, jump, reach
       bugs: timeOfDay === 'night' ? B.bugs : [],
       discs: B.discsStone, numbers: B.numbers, marks: B.marks, signs: B.signs, mapKey: B.mapKey, particles: B.particles,
       prize: { ...B.prize, ...(texts.prize ?? {}) },
+      gateSvg: GATES[world] ?? '', finSvg: FINISHES[world] ?? '', trailDefs: B.blend.defs, overlays: B.blend.overlays,
+      extra: (B.lookBack ? `<div style="position: absolute; left: ${B.lookBack.left}px; top: ${B.lookBack.top}px; width: 68px; height: 64px; opacity: .62; pointer-events: none">` +
+        `<div style="width: 170px; height: 160px; transform: scale(.4); transform-origin: 0 0">${FINISHES[B.lookBack.key as WorldKey] ?? ''}</div></div>` : '') +
+        (B.onward ? `<div style="position: absolute; left: ${B.onward.left}px; top: ${B.onward.top}px; width: ${B.onward.w}px; height: 64px; display: flex; flex-direction: column; align-items: center; pointer-events: none">` +
+        `<span style="height: 28px; box-sizing: border-box; display: flex; align-items: center; gap: 5px; padding: 0 11px; border-radius: 7px; background: #A0703F; border: 2px solid #6B4423; box-shadow: 0 2px 0 #6B4423; color: #FFF4DE; font-size: 13px; font-weight: 800; white-space: nowrap">${B.onward.text}` +
+        `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v16M5 13l7 7 7-7"></path></svg></span>` +
+        `<span style="width: 6px; height: 32px; margin-top: 2px; border-radius: 0 0 3px 3px; background: #6B4423"></span></div>` : ''),
     };
     return {
       T,
@@ -153,7 +164,7 @@ function TrailMapImpl({ world, length, spaces, players, meId, myPos, jump, reach
 
   return (
     <div role="img" aria-label={texts.aria}
-      style={{ position: 'relative', width: MAP_WIDTH, height: B.H, overflow: 'hidden', background: T0.ground, fontFamily: 'Nunito, system-ui, sans-serif', color: T0.ink }}>
+      style={{ position: 'relative', width: MAP_WIDTH, height: B.H, overflow: 'hidden', background: B.blend.ground, fontFamily: 'Nunito, system-ui, sans-serif', color: T0.ink }}>
       <Html html={statics.base} h={B.H} />
       {steps && (
         <svg width={MAP_WIDTH} height={B.H} style={{ ...layer, height: B.H }} aria-hidden="true">

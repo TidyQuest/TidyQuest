@@ -4,11 +4,34 @@
 // shortcuts and slides routed around the trail, place names, landmarks, scenery, and the night and sunset lights.
 // Everything is drawn from a seeded random generator, so a world always looks the same. Text arrives escaped.
 
-export type WorldKey = 'woods' | 'summit' | 'blossom' | 'shores';
+import { NEW_THEMES } from './worldThemes';
+
+export type WorldKey = 'summit' | 'frozen' | 'rainy' | 'blossom' | 'kites' | 'camp' | 'shores' | 'prairie' | 'orchard' | 'woods' | 'misty' | 'village';
 export type SpaceKind = 'plain' | 'start' | 'finish' | 'coins' | 'card' | 'treat' | 'up' | 'down' | 'high';
-/** Each month's world, as the server picks it (utils/quest.ts WORLDS) */
-const WORLDS: WorldKey[] = ['summit', 'summit', 'blossom', 'blossom', 'blossom', 'shores', 'shores', 'shores', 'woods', 'woods', 'woods', 'summit'];
+/** Each month's world, January to December, as the server picks it (utils/quest.ts WORLDS) */
+export const WORLDS: WorldKey[] = ['summit', 'frozen', 'rainy', 'blossom', 'kites', 'camp', 'shores', 'prairie', 'orchard', 'woods', 'misty', 'village'];
 export const worldFor = (month: string): WorldKey => WORLDS[Number(month.slice(5, 7)) - 1] ?? 'woods';
+/** The month before or after ('2026-12' + 1 = '2027-01') */
+export function monthPlus(month: string, k: number): string {
+  const y = Number(month.slice(0, 4)), m = Number(month.slice(5, 7)) - 1 + k;
+  const yy = y + Math.floor(m / 12), mm = ((m % 12) + 12) % 12;
+  return `${yy}-${String(mm + 1).padStart(2, '0')}`;
+}
+/** How far up and down the map the months before and after blend in (about a phone screen) */
+export const BLEND = 520;
+const smooth = (t: number) => { const u = Math.max(0, Math.min(1, t)); return u * u * (3 - 2 * u); };
+/** How much of last month's world (top) and next month's (bottom) shows at a height: half at the edge, none past BLEND */
+export const blendAt = (y: number, H: number) => ({
+  prev: y < BLEND ? 0.5 * (1 - smooth(y / BLEND)) : 0,
+  next: y > H - BLEND ? 0.5 * (1 - smooth((H - y) / BLEND)) : 0,
+});
+const hexRgb = (h: string) => [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16));
+/** A colour mixed from this world's, last month's and next month's at a height */
+export function mixAt(own: string, prev: string, next: string, y: number, H: number): string {
+  const w = blendAt(y, H), a = hexRgb(own), p = hexRgb(prev), n = hexRgb(next);
+  const v = a.map((c, i) => Math.round(c * (1 - w.prev - w.next) + p[i] * w.prev + n[i] * w.next));
+  return '#' + v.map((c) => c.toString(16).padStart(2, '0')).join('');
+}
 export interface MapSpace { t: SpaceKind; n?: number; to?: number }
 
 /** The words drawn on the map, in the viewer's language (escaped for HTML) */
@@ -16,6 +39,8 @@ export interface MapWords {
   start: string; finish: string; halfway: string; toGo: (n: number) => string;
   go: string; back: string; pill: (kind: 'go' | 'back', to: number) => string;
   regions: string[]; waters: string[];
+  /** The sign below the finish: "On to December" */
+  onward: string;
   key: { coins: string; coinsWhat: string; card: string; cardWhat: string; treat: string; treatWhat: string; upWhat: string; downWhat: string; high: string; highWhat: string };
 }
 
@@ -75,7 +100,7 @@ export type Built = Record<string, any> & {
 };
 const CACHE = new Map<string, Built>();
 
-export const THEMES: Record<WorldKey, any> = {
+const FIRST_THEMES: Record<string, any> = {
   woods: {
     seed: 11,
     fogC: '246, 242, 228',
@@ -218,6 +243,8 @@ export const THEMES: Record<WorldKey, any> = {
   }
 };
 
+export const THEMES: Record<WorldKey, any> = { ...FIRST_THEMES, ...NEW_THEMES } as Record<WorldKey, any>;
+
 function drawLand(kind: string, p: { x: number; y: number; R: number }, L: Record<string, string[]>): void {
   const x = p.x, y = p.y, R = p.R;
   if (kind === 'hills') {
@@ -273,15 +300,17 @@ function drawLand(kind: string, p: { x: number; y: number; R: number }, L: Recor
   }
 }
 
-export function buildTrail(key: WorldKey, N: number, spaces: Record<number, MapSpace>, W: MapWords, landOn = true): Built {
+export function buildTrail(key: WorldKey, N: number, spaces: Record<number, MapSpace>, W: MapWords, landOn = true, around?: { prev: WorldKey; next: WorldKey }): Built {
   const S: Record<number, MapSpace> = { ...spaces, 0: { t: 'start' }, [N]: { t: 'finish' } };
-  const ck = [key, N, JSON.stringify(spaces), JSON.stringify(W), landOn].join('|');
+  const idx = WORLDS.indexOf(key), prevKey = around?.prev ?? WORLDS[(idx + 11) % 12], nextKey = around?.next ?? WORLDS[(idx + 1) % 12];
+  const ck = [key, prevKey, nextKey, N, JSON.stringify(spaces), JSON.stringify(W), landOn].join('|');
   const hit = CACHE.get(ck);
   if (hit) return hit;
   const T0 = THEMES[key];
   const T = { ...T0, regions: T0.regions.map((rg: any, i: number) => ({ ...rg, name: W.regions[i] })), waters: T0.waters.map((w: any, i: number) => ({ ...w, name: W.waters[i] })) };
   const r = rng(T.seed);
   const pick = (v: any) => Array.isArray(v) ? v[Math.floor(r() * v.length)] : v;
+  const TP = THEMES[prevKey], TN = THEMES[nextKey];
       const Y0 = 400, Y1 = Y0 + Math.round(3364 * N / 80), H = Y1 + 300, K = 2 * Math.PI / 470;
   const fx = (y: any) => 195 + T.amp * Math.sin(K * (y - Y0) + T.phase) + 9 * Math.sin(2.6 * K * (y - Y0) + T.phase * 1.7);
 
@@ -338,8 +367,10 @@ export function buildTrail(key: WorldKey, N: number, spaces: Record<number, MapS
   });
   const end = pts[pts.length - 1];
   const finX = Math.max(100, Math.min(290, end.x));
-  const trailD = 'M' + pts.filter((_p, i) => i % 2 === 0).map((p) => f1(p.x) + ',' + f1(p.y)).join('L') +
-    'L' + f1(end.x) + ',' + f1(end.y) + 'Q' + f1(end.x) + ',' + (Y1 + 70) + ' ' + f1(finX) + ',' + (Y1 + 140);
+  // The trail comes in from the top edge (last month's map) and leaves past the finish at the bottom (next month's)
+  const p0 = pts[0];
+  const trailD = 'M195,-30C195,' + f1(Y0 - 200) + ' ' + f1(p0.x) + ',' + f1(Y0 - 160) + ' ' + f1(p0.x) + ',' + f1(Y0) + 'L' + pts.filter((_p, i) => i % 2 === 0).map((p) => f1(p.x) + ',' + f1(p.y)).join('L') +
+    'L' + f1(end.x) + ',' + f1(end.y) + 'Q' + f1(end.x) + ',' + (Y1 + 70) + ' ' + f1(finX) + ',' + (Y1 + 140) + 'Q' + f1(finX) + ',' + (Y1 + 250) + ' 195,' + (H + 30);
 
   // Everything placed on the map keeps clear of the spaces, the lines and each other
   const rects: any[] = [];
@@ -373,6 +404,25 @@ export function buildTrail(key: WorldKey, N: number, spaces: Record<number, MapS
   // Room for the start gate and the finish balloons
   const gate = { left: f1(sp[0].x - 50), top: f1(sp[0].y - 58) };
   rects.push({ x1: sp[0].x - 52, y1: sp[0].y - 60, x2: sp[0].x + 52, y2: sp[0].y + 24 });
+  // Last month's finish, small and far behind the start; the "On to …" sign beside this month's finish
+  let lookBack: any = null, onward: any = null;
+  if (prevKey !== key) {
+    for (const dx of [-112, 112, -140, 140, -84, 84]) {
+      const cx = sp[0].x + dx, b = { x1: cx - 34, y1: Math.max(340, sp[0].y - 62), x2: cx + 34, y2: Math.max(340, sp[0].y - 62) + 64 };
+      if (inMap(b) && !hitRect(b) && !hitDisc(b, 6) && !hitTrail(b, 2)) { rects.push(b); lookBack = { left: f1(b.x1), top: f1(b.y1), key: prevKey }; break; }
+    }
+  }
+  {
+    const w = Math.max(84, W.onward.replace(/&[a-z#0-9]+;/g, 'x').length * 7.2 + 30);
+    for (const dy of [120, 150, 90, 170]) {
+      const right = [finX + 92 + w / 2, finX + 104 + w / 2], left = [finX - 92 - w / 2, finX - 104 - w / 2];
+      for (const cx of finX < 195 ? right.concat(left) : left.concat(right)) {
+        const b = { x1: cx - w / 2, y1: Y1 + dy - 30, x2: cx + w / 2, y2: Y1 + dy + 34 };
+        if (inMap(b) && !hitRect(b) && !hitDisc(b, 4)) { rects.push(b); onward = { left: f1(b.x1), top: f1(b.y1), w: f1(w), text: W.onward }; break; }
+      }
+      if (onward) break;
+    }
+  }
   const fp = sp[N], pf = at(len - 34), pf2 = at(len - 30);
   const party = {
     lineLeft: f1((pf.x + pf2.x) / 2 - 27), lineTop: f1((pf.y + pf2.y) / 2 - 5),
@@ -522,6 +572,10 @@ export function buildTrail(key: WorldKey, N: number, spaces: Record<number, MapS
       if (st.art === 'butterfly') {
         art = ell(x - 4.8, y - 3, 4.8, 3.6, 0.5) + ell(x + 4.8, y - 3, 4.8, 3.6, -0.5) + ell(x - 3.8, y + 3.2, 3.4, 2.6, -0.5) + ell(x + 3.8, y + 3.2, 3.4, 2.6, 0.5);
         art2 = ell(x, y, 5.6, 1.4, Math.PI / 2) + ell(x - 1.5, y - 6.6, 2.2, 0.5, Math.PI / 2 - 0.45) + ell(x + 1.5, y - 6.6, 2.2, 0.5, Math.PI / 2 + 0.45);
+      }
+      if (st.art === 'kite') {
+        art = 'M' + f1(x) + ',' + f1(y - 9) + 'L' + f1(x + 6.5) + ',' + f1(y) + 'L' + f1(x) + ',' + f1(y + 10) + 'L' + f1(x - 6.5) + ',' + f1(y) + 'Z';
+        art2 = 'M' + f1(x - 0.6) + ',' + f1(y - 8) + 'H' + f1(x + 0.6) + 'V' + f1(y + 9) + 'H' + f1(x - 0.6) + 'Z' + circ(x + 2, y + 13, 1.6) + circ(x - 1, y + 17, 1.6);
       }
       if (st.art === 'crab') {
         art = ell(x, y, 7, 4.6, 0) + circ(x - 9.5, y - 4, 2.7) + circ(x + 9.5, y - 4, 2.7) + ell(x - 7.5, y - 2.4, 2.6, 1.2, 0.71) + ell(x + 7.5, y - 2.4, 2.6, 1.2, -0.71) +
@@ -678,7 +732,7 @@ export function buildTrail(key: WorldKey, N: number, spaces: Record<number, MapS
       return R;
     };
     const cands: any[] = [];
-    for (let y = 440; y < Y1 - 40; y += 18) for (let x = 28; x <= 362; x += 18) { const R = room(x, y); if (R >= 54) cands.push({ x, y, R }); }
+    for (let y = 440; y < Math.min(Y1 - 40, H - BLEND - 60); y += 18) for (let x = 28; x <= 362; x += 18) { const R = room(x, y); if (R >= 54) cands.push({ x, y, R }); }
     cands.sort((a, b) => b.R - a.R);
     for (const c of cands) {
       if (pockets.length >= 8) break;
@@ -694,12 +748,15 @@ export function buildTrail(key: WorldKey, N: number, spaces: Record<number, MapS
   // Trees, flowers and the rest of the scenery fill the open ground
   const inBox = (x: any, y: any) => rects.some((b) => x > b.x1 && x < b.x2 && y > b.y1 && y < b.y2);
   const nearLine = (x: any, y: any, m: any) => linePts.some((q) => Math.abs(q.x - x) < m && Math.abs(q.y - y) < m);
-  const kindDef: Record<string, any> = {};
-  T.kinds.forEach((k: any) => { kindDef[k[0]] = k[2]; });
-  const baseSize: Record<string, number> = { round: 46, pine: 46, bush: 30, flowers: 24, rock: 24, mushroom: 22, palm: 54, star: 20, tuft: 20, snowman: 34, leaves: 22, umbrella: 40, bare: 42, drift: 34 };
+  const defsOf = (TT: any) => { const o: Record<string, any> = {}; TT.kinds.forEach((k: any) => { o[k[0]] = k[2]; }); return o; };
+  const kindDef = defsOf(T);
+  const baseSize: Record<string, number> = {
+    round: 46, pine: 46, bush: 30, flowers: 24, rock: 24, mushroom: 22, palm: 54, star: 20, tuft: 20, snowman: 34, leaves: 22, umbrella: 40, bare: 42, drift: 34,
+    sunflower: 40, wheat: 28, haybale: 30, apple: 46, tent: 40, ice: 32, puddle: 34, cattail: 30, cottage: 50, lamp: 40, pumpkin: 24, fence: 30, log: 30, budtree: 42
+  };
   const items: any[] = [];
-  const add = (kind: any, x: any, y: any, size: any) => {
-    const d = kindDef[kind] || {};
+  const add = (kind: any, x: any, y: any, size: any, defs = kindDef) => {
+    const d = defs[kind] || {};
     const is: Record<string, boolean> = {};
     is[kind] = true;
     items.push({ is, y, left: f1(x - size / 2), top: f1(y - size), size: f1(size), c1: pick(d.c1), c2: pick(d.c2), c3: pick(d.c3), o2: d.o2 == null ? 0 : d.o2 });
@@ -725,46 +782,53 @@ export function buildTrail(key: WorldKey, N: number, spaces: Record<number, MapS
       }
     }
   });
-  const total = T.kinds.reduce((a: any, k: any) => a + k[1], 0);
-  const pickKind = () => {
-    let v = r() * total;
-    for (let i = 0; i < T.kinds.length; i++) { v -= T.kinds[i][1]; if (v <= 0) return T.kinds[i][0]; }
-    return T.kinds[0][0];
+  const pickKind = (TT: any) => {
+    let v = r() * TT.kinds.reduce((a: any, k: any) => a + k[1], 0);
+    for (let i = 0; i < TT.kinds.length; i++) { v -= TT.kinds[i][1]; if (v <= 0) return TT.kinds[i][0]; }
+    return TT.kinds[0][0];
   };
+  // Near the top some scenery comes from last month's world, near the bottom from next month's
+  const defsPrev = defsOf(TP), defsNext = defsOf(TN);
+  const worldAt = (y: number) => { const b = blendAt(y, H), v = r(); return v < b.prev ? 'prev' : v < b.prev + b.next ? 'next' : 'own'; };
   for (let gy = 130; gy < H; gy += 40) {
     for (let gx = 10; gx < 392; gx += 40) {
       const x = gx + (r() - 0.5) * 26, y = gy + (r() - 0.5) * 26;
-      if (r() > T.density) continue;
-      const kind = pickKind();
+      const from = worldAt(y), TT = from === 'prev' ? TP : from === 'next' ? TN : T;
+      if (r() > TT.density) continue;
+      const kind = pickKind(TT);
       const size = baseSize[kind] * (0.8 + r() * 0.45);
-      if (fits(x, y, size)) add(kind, x, y, size);
+      if (fits(x, y, size)) add(kind, x, y, size, from === 'prev' ? defsPrev : from === 'next' ? defsNext : kindDef);
     }
   }
   items.sort((a, b) => a.y - b.y);
 
   const patches: any[] = [];
   for (let i = 0; i < 28; i++) {
-    patches.push({ x: f1(-60 + r() * 400), y: f1(120 + r() * (H - 160)), w: f1(90 + r() * 120), h: f1(50 + r() * 70), c: T.patch, o: (0.5 + r() * 0.4).toFixed(2) });
+    const px = -60 + r() * 400, py = 120 + r() * (H - 160), pw = 90 + r() * 120, ph = 50 + r() * 70;
+    patches.push({ x: f1(px), y: f1(py), w: f1(pw), h: f1(ph), c: mixAt(T.patch, TP.patch, TN.patch, py + ph / 2, H), o: (0.5 + r() * 0.4).toFixed(2) });
   }
 
   const shapes: Record<string, string> = {
     leaf: 'M0 -7C5 -4 5 4 0 7C-5 4 -5 -4 0 -7Z',
     snow: 'M-2.8 0a2.8 2.8 0 1 0 5.6 0a2.8 2.8 0 1 0 -5.6 0Z',
     petal: 'M0 -5C4 -3 4 3 0 5C-2.5 2 -2.5 -2 0 -5Z',
-    sparkle: 'M0 -7L1.6 -1.6L7 0L1.6 1.6L0 7L-1.6 1.6L-7 0L-1.6 -1.6Z'
+    sparkle: 'M0 -7L1.6 -1.6L7 0L1.6 1.6L0 7L-1.6 1.6L-7 0L-1.6 -1.6Z',
+    rain: 'M0.2 -6L1 -6L-0.2 6L-1 6Z',
+    seed: 'M0 -6L0.5 -0.5L6 0L0.5 0.5L0 6L-0.5 0.5L-6 0L-0.5 -0.5Z M-1.4 0a1.4 1.4 0 1 0 2.8 0a1.4 1.4 0 1 0 -2.8 0Z'
   };
-  const PT = T.particle, fall = PT.type !== 'sparkle';
   const particles: any[] = [];
   for (let i = 0; i < 60; i++) {
     const dx = Math.round((10 + r() * 30) * (r() < 0.5 ? -1 : 1));
+    const x = 8 + r() * 374, y = 350 + r() * (H - 450), from = worldAt(y);
+    const PT = (from === 'prev' ? TP : from === 'next' ? TN : T).particle, type = PT.type, fall = type !== 'sparkle';
     particles.push({
-      x: f1(8 + r() * 374), y: f1(350 + r() * (H - 450)), size: Math.round(14 + r() * 8),
-      d: shapes[PT.type], c: pick(PT.colors),
-      stroke: PT.type === 'snow' ? '#AFC6DD' : (PT.type === 'sparkle' ? '#D9A848' : 'none'),
-      move: fall ? '0 0;' + dx + ' ' + Math.round(130 + r() * 60) : '0 0;0 0',
+      x: f1(x), y: f1(y), size: Math.round(14 + r() * 8),
+      d: shapes[type], c: pick(PT.colors),
+      stroke: type === 'snow' ? '#AFC6DD' : (type === 'sparkle' ? '#D9A848' : (type === 'seed' ? '#C9C2A8' : 'none')),
+      move: type === 'rain' ? '0 0;-14 ' + Math.round(150 + r() * 40) : type === 'seed' ? '0 0;' + dx * 2 + ' ' + Math.round(-30 - r() * 30) : fall ? '0 0;' + dx + ' ' + Math.round(130 + r() * 60) : '0 0;0 0',
       fade: fall ? '0;0.95;0.95;0' : '0;1;0',
-      spin: PT.type === 'snow' ? '0;0' : (fall ? '0;' + Math.round(140 + r() * 180) : '0;90'),
-      dur: (fall ? 6 + r() * 5 : 2.5 + r() * 2.5).toFixed(1) + 's',
+      spin: type === 'snow' || type === 'rain' ? '0;0' : (fall ? '0;' + Math.round(140 + r() * 180) : '0;90'),
+      dur: (type === 'rain' ? 1.1 + r() * 0.6 : type === 'seed' ? 9 + r() * 4 : fall ? 6 + r() * 5 : 2.5 + r() * 2.5).toFixed(1) + 's',
       begin: '-' + (r() * 9).toFixed(1) + 's'
     });
   }
@@ -787,7 +851,7 @@ export function buildTrail(key: WorldKey, N: number, spaces: Record<number, MapS
   const discsStone = discs.map((d, i) => kindOf(i) === 'plain' ? Object.assign({}, d, { radius: rr() + ' ' + rr() + ' ' + rr() + ' ' + rr() + ' / ' + rr() + ' ' + rr() + ' ' + rr() + ' ' + rr() }) : d);
   const numbers: any[] = [];
   for (let i = 1; i < N; i++) if (kindOf(i) !== 'plain') numbers.push({ x: f1(sp[i].x), top: f1(sp[i].y + rad[i] + 4), text: String(i) });
-  const shadeKinds: Record<string, number> = { round: 1, pine: 1, bush: 1, rock: 1, mushroom: 1, palm: 1, snowman: 1, umbrella: 1, bare: 1 };
+  const shadeKinds: Record<string, number> = { round: 1, pine: 1, bush: 1, rock: 1, mushroom: 1, palm: 1, snowman: 1, umbrella: 1, bare: 1, apple: 1, budtree: 1, sunflower: 1 };
   const shadows = items.filter((it) => shadeKinds[Object.keys(it.is)[0]]).map((it) => {
     const h = Math.max(4, it.size * 0.14);
     return { left: f1(it.left + it.size * 0.14), top: f1(it.top + it.size - h * 0.7), w: f1(it.size * 0.72), h: f1(h) };
@@ -865,8 +929,53 @@ export function buildTrail(key: WorldKey, N: number, spaces: Record<number, MapS
     fin: { left: f1(finX - 85), top: Y1 + 40 },
     prize: { left: f1(prizeLeft), top: Y1 + 214 },
     discsStone, numbers, shadows, surfOn, surfOff, glowsNight, glowsDusk, bugs, flocks, party, gate, land: landPaths,
-    lmsNoLife: lms.filter((m) => !m.life), Y1
+    lmsNoLife: lms.filter((m) => !m.life), Y1,
+    blend: blendLayers(T, TP, TN, H, r), lookBack, onward, prevKey, nextKey
   };
   CACHE.set(ck, B);
   return B;
+}
+
+/**
+ * How the map fades into the months on either side: the ground as a gradient, the trail's colours as SVG gradient
+ * stops, and any northern lights or fog, each masked to where its world shows.
+ */
+function blendLayers(T: any, TP: any, TN: any, H: number, r: () => number) {
+  const ys: number[] = [];
+  for (let y = 0; y <= BLEND; y += 65) ys.push(y);
+  for (let y = H - BLEND; y <= H; y += 65) ys.push(y);
+  if (ys[ys.length - 1] !== H) ys.push(H);
+  const pc = (y: number) => f1((y / H) * 100) + '%';
+  const grad = (k: string) => ys.map((y) => `${pc(y)} ${mixAt(T[k], TP[k], TN[k], y, H)}`);
+  const ground = 'linear-gradient(to bottom, ' + ys.map((y) => `${mixAt(T.ground, TP.ground, TN.ground, y, H)} ${f1(y)}px`).join(', ') + ')';
+  const stops = (k: string) => grad(k).map((g) => { const [o, c] = g.split(' '); return `<stop offset="${o}" stop-color="${c}"></stop>`; }).join('');
+  const defs = `<defs><linearGradient id="tqTrailEdge" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="${H}">${stops('edge')}</linearGradient>` +
+    `<linearGradient id="tqTrailFill" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="${H}">${stops('trail')}</linearGradient>` +
+    `<linearGradient id="tqTrailDash" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="${H}">${stops('dash')}</linearGradient></defs>`;
+  // Overlays: this world's everywhere but fading at the edges, a neighbour's only in its blend
+  const layers: string[] = [];
+  const mask = (which: 'own' | 'prev' | 'next') => 'linear-gradient(to bottom, ' + ys.concat(which === 'own' ? [BLEND + 1, H - BLEND - 1] : []).sort((a, b) => a - b).map((y) => {
+    const b = blendAt(y, H), a = which === 'prev' ? b.prev : which === 'next' ? b.next : 1 - b.prev - b.next;
+    return `rgba(0,0,0,${a.toFixed(2)}) ${f1(y)}px`;
+  }).join(', ') + ')';
+  ([['own', T], ['prev', TP], ['next', TN]] as const).forEach(([which, TT]) => {
+    if (!TT.overlay || (which !== 'own' && TT.overlay === T.overlay)) return;
+    const y0 = which === 'next' ? H - BLEND : 0, y1 = which === 'prev' ? BLEND : H, parts: string[] = [];
+    if (TT.overlay === 'aurora') {
+      for (let y = y0 + 60; y < y1; y += 340) {
+        const rot = f1((r() - 0.5) * 16), hgt = Math.round(60 + r() * 40);
+        parts.push(`<div style="position: absolute; left: -60px; top: ${f1(y)}px; width: 510px; height: ${hgt}px; border-radius: 50%; transform: rotate(${rot}deg); ` +
+          `background: linear-gradient(90deg, rgba(99,230,190,0) 0%, rgba(99,230,190,.34) 30%, rgba(151,117,250,.3) 70%, rgba(151,117,250,0) 100%); filter: blur(10px)"></div>`);
+      }
+    } else if (TT.overlay === 'fog') {
+      for (let y = y0 + 40; y < y1; y += 70) {
+        const x = -40 + r() * 400, w = 160 + r() * 160, hgt = 60 + r() * 50;
+        parts.push(`<div style="position: absolute; left: ${f1(x - w / 2)}px; top: ${f1(y)}px; width: ${f1(w)}px; height: ${f1(hgt)}px; border-radius: 50%; ` +
+          `background: radial-gradient(closest-side, rgba(250,250,247,.62), rgba(250,250,247,0))"></div>`);
+      }
+    }
+    const m = mask(which);
+    layers.push(`<div style="position: absolute; left: 0; top: 0; width: 390px; height: ${H}px; pointer-events: none; overflow: hidden; -webkit-mask-image: ${m}; mask-image: ${m}">${parts.join('')}</div>`);
+  });
+  return { ground, defs, overlays: layers.join('') };
 }

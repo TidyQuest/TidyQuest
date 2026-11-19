@@ -429,7 +429,7 @@ export const GUIDE_EN: GuideSection[] = [
       { p: 'Built-in badges unlock by themselves. Parents can make their own in **Settings → Badges** (for example "Homework 4 weeks in a row"), with optional bonus coins, and set coins for every built-in badge. Its icon is picked like a chore\'s: tap the button next to Icon to open Choose an icon (Wins & extras is at the top, and Search icons… finds the rest).' },
       { h: 'Quest Trail' },
       { where: 'Today → the Quest Trail card and its map (parents: Settings → Quest Trail)' },
-      { p: 'A board game the whole family plays over a month. Everyone with "Participates in tasks" on plays, parents included. Each month opens a new map, and on the 1st everyone starts again at Start.' },
+      { p: 'A board game the whole family plays over a month. Everyone with "Participates in tasks" on plays, parents included. Each month has its own world, from the Snowy Summit in January to the Winter Village in December, and on the 1st everyone starts again at Start. The top and bottom of each map blend into the months before and after it.' },
       { ul: [
         '**Stars:** 1 star for any day you do a chore, and a bonus star when you do 3 or more that day (2 a day at most). Each chore counts once a day. A chore waiting for a parent’s approval gives its star once it’s approved, for the day it was done.',
         '**Rolling:** each star is one roll of the die, whenever you like. Coin spaces pay +1 to +3 coins, shortcuts jump you ahead, slides take you back a few spaces, a chore card gives an extra star for doing a chore today, and a mascot treat gives the family mascot a free accessory.',

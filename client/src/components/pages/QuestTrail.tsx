@@ -216,7 +216,7 @@ const QuestTrail: React.FC<Props> = ({ userId, language, coins, onCoinsChanged, 
           </div>
         </div>
         <div className="quest-map" style={{ zoom }}>
-          <TrailMap world={world} length={len} spaces={state.trail.spaces} players={state.players} meId={me ? userId : null}
+          <TrailMap world={world} month={state.trail.month} length={len} spaces={state.trail.spaces} players={state.players} meId={me ? userId : null}
             myPos={myPos} jump={jump} reach={canRoll && !finished} timeOfDay={state.timeOfDay} fog={state.fog} texts={texts} />
         </div>
       </div>
