@@ -73,6 +73,12 @@ What changed in each release, in plain language, newest first. Releases up to v0
   curves, meanders through the Rainy Meadow, leans with the wind on the Kite Hills and runs long and flat along Sunny
   Shores, and some worlds take a double bend now and then. Streams still cross where the trail turns. Phones keep
   the map exactly as it was.
+- **The Quest Trail map looks more like a real board game** (ENH-37, ENH-38, ENH-40). One sun lights every world from
+  the top left: trees, rocks, houses, animals, gates and finish buildings have a lit side, a shaded side and a soft
+  shadow, hills look raised and lakes sunk. The ground has a faint texture of its own in each world (snow sparkle, ice
+  glints, wet grass, petals, daisies, pine needles, sand ripples, dry grass, fallen leaves, moss) that fades into the
+  next month's. Coloured spaces are shiny tokens with a thick edge and plain ones are grainy stepping stones, in the
+  fog and the map key too. Nothing on the map moves.
 
 ### Fixed
 

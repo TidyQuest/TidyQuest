@@ -4,6 +4,8 @@
 // shortcuts and slides routed around the trail, place names, landmarks, scenery, and the night and sunset lights.
 // Everything is drawn from a seeded random generator, so a world always looks the same. Text arrives escaped.
 
+import { groundTex } from './groundArt';
+import { LAYERS, castShadow, crescent } from './light';
 import { NEW_THEMES } from './worldThemes';
 
 export type WorldKey = 'summit' | 'frozen' | 'rainy' | 'blossom' | 'kites' | 'camp' | 'shores' | 'prairie' | 'orchard' | 'woods' | 'misty' | 'village';
@@ -113,7 +115,8 @@ const FIRST_THEMES: Record<string, any> = {
     bugs: 'fireflies',
     amp: 118, phase: 0.5,
     zig: { m: 2.2, R: 54, wave: [10, 290] },
-    ground: '#DDE4BA', patch: '#CCD6A2', ink: '#45311F', muted: '#6B5440', accent: '#D9480F', accentInk: '#A8380B',
+    ground: '#DDE4BA', ink: '#45311F', muted: '#6B5440', accent: '#D9480F', accentInk: '#A8380B',
+    tex: { kind: 'litter', dark: '#8E9A4E', lite: '#F4F7E4', bits: ['#E8590C', '#C92A2A', '#F2B33D', '#B07A3A'] },
     banner: '#FFF7E6', edge: '#B98E5A', edgeDark: '#8C6638', trail: '#ECD3A3', dash: '#C9A672', stone: '#FFF8EA',
     water: '#5FA8C6', waterLight: '#8FCBE0', ripple: '#FFFFFF', flowVals: '0;-46', plank: '#A0703F', rail: '#6B4423',
     density: 0.56,
@@ -149,7 +152,8 @@ const FIRST_THEMES: Record<string, any> = {
     bugs: 'stars',
     amp: 122, phase: -0.7,
     zig: { m: 1.7, R: 40, swing: 0.94, wave: [3, 300] },
-    ground: '#E3EBF4', patch: '#F7FAFD', ink: '#24405C', muted: '#4C6580', accent: '#1F6FB2', accentInk: '#1F5F99',
+    ground: '#E3EBF4', ink: '#24405C', muted: '#4C6580', accent: '#1F6FB2', accentInk: '#1F5F99',
+    tex: { kind: 'snow', dark: '#93AED6', lite: '#FFFFFF' },
     banner: '#F8FBFF', edge: '#93AEC9', edgeDark: '#6D8CAB', trail: '#FFFFFF', dash: '#C9D8E6', stone: '#FFFFFF',
     water: '#A9D4EE', waterLight: '#DDF0FB', ripple: '#FFFFFF', flowVals: '0;0', plank: '#8A6A4F', rail: '#5E4632',
     density: 0.55,
@@ -185,7 +189,8 @@ const FIRST_THEMES: Record<string, any> = {
     bugs: 'fireflies',
     amp: 116, phase: 2.1,
     zig: { m: 2.3, R: 58, dbl: [0, 0.5], drop: 16, wave: [5, 330] },
-    ground: '#CFE8B7', patch: '#BEDFA0', ink: '#2C4A2E', muted: '#4D6B45', accent: '#D6336C', accentInk: '#B02A64',
+    ground: '#CFE8B7', ink: '#2C4A2E', muted: '#4D6B45', accent: '#D6336C', accentInk: '#B02A64',
+    tex: { kind: 'spring', dark: '#5C9E3F', lite: '#F0F9E6', bits: ['#F7A8C4', '#FFFFFF', '#F28AB2'] },
     banner: '#FFFDF5', edge: '#C7A77A', edgeDark: '#9C7E52', trail: '#F7ECD5', dash: '#DCC7A0', stone: '#FFFDF6',
     water: '#62B8E0', waterLight: '#9FD6EF', ripple: '#FFFFFF', flowVals: '0;-46', plank: '#C08552', rail: '#8B5E34',
     density: 0.56,
@@ -220,7 +225,8 @@ const FIRST_THEMES: Record<string, any> = {
     bugs: 'fireflies',
     amp: 120, phase: 1.2,
     zig: { m: 2.5, R: 74, wave: [10, 380] },
-    ground: '#F6E4B5', patch: '#F0D58F', ink: '#0E4F57', muted: '#5B4A2A', accent: '#0E8A96', accentInk: '#0E7C86',
+    ground: '#F6E4B5', ink: '#0E4F57', muted: '#5B4A2A', accent: '#0E8A96', accentInk: '#0E7C86',
+    tex: { kind: 'sand', dark: '#D2A562', lite: '#FFFBEF', bits: ['#FFFFFF', '#FFC2B3', '#FFE3D6'] },
     banner: '#FFFBEF', edge: '#D2A562', edgeDark: '#A67C3D', trail: '#FFF5DD', dash: '#E4C489', stone: '#FFFDF4',
     water: '#34B3C2', waterLight: '#79D5DE', ripple: '#FFFFFF', flowVals: '0;-46', plank: '#B07A45', rail: '#7A4E26',
     density: 0.5,
@@ -249,8 +255,12 @@ const FIRST_THEMES: Record<string, any> = {
 
 export const THEMES: Record<WorldKey, any> = { ...FIRST_THEMES, ...NEW_THEMES } as Record<WorldKey, any>;
 
-function drawLand(kind: string, p: { x: number; y: number; R: number }, L: Record<string, string[]>, mid = 195): void {
-  const x = p.x, y = p.y, R = p.R;
+/**
+ * One landscape feature in a pocket beside the trail, into the land layers L.l1–l7. S gets what the sun adds (ENH-37):
+ * S.s<k> shade and S.h<k> light, each drawn just after land layer k (0: under all of them).
+ */
+function drawLand(kind: string, p: { x: number; y: number; R: number }, L: Record<string, string[]>, mid = 195, S: Record<string, string[]> = {}): void {
+  const x = p.x, y = p.y, R = p.R, put = (k: string, d: string) => (S[k] ??= []).push(d);
   if (kind === 'hills') {
     const mound = (mx: any, base: any, w: any, h: any) => 'M' + f1(mx - w) + ',' + f1(base) + 'C' + f1(mx - w * 0.55) + ',' + f1(base - h * 1.3) + ' ' + f1(mx + w * 0.55) + ',' + f1(base - h * 1.3) + ' ' + f1(mx + w) + ',' + f1(base) + 'Z';
     const bx = x + R * 0.28, bb = y + R * 0.45, bh = R * 0.85, fx = x - R * 0.18, fb = y + R * 0.6, fh = R * 0.7;
@@ -262,9 +272,24 @@ function drawLand(kind: string, p: { x: number; y: number; R: number }, L: Recor
     }
     const top = bb - bh * 0.97;
     [-0.3, 0, 0.3].forEach((t) => L.l7.push(circ(bx + R * t, top + Math.abs(t) * R * 0.3 - 2, 6.5)));
+    // The sun: each mound's right flank in shade (the right half of its outline, back to the foot) and a lit rim on
+    // its upper left; the trees on top shaded like the ones on the ground
+    const sides = (mx: number, base: number, w: number, h: number, k: string) => {
+      const P = (dx: number, dy: number) => f1(mx + w * dx) + ',' + f1(base - h * dy), crest = P(0, 0.975);
+      put('s' + k, 'M' + crest + 'C' + P(0.3875, 0.975) + ' ' + P(0.775, 0.65) + ' ' + P(1, 0) + 'L' + P(0.45, 0) + 'C' + P(0.5, 0.4) + ' ' + P(0.35, 0.85) + ' ' + crest + 'Z');
+      put('h' + k, 'M' + P(-1, 0) + 'C' + P(-0.775, 0.65) + ' ' + P(-0.3875, 0.975) + ' ' + crest + 'C' + P(-0.4, 0.86) + ' ' + P(-0.75, 0.45) + ' ' + P(-0.93, 0) + 'Z');
+    };
+    sides(bx, bb, R * 0.72, bh, '1');
+    sides(fx, fb, R * 0.86, fh, '5');
+    [-0.3, 0, 0.3].forEach((t) => {
+      const cx = bx + R * t, cy = top + Math.abs(t) * R * 0.3 - 2;
+      put('s7', crescent(cx, cy, 6.5, 6.5, 2.8));
+      put('h7', crescent(cx, cy, 6.5, 6.5, 1.6, true));
+    });
   } else if (kind === 'peaks') {
     const peak = (px: any, base: any, w: any, h: any, A: any, Bs: any, C: any) => {
       A.push('M' + f1(px - w) + ',' + f1(base) + 'L' + f1(px) + ',' + f1(base - h) + 'L' + f1(px + w) + ',' + f1(base) + 'Z');
+      put(A === L.l1 ? 'h1' : 'h4', 'M' + f1(px) + ',' + f1(base - h) + 'L' + f1(px - w) + ',' + f1(base) + 'L' + f1(px - w * 0.7) + ',' + f1(base) + 'Z');
       Bs.push('M' + f1(px) + ',' + f1(base - h) + 'L' + f1(px + w) + ',' + f1(base) + 'L' + f1(px + w * 0.15) + ',' + f1(base) + 'Z');
       C.push('M' + f1(px) + ',' + f1(base - h) + 'L' + f1(px + w * 0.36) + ',' + f1(base - h * 0.64) + 'L' + f1(px + w * 0.16) + ',' + f1(base - h * 0.57) +
         'L' + f1(px) + ',' + f1(base - h * 0.68) + 'L' + f1(px - w * 0.18) + ',' + f1(base - h * 0.56) + 'L' + f1(px - w * 0.36) + ',' + f1(base - h * 0.64) + 'Z');
@@ -276,28 +301,34 @@ function drawLand(kind: string, p: { x: number; y: number; R: number }, L: Recor
     for (let k = -2; k <= 2; k++) {
       const tx = x + k * R * 0.3, ty = base + 3 + (k % 2 ? 4 : 0);
       L.l7.push('M' + f1(tx) + ',' + f1(ty - 15) + 'L' + f1(tx + 6) + ',' + f1(ty) + 'L' + f1(tx - 6) + ',' + f1(ty) + 'Z');
+      put('s7', 'M' + f1(tx) + ',' + f1(ty - 15) + 'L' + f1(tx + 6) + ',' + f1(ty) + 'L' + f1(tx) + ',' + f1(ty) + 'Z');
     }
   } else if (kind === 'fields') {
     const a = R * 0.95, b = R * 0.62, rows = [L.l2, L.l3, L.l4];
     L.l1.push(ell(x, y, a, b, 0));
+    put('s0', ell(x + 2.6, y + 2.8, a, b, 0));
     let k = 0;
     for (let yy = y - b + 7; yy + 6 < y + b - 5; yy += 11, k++) {
       const y2 = yy + 6;
       const w1 = a * Math.sqrt(Math.max(0, 1 - Math.pow((yy - y) / b, 2))) - 8, w2 = a * Math.sqrt(Math.max(0, 1 - Math.pow((y2 - y) / b, 2))) - 8;
       if (w1 < 6 || w2 < 6) continue;
       rows[k % 3].push('M' + f1(x - w1) + ',' + f1(yy) + 'L' + f1(x + w1) + ',' + f1(yy) + 'L' + f1(x + w2) + ',' + f1(y2) + 'L' + f1(x - w2) + ',' + f1(y2) + 'Z');
+      put('s1', 'M' + f1(x - w2 + 1.2) + ',' + f1(y2) + 'L' + f1(x + w2) + ',' + f1(y2) + 'L' + f1(x + w2 + 1.2) + ',' + f1(y2 + 1.8) + 'L' + f1(x - w2 + 2.4) + ',' + f1(y2 + 1.8) + 'Z');
     }
   } else if (kind === 'bays') {
     const side = x < mid - 45 ? -1 : (x > mid + 45 ? 1 : 0), cx = x + side * R * 0.4, rx = side ? R * 1.3 : R * 0.95, ry = R * 0.66;
     L.l1.push(ell(cx, y, rx + 8, ry + 7, 0));
     L.l2.push(ell(cx, y, rx, ry, 0));
     L.l3.push(ell(cx + side * rx * 0.15, y + 2, rx * 0.62, ry * 0.55, 0));
+    put('s4', crescent(f1(cx), f1(y), f1(rx), f1(ry), Math.min(9, ry * 0.3), true));
+    put('h4', crescent(f1(cx), f1(y), f1(rx), f1(ry), Math.min(5, ry * 0.16)));
     for (let k = 0; k < 6; k++) {
       const wx = x + (k - 2.5) * R * 0.26, wy = y - ry * 0.5 + (k % 3) * ry * 0.4;
       if (Math.pow((wx - cx) / rx, 2) + Math.pow((wy - y) / ry, 2) > 0.7) continue;
       L.l4.push('M' + f1(wx - 6) + ',' + f1(wy) + 'Q' + f1(wx) + ',' + f1(wy - 3.6) + ' ' + f1(wx + 6) + ',' + f1(wy) + 'Q' + f1(wx) + ',' + f1(wy - 1.8) + ' ' + f1(wx - 6) + ',' + f1(wy) + 'Z');
     }
     const bx = x + side * R * 0.25, by = y + 6;
+    put('s4', ell(bx + 3.5, by + 5.5, 12, 2.4, 0));
     L.l5.push('M' + f1(bx - 11) + ',' + f1(by) + 'L' + f1(bx + 11) + ',' + f1(by) + 'L' + f1(bx + 7) + ',' + f1(by + 5) + 'L' + f1(bx - 7) + ',' + f1(by + 5) + 'Z' + bar(bx - 0.7, by - 17, bx + 0.7, by));
     L.l6.push('M' + f1(bx + 1.2) + ',' + f1(by - 16) + 'L' + f1(bx + 1.2) + ',' + f1(by - 2) + 'L' + f1(bx + 10) + ',' + f1(by - 2) + 'Z' +
       'M' + f1(bx - 1.2) + ',' + f1(by - 12) + 'L' + f1(bx - 1.2) + ',' + f1(by - 2) + 'L' + f1(bx - 7) + ',' + f1(by - 2) + 'Z');
@@ -872,7 +903,7 @@ export function buildTrail(key: WorldKey, N: number, spaces: Record<number, MapS
   });
 
   // Big landscape features fill the largest open pockets beside the trail
-  const land = { l1: [], l2: [], l3: [], l4: [], l5: [], l6: [], l7: [] };
+  const land = { l1: [], l2: [], l3: [], l4: [], l5: [], l6: [], l7: [] }, sunLand: Record<string, string[]> = {};
   if (landOn) {
     const pockets: any[] = [];
     const room = (x: any, y: any) => {
@@ -892,7 +923,7 @@ export function buildTrail(key: WorldKey, N: number, spaces: Record<number, MapS
       if (R >= 54) pockets.push({ x: c.x, y: c.y, R });
     }
     pockets.forEach((p) => {
-      drawLand(T.land.kind, p, land, mid);
+      drawLand(T.land.kind, p, land, mid, sunLand);
       rects.push({ x1: p.x - p.R * 0.95, y1: p.y - p.R * 0.95, x2: p.x + p.R * 0.95, y2: p.y + p.R * 0.95 });
     });
   }
@@ -954,10 +985,14 @@ export function buildTrail(key: WorldKey, N: number, spaces: Record<number, MapS
   }
   items.sort((a, b) => a.y - b.y);
 
+  // Soft lighter and darker areas, so the ground isn't one flat colour: where the old pale ovals were, on the same five
+  // random numbers each, but bigger and fading out at the edges
   const patches: any[] = [];
   for (let i = 0, n = wide ? Math.round(28 * kx * 0.8) : 28; i < n; i++) {
-    const px = -60 + r() * (mapW + 10), py = 120 + r() * (H - 160), pw = 90 + r() * 120, ph = 50 + r() * 70;
-    patches.push({ x: f1(px), y: f1(py), w: f1(pw), h: f1(ph), c: mixAt(T.patch, TP.patch, TN.patch, py + ph / 2, H), o: (0.5 + r() * 0.4).toFixed(2) });
+    const px = -60 + r() * (mapW + 10), py = 120 + r() * (H - 160), pw = 90 + r() * 120, ph = 50 + r() * 70, u = r();
+    const k = u < 0.45 ? 'dark' : 'lite', cx = px + pw / 2, cy = py + ph / 2, w = pw * 2, h = ph * 2;
+    const c = hexRgb(mixAt(T.tex[k], TP.tex[k], TN.tex[k], cy, H)).join(', '), a = k === 'dark' ? 0.2 + u * 0.4 : 0.5 + (u - 0.45) * 0.55;
+    patches.push({ x: f1(cx - w / 2), y: f1(cy - h / 2), w: f1(w), h: f1(h), bg: `radial-gradient(closest-side, rgba(${c}, ${a.toFixed(2)}), rgba(${c}, ${(a * 0.75).toFixed(2)}) 40%, rgba(${c}, ${(a * 0.35).toFixed(2)}) 70%, rgba(${c}, 0))` });
   }
 
   const shapes: Record<string, string> = {
@@ -1001,13 +1036,37 @@ export function buildTrail(key: WorldKey, N: number, spaces: Record<number, MapS
   discs.forEach((d: any) => { d.radius = '50%'; });
   const rr = () => Math.round(42 + r() * 16) + '%';
   const discsStone = discs.map((d, i) => kindOf(i) === 'plain' ? Object.assign({}, d, { radius: rr() + ' ' + rr() + ' ' + rr() + ' ' + rr() + ' / ' + rr() + ' ' + rr() + ' ' + rr() + ' ' + rr() }) : d);
+  // The stepping stones' grain: fine specks scattered round each stone, clear of its number. They have their own
+  // random numbers, so nothing else on the map moves.
+  const gr = rng(T.seed + 140), hex2 = (a: number) => Math.round(a * 255).toString(16).padStart(2, '0');
+  discsStone.forEach((d: any, i) => {
+    if (kindOf(i) !== 'plain') return;
+    const specks: string[] = [];
+    for (let k = 0, n = 6 + Math.floor(gr() * 3); k < n; k++) {
+      const a = gr() * 2 * Math.PI, q = 28 + gr() * 16;
+      specks.push(`radial-gradient(${f1(0.45 + gr() * 0.45)}px at ${Math.round(50 + Math.cos(a) * q)}% ${Math.round(50 + Math.sin(a) * q)}%, ${T.edgeDark}${hex2(0.3 + gr() * 0.3)} 55%, #0000)`);
+    }
+    d.grain = specks.join(', ');
+  });
   const numbers: any[] = [];
   for (let i = 1; i < N; i++) if (kindOf(i) !== 'plain') numbers.push({ x: f1(sp[i].x), top: f1(sp[i].y + rad[i] + 4), text: String(i) });
-  const shadeKinds: Record<string, number> = { round: 1, pine: 1, bush: 1, rock: 1, mushroom: 1, palm: 1, snowman: 1, umbrella: 1, bare: 1, apple: 1, budtree: 1, sunflower: 1 };
-  const shadows = items.filter((it) => shadeKinds[Object.keys(it.is)[0]]).map((it) => {
-    const h = Math.max(4, it.size * 0.14);
-    return { left: f1(it.left + it.size * 0.14), top: f1(it.top + it.size - h * 0.7), w: f1(it.size * 0.72), h: f1(h) };
+  // The sun's shadows (ENH-37): everything standing casts one down and to the right, all of them in one soft layer
+  // (a path per layer, so a whole map's shadows cost eight elements). Per kind: [footprint width, height, shift right, foot]
+  // as shares of the drawing's size. Flat things (flowers, leaves, puddles, drifts) and critters in the water cast none.
+  const CAST: Record<string, number[]> = {
+    round: [0.6, 1], apple: [0.6, 1], pine: [0.66, 1], bush: [0.88, 0.62], rock: [0.78, 0.48], mushroom: [0.66, 0.7], palm: [0.5, 0.85, 0.03],
+    snowman: [0.5, 0.88], umbrella: [0.8, 0.95], bare: [0.42, 1], budtree: [0.42, 1], sunflower: [0.4, 0.75], wheat: [0.44, 0.5], cattail: [0.44, 0.5],
+    cottage: [0.88, 0.85], tent: [0.86, 0.72], lamp: [0.22, 1], haybale: [0.78, 0.45], pumpkin: [0.66, 0.42], fence: [0.86, 0.45], log: [0.8, 0.26], ice: [0.6, 0.8],
+    acorn: [0.56, 0.92], squirrel: [0.62, 0.8], owl: [0.9, 0.55, 0, 0.94], lantern: [0.3, 1, -0.24], pinecone: [0.56, 0.72, -0.05], polarbear: [0.8, 0.7, 0.08],
+    igloo: [0.88, 0.62], bunny: [0.62, 0.74, -0.05], windmill: [0.3, 1], beehive: [0.66, 0.8], shell: [0.36, 0.5, 0, 0.94], sandcastle: [0.84, 0.9],
+    beachball: [0.5, 0.6, 0, 0.92], penguin: [0.46, 0.9], seal: [0.86, 0.45], campfire: [0.8, 0.4], scarecrow: [0.42, 1], basket: [0.7, 0.6], crow: [0.24, 1], sled: [0.86, 0.38]
+  };
+  const soft: string[][] = Array.from({ length: LAYERS }, () => []);
+  items.concat(lms).forEach((it) => {
+    const c = CAST[Object.keys(it.is)[0]], s = Number(it.size);
+    if (c) castShadow(it.left + s * (0.5 + (c[2] || 0)), it.top + s * (c[3] || 1), s * c[0], s * c[1]).forEach((e, k) => soft[k].push(ell(e[0], e[1], e[2], e[3], 0)));
   });
+  const shadows = { soft: soft.map((p) => p.join('')), land: Object.fromEntries(Object.entries(sunLand).map(([k, ps]) => [k, ps.join('')])) };
   const SF = T.surface, surfOff = { s1c: 'none', s1w: 0, s1d: 'none', s2c: 'none', s2w: 0, b1: '', b2: '', b3: '', c1: 'none', c2: 'none', c3: 'none', dashW: 3 };
   const surfOn = Object.assign({}, surfOff, { dashW: 0 });
   if (SF.tracks) Object.assign(surfOn, { s1c: SF.tracks[0], s1w: 16, s2c: SF.tracks[1], s2w: 11 });
@@ -1066,7 +1125,7 @@ export function buildTrail(key: WorldKey, N: number, spaces: Record<number, MapS
   }
   const landPaths = { l1: land.l1.join(''), l2: land.l2.join(''), l3: land.l3.join(''), l4: land.l4.join(''), l5: land.l5.join(''), l6: land.l6.join(''), l7: land.l7.join('') };
 
-  const item = (title: string, what: string, m: { bg: string; fg: string }, icon: string, text?: string) => ({ title, what, bg: m.bg, fg: m.fg, icon: icon || '', hasIcon: !text, hasText: !!text, text: text || '' });
+  const item = (title: string, what: string, m: { bg: string; fg: string; dark: string }, icon: string, text?: string) => ({ title, what, bg: m.bg, fg: m.fg, dark: m.dark, icon: icon || '', hasIcon: !text, hasText: !!text, text: text || '' });
   const mapKey = [
     item(W.key.coins, W.key.coinsWhat, M.coins, '', '+2'),
     item(W.key.card, W.key.cardWhat, M.card, IC.card),
@@ -1091,8 +1150,8 @@ export function buildTrail(key: WorldKey, N: number, spaces: Record<number, MapS
 }
 
 /**
- * How the map fades into the months on either side: the ground as a gradient, the trail's colours as SVG gradient
- * stops, and any northern lights or fog, each masked to where its world shows.
+ * How the map fades into the months on either side: the ground as a gradient (its texture as masked bands), the
+ * trail's colours as SVG gradient stops, and any northern lights or fog, each masked to where its world shows.
  */
 function blendLayers(T: any, TP: any, TN: any, H: number, r: () => number, mapW = 390) {
   const ys: number[] = [];
@@ -1133,5 +1192,24 @@ function blendLayers(T: any, TP: any, TN: any, H: number, r: () => number, mapW 
     const m = mask(which);
     layers.push(`<div style="position: absolute; left: 0; top: 0; width: ${mapW}px; height: ${H}px; pointer-events: none; overflow: hidden; -webkit-mask-image: ${m}; mask-image: ${m}">${parts.join('')}</div>`);
   });
-  return { ground, defs, overlays: layers.join('') };
+  // The ground's texture: this world's all over, last month's fading out down the top band and next month's in up the
+  // bottom one. The tiles are set once on the holder (CSS variables); each band lines them up with the map's top.
+  const tex = (TT: any) => groundTex(TT.tex, rng(TT.seed + 138));
+  const own = tex(T), up = tex(TP), down = tex(TN), bl = (y: number) => blendAt(y, H), mine = (y: number) => 1 - bl(y).prev - bl(y).next;
+  const fade = (y0: number, y1: number, a: (y: number) => number) => {
+    const st: string[] = [];
+    for (let y = y0; ; y = Math.min(y1, y + 65)) { st.push(`rgba(0,0,0,${a(y).toFixed(2)}) ${f1(y - y0)}px`); if (y >= y1) break; }
+    return 'linear-gradient(to bottom, ' + st.join(', ') + ')';
+  };
+  const band = (v: string, y0: number, y1: number, a?: (y: number) => number) => {
+    const m = a && fade(y0, y1, a);
+    return y1 - y0 < 1 ? '' : `<div style="position: absolute; left: 0; top: ${f1(y0)}px; width: ${mapW}px; height: ${f1(y1 - y0)}px; ` +
+      `background-image: var(--tq-${v}); background-size: var(--tq-${v}s); background-position: 0 ${f1(-y0)}px${m ? `; -webkit-mask-image: ${m}; mask-image: ${m}` : ''}"></div>`;
+  };
+  const ya = Math.min(BLEND, H / 2), yb = Math.max(H - BLEND, H / 2);
+  const texture = `<div style="position: absolute; left: 0; top: 0; width: ${mapW}px; height: ${H}px; --tq-g: ${own.img}; --tq-gs: ${own.size}; ` +
+    `--tq-p: ${up.img}; --tq-ps: ${up.size}; --tq-n: ${down.img}; --tq-ns: ${down.size}">` +
+    band('g', 0, ya, mine) + band('g', ya, yb) + band('g', yb, H, mine) +
+    band('p', 0, Math.min(BLEND, H), (y) => bl(y).prev) + band('n', Math.max(0, H - BLEND), H, (y) => bl(y).next) + '</div>';
+  return { ground, defs, overlays: layers.join(''), texture };
 }

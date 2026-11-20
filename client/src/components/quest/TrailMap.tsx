@@ -93,7 +93,7 @@ function TrailMapImpl({ width, world, month, length, spaces, players, meId, acti
       bugs: timeOfDay === 'night' ? B.bugs : [],
       discs: B.discsStone, numbers: B.numbers, marks: B.marks, signs: B.signs, mapKey: B.mapKey, particles: B.particles,
       prize: { ...B.prize, ...(texts.prize ?? {}) },
-      gateSvg: GATES[world] ?? '', finSvg: FINISHES[world] ?? '', trailDefs: B.blend.defs, overlays: B.blend.overlays,
+      gateSvg: GATES[world] ?? '', finSvg: FINISHES[world] ?? '', trailDefs: B.blend.defs, overlays: B.blend.overlays, texture: B.blend.texture,
       extra: (B.lookBack ? `<div style="position: absolute; left: ${B.lookBack.left}px; top: ${B.lookBack.top}px; width: 68px; height: 64px; opacity: .62; pointer-events: none">` +
         `<div style="width: 170px; height: 160px; transform: scale(.4); transform-origin: 0 0">${FINISHES[B.lookBack.key as WorldKey] ?? ''}</div></div>` : '') +
         (B.onward ? `<div style="position: absolute; left: ${B.onward.left}px; top: ${B.onward.top}px; width: ${B.onward.w}px; height: 64px; display: flex; flex-direction: column; align-items: center; pointer-events: none">` +
