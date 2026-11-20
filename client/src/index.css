@@ -2387,7 +2387,7 @@ html[data-look='calm'] .today-tabs button.on { background: var(--warm-card); }
 .quest-head-row { display: flex; align-items: center; gap: 4px; padding: 6px 10px 6px 4px; }
 .quest-head-title { display: flex; flex-direction: column; flex: 1; min-width: 0; }
 .quest-head-title h1 { margin: 0; font-size: 19px; font-weight: 800; line-height: 1.15; color: var(--warm-text); }
-.quest-head-title span { font-size: 13px; font-weight: 700; color: var(--warm-text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.quest-head-title span { font-size: 13px; font-weight: 700; line-height: 1.25; color: var(--warm-text-secondary); overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
 .quest-icon-btn { width: 44px; height: 44px; flex-shrink: 0; border: 0; border-radius: 50%; background: transparent; color: var(--warm-text); display: flex; align-items: center; justify-content: center; cursor: pointer; }
 .quest-icon-btn:hover { background: var(--warm-bg-subtle); }
 .quest-coins { display: flex; align-items: center; gap: 6px; flex-shrink: 0; background: var(--warm-card); border-radius: 999px; padding: 6px 12px 6px 8px; font-weight: 800; font-size: 15px; color: var(--warm-text); box-shadow: 0 1px 2px rgba(70,45,20,.08); }
@@ -2493,10 +2493,23 @@ html[data-look='calm'] .today-tabs button.on { background: var(--warm-card); }
 .quest-end-card { padding: 12px 14px; }
 .quest-end-badges-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; }
 .quest-end-badges-head small { font-size: 13px; font-weight: 700; color: var(--warm-text-secondary); }
-.quest-end-badges { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 4px; }
-.quest-end-badges span { aspect-ratio: 1 / 1; border-radius: 50%; background: var(--warm-border); color: var(--warm-text-secondary); font-size: 11px; font-weight: 800; display: flex; align-items: center; justify-content: center; }
-.quest-end-badges span.won { color: #FFFFFF; font-size: 13px; }
-.quest-end-badges span.this:not(.won) { background: transparent; border: 2px dashed var(--warm-text-light); box-sizing: border-box; }
+.quest-end-badges { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 10px 6px; }
+.quest-badge { position: relative; display: flex; flex-direction: column; align-items: center; gap: 3px; min-width: 0; }
+.quest-badge-tile { width: 100%; max-width: 56px; aspect-ratio: 1 / 1; border-radius: 50%; overflow: hidden; box-sizing: border-box; border: 2.5px solid var(--warm-border); background: var(--warm-bg-subtle); display: flex; align-items: flex-end; justify-content: center; color: #FFFFFF; font-weight: 800; }
+.quest-badge.won .quest-badge-tile { background: #FFF6E3; box-shadow: 0 1px 3px rgba(70,45,20,.18); }
+.quest-badge.this .quest-badge-tile { border-style: dashed; border-color: var(--warm-text-light); }
+.quest-badge-art { display: block; width: 92%; margin-bottom: 4%; }
+.quest-badge-art svg { display: block; width: 100%; height: auto; }
+.quest-badge:not(.won) .quest-badge-art { filter: grayscale(1); opacity: .3; }
+.quest-badge-month { font-size: 11px; font-weight: 800; line-height: 1; color: var(--warm-text-secondary); }
+.quest-badge.won .quest-badge-month { color: var(--warm-text); }
+.quest-badge-crown { position: absolute; top: -7px; right: calc(50% - 32px); font-size: 15px; font-style: normal; line-height: 1; filter: drop-shadow(0 1px 1px rgba(0,0,0,.25)); }
+/* Last winner's crown (ENH-44): over their picture on the Today race strip, beside it on the map's chips */
+.quest-crown { position: absolute; left: 50%; top: -10px; transform: translateX(-50%); font-size: 12px; font-style: normal; line-height: 1; pointer-events: none; filter: drop-shadow(0 1px 1px rgba(0,0,0,.25)); }
+.quest-card-dot > .quest-crown { background: none; box-shadow: none; border-radius: 0; }
+.quest-chip-crown { font-size: 14px; margin-left: -4px; }
+.quest-badges-panel .quest-end-badges { margin-top: 12px; }
+.quest-badges-panel p { margin: 6px 0 0; font-size: 13px; color: var(--warm-text-secondary); }
 .quest-end-rows { padding: 4px 14px; }
 .quest-end-row { display: flex; align-items: center; gap: 12px; min-height: 44px; border-bottom: 1px solid var(--warm-border-subtle); }
 .quest-end-row:last-child { border-bottom: 0; }

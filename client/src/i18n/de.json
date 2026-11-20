@@ -2952,7 +2952,13 @@
       "prizeWonBy": "{name} hat ihn gewonnen: {prize}",
       "prizeWonYou": "Du hast ihn gewonnen: {prize}",
       "rollingFor": "Würfeln für {name}",
-      "backToMine": "Zurück zu deinem Zug"
+      "backToMine": "Zurück zu deinem Zug",
+      "badgesTitle": "Pfad-Abzeichen",
+      "closeBadges": "Pfad-Abzeichen schließen",
+      "badgesHint": "Das Ziel jedes Monats leuchtet auf, wenn du es erreichst, mit einer Krone, wenn du als Erstes ankommst.",
+      "badgeFinished": "{month}: Ziel erreicht",
+      "badgeFirst": "{month}: als Erstes angekommen",
+      "crownTitle": "Sieger vom letzten Monat"
     },
     "doneFor": {
       "countedYours": "„{task}“ zählt für dich",

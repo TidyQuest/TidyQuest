@@ -2952,7 +2952,13 @@
       "prizeWonBy": "{name} heeft hem gewonnen: {prize}",
       "prizeWonYou": "Jij hebt hem gewonnen: {prize}",
       "rollingFor": "Gooien voor {name}",
-      "backToMine": "Terug naar je eigen beurt"
+      "backToMine": "Terug naar je eigen beurt",
+      "badgesTitle": "Padbadges",
+      "closeBadges": "Padbadges sluiten",
+      "badgesHint": "De finish van elke maand licht op als je hem haalt, met een kroon als je er als eerste bent.",
+      "badgeFinished": "{month}: finish gehaald",
+      "badgeFirst": "{month}: als eerste aangekomen",
+      "crownTitle": "Winnaar van vorige maand"
     },
     "doneFor": {
       "countedYours": "„{task}” telt voor jou",

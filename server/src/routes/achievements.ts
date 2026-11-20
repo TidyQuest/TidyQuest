@@ -4,6 +4,8 @@ import { AuthRequest, authMiddleware } from '../middleware/auth';
 import { ensureAdmin } from '../utils/adminHelpers';
 import { achievementsFor, builtinBadgeBonus, newStatsShared, type StatsShared } from '../utils/achievementStats';
 import { getFeatures } from '../utils/features';
+import { trailBadges } from '../utils/quest';
+import { dateStr } from '../utils/clock';
 import { customBadgeKey, listCustomBadges, readCustomBadgeInput, saveCustomBadge } from '../utils/badges';
 
 const router = Router();
@@ -15,7 +17,11 @@ function getUserStats(userId: number, shared?: StatsShared) {
   const result = achievementsFor(userId, { shared });
   if (!result) return null;
   const features = getFeatures();
-  return { ...user, achievements: result.achievements, level: features.levels ? result.level : null, nextBadge: features.nextBadge ? result.nextBadge : null };
+  return {
+    ...user, achievements: result.achievements, level: features.levels ? result.level : null, nextBadge: features.nextBadge ? result.nextBadge : null,
+    // Quest Trail badges this year (ENH-44)
+    trailBadges: features.questTrail ? trailBadges(userId, dateStr(new Date()).slice(0, 4)) : null,
+  };
 }
 
 router.get('/', (req: AuthRequest, res: Response) => {

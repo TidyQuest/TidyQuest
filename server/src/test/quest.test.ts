@@ -352,6 +352,47 @@ describe('Quest Trail: the end of the month', () => {
     expect(now.enabled && Object.keys(now.players[0])).toEqual(expect.arrayContaining(['avatarColor', 'avatarType', 'avatarPreset', 'avatarPhotoUrl']));
   });
 
+  it('keeps your trail badges all year with a crown on the months you came first, and last winner wears the crown (ENH-44)', async () => {
+    const { admin, kid, teen, chores } = await family();
+    const t = wholeMarch(); // the kid came first in February
+    for (const u of [teen.user.id, kid.user.id]) done(u, chores[0], march(2, 9));
+    moveTo('2030-03', teen.user.id, 79);
+    moveTo('2030-03', kid.user.id, 79);
+    loadDie(1);
+    takeTurn(t, teen.user.id, { rolledBy: teen.user.id, now: march(2, 20) });
+    takeTurn(t, kid.user.id, { rolledBy: kid.user.id, now: march(2, 20) });
+    const inMarch = questState(kid.user.id, march(3));
+    expect(inMarch.enabled && inMarch.badges).toEqual({ year: '2030', finished: ['2030-02', '2030-03'], first: ['2030-02'] });
+    expect(inMarch.enabled && inMarch.crown).toBe(kid.user.id); // February's winner, all March
+    expect(questState(admin.user.id, march(3))).toMatchObject({ badges: null }); // never played
+
+    ensureTrail(at(2030, 3, 1, 0, 0, 30));
+    const april = questState(kid.user.id, at(2030, 3, 1, 9));
+    expect(april.enabled && april.crown).toBe(teen.user.id);
+    expect(april.enabled && april.lastMonth).toMatchObject({ badges: ['2030-02', '2030-03'], firsts: ['2030-02'] });
+    expect(questState(teen.user.id, at(2030, 3, 1, 9))).toMatchObject({ badges: { finished: ['2030-03'], first: ['2030-03'] } });
+    // Nobody finishes April: the crown stays with March's winner
+    ensureTrail(at(2030, 4, 1, 0, 0, 30));
+    expect(questState(kid.user.id, at(2030, 4, 1, 9))).toMatchObject({ crown: teen.user.id });
+  });
+
+  it('shows each person\'s trail badges this year on the Achievements page, only with Quest Trail on (ENH-44)', async () => {
+    const { admin, kid } = await family();
+    const year = dateStr(new Date()).slice(0, 4);
+    db.prepare("INSERT INTO quest_players (month, userId, position, joinDay, finishedAt, place) VALUES (?, ?, 80, ?, ?, 1)")
+      .run(`${year}-01`, kid.user.id, `${year}-01-01`, `${year}-01-20T12:00:00.000Z`);
+    db.prepare("INSERT INTO quest_players (month, userId, position, joinDay, finishedAt, place) VALUES (?, ?, 80, ?, ?, 2)")
+      .run(`${year}-02`, kid.user.id, `${year}-02-01`, `${year}-02-20T12:00:00.000Z`);
+    db.prepare("INSERT INTO quest_players (month, userId, position, joinDay, finishedAt, place) VALUES (?, ?, 80, ?, ?, 1)")
+      .run(`${Number(year) - 1}-12`, kid.user.id, `${Number(year) - 1}-12-01`, `${Number(year) - 1}-12-20T12:00:00.000Z`); // last year's
+    const res = await agent.get('/api/achievements').set(auth(kid.token));
+    expect(res.body.me.trailBadges).toEqual({ year, finished: [`${year}-01`, `${year}-02`], first: [`${year}-01`] });
+    const fam = (await agent.get('/api/achievements').set(auth(admin.token))).body;
+    expect(fam.family.find((u: any) => u.id === kid.user.id).trailBadges.finished).toHaveLength(2);
+    db.prepare("INSERT OR REPLACE INTO app_settings (key, value) VALUES ('features', ?)").run(JSON.stringify({ rescue: false, questTrail: false }));
+    expect((await agent.get('/api/achievements').set(auth(kid.token))).body.me.trailBadges).toBeNull();
+  });
+
   it('takes the month-end turns in a random order, not always the same one first', async () => {
     const { kid, teen, chores } = await family();
     saveQuestSettings({ prizeCoins: 10 });

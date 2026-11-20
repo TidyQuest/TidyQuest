@@ -2952,7 +2952,13 @@
       "prizeWonBy": "{name} l'a gagné : {prize}",
       "prizeWonYou": "Tu l'as gagné : {prize}",
       "rollingFor": "Lancer pour {name}",
-      "backToMine": "Revenir à ton tour"
+      "backToMine": "Revenir à ton tour",
+      "badgesTitle": "Badges du sentier",
+      "closeBadges": "Fermer les badges du sentier",
+      "badgesHint": "L’arrivée de chaque mois s’allume quand tu l’atteins, avec une couronne quand tu y arrives le premier.",
+      "badgeFinished": "{month} : arrivée atteinte",
+      "badgeFirst": "{month} : arrivé en premier",
+      "crownTitle": "Gagnant du mois dernier"
     },
     "doneFor": {
       "countedYours": "« {task} » compté pour toi",

@@ -74,7 +74,7 @@ export const KidQuestCard: React.FC<Props> = ({ state, userId, language, onRolle
           </span>
         )}
       </span>
-      <QuestRail players={state.players} userId={userId} length={len} youSize={24} />
+      <QuestRail players={state.players} userId={userId} length={len} crown={state.crown} youSize={24} />
       {today && !finished && (
         <span className="quest-kid-today">
           {[0, 1].map((i) => {

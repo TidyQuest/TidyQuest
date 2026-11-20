@@ -24,6 +24,8 @@ export interface QuestLastMonth {
   prize: { rewardTitle: string | null; coins: number } | null;
   myCoins: number;
   badges: string[];
+  /** Months this year the viewer came first (ENH-44) */
+  firsts?: string[];
   players: (QuestAvatar & { userId: number; displayName: string; isKid: boolean; position: number; place: number | null; finishedAt: string | null; prizeWon: boolean })[];
 }
 export interface QuestState {
@@ -39,8 +41,13 @@ export interface QuestState {
   coinsPerStar: number;
   timeOfDay: 'day' | 'sunset' | 'night';
   fog: boolean;
+  /** The viewer's trail badges this year (ENH-44); null if they haven't played */
+  badges: TrailBadges | null;
+  /** Who wears last winner's crown on the race strip (ENH-44) */
+  crown: number | null;
   lastMonth: QuestLastMonth | null;
 }
+export interface TrailBadges { year: string; finished: string[]; first: string[] }
 export type QuestEvent =
   | { t: 'move'; from: number; to: number }
   | { t: 'coins'; n: number }

@@ -91,7 +91,7 @@ export const QuestCard: React.FC<Props> = ({ userId, language, refreshKey, kidMo
           </span>
           <span className="quest-card-play">{me && stars > 0 && !me.finishedAt ? t('quest.play') : t('quest.seeMap')}</span>
         </span>
-        <QuestRail players={state.players} userId={userId} length={len} />
+        <QuestRail players={state.players} userId={userId} length={len} crown={state.crown} />
         <small className="quest-card-race">{race}</small>
         {today && todayLine && (
           <span className="quest-card-today">

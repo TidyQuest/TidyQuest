@@ -1,7 +1,8 @@
 import React, { useEffect, useRef } from 'react';
 import { useTranslation } from '../../hooks/useTranslation';
 import { UserAvatar } from '../shared/UserAvatar';
-import { THEMES, worldFor } from './trailBuild';
+import { THEMES } from './trailBuild';
+import { TrailBadgeHead, TrailBadgeRow } from './TrailBadges';
 import { fill, finishPlace, monthName, prizeText, shortDate, worldTitle } from './questText';
 import type { QuestLastMonth, QuestState } from './types';
 
@@ -43,7 +44,6 @@ export const MonthEnd: React.FC<Props> = ({ last, current, userId, language, onD
     : winner?.finishedAt ? fill(t('quest.endFirst'), { place, date: shortDate(language, winner.finishedAt) }) : '';
 
   const year = last.month.slice(0, 4);
-  const narrow = (m: number) => new Intl.DateTimeFormat(language, { month: 'narrow', timeZone: 'UTC' }).format(new Date(Date.UTC(Number(year), m, 15)));
   const T = THEMES[last.world];
 
   return (
@@ -73,22 +73,8 @@ export const MonthEnd: React.FC<Props> = ({ last, current, userId, language, onD
 
         {me && (
           <section className="quest-end-card tq-card">
-            <div className="quest-end-badges-head">
-              <b>{t('quest.endBadges')}</b>
-              <small>{fill(t('quest.endBadgeCount'), { n: last.badges.length })}</small>
-            </div>
-            <div className="quest-end-badges" aria-label={fill(t('quest.endBadgeCount'), { n: last.badges.length })}>
-              {Array.from({ length: 12 }, (_, m) => {
-                const key = `${year}-${String(m + 1).padStart(2, '0')}`;
-                const won = last.badges.includes(key);
-                return (
-                  <span key={key} className={won ? 'won' : key === last.month ? 'this' : ''} title={monthName(language, key)}
-                    style={won ? { background: THEMES[worldFor(key)].accent } : undefined}>
-                    {won ? '★' : narrow(m)}
-                  </span>
-                );
-              })}
-            </div>
+            <TrailBadgeHead title={t('quest.endBadges')} count={last.badges.length} language={language} />
+            <TrailBadgeRow year={year} finished={last.badges} first={last.firsts ?? []} current={last.month} language={language} />
           </section>
         )}
 

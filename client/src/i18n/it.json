@@ -2952,7 +2952,13 @@
       "prizeWonBy": "{name} l'ha vinto: {prize}",
       "prizeWonYou": "L'hai vinto tu: {prize}",
       "rollingFor": "Tiri per {name}",
-      "backToMine": "Torna al tuo turno"
+      "backToMine": "Torna al tuo turno",
+      "badgesTitle": "Distintivi del sentiero",
+      "closeBadges": "Chiudi i distintivi del sentiero",
+      "badgesHint": "Il traguardo di ogni mese si illumina quando lo raggiungi, con una corona quando arrivi per primo.",
+      "badgeFinished": "{month}: traguardo raggiunto",
+      "badgeFirst": "{month}: arrivato primo",
+      "crownTitle": "Vincitore del mese scorso"
     },
     "doneFor": {
       "countedYours": "«{task}» contato come tuo",

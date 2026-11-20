@@ -4,7 +4,7 @@ import type { QuestPlayer } from './types';
 
 /**
  * The little race track on the Quest Trail cards on Today (NEW-40): everyone's picture along it, yours bigger and
- * on top, and the 🏆 past the end so whoever finished stays in sight. People on the same space sit a little apart.
+ * on top, and the 🏆 past the end so whoever finished stays in sight. Last month's winner wears a crown (ENH-44). People on the same space sit a little apart.
  */
 
 interface Props {
@@ -13,9 +13,11 @@ interface Props {
   length: number;
   /** Your picture's size (the others' are 16) */
   youSize?: number;
+  /** Last month's winner wears a crown (ENH-44) */
+  crown?: number | null;
 }
 
-export const QuestRail: React.FC<Props> = ({ players, userId, length, youSize = 22 }) => {
+export const QuestRail: React.FC<Props> = ({ players, userId, length, youSize = 22, crown = null }) => {
   const me = players.find((p) => p.userId === userId) ?? null;
   const order = [...players.filter((p) => p.userId !== userId), ...(me ? [me] : [])];
   const at = (p: QuestPlayer) => Math.min(length, Math.max(0, p.position));
@@ -34,6 +36,7 @@ export const QuestRail: React.FC<Props> = ({ players, userId, length, youSize = 
           style={{ left: `calc(${(100 * at(p)) / length}% + ${nudge(p)}px)` }}>
           <UserAvatar name={p.displayName} color={p.avatarColor || '#6B5A4B'} size={p.userId === userId ? youSize : 16}
             avatarType={p.avatarType ?? undefined} avatarPreset={p.avatarPreset} avatarPhotoUrl={p.avatarPhotoUrl} />
+          {p.userId === crown && <i className="quest-crown">👑</i>}
         </span>
       ))}
       <span className="quest-card-finish">🏆</span>

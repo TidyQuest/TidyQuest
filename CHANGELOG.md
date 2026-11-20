@@ -29,6 +29,11 @@ What changed in each release, in plain language, newest first. Releases up to v0
   shortcut and slide. The top and bottom of each map blend into the months before and after it: the ground colour,
   scenery, weather and trail fade from one world into the next, last month's finish shows in the distance behind
   the start, and an "On to December" sign stands past the finish.
+- **Quest Trail badges you can see all year, and a crown for the winner** (ENH-44). Each month you reach the
+  finish, that month's finish (the barn, the mill, the treehouse…) lights up as a badge, with a crown 👑 on the
+  months you came first. Your trail badges stay on the Achievements page (everyone's, for parents), and a new
+  medal button at the top of the Quest Trail map shows yours. Last month's winner wears a crown on the race strip
+  of the Quest Trail card on Today (kid mode too) and on the map, until someone wins another month.
 - **"Done for someone…"** (FIX-37). A new button in an opened chore lets parents and members pick who did a chore
   before marking it done, assigned or not. The person gets a notification ("Dad marked … done for you"), and Activity
   says "Marked done by Dad".

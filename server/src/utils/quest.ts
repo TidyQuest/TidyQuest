@@ -528,6 +528,9 @@ export function questState(viewerId: number, now: Date = new Date()) {
       won: won ? { userId: won.userId, displayName: won.displayName, rewardTitle: won.prize?.rewardTitle ?? null, coins: won.prize?.coins ?? 0 } : null,
     },
     finisherCoins: s.finisherCoins, coinsPerStar: s.coinsPerStar, timeOfDay: s.timeOfDay, fog: s.fog,
+    // The viewer's badges this year, and last winner's crown (only while they're still in the race)
+    badges: trailBadges(viewerId, trail.month.slice(0, 4)),
+    crown: ((id) => (id != null && playing.has(id) ? id : null))(crownFor(trail.month)),
     lastMonth: lastMonthFor(viewerId, trail.month),
   };
 }
@@ -547,6 +550,22 @@ function prizeWonIn(month: string): { userId: number; displayName: string; prize
   return { ...winner, prize: null };
 }
 
+/** Someone's trail badges for a year (ENH-44): the months they reached the finish, and the ones they came first in.
+ *  null when they haven't played the Quest Trail that year (a parent who doesn't do chores). */
+export function trailBadges(userId: number, year: string): { year: string; finished: string[]; first: string[] } | null {
+  const rows = prepared('SELECT month, finishedAt, place FROM quest_players WHERE userId = ? AND month LIKE ? ORDER BY month')
+    .all(userId, `${year}-%`) as { month: string; finishedAt: string | null; place: number | null }[];
+  if (!rows.length) return null;
+  const finished = rows.filter((r) => r.finishedAt);
+  return { year, finished: finished.map((r) => r.month), first: finished.filter((r) => r.place === 1).map((r) => r.month) };
+}
+
+/** Who wears the crown this month (ENH-44): whoever came first in the last month someone did, until the next winner. */
+function crownFor(month: string): number | null {
+  const row = prepared('SELECT userId FROM quest_players WHERE month < ? AND place = 1 ORDER BY month DESC LIMIT 1').get(month) as { userId: number } | undefined;
+  return row?.userId ?? null;
+}
+
 /** Last month's results, until the viewer has seen the end-of-month screen. */
 function lastMonthFor(viewerId: number, month: string) {
   const prev = getTrail(prevMonthOf(month));
@@ -558,10 +577,9 @@ function lastMonthFor(viewerId: number, month: string) {
   // The prize as it was won, the viewer's coins and their badges this year
   const prize = prizeWonIn(prev.month)?.prize ?? null;
   const myCoins = (prepared('SELECT COALESCE(SUM(coins), 0) AS n FROM quest_rolls WHERE month = ? AND userId = ?').get(prev.month, viewerId) as { n: number }).n;
-  const badges = (prepared("SELECT month FROM quest_players WHERE userId = ? AND finishedAt IS NOT NULL AND month LIKE ? ORDER BY month")
-    .all(viewerId, `${prev.month.slice(0, 4)}-%`) as { month: string }[]).map((r) => r.month);
+  const mine = trailBadges(viewerId, prev.month.slice(0, 4));
   return {
-    month: prev.month, world: prev.world, length: prev.length, prize, myCoins, badges,
+    month: prev.month, world: prev.world, length: prev.length, prize, myCoins, badges: mine?.finished ?? [], firsts: mine?.first ?? [],
     players: rows.map((r) => ({
       userId: r.userId, displayName: r.displayName, isKid: r.role === 'child', ...avatarOf(r),
       position: r.position, place: r.place, finishedAt: r.finishedAt, prizeWon: !!r.prizeWon,

@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { api } from '../../hooks/useApi';
 import { useTranslation } from '../../hooks/useTranslation';
+import { TrailBadgeRow } from '../quest/TrailBadges';
 import { UserAvatar } from '../shared/UserAvatar';
 import { TrailMap, MAP_WIDTH } from '../quest/TrailMap';
 import { THEMES, ICONS, META } from '../quest/trailBuild';
@@ -53,6 +54,7 @@ const QuestTrail: React.FC<Props> = ({ userId, language, coins, onCoinsChanged, 
   const [jump, setJump] = useState<{ from: number; to: number; t: number } | null>(null);
   const [result, setResult] = useState<TurnMessage | null>(null);
   const [showKey, setShowKey] = useState(false);
+  const [showBadges, setShowBadges] = useState(false);
   const [zoom, setZoom] = useState(1);
   /** The map's width: null until the page is measured */
   const [mapW, setMapW] = useState<number | null>(null);
@@ -195,7 +197,12 @@ const QuestTrail: React.FC<Props> = ({ userId, language, coins, onCoinsChanged, 
             <h1>{t('quest.title')}</h1>
             <span>{worldTitle(t, world)} · {left > 0 ? fill(t(left === 1 ? 'quest.dayLeft' : 'quest.daysLeft'), { n: left }) : t('quest.lastDay')}</span>
           </div>
-          <button type="button" className="quest-icon-btn" aria-label={t('quest.keyTitle')} aria-expanded={showKey} onClick={() => setShowKey((v) => !v)}>
+          {state.badges && (
+            <button type="button" className="quest-icon-btn" aria-label={t('quest.badgesTitle')} aria-expanded={showBadges} onClick={() => { setShowKey(false); setShowBadges((v) => !v); }}>
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M8 3l2.5 6M16 3l-2.5 6" /><circle cx="12" cy="15" r="6" /><path d="M12 12.3l.9 1.8 2 .3-1.45 1.4.35 2-1.8-.95-1.8.95.35-2-1.45-1.4 2-.3z" /></svg>
+            </button>
+          )}
+          <button type="button" className="quest-icon-btn" aria-label={t('quest.keyTitle')} aria-expanded={showKey} onClick={() => { setShowBadges(false); setShowKey((v) => !v); }}>
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M3 6.5l6-2.5 6 2.5 6-2.5v13.5l-6 2.5-6-2.5-6 2.5zM9 4v13.5M15 6.5V20" /></svg>
           </button>
           <span className="quest-coins" aria-label={fill(t('quest.coinsAria'), { n: coins })}><span aria-hidden="true" className="quest-coin" />{coins}</span>
@@ -203,13 +210,26 @@ const QuestTrail: React.FC<Props> = ({ userId, language, coins, onCoinsChanged, 
         <nav className="quest-chips" aria-label={t('quest.whoWhere')}>
           {sorted.map((p, i) => (
             <button key={p.userId} type="button" className={`quest-chip${p.userId === userId ? ' you' : ''}`} onClick={() => follow(p.userId, true)}
-              aria-label={fill(t('quest.chipAria'), { place: i + 1, name: p.displayName, pos: p.position })}>
+              aria-label={fill(t('quest.chipAria'), { place: i + 1, name: p.displayName, pos: p.position }) + (p.userId === state.crown ? ` · ${t('quest.crownTitle')}` : '')}>
               <UserAvatar userId={p.userId} name={p.displayName} color={p.avatarColor || '#6B5A4B'} size={26}
                 avatarType={p.avatarType ?? undefined} avatarPreset={p.avatarPreset} avatarPhotoUrl={p.avatarPhotoUrl} />
+              {p.userId === state.crown && <span className="quest-chip-crown" aria-hidden="true" title={t('quest.crownTitle')}>👑</span>}
               {p.finishedAt ? '🏁' : posOf(p)}
             </button>
           ))}
         </nav>
+        {showBadges && state.badges && (
+          <section className="quest-key quest-badges-panel tq-card" aria-label={t('quest.badgesTitle')}>
+            <div className="quest-key-head">
+              <h2>{t('quest.badgesTitle')}</h2>
+              <button type="button" className="quest-icon-btn" aria-label={t('quest.closeBadges')} onClick={() => setShowBadges(false)}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" /></svg>
+              </button>
+            </div>
+            <p>{t('quest.badgesHint')} {fill(t('quest.endBadgeCount'), { n: state.badges.finished.length })}</p>
+            <TrailBadgeRow year={state.badges.year} finished={state.badges.finished} first={state.badges.first} current={state.trail.month} language={language} />
+          </section>
+        )}
         {showKey && (
           <section className="quest-key tq-card" aria-label={t('quest.keyTitle')}>
             <div className="quest-key-head">

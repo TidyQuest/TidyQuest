@@ -2952,7 +2952,13 @@
       "prizeWonBy": "{name} won it: {prize}",
       "prizeWonYou": "You won it: {prize}",
       "rollingFor": "Rolling for {name}",
-      "backToMine": "Back to your own turn"
+      "backToMine": "Back to your own turn",
+      "badgesTitle": "Trail badges",
+      "closeBadges": "Close the trail badges",
+      "badgesHint": "Each month's finish lights up when you reach it, with a crown when you get there first.",
+      "badgeFinished": "{month}: reached the finish",
+      "badgeFirst": "{month}: came first",
+      "crownTitle": "Last month's winner"
     },
     "doneFor": {
       "countedYours": "“{task}” counted as yours",
