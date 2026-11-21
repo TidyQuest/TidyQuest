@@ -27,7 +27,8 @@ const TROPHY = 'M8 4h8v5a4 4 0 01-8 0V4zM8 6H5a3 3 0 003 4M16 6h3a3 3 0 01-3 4M1
 export const MonthEnd: React.FC<Props> = ({ last, current, userId, language, onDone, doneLabel }) => {
   const { t } = useTranslation(language);
   const button = useRef<HTMLButtonElement | null>(null);
-  useEffect(() => { button.current?.focus(); }, []);
+  // Focus the button without scrolling to it, so the screen opens at its top (BUG-61)
+  useEffect(() => { button.current?.focus({ preventScroll: true }); }, []);
 
   const place = finishPlace(t, last.world);
   const month = monthName(language, last.month);

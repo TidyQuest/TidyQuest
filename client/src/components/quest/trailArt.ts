@@ -329,12 +329,12 @@ ${(d.hasText) ? `<span style="color: ${d.ink}; font-size: ${d.fs}px; font-weight
 
 export function topHtml(V: any): string {
   const { T, mapKey } = V;
-  return `<div style="position: absolute; left: 16px; top: 22px; width: 282px; box-sizing: border-box; padding: 14px 16px 15px; border-radius: 18px; background: ${T.banner}; border: 2px solid ${T.edge}; box-shadow: 0 4px 0 ${T.edge}">
+  return `<div style="position: absolute; left: 16px; top: 22px; width: ${V.keyAt.bannerW}px; box-sizing: border-box; padding: 14px 16px 15px; border-radius: 18px; background: ${T.banner}; border: 2px solid ${T.edge}; box-shadow: 0 4px 0 ${T.edge}">
 <div style="font-size: 12px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: ${T.accentInk}">${T.kicker}</div>
 <div style="font-family: Fredoka, Nunito, sans-serif; font-weight: 600; font-size: ${T.titleSize}px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.1; margin-top: 2px; color: ${T.ink}">${T.title}</div>
 <div style="font-size: 13px; font-weight: 700; margin-top: 6px; color: ${T.muted}">${T.sub}</div>
 </div>
-<div style="position: absolute; left: ${V.keyAt.left}px; top: ${V.keyAt.top}px; width: 358px; box-sizing: border-box; padding: 12px 14px 14px; border-radius: 18px; background: ${T.banner}; border: 2px solid ${T.edge}; box-shadow: 0 4px 0 ${T.edge}">
+<div style="position: absolute; left: ${V.keyAt.left}px; top: ${V.keyAt.top}px; width: ${V.keyAt.w}px; box-sizing: border-box; padding: 12px 14px 14px; border-radius: 18px; background: ${T.banner}; border: 2px solid ${T.edge}; box-shadow: 0 4px 0 ${T.edge}">
 <div style="font-size: 12px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: ${T.accentInk}">${T.keyTitle}</div>
 <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 12px; margin-top: 10px">
 ${(mapKey).map((k: any) => `
@@ -351,9 +351,9 @@ ${(k.hasText) ? `<span style="color: #6E4000; font-size: 12px; font-weight: 800;
 `).join('')}
 </div>
 </div>
-<div style="position: absolute; right: 18px; top: 22px; width: 64px; display: flex; flex-direction: column; align-items: center; gap: 2px" aria-hidden="true">
+<div style="position: absolute; right: ${V.keyAt.compassRight}px; top: 22px; width: ${V.keyAt.compassSize}px; display: flex; flex-direction: column; align-items: center; gap: 2px" aria-hidden="true">
 <span style="font-family: Fredoka, Nunito, sans-serif; font-weight: 700; font-size: 14px; line-height: 16px; color: ${T.ink}">N</span>
-<svg width="64" height="64" viewBox="0 0 64 64"><circle cx="32" cy="32" r="29" fill="${T.banner}" stroke="${T.edge}" stroke-width="2.5"></circle><circle cx="32" cy="32" r="22" fill="none" stroke="${T.edge}" stroke-width="1" stroke-dasharray="2 4"></circle><g><animateTransform attributeName="transform" type="rotate" values="-10 32 32;10 32 32;-10 32 32" dur="5s" repeatCount="indefinite"></animateTransform><path d="M32 7 L38 32 L26 32 Z" fill="${T.accent}"></path><path d="M32 57 L38 32 L26 32 Z" fill="${T.ink}" opacity=".45"></path></g><path d="M7 32 L32 28 L32 36 Z M57 32 L32 28 L32 36 Z" fill="${T.ink}" opacity=".22"></path><circle cx="32" cy="32" r="3.5" fill="${T.banner}" stroke="${T.ink}" stroke-width="1.5"></circle></svg>
+<svg width="${V.keyAt.compassSize}" height="${V.keyAt.compassSize}" viewBox="0 0 64 64"><circle cx="32" cy="32" r="29" fill="${T.banner}" stroke="${T.edge}" stroke-width="2.5"></circle><circle cx="32" cy="32" r="22" fill="none" stroke="${T.edge}" stroke-width="1" stroke-dasharray="2 4"></circle><g><animateTransform attributeName="transform" type="rotate" values="-10 32 32;10 32 32;-10 32 32" dur="5s" repeatCount="indefinite"></animateTransform><path d="M32 7 L38 32 L26 32 Z" fill="${T.accent}"></path><path d="M32 57 L38 32 L26 32 Z" fill="${T.ink}" opacity=".45"></path></g><path d="M7 32 L32 28 L32 36 Z M57 32 L32 28 L32 36 Z" fill="${T.ink}" opacity=".22"></path><circle cx="32" cy="32" r="3.5" fill="${T.banner}" stroke="${T.ink}" stroke-width="1.5"></circle></svg>
 </div>`;
 }
 

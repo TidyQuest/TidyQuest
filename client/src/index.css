@@ -2387,7 +2387,15 @@ html[data-look='calm'] .today-tabs button.on { background: var(--warm-card); }
 .quest-head-row { display: flex; align-items: center; gap: 4px; padding: 6px 10px 6px 4px; }
 .quest-head-title { display: flex; flex-direction: column; flex: 1; min-width: 0; }
 .quest-head-title h1 { margin: 0; font-size: 19px; font-weight: 800; line-height: 1.15; color: var(--warm-text); }
-.quest-head-title span { font-size: 13px; font-weight: 700; line-height: 1.25; color: var(--warm-text-secondary); overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+.quest-head-sub { display: flex; flex-wrap: wrap; column-gap: 5px; font-size: 13px; font-weight: 700; line-height: 1.25; color: var(--warm-text-secondary); min-width: 0; }
+.quest-head-sub > span:first-child { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.quest-head-days { white-space: nowrap; }
+.quest-head-days::before { content: '· '; }
+/* FIX-42: on a phone the days left get their own line, so they're never wrapped or cut off */
+@media (max-width: 520px) {
+  .quest-head-sub { flex-direction: column; }
+  .quest-head-days::before { content: none; }
+}
 .quest-icon-btn { width: 44px; height: 44px; flex-shrink: 0; border: 0; border-radius: 50%; background: transparent; color: var(--warm-text); display: flex; align-items: center; justify-content: center; cursor: pointer; }
 .quest-icon-btn:hover { background: var(--warm-bg-subtle); }
 .quest-coins { display: flex; align-items: center; gap: 6px; flex-shrink: 0; background: var(--warm-card); border-radius: 999px; padding: 6px 12px 6px 8px; font-weight: 800; font-size: 15px; color: var(--warm-text); box-shadow: 0 1px 2px rgba(70,45,20,.08); }
@@ -2406,8 +2414,12 @@ html[data-look='calm'] .today-tabs button.on { background: var(--warm-card); }
 .quest-key-disc { width: 34px; height: 34px; flex-shrink: 0; box-sizing: border-box; border-radius: 50%; border: 3px solid; display: flex; align-items: center; justify-content: center; font-size: 13px; }
 .quest-map-col { position: relative; overflow: clip; }
 .quest-map { width: max-content; margin: 0 auto; }
+/* The progress bar: down the map's right edge on a phone, starting a little below the page header so its top dot
+   stays clear of it; on a wide page in its own strip beside the map (FIX-40, RAIL_STRIP in QuestTrail.tsx) */
 .quest-rail-holder { position: sticky; top: 130px; height: 0; z-index: 6; }
-.quest-rail { position: absolute; right: 20px; top: 0; width: 6px; height: 38vh; }
+.quest-rail { position: absolute; right: 20px; top: 24px; width: 6px; height: 38vh; }
+.quest-map-col.strip { padding-right: 40px; background-clip: content-box !important; }
+.quest-map-col.strip .quest-rail { right: -23px; }
 .quest-rail-track, .quest-rail-done { position: absolute; left: 0; top: 0; width: 6px; border-radius: 3px; }
 .quest-rail-track { height: 100%; background: rgba(255,255,255,.92); box-shadow: 0 1px 4px rgba(0,0,0,.22); }
 .quest-rail-done { background: #1971C2; }
@@ -2522,7 +2534,7 @@ html[data-look='calm'] .today-tabs button.on { background: var(--warm-card); }
 .quest-end-next small { font-size: 13px; font-weight: 800; color: var(--warm-accent); }
 .quest-end-next b { font-size: 20px; font-weight: 800; }
 .quest-end-next span { font-size: 14px; line-height: 1.4; color: var(--warm-text-secondary); }
-.quest-end-go { min-height: 52px; font-size: 17px; }
+.quest-end-go { min-height: 52px; font-size: 17px; justify-content: center; }
 
 @media (max-width: 768px) {
   .quest-page { margin: -12px -16px 0; max-width: none; }

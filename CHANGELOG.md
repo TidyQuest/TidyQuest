@@ -114,6 +114,16 @@ What changed in each release, in plain language, newest first. Releases up to v0
   you're on it). Change gives the chore to whoever really did it: coins, streak, turn and any badge that Done earned
   move to them, and nothing is left with the grown-up. The grown-up's badge notification waits a minute, so it doesn't
   go out for a chore they hand on. A grown-up alone with nobody else to give it to doesn't see the bar.
+- **The Quest Trail's end-of-month screen opens at the top** (BUG-61): it used to start partway down, with the trophy
+  (and on a computer the "… is over" line) out of sight. On a computer its "See the new trail" button now has its
+  label in the middle (BUG-62).
+- **The progress bar beside the Quest Trail map no longer covers the map** (FIX-40). On a computer or tablet it has its
+  own strip beside the map; on a phone the map key and compass sit in from the edge so the bar runs clear of them, and
+  its top dot no longer hides under the page header.
+- **A parent rolling for someone sees that person's progress on the side bar** (BUG-64): the blue part and the bigger
+  dot now follow whoever's turn it is, not the parent.
+- **The days left fit in the Quest Trail header on small phones** (FIX-42): on a phone they get their own line under
+  the month's world, so they're never cut off or split.
 
 ## v0.19.0 (2026-11-17)
 

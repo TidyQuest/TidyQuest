@@ -525,8 +525,11 @@ export function buildTrail(key: WorldKey, N: number, spaces: Record<number, MapS
   const signRoom = (b: any) => signRects.reduce((m, q) => Math.min(m, Math.max(Math.max(q.x1 - b.x2, b.x1 - q.x2) / 14, Math.max(q.y1 - b.y2, b.y1 - q.y2) / 26)), Infinity);
 
   // The title banner (top left), the compass (top right) and the map key: under the banner on a phone, beside the
-  // compass on a wide map
-  const keyAt = row ? { left: mapW - 96 - 358, top: 22 } : { left: 16, top: 146 };
+  // compass on a wide map. On a phone the page's progress bar runs down the map's right edge, so the banner, compass
+  // and key stop short of it there (FIX-40); a wide page has the bar in its own strip beside the map.
+  const keyAt = row ? { left: mapW - 96 - 358, top: 22, w: 358, bannerW: 282, compassRight: 18, compassSize: 64 }
+    : wide ? { left: 16, top: 146, w: 358, bannerW: 282, compassRight: 18, compassSize: 64 }
+      : { left: 16, top: 146, w: 332, bannerW: 276, compassRight: 42, compassSize: 52 };
   rects.push({ x1: 8, y1: 12, x2: 298, y2: 136 });
   rects.push({ x1: mapW - 92, y1: 8, x2: mapW, y2: 122 });
   rects.push(row ? { x1: keyAt.left - 8, y1: 12, x2: keyAt.left + 366, y2: 232 } : { x1: 8, y1: 136, x2: 382, y2: 336 });

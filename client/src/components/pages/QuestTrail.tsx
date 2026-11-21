@@ -31,6 +31,8 @@ const sleep = (ms: number) => new Promise<void>((r) => { window.setTimeout(r, ms
 const calm = () => typeof window !== 'undefined' && !!window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
 /** From this page width the map is drawn as wide as the page (up to WIDEST), its trail zigzagging across it */
 const WIDE_FROM = 600, WIDEST = 1000;
+/** A wide page's progress bar has its own strip this wide beside the map (FIX-40); a phone's runs down the map's edge */
+const RAIL_STRIP = 40;
 const FACES: Record<number, number[]> = { 1: [4], 2: [0, 8], 3: [0, 4, 8], 4: [0, 2, 6, 8], 5: [0, 2, 4, 6, 8], 6: [0, 2, 3, 5, 6, 8] };
 const KEY_ITEMS = [['keyCoins', 'keyCoinsWhat', 'coins'], ['keyCard', 'keyCardWhat', 'card'], ['keyTreat', 'keyTreatWhat', 'treat'], ['', 'keyUpWhat', 'up'], ['', 'keyDownWhat', 'down'], ['keyHigh', 'keyHighWhat', 'high']] as const;
 
@@ -71,20 +73,21 @@ const QuestTrail: React.FC<Props> = ({ userId, language, coins, onCoinsChanged, 
   useEffect(() => { void load(); }, [load]);
 
   // On a phone the map is drawn 390 px wide, and narrower phones shrink it to fit, so nothing scrolls sideways. A
-  // wider page gets a map as wide as itself. After the first measure, resizing redraws it once the window settles.
+  // wider page gets a map as wide as itself, less the progress bar's strip. After the first measure, resizing redraws
+  // it once the window settles. The column's width is read with its padding (the strip), which only wide pages have.
   const columnRef = useCallback((el: HTMLDivElement | null) => {
     if (!el) return;
     const apply = (w: number) => {
-      const wide = w >= WIDE_FROM, next = wide ? Math.min(WIDEST, Math.floor(w)) : MAP_WIDTH;
+      const wide = w >= WIDE_FROM, next = wide ? Math.min(WIDEST, Math.floor(w) - RAIL_STRIP) : MAP_WIDTH;
       setZoom(wide ? 1 : Math.min(1, w / MAP_WIDTH));
       widthRef.current = next;
       setMapW(next);
     };
     if (typeof ResizeObserver === 'undefined') { apply(el.clientWidth); return; }
     let timer = 0;
-    const ro = new ResizeObserver(([e]) => {
+    const ro = new ResizeObserver(() => {
       window.clearTimeout(timer);
-      const w = e.contentRect.width;
+      const w = el.clientWidth;
       if (widthRef.current == null) apply(w); else timer = window.setTimeout(() => apply(w), 200);
     });
     ro.observe(el);
@@ -183,7 +186,8 @@ const QuestTrail: React.FC<Props> = ({ userId, language, coins, onCoinsChanged, 
   const len = state.trail.length;
   const rollLabel = busy ? t('quest.rolling') : finished ? (stars > 0 ? fill(t('quest.cashIn'), { n: state.coinsPerStar }) : t('quest.finished')) : stars > 0 ? t('quest.roll') : t('quest.noStars');
   const hint = finished ? fill(t('quest.hintFinished'), { n: state.coinsPerStar }) : stars > 0 ? t('quest.hintRoll') : t(waiting ? 'quest.hintWaiting' : 'quest.hintEarn');
-  const myPos = me ? posOf(me) : 0;
+  // The side bar fills to whoever's die it is: yours, or the person a parent is rolling for (BUG-64)
+  const railPos = turnOf ? posOf(turnOf) : 0;
   const tile = result ? META[result.kind === 'finish' ? 'start' : result.kind] : null;
 
   return (
@@ -195,7 +199,11 @@ const QuestTrail: React.FC<Props> = ({ userId, language, coins, onCoinsChanged, 
           </button>
           <div className="quest-head-title">
             <h1>{t('quest.title')}</h1>
-            <span>{worldTitle(t, world)} · {left > 0 ? fill(t(left === 1 ? 'quest.dayLeft' : 'quest.daysLeft'), { n: left }) : t('quest.lastDay')}</span>
+            {/* The world, and the days left kept whole: on their own line on a phone (FIX-42) */}
+            <span className="quest-head-sub">
+              <span>{worldTitle(t, world)}</span>
+              <span className="quest-head-days">{left > 0 ? fill(t(left === 1 ? 'quest.dayLeft' : 'quest.daysLeft'), { n: left }) : t('quest.lastDay')}</span>
+            </span>
           </div>
           {state.badges && (
             <button type="button" className="quest-icon-btn" aria-label={t('quest.badgesTitle')} aria-expanded={showBadges} onClick={() => { setShowKey(false); setShowBadges((v) => !v); }}>
@@ -257,13 +265,13 @@ const QuestTrail: React.FC<Props> = ({ userId, language, coins, onCoinsChanged, 
         )}
       </header>
 
-      <div className="quest-map-col" ref={columnRef} style={{ background: T.ground }}>
+      <div className={`quest-map-col${mapW != null && mapW > MAP_WIDTH ? ' strip' : ''}`} ref={columnRef} style={{ background: T.ground }}>
         <div className="quest-rail-holder">
           <div className="quest-rail" aria-hidden="true">
             <span className="quest-rail-track" />
-            <span className="quest-rail-done" style={{ height: `${(100 * myPos) / len}%` }} />
+            <span className="quest-rail-done" style={{ height: `${(100 * railPos) / len}%` }} />
             {state.players.map((p) => {
-              const mine = p.userId === userId, pos = posOf(p);
+              const mine = p.userId === turnId, pos = posOf(p);
               return (
                 <button key={p.userId} type="button" tabIndex={-1} className={`quest-rail-dot${mine ? ' you' : ''}`} style={{ top: `${(100 * pos) / len}%` }} onClick={() => follow(p.userId, true)}>
                   <UserAvatar name={p.displayName} color={p.avatarColor || '#6B5A4B'} size={mine ? 22 : 16} avatarType={p.avatarType ?? undefined} avatarPreset={p.avatarPreset} avatarPhotoUrl={p.avatarPhotoUrl} />
