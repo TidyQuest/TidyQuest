@@ -5,7 +5,7 @@ import { isFeatureOn } from './features';
  * "What's new" after a big update (NEW-38). The ids of the announcements the client has slides for
  * (client/src/components/shared/WhatsNew.tsx), oldest first: add a new one here and there together.
  */
-export const WHATS_NEW = ['new-look'] as const;
+export const WHATS_NEW = ['new-look', 'quest-trail'] as const;
 
 const ARRIVED_KEY = 'whatsNewArrived';
 
@@ -31,6 +31,11 @@ export function recordWhatsNewArrivals(instance: Pick<typeof db, 'prepare'> = db
   instance.prepare("INSERT OR REPLACE INTO app_settings (key, value, updatedAt) VALUES (?, ?, datetime('now'))").run(ARRIVED_KEY, JSON.stringify(map));
 }
 
+/** Whether an announcement is about something this family has: the Quest Trail one only while they play it. */
+function applies(id: string): boolean {
+  return id !== 'quest-trail' || isFeatureOn('questTrail');
+}
+
 /** The announcements this person still has to see, oldest first (none when the family switched them off). */
 export function unseenWhatsNew(userId: number): string[] {
   if (!isFeatureOn('whatsNew')) return [];
@@ -38,7 +43,7 @@ export function unseenWhatsNew(userId: number): string[] {
   const seen = new Set((prepared('SELECT itemId FROM whats_new_seen WHERE userId = ?').all(userId) as Array<{ itemId: string }>).map((r) => r.itemId));
   // julianday() reads both "2026-11-20 10:00:00" and ISO times, however the account was made
   const olderThan = prepared('SELECT 1 FROM users WHERE id = ? AND julianday(createdAt) < julianday(?)');
-  return WHATS_NEW.filter((id) => map[id] && !seen.has(id) && olderThan.get(userId, map[id]));
+  return WHATS_NEW.filter((id) => map[id] && !seen.has(id) && olderThan.get(userId, map[id]) && applies(id));
 }
 
 /** Seen (or skipped): the given announcements, or all of them, for these people. */

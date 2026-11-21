@@ -28,13 +28,13 @@ async function family() {
 describe("What's new", () => {
   it('shows once per person, and skipping counts as seen', async () => {
     const { admin, kid } = await family();
-    expect(await unseen(admin.token)).toEqual(['new-look']);
-    expect(await unseen(kid.token)).toEqual(['new-look']);
+    expect(await unseen(admin.token)).toEqual([...WHATS_NEW]);
+    expect(await unseen(kid.token)).toEqual([...WHATS_NEW]);
 
     await agent.post('/api/whats-new/seen').set(auth(admin.token)).send({ ids: ['new-look'] }).expect(200);
-    expect(await unseen(admin.token)).toEqual([]);
+    expect(await unseen(admin.token)).toEqual(['quest-trail']);
     // Only for the person who saw it
-    expect(await unseen(kid.token)).toEqual(['new-look']);
+    expect(await unseen(kid.token)).toEqual([...WHATS_NEW]);
 
     // No ids: everything
     await agent.post('/api/whats-new/seen').set(auth(kid.token)).send({}).expect(200);
@@ -48,7 +48,7 @@ describe("What's new", () => {
     // Restarting doesn't move the time it arrived
     recordWhatsNewArrivals();
     expect(await unseen(newKid.token)).toEqual([]);
-    expect(await unseen(admin.token)).toEqual(['new-look']);
+    expect(await unseen(admin.token)).toEqual([...WHATS_NEW]);
   });
 
   it('shows nothing when the family switched it off', async () => {
@@ -56,6 +56,15 @@ describe("What's new", () => {
     await agent.put('/api/features').set(auth(admin.token)).send({ features: { whatsNew: false } }).expect(200);
     expect(await unseen(kid.token)).toEqual([]);
     expect(await unseen(admin.token)).toEqual([]);
+  });
+
+  it('leaves out the Quest Trail news while the family has the game switched off', async () => {
+    const { admin, kid } = await family();
+    await agent.put('/api/features').set(auth(admin.token)).send({ features: { questTrail: false } }).expect(200);
+    expect(await unseen(kid.token)).toEqual(['new-look']);
+    // Switched on later: it shows then
+    await agent.put('/api/features').set(auth(admin.token)).send({ features: { questTrail: true } }).expect(200);
+    expect(await unseen(kid.token)).toEqual([...WHATS_NEW]);
   });
 
   it('marks everyone seen when the family finishes the setup wizard', async () => {
@@ -73,7 +82,7 @@ describe("What's new", () => {
   it('ignores ids it does not know and refuses a bad list', async () => {
     const { admin } = await family();
     await agent.post('/api/whats-new/seen').set(auth(admin.token)).send({ ids: ['made-up'] }).expect(200);
-    expect(await unseen(admin.token)).toEqual(['new-look']);
+    expect(await unseen(admin.token)).toEqual([...WHATS_NEW]);
     expect((await agent.post('/api/whats-new/seen').set(auth(admin.token)).send({ ids: 'new-look' })).status).toBe(400);
     expect((await agent.post('/api/whats-new/seen').send({})).status).toBe(401);
   });
@@ -82,9 +91,9 @@ describe("What's new", () => {
     const { admin, kid } = await family();
     await agent.post('/api/whats-new/seen').set(auth(kid.token)).send({}).expect(200);
     const backup = (await agent.get('/api/export').set(auth(admin.token))).body;
-    expect(backup.whatsNewSeen).toHaveLength(1);
+    expect(backup.whatsNewSeen).toHaveLength(WHATS_NEW.length);
     db.prepare('DELETE FROM whats_new_seen').run();
     await agent.post('/api/import').set(auth(admin.token)).send(backup).expect(200);
-    expect(db.prepare('SELECT userId, itemId FROM whats_new_seen').all()).toEqual([{ userId: kid.user.id, itemId: WHATS_NEW[0] }]);
+    expect(db.prepare('SELECT userId, itemId FROM whats_new_seen').all()).toEqual(WHATS_NEW.map((itemId) => ({ userId: kid.user.id, itemId })));
   });
 });

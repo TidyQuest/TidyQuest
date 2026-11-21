@@ -207,6 +207,25 @@ export function buyAccessory(userId: number, itemId: string): { error: string } 
   return { outfit, coins: me.coins - item.price };
 }
 
+/**
+ * A free accessory (Quest Trail's treat spaces): one from the shop, put on in a spot nobody's filled, so it
+ * never replaces something someone bought. Null when there's no mascot to dress (switched off, not hatched)
+ * or every spot is taken; the caller pays coins instead.
+ */
+export function giftAccessory(userId: number, pick: (n: number) => number): string | null {
+  if (!isFeatureOn('mascot') || mascotProgress() < STAGES[1].from) return null;
+  const me = prepared('SELECT displayName FROM users WHERE id = ?').get(userId) as { displayName: string } | undefined;
+  if (!me) return null;
+  const outfit = mascotOutfit();
+  const choices = SHOP.filter((i) => !outfit[i.slot]);
+  if (choices.length === 0) return null;
+  const item = choices[pick(choices.length)];
+  prepared('INSERT INTO mascot_purchases (userId, itemId, price) VALUES (?, ?, 0)').run(userId, item.id);
+  outfit[item.slot] = { id: item.id, by: userId, byName: me.displayName, at: new Date().toISOString() };
+  saveOutfit(outfit);
+  return item.id;
+}
+
 /** Take an item off (free): only whoever bought it, or a parent */
 export function takeOffAccessory(userId: number, slot: string): { error: string } | { outfit: Outfit } {
   const outfit = mascotOutfit();

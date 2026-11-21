@@ -1,0 +1,388 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+// Generated from the Quest Trail mock-up (TrailMap) and then edited by hand: the map drawn as HTML strings.
+// Every value put in here is a number, a colour, a path or text already escaped with esc().
+import { SHADE, SUN, crescent, layerOpacity, lit, litD, shade, shadeD, shadowSvg } from './light';
+import { f1 } from './trailBuild';
+import { MARKS, SCENERY, TREE } from './worldArt';
+
+// The sun on the land (ENH-37): buildTrail's shade (s) and light (h) for each land layer, drawn just after it
+const LAND_SUN: Record<string, string> = { s0: shade(0.12), s1: shade(0.12), h1: lit(0.2), s4: shade(0.15), h4: lit(0.28), s5: shade(0.13), h5: lit(0.2), s7: shade(0.24), h7: lit(0.3) };
+const landSun = (V: any, k: number) => ['s', 'h'].map((t) => V.shadows?.land?.[t + k] ? `<path d="${V.shadows.land[t + k]}" fill="${LAND_SUN[t + k]}"></path>` : '').join('');
+// ...and on the scenery: shade on the lower right of each drawing (40 × 40), light on its upper left
+const sh = shadeD, li = litD;
+const SUNNY = {
+  pine: sh('M20 8L36 33H20ZM20 1L32 21H20Z', 0.2) + li('M11.7 21L4 33H9.5L14.5 21ZM20 1L8 21H12.4Z', 0.14) + sh('M20 31H22V40H20Z', 0.3),
+  bush: sh(crescent(12, 31, 8.5, 8.5, 4) + crescent(28, 31, 8.5, 8.5, 4) + crescent(20, 25, 10.5, 10.5, 5), 0.2), bushLit: crescent(20, 25, 10.5, 10.5, 3, true),
+  rock: sh('M29 22L36 39H25.5L28.6 30Z', 0.22),
+  mushroom: sh('M16 26H24V28.5H16ZM21 28.5H24V36Q24 39 21 39Z', 0.2), capShade: sh('M35 26Q35 13 22 11.2Q30 14.5 29.5 26Z', 0.2) + li('M7.5 22Q8 13.5 17 11.6Q11 15 10.3 22Z', 0.3),
+  palmTrunk: '<path d="M22.4 40Q19.5 28 24.4 15.4" stroke="' + shade(0.3) + '" stroke-width="1.4" fill="none" stroke-linecap="round"></path>',
+  palm: sh('M23 15Q34 8 39 16Q31 12 23 17ZM23 15Q30 2 37 6Q28 8 23 16Z', 0.14) + li('M23 15Q16 3 7 5Q17 8 23 16Z', 0.18),
+  snowman: sh(crescent(20, 30, 9.5, 9.5, 4) + crescent(20, 16, 6.8, 6.8, 3), 0.13),
+  drift: sh('M27.5 29.3Q32.5 31.5 38 39H24Q29 34 27.5 29.3Z', 0.1),
+  umbrella: sh('M3 17Q20 14.2 37 17Q20 15.9 3 17Z', 0.25) + sh('M28.4 9.8Q33.6 12.3 37 17Q31.4 16 26.6 16.6Q28 13 28.4 9.8Z', 0.16)
+};
+const LMS = {
+  acorn: sh('M30.5 17Q30.5 32 20 37.5Q26.6 31 26 18.6Z', 0.22) + sh('M9.6 18.9Q20 21.8 30.4 18.9V21.4Q20 24.2 9.8 21.4Z', 0.2),
+  acornCap: sh('M34 18.5Q34 7.5 20 7.5Q29 9.5 28.6 19.7Q31.6 19.3 34 18.5Z', 0.22) + li('M8 15Q9.5 9 18 8.2Q12 10.5 11 16.4Z', 0.22),
+  tail: sh('M22 35C36 37 40 23 34.5 13C37 21 34 30.5 22 35Z', 0.2),
+  squirrelBody: sh(crescent(17, 29, 8, 9, 3.2), 0.18), squirrelHead: sh(crescent(13, 17, 6.5, 6.5, 2.4), 0.18) + li(crescent(13, 17, 6.5, 6.5, 1.8, true), 0.22),
+  owl: sh(crescent(20, 22, 10, 12, 3.6), 0.2) + li(crescent(20, 22, 10, 12, 2.4, true), 0.18),
+  branch: '<path d="M2.6 36.6 Q20 33.6 37.4 37.6" stroke="' + shade(0.28) + '" stroke-width="1.2" fill="none" stroke-linecap="round"></path>',
+  post: sh('M10.6 5.6H12V39H10.6Z', 0.3), lanternCap: sh('M27 9.8L31 12.5H27Z', 0.25),
+  cone: sh('M14 9.5C21.5 15 21.5 31 14 37C17.6 30 17.8 16 14 9.5Z', 0.22), cone2: sh('M28 17C33.5 21 33.5 33 28 38C30.6 32 30.8 22 28 17Z', 0.22),
+  onIce: shadowSvg(22.5, 28.6, 9, 15), penguin: sh(crescent(22.9, 22.4, 3.3, 5.4, 1.6), 0.15) + li(crescent(22, 20.5, 5.2, 7.6, 1.4, true), 0.2),
+  bear: sh(crescent(24, 24, 13, 8.5, 3.6), 0.12), bearHead: sh(crescent(10, 20, 7, 5.2, 2), 0.12),
+  igloo: sh('M36 35Q36 12 20 12Q31.4 16 30.6 35Z', 0.1),
+  bunny: sh(crescent(18, 29.5, 10, 8.5, 3.2), 0.12), bunnyHead: sh(crescent(24, 20.5, 6.5, 6.5, 2.4), 0.12),
+  tower: sh('M20 17H22.6L25 39H20Z', 0.14), towerCap: sh('M20 11.5L24.4 18H20Z', 0.2),
+  hive: sh('M31 34Q31 13.5 20 12Q27.6 16.4 26.6 34Z', 0.18) + li('M11.6 30Q11.2 17 19 13.2Q14.6 19 14.4 30Z', 0.3),
+  shell: sh('M20 34L29 10.6Q32.3 13 33.5 18.5Z', 0.14),
+  castle: sh('M31.4 15H34V27H35V38H31.4ZM22.6 10H25V28H22.6ZM11.6 15H14V28H11.6Z', 0.14),
+  ball: sh(crescent(20, 25, 11, 11, 4.4), 0.18)
+};
+
+export function baseHtml(V: any): string {
+  const { H, T, br, bugs, con, dusk, fin, flocks, gate, glows, labels, land, landC, lms, party, patches, pills, place, scenery, shadows, show, surf, svg } = V;
+  return `${(patches).map((g: any) => `
+<div style="position: absolute; left: ${g.x}px; top: ${g.y}px; width: ${g.w}px; height: ${g.h}px; background: ${g.bg}"></div>
+`).join('')}
+${V.texture}
+<svg width="${V.MW}" height="${H}" viewBox="0 0 ${V.MW} ${H}" style="position: absolute; left: 0; top: 0" aria-hidden="true">
+${V.trailDefs}
+${landSun(V, 0)}<path d="${land.l1}" fill="${landC.l1}"></path>${landSun(V, 1)}
+<path d="${land.l2}" fill="${landC.l2}"></path>
+<path d="${land.l3}" fill="${landC.l3}"></path>
+<path d="${land.l4}" fill="${landC.l4}"></path>${landSun(V, 4)}
+<path d="${land.l5}" fill="${landC.l5}"></path>${landSun(V, 5)}
+<path d="${land.l6}" fill="${landC.l6}"></path>
+<path d="${land.l7}" fill="${landC.l7}"></path>${landSun(V, 7)}
+<path d="${svg.water1}" fill="none" stroke="${T.water}" stroke-width="36" stroke-linecap="round" stroke-linejoin="round"></path>
+<path d="${svg.water1}" fill="none" stroke="${T.waterLight}" stroke-width="20" stroke-linecap="round" stroke-linejoin="round"></path>
+<path d="${svg.water1}" fill="none" stroke="${T.ripple}" stroke-width="2.2" stroke-dasharray="8 15" stroke-linecap="round" opacity=".85">
+<animate attributeName="stroke-dashoffset" values="${T.flowVals}" dur="2.6s" repeatCount="indefinite"></animate>
+</path>
+<path d="${svg.water2}" fill="none" stroke="${T.water}" stroke-width="36" stroke-linecap="round" stroke-linejoin="round"></path>
+<path d="${svg.water2}" fill="none" stroke="${T.waterLight}" stroke-width="20" stroke-linecap="round" stroke-linejoin="round"></path>
+<path d="${svg.water2}" fill="none" stroke="${T.ripple}" stroke-width="2.2" stroke-dasharray="8 15" stroke-linecap="round" opacity=".85">
+<animate attributeName="stroke-dashoffset" values="${T.flowVals}" dur="2.6s" repeatCount="indefinite"></animate>
+</path>
+<path d="${svg.trail}" fill="none" stroke="#3C2A14" stroke-opacity=".12" stroke-width="50" stroke-linecap="round" stroke-linejoin="round" transform="translate(0 5)"></path>
+<path d="${svg.trail}" fill="none" stroke="url(#tqTrailEdge)" stroke-width="46" stroke-linecap="round" stroke-linejoin="round"></path>
+<path d="${svg.trail}" fill="none" stroke="url(#tqTrailFill)" stroke-width="38" stroke-linecap="round" stroke-linejoin="round"></path>
+<path d="${svg.trail}" fill="none" stroke="${surf.s1c}" stroke-width="${surf.s1w}" stroke-dasharray="${surf.s1d}" stroke-linejoin="round"></path>
+<path d="${svg.trail}" fill="none" stroke="${surf.s2c}" stroke-width="${surf.s2w}" stroke-linejoin="round"></path>
+<path d="${surf.b1}" fill="${surf.c1}"></path>
+<path d="${surf.b2}" fill="${surf.c2}"></path>
+<path d="${surf.b3}" fill="${surf.c3}"></path>
+<path d="${svg.trail}" fill="none" stroke="url(#tqTrailDash)" stroke-width="${surf.dashW}" stroke-dasharray="1 12" stroke-linecap="round"></path>
+<g transform="${svg.bridge1}">
+<rect x="-31" y="-26" width="62" height="52" rx="4" fill="${br.plank}"></rect>
+<path d="M-23 -26 V26 M-13 -26 V26 M-3 -26 V26 M7 -26 V26 M17 -26 V26 M27 -26 V26" stroke="${br.line}" stroke-width="2" stroke-dasharray="${br.lineDash}" opacity="${br.lineO}"></path>
+<path d="M-36 -26 H36 M-36 26 H36" stroke="${br.rail}" stroke-width="${br.railW}" stroke-dasharray="${br.railDash}" stroke-linecap="round"></path>
+</g>
+<g transform="${svg.bridge2}">
+<rect x="-31" y="-26" width="62" height="52" rx="4" fill="${br.plank}"></rect>
+<path d="M-23 -26 V26 M-13 -26 V26 M-3 -26 V26 M7 -26 V26 M17 -26 V26 M27 -26 V26" stroke="${br.line}" stroke-width="2" stroke-dasharray="${br.lineDash}" opacity="${br.lineO}"></path>
+<path d="M-36 -26 H36 M-36 26 H36" stroke="${br.rail}" stroke-width="${br.railW}" stroke-dasharray="${br.railDash}" stroke-linecap="round"></path>
+</g>
+</svg>
+${(show.shadows) ? `
+<svg width="${V.MW}" height="${H}" viewBox="0 0 ${V.MW} ${H}" style="position: absolute; left: 0; top: 0" aria-hidden="true">${(shadows.soft || []).map((d: string) => `<path d="${d}" fill="rgb(${SHADE})" opacity="${layerOpacity()}"></path>`).join('')}</svg>
+` : ''}
+${(scenery).map((s: any) => `
+<div style="position: absolute; left: ${s.left}px; top: ${s.top}px; width: ${s.size}px; height: ${s.size}px">
+${(s.is.round) ? `<svg width="100%" height="100%" viewBox="0 0 40 40" aria-hidden="true"><rect x="17.8" y="24" width="4.4" height="16" rx="2" fill="#7A5230"></rect>${TREE.trunk}<circle cx="20" cy="17" r="14" fill="${s.c1}"></circle><path d="${TREE.dark}" fill="${s.c3}" opacity=".3"></path><path d="${TREE.light}" fill="${s.c2}" opacity=".4"></path><circle cx="13.6" cy="11.2" r="2.8" fill="${s.c2}" opacity=".5"></circle></svg>` : ''}
+${(s.is.pine) ? `<svg width="100%" height="100%" viewBox="0 0 40 40" aria-hidden="true"><rect x="18" y="31" width="4" height="9" fill="#6B4A2E"></rect><path d="M20 8 L36 33 H4 Z" fill="${s.c1}"></path><path d="M20 1 L32 21 H8 Z" fill="${s.c1}"></path>${SUNNY.pine}<path d="M20 1 L25.4 10 L22.4 9 L20 11.5 L17.6 9 L14.6 10 Z" fill="${s.c2}"></path><path d="M10.6 22 L13.4 18 L16.2 20.2 L20 17.6 L23.8 20.2 L26.6 18 L29.4 22 L25.6 23.8 L20 21.6 L14.4 23.8 Z" fill="${s.c2}" opacity="${s.o2}"></path></svg>` : ''}
+${(s.is.bush) ? `<svg width="100%" height="100%" viewBox="0 0 40 40" aria-hidden="true"><circle cx="12" cy="31" r="8.5" fill="${s.c1}"></circle><circle cx="28" cy="31" r="8.5" fill="${s.c1}"></circle><circle cx="20" cy="25" r="10.5" fill="${s.c1}"></circle>${SUNNY.bush}<path d="${SUNNY.bushLit}" fill="${s.c2}" opacity=".35"></path><circle cx="16" cy="21" r="3.2" fill="${s.c2}" opacity=".6"></circle><circle cx="13" cy="29" r="2" fill="${s.c3}"></circle><circle cx="24" cy="22" r="2" fill="${s.c3}"></circle><circle cx="28" cy="31" r="2" fill="${s.c3}"></circle><circle cx="19" cy="32" r="1.8" fill="${s.c3}"></circle></svg>` : ''}
+${(s.is.flowers) ? `<svg width="100%" height="100%" viewBox="0 0 40 40" aria-hidden="true"><path d="M10 40 V27 M20 40 V22 M30 40 V28" stroke="#3E8E41" stroke-width="2" stroke-linecap="round"></path><path d="M20 33 Q14 30 13 25 Q18 27 20 33 Z M20 36 Q26 33 27 28 Q22 30 20 36 Z" fill="#4CA64F"></path><circle cx="10" cy="25" r="5" fill="${s.c1}"></circle><circle cx="10" cy="25" r="2" fill="${s.c2}"></circle><circle cx="20" cy="19" r="5.5" fill="${s.c3}"></circle><circle cx="20" cy="19" r="2.2" fill="${s.c2}"></circle><circle cx="30" cy="26" r="5" fill="${s.c1}"></circle><circle cx="30" cy="26" r="2" fill="${s.c2}"></circle></svg>` : ''}
+${(s.is.rock) ? `<svg width="100%" height="100%" viewBox="0 0 40 40" aria-hidden="true"><path d="M4 39 L8 27 L17 20 L29 22 L36 39 Z" fill="${s.c1}"></path><path d="M8 27 L17 20 L29 22 L31 27 L22 25 L13 28 Z" fill="${s.c2}"></path>${SUNNY.rock}</svg>` : ''}
+${(s.is.mushroom) ? `<svg width="100%" height="100%" viewBox="0 0 40 40" aria-hidden="true"><rect x="16" y="24" width="8" height="15" rx="3.5" fill="#F4E9D8"></rect>${SUNNY.mushroom}<path d="M5 26 Q5 11 20 11 Q35 11 35 26 Z" fill="#D9412F"></path>${SUNNY.capShade}<circle cx="13.5" cy="19" r="2.3" fill="#FFFFFF"></circle><circle cx="21.5" cy="15.5" r="2" fill="#FFFFFF"></circle><circle cx="27.5" cy="21" r="1.8" fill="#FFFFFF"></circle></svg>` : ''}
+${(s.is.leaves) ? `<svg width="100%" height="100%" viewBox="0 0 40 40" aria-hidden="true"><ellipse cx="11" cy="35" rx="6" ry="3" fill="${s.c1}" transform="rotate(-25 11 35)"></ellipse><ellipse cx="22" cy="37" rx="6" ry="3" fill="${s.c2}" transform="rotate(15 22 37)"></ellipse><ellipse cx="30" cy="33" rx="5.5" ry="2.8" fill="${s.c3}" transform="rotate(-40 30 33)"></ellipse><ellipse cx="18" cy="31" rx="5" ry="2.6" fill="${s.c3}" transform="rotate(30 18 31)"></ellipse></svg>` : ''}
+${(s.is.palm) ? `<svg width="100%" height="100%" viewBox="0 0 40 40" aria-hidden="true"><path d="M21 40 Q18 28 23 15" stroke="#9C6B3C" stroke-width="4" fill="none" stroke-linecap="round"></path>${SUNNY.palmTrunk}<path d="M23 15 Q12 9 3 16 Q13 13 23 17 Z" fill="#2F9E44"></path><path d="M23 15 Q34 8 39 16 Q31 12 23 17 Z" fill="#2F9E44"></path><path d="M23 15 Q16 3 7 5 Q17 8 23 16 Z" fill="#40C057"></path><path d="M23 15 Q30 2 37 6 Q28 8 23 16 Z" fill="#40C057"></path>${SUNNY.palm}<circle cx="21.5" cy="18" r="2.3" fill="#7A4E26"></circle><circle cx="25" cy="18.5" r="2.3" fill="#7A4E26"></circle></svg>` : ''}
+${(s.is.star) ? `<svg width="100%" height="100%" viewBox="0 0 40 40" aria-hidden="true"><path d="M20 10 L23.5 19 L33 19.5 L25.6 25.4 L28.3 35 L20 29.6 L11.7 35 L14.4 25.4 L7 19.5 L16.5 19 Z" fill="${s.c1}" stroke="#FFFFFF" stroke-width="1" stroke-linejoin="round"></path><circle cx="20" cy="24" r="1.6" fill="#FFFFFF" opacity=".7"></circle></svg>` : ''}
+${(s.is.tuft) ? `<svg width="100%" height="100%" viewBox="0 0 40 40" aria-hidden="true"><path d="M13 40 Q13 31 8 25 M20 40 Q20 29 21 20 M27 40 Q27 32 33 26 M17 40 Q16 33 13 30 M24 40 Q25 34 28 31" stroke="${s.c1}" stroke-width="2.6" stroke-linecap="round" fill="none"></path></svg>` : ''}
+${(s.is.snowman) ? `<svg width="100%" height="100%" viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="30" r="9.5" fill="#FFFFFF" stroke="#AFC4DA" stroke-width="1.2"></circle><circle cx="20" cy="16" r="6.8" fill="#FFFFFF" stroke="#AFC4DA" stroke-width="1.2"></circle>${SUNNY.snowman}<path d="M14 21 Q20 24.5 26 21 L26 23.5 Q20 27 14 23.5 Z" fill="#C92A2A"></path><path d="M20.5 16.5 L27 17.8 L20.5 19 Z" fill="#F08C00"></path><circle cx="17.8" cy="14.5" r="1" fill="#2A2017"></circle><circle cx="22.2" cy="14.5" r="1" fill="#2A2017"></circle><rect x="15" y="5" width="10" height="5.5" rx="1" fill="#2A2017"></rect><rect x="13" y="9.5" width="14" height="2" rx="1" fill="#2A2017"></rect></svg>` : ''}
+${(s.is.bare) ? `<svg width="100%" height="100%" viewBox="0 0 40 40" aria-hidden="true"><path d="M20 40 V18 M20 28 L12 19 M20 24 L28 15 M12 19 L9 13 M12 19 L8 21 M28 15 L31 9 M28 15 L33 16 M20 18 L17 10 M20 18 L23 8" stroke="${s.c1 || '#6B4A2E'}" stroke-width="2.4" stroke-linecap="round" fill="none"></path><path d="M8 13 Q9 11 11 12 M30 9 Q31 7 33 8 M22 8 Q23 6 25 7 M16 10 Q17 8 19 9" stroke="${s.c2 || '#FFFFFF'}" stroke-width="2" stroke-linecap="round" fill="none"></path></svg>` : ''}
+${(s.is.drift) ? `<svg width="100%" height="100%" viewBox="0 0 40 40" aria-hidden="true"><path d="M2 39 Q8 28 18 30 Q27 24 38 39 Z" fill="#FFFFFF"></path>${SUNNY.drift}<path d="M9 35 Q16 31 25 33" stroke="#C9DAEA" stroke-width="1.6" fill="none" stroke-linecap="round"></path></svg>` : ''}
+${(s.is.umbrella) ? `<svg width="100%" height="100%" viewBox="0 0 40 40" aria-hidden="true"><rect x="8" y="34" width="24" height="5" rx="2" fill="${s.c2}"></rect><path d="M20 15 V40" stroke="#6B4A2E" stroke-width="2" stroke-linecap="round"></path><path d="M3 17 Q20 -1 37 17 Z" fill="${s.c1}"></path><path d="M14.5 16.6 Q17 4 20 6 Q23 4 25.5 16.6 Q20 14 14.5 16.6 Z" fill="#FFFFFF" opacity=".85"></path>${SUNNY.umbrella}</svg>` : ''}
+${SCENERY[Object.keys(s.is)[0]] ? SCENERY[Object.keys(s.is)[0]](s) : ''}
+</div>
+`).join('')}
+${(lms).map((m: any) => `
+<div style="position: absolute; left: ${m.left}px; top: ${m.top}px; width: ${m.size}px; height: ${m.size}px">
+${(m.is.acorn) ? `<svg width="100%" height="100%" viewBox="0 0 40 40" aria-hidden="true"><path d="M9.5 17 Q9.5 32 20 37.5 Q30.5 32 30.5 17 Z" fill="#B7793A"></path><path d="M13.5 20 Q13.8 28.5 18.5 33" stroke="#D9A066" stroke-width="2.4" fill="none" stroke-linecap="round"></path>${LMS.acorn}<path d="M6 18.5 Q6 7.5 20 7.5 Q34 7.5 34 18.5 Q20 21.5 6 18.5 Z" fill="#7A5230"></path>${LMS.acornCap}<path d="M10.5 13 L13.5 17 M16 10.2 L19 15.5 M22.5 9.8 L25 15 M28.5 12 L30.5 16" stroke="#5C3D20" stroke-width="1.4" stroke-linecap="round"></path><path d="M20 7.5 Q20 3.5 23.5 2" stroke="#5C3D20" stroke-width="2.4" fill="none" stroke-linecap="round"></path></svg>` : ''}
+${(m.is.squirrel) ? `<svg width="100%" height="100%" viewBox="0 0 40 40" aria-hidden="true"><path d="M22 35 C36 37 40 23 34.5 13 C30.5 5.5 21.5 6 22.5 13 C28.5 13 31 19 29.5 24.5 C28 29.5 24 31 20.5 31 Z" fill="#B85C25"></path>${LMS.tail}<path d="M26 12 C30 11.5 32.5 15 32.5 19" stroke="#D9773A" stroke-width="2" fill="none" stroke-linecap="round"></path><ellipse cx="17" cy="29" rx="8" ry="9" fill="#D9773A"></ellipse><ellipse cx="14.5" cy="31" rx="4" ry="5.5" fill="#F2C08F"></ellipse>${LMS.squirrelBody}<path d="M14 11.5 L16.5 6 L18.2 12.4 Z" fill="#B85C25"></path><circle cx="13" cy="17" r="6.5" fill="#D9773A"></circle>${LMS.squirrelHead}<circle cx="11" cy="16" r="1.3" fill="#2A2017"></circle><circle cx="6.8" cy="18.2" r="1.1" fill="#2A2017"></circle><circle cx="9.5" cy="25.5" r="2.6" fill="#B7793A"></circle><path d="M6.9 24.6 Q9.5 21.8 12.1 24.6 Z" fill="#7A5230"></path><ellipse cx="13.5" cy="37.6" rx="4" ry="1.6" fill="#B85C25"></ellipse></svg>` : ''}
+${(m.is.owl) ? `<svg width="100%" height="100%" viewBox="0 0 40 40" aria-hidden="true"><path d="M2 35 Q20 32 38 36" stroke="#6B4A2E" stroke-width="3.4" fill="none" stroke-linecap="round"></path>${LMS.branch}<path d="M11 14 L12 5.5 L17 11 Z M29 14 L28 5.5 L23 11 Z" fill="#6E4A2A"></path><ellipse cx="20" cy="22" rx="10" ry="12" fill="#8C6239"></ellipse><ellipse cx="20" cy="26.5" rx="6.4" ry="7.2" fill="#D8B48A"></ellipse>${LMS.owl}<path d="M17 24.5 l1.5 1.5 l1.5 -1.5 M20 28.5 l1.5 1.5 l1.5 -1.5 M17 29.5 l1.5 1.5 l1.5 -1.5" stroke="#8C6239" stroke-width="1" fill="none"></path><circle cx="16" cy="16.5" r="4.4" fill="#FFF8E7"></circle><circle cx="24" cy="16.5" r="4.4" fill="#FFF8E7"></circle><circle cx="16.4" cy="16.9" r="2" fill="#2A2017"><animate attributeName="r" values="2;2;0.3;2" keyTimes="0;0.92;0.96;1" dur="5s" repeatCount="indefinite"></animate></circle><circle cx="23.6" cy="16.9" r="2" fill="#2A2017"><animate attributeName="r" values="2;2;0.3;2" keyTimes="0;0.92;0.96;1" dur="5s" repeatCount="indefinite"></animate></circle><path d="M18.6 19.6 L21.4 19.6 L20 22.8 Z" fill="#F08C00"></path><path d="M16.5 33.2 v2.6 M18.5 33.2 v2.6 M21.5 33.2 v2.6 M23.5 33.2 v2.6" stroke="#F08C00" stroke-width="1.4" stroke-linecap="round"></path></svg>` : ''}
+${(m.is.lantern) ? `<svg width="100%" height="100%" viewBox="0 0 40 40" aria-hidden="true"><circle cx="27" cy="17.5" r="10" fill="#FFD43B" opacity=".3"><animate attributeName="opacity" values=".15;.5;.15" dur="2.4s" repeatCount="indefinite"></animate></circle><rect x="9" y="5" width="3" height="34" rx="1" fill="#5C3D2E"></rect>${LMS.post}<path d="M10.5 7 H27 V11" stroke="#5C3D2E" stroke-width="2" fill="none"></path><path d="M23 12.5 L27 9.8 L31 12.5 Z" fill="#7A5230"></path>${LMS.lanternCap}<rect x="23" y="12.5" width="8" height="10" rx="2" fill="#FFE066" stroke="#7A5230" stroke-width="1.4"></rect><path d="M27 13.5 V21.5" stroke="#F2B33D" stroke-width="1.2"></path><path d="M6 39 H15.5" stroke="#5C3D2E" stroke-width="2.6" stroke-linecap="round"></path></svg>` : ''}
+${(m.is.pinecone) ? `<svg width="100%" height="100%" viewBox="0 0 40 40" aria-hidden="true"><path d="M2 39 Q20 33.5 38 39 Z" fill="#FFFFFF"></path><path d="M14 9.5 C21.5 15 21.5 31 14 37 C6.5 31 6.5 15 14 9.5 Z" fill="#8B5A2B"></path>${LMS.cone}<path d="M9.4 18 L14 21.6 L18.6 18 M9 24 L14 27.6 L19 24 M9.8 30 L14 33.6 L18.2 30" stroke="#5E3A17" stroke-width="1.4" fill="none" stroke-linejoin="round"></path><path d="M10.2 12.6 Q14 7.6 17.8 12.6 Q14 15 10.2 12.6 Z" fill="#FFFFFF"></path><g transform="rotate(28 28 28)"><path d="M28 17 C33.5 21 33.5 33 28 38 C22.5 33 22.5 21 28 17 Z" fill="#A0693A"></path>${LMS.cone2}<path d="M24.4 23 L28 25.8 L31.6 23 M24 29 L28 31.8 L32 29" stroke="#5E3A17" stroke-width="1.2" fill="none" stroke-linejoin="round"></path></g></svg>` : ''}
+${(m.is.icepond) ? `<svg width="100%" height="100%" viewBox="0 0 40 40" aria-hidden="true"><ellipse cx="20" cy="31" rx="18.5" ry="7.5" fill="#CFE9F8" stroke="#93C1E0" stroke-width="1.2"></ellipse><path d="M8 31.5 Q14 28.5 20 30.5 M21 34.5 Q27 32.5 32 33.5" stroke="#FFFFFF" stroke-width="1.6" fill="none" stroke-linecap="round"></path>${LMS.onIce}<ellipse cx="22" cy="20.5" rx="5.2" ry="7.6" fill="#2A2F3A"></ellipse><ellipse cx="22.9" cy="22.4" rx="3.3" ry="5.4" fill="#FFFFFF"></ellipse>${LMS.penguin}<path d="M17.2 19.4 Q22 21.2 26.8 19.4 L26.8 21.4 Q22 23.2 17.2 21.4 Z" fill="#E03131"></path><path d="M18 21 L15.5 26.5 L18.6 25.6 Z" fill="#E03131"></path><circle cx="23.8" cy="15.8" r="1.6" fill="#FFFFFF"></circle><circle cx="24.2" cy="15.8" r="0.8" fill="#2A2017"></circle><path d="M26.2 16.6 L30.2 17.6 L26.2 18.6 Z" fill="#F08C00"></path><path d="M18.8 28.4 h3.6 M23 28.4 h3.6" stroke="#F08C00" stroke-width="1.6" stroke-linecap="round"></path></svg>` : ''}
+${(m.is.polarbear) ? `<svg width="100%" height="100%" viewBox="0 0 40 40" aria-hidden="true"><rect x="12" y="27" width="5" height="11" rx="2.4" fill="#F4F8FC" stroke="#A9BED3" stroke-width="1.2"></rect><rect x="18.5" y="28" width="5" height="10" rx="2.4" fill="#F4F8FC" stroke="#A9BED3" stroke-width="1.2"></rect><rect x="25.5" y="28" width="5" height="10" rx="2.4" fill="#F4F8FC" stroke="#A9BED3" stroke-width="1.2"></rect><rect x="31" y="27" width="5" height="11" rx="2.4" fill="#F4F8FC" stroke="#A9BED3" stroke-width="1.2"></rect><ellipse cx="24" cy="24" rx="13" ry="8.5" fill="#F4F8FC" stroke="#A9BED3" stroke-width="1.2"></ellipse>${LMS.bear}<circle cx="12.5" cy="15" r="2" fill="#F4F8FC" stroke="#A9BED3" stroke-width="1.2"></circle><ellipse cx="10" cy="20" rx="7" ry="5.2" fill="#F4F8FC" stroke="#A9BED3" stroke-width="1.2"></ellipse>${LMS.bearHead}<circle cx="8.6" cy="18.8" r="0.95" fill="#2A2017"></circle><circle cx="3.6" cy="20.6" r="1.4" fill="#2A2017"></circle></svg>` : ''}
+${(m.is.igloo) ? `<svg width="100%" height="100%" viewBox="0 0 40 40" aria-hidden="true"><path d="M1 37 Q20 32 39 37 L39 39.5 L1 39.5 Z" fill="#FFFFFF"></path><path d="M4 35 Q4 12 20 12 Q36 12 36 35 Z" fill="#FFFFFF" stroke="#9DB7D1" stroke-width="1.4"></path><path d="M6.2 28 H33.8 M8.6 21 H31.4 M14 35 V28 M26 35 V28 M20 28 V21 M13 21 V15.6 M27 21 V15.6" stroke="#BCD0E3" stroke-width="1.2"></path>${LMS.igloo}<path d="M13.5 35 V29 Q13.5 22.5 20 22.5 Q26.5 22.5 26.5 29 V35 Z" fill="#FFFFFF" stroke="#9DB7D1" stroke-width="1.4"></path><path d="M16.2 35 V30 Q16.2 26 20 26 Q23.8 26 23.8 30 V35 Z" fill="#4C6580"></path></svg>` : ''}
+${(m.is.bunny) ? `<svg width="100%" height="100%" viewBox="0 0 40 40" aria-hidden="true"><circle cx="8.5" cy="31" r="3.2" fill="#FFFFFF" stroke="#D5C7BD" stroke-width="1"></circle><ellipse cx="21" cy="9.5" rx="2.7" ry="7" fill="#FFFFFF" stroke="#D5C7BD" stroke-width="1"></ellipse><ellipse cx="21" cy="10" rx="1.1" ry="4.6" fill="#F7A8C4"></ellipse><ellipse cx="26.5" cy="10" rx="2.7" ry="7" fill="#FFFFFF" stroke="#D5C7BD" stroke-width="1" transform="rotate(20 26.5 10)"></ellipse><ellipse cx="26.5" cy="10.5" rx="1.1" ry="4.6" fill="#F7A8C4" transform="rotate(20 26.5 10.5)"></ellipse><ellipse cx="18" cy="29.5" rx="10" ry="8.5" fill="#FFFFFF" stroke="#D5C7BD" stroke-width="1"></ellipse>${LMS.bunny}<circle cx="24" cy="20.5" r="6.5" fill="#FFFFFF" stroke="#D5C7BD" stroke-width="1"></circle>${LMS.bunnyHead}<circle cx="26" cy="19.5" r="1.1" fill="#2A2017"></circle><circle cx="30.1" cy="21.6" r="1" fill="#F06595"></circle><ellipse cx="22.5" cy="37.4" rx="4.5" ry="1.8" fill="#FFFFFF" stroke="#D5C7BD" stroke-width="1"></ellipse></svg>` : ''}
+${(m.is.windmill) ? `<svg width="100%" height="100%" viewBox="0 0 40 40" aria-hidden="true"><path d="M15 39 L17.4 17 H22.6 L25 39 Z" fill="#EAD8B8" stroke="#B08A5A" stroke-width="1.2"></path>${LMS.tower}<path d="M15.6 18 L20 11.5 L24.4 18 Z" fill="#C0392B"></path>${LMS.towerCap}<rect x="18.4" y="31.5" width="3.2" height="7.5" rx="1.6" fill="#8B5E34"></rect><circle cx="20" cy="24.5" r="1.5" fill="#8FCBE0"></circle><g><animateTransform attributeName="transform" type="rotate" values="0 20 15;360 20 15" dur="9s" repeatCount="indefinite"></animateTransform><path d="M20 15 V2 M20 15 H33 M20 15 V28 M20 15 H7" stroke="#8B5E34" stroke-width="1.2"></path><path d="M20.6 3 H24.4 V13 H20.6 Z M22 15.6 H32 V19.4 H22 Z M15.6 17 H19.4 V27 H15.6 Z M8 10.6 H18 V14.4 H8 Z" fill="#FFFFFF" stroke="#8B5E34" stroke-width="0.9"></path></g><circle cx="20" cy="15" r="1.7" fill="#5C3D2E"></circle></svg>` : ''}
+${(m.is.clover) ? `<svg width="100%" height="100%" viewBox="0 0 40 40" aria-hidden="true"><path d="M20 22 Q22.5 32 29 38.5" stroke="#2F7A3A" stroke-width="2.2" fill="none" stroke-linecap="round"></path><g fill="#3FA34D"><path d="M20 18 C17 15 12 15 12.5 10 C13 6.5 17.5 6.8 20 9.5 C22.5 6.8 27 6.5 27.5 10 C28 15 23 15 20 18 Z"></path><path d="M20 18 C17 15 12 15 12.5 10 C13 6.5 17.5 6.8 20 9.5 C22.5 6.8 27 6.5 27.5 10 C28 15 23 15 20 18 Z" transform="rotate(90 20 18)"></path><path d="M20 18 C17 15 12 15 12.5 10 C13 6.5 17.5 6.8 20 9.5 C22.5 6.8 27 6.5 27.5 10 C28 15 23 15 20 18 Z" transform="rotate(180 20 18)"></path><path d="M20 18 C17 15 12 15 12.5 10 C13 6.5 17.5 6.8 20 9.5 C22.5 6.8 27 6.5 27.5 10 C28 15 23 15 20 18 Z" transform="rotate(270 20 18)"></path></g><circle cx="20" cy="18" r="1.4" fill="#2F7A3A"></circle></svg>` : ''}
+${(m.is.bluebell) ? `<svg width="100%" height="100%" viewBox="0 0 40 40" aria-hidden="true"><path d="M11 39 Q8 30 10 22 Q14 31 13.5 39 Z" fill="#4CA64F"></path><path d="M28 39 Q31 31 29.5 25 Q26 32 26 39 Z" fill="#4CA64F"></path><path d="M17 39 Q16 18 29 9" stroke="#3E8E41" stroke-width="1.8" fill="none" stroke-linecap="round"></path><path d="M18.5 21.6 V24.4 M22.4 15.4 V17.8 M26.6 10.9 V13.1" stroke="#3E8E41" stroke-width="1.2"></path><path d="M18.5 24 C16 24 15 26.6 14.8 29.6 L16 28.8 L17.2 29.6 L18.5 28.8 L19.8 29.6 L21 28.8 L22.2 29.6 C22 26.6 21 24 18.5 24 Z" fill="#5C7CFA"></path><path d="M22.4 17.4 C20 17.4 19 20 18.8 23 L20 22.2 L21.2 23 L22.4 22.2 L23.6 23 L24.8 22.2 L26 23 C25.8 20 24.8 17.4 22.4 17.4 Z" fill="#748FFC"></path><path d="M26.6 13 C24.4 13 23.5 15.4 23.3 18.2 L24.4 17.5 L25.5 18.2 L26.6 17.5 L27.7 18.2 L28.8 17.5 L29.9 18.2 C29.7 15.4 28.8 13 26.6 13 Z" fill="#5C7CFA"></path></svg>` : ''}
+${(m.is.beehive) ? `<svg width="100%" height="100%" viewBox="0 0 40 40" aria-hidden="true"><rect x="7" y="34" width="26" height="3.4" rx="1.2" fill="#8B5E34"></rect><path d="M10 37.4 V40 M30 37.4 V40" stroke="#8B5E34" stroke-width="2"></path><path d="M9 34 Q9 13.5 20 12 Q31 13.5 31 34 Z" fill="#F2B33D"></path><path d="M9.7 28.5 H30.3 M10.8 22.5 H29.2 M13 17 H27" stroke="#C98A1A" stroke-width="1.6"></path>${LMS.hive}<path d="M16.5 34 V31.2 Q20 27.6 23.5 31.2 V34 Z" fill="#5C3D2E"></path><g><animateTransform attributeName="transform" type="translate" values="0 0;3 -2.5;6 0;3 2.5;0 0" dur="1.8s" repeatCount="indefinite"></animateTransform><ellipse cx="28.5" cy="8" rx="2.8" ry="2" fill="#FFD43B" stroke="#2A2017" stroke-width="0.8"></ellipse><path d="M27.6 6.2 V9.8 M29.4 6.2 V9.8" stroke="#2A2017" stroke-width="0.9"></path><ellipse cx="28" cy="5.6" rx="1.8" ry="1.1" fill="#FFFFFF" opacity=".85"></ellipse></g><g><animateTransform attributeName="transform" type="translate" values="0 0;-3 2;-5 -1;-2 -3;0 0" dur="2.3s" repeatCount="indefinite"></animateTransform><ellipse cx="9" cy="10" rx="2.6" ry="1.9" fill="#FFD43B" stroke="#2A2017" stroke-width="0.8"></ellipse><path d="M8.2 8.3 V11.7 M9.9 8.3 V11.7" stroke="#2A2017" stroke-width="0.9"></path><ellipse cx="9.6" cy="7.7" rx="1.7" ry="1" fill="#FFFFFF" opacity=".85"></ellipse></g></svg>` : ''}
+${(m.is.shell) ? `<svg width="100%" height="100%" viewBox="0 0 40 40" aria-hidden="true"><path d="M20 34 L6.5 18.5 Q8 8 20 6 Q32 8 33.5 18.5 Z" fill="#FFC2B3" stroke="#E07A62" stroke-width="1.3" stroke-linejoin="round"></path><path d="M20 34 L11 10.6 M20 34 L15.5 7.3 M20 34 V6 M20 34 L24.5 7.3 M20 34 L29 10.6" stroke="#E07A62" stroke-width="1.2"></path>${LMS.shell}<path d="M16 33 H24 L22.6 37.5 H17.4 Z" fill="#FFC2B3" stroke="#E07A62" stroke-width="1.2" stroke-linejoin="round"></path></svg>` : ''}
+${(m.is.sandcastle) ? `<svg width="100%" height="100%" viewBox="0 0 40 40" aria-hidden="true"><path d="M5 38 V27 H35 V38 Z" fill="#E2BE74"></path><path d="M6 28 V15 H8.4 V17 H11.6 V15 H14 V28 Z M26 28 V15 H28.4 V17 H31.6 V15 H34 V28 Z" fill="#E2BE74"></path><path d="M15 28 V10 H17.6 V12 H22.4 V10 H25 V28 Z" fill="#EBCB8B"></path>${LMS.castle}<path d="M5 31.5 H35" stroke="#C9A35A" stroke-width="1.2"></path><path d="M17.4 38 V32.5 Q20 29.5 22.6 32.5 V38 Z" fill="#A87C35"></path><path d="M20 12 V3" stroke="#6B4A2E" stroke-width="1.2"></path><path d="M20 3 L26 5 L20 7 Z" fill="#E03131"></path><rect x="8.6" y="20" width="3" height="4" rx="1.5" fill="#A87C35"></rect><rect x="28.4" y="20" width="3" height="4" rx="1.5" fill="#A87C35"></rect></svg>` : ''}
+${(m.is.beachball) ? `<svg width="100%" height="100%" viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="25" r="11" fill="#FFFFFF"></circle><path d="M20 14 A11 11 0 0 0 9 25 A11 11 0 0 0 20 36 Q12.5 25 20 14 Z" fill="#FF6B6B"></path><path d="M20 14 A11 11 0 0 1 31 25 A11 11 0 0 1 20 36 Q27.5 25 20 14 Z" fill="#4DABF7"></path><path d="M20 14 Q23 25 20 36 Q17 25 20 14 Z" fill="#FCC419"></path>${LMS.ball}<circle cx="20" cy="25" r="11" fill="none" stroke="#2A2017" stroke-width="0.8" opacity=".35"></circle><ellipse cx="15.5" cy="19.5" rx="2.6" ry="1.4" fill="#FFFFFF" opacity=".75" transform="rotate(-35 15.5 19.5)"></ellipse></svg>` : ''}
+${(m.is.duck) ? `<svg width="100%" height="100%" viewBox="0 0 40 40" aria-hidden="true"><g><animateTransform attributeName="transform" type="translate" values="0 0;0 1.2;0 0" dur="2.2s" repeatCount="indefinite"></animateTransform><path d="M32 25 L37.5 20.5 L35.5 28 Z" fill="#7A5230"></path><ellipse cx="22" cy="27" rx="11" ry="6" fill="#A47148"></ellipse><path d="M17 25.5 Q24 21.5 30.5 25.5 Q24 29.5 17 25.5 Z" fill="#7A5230"></path><rect x="10.4" y="19.5" width="4.4" height="6.5" rx="1.5" fill="#2F8A4A"></rect><rect x="10.4" y="23" width="4.4" height="1.5" fill="#FFFFFF"></rect><circle cx="12.4" cy="17.6" r="5" fill="#2F8A4A"></circle><path d="M7.6 17.4 L3.2 18.8 L7.6 20.2 Z" fill="#F2B33D"></path><circle cx="11.2" cy="16.6" r="0.95" fill="#2A2017"></circle></g><path d="M7 33.5 Q13 31.5 19 33.5 Q25 35.5 33 33.5" stroke="#FFFFFF" stroke-width="1.4" fill="none" stroke-linecap="round" opacity=".85"></path></svg>` : ''}
+${(m.is.frog) ? `<svg width="100%" height="100%" viewBox="0 0 40 40" aria-hidden="true"><path d="M4 30 A16 6.5 0 1 0 36 30 A16 6.5 0 1 0 4 30 Z" fill="#4CA64F"></path><path d="M20 30 L33 25.6 L35 28.6 Z" fill="#9FD6EF"></path><ellipse cx="13" cy="29.5" rx="3.6" ry="1.9" fill="#3F8F2E"></ellipse><ellipse cx="27" cy="29.5" rx="3.6" ry="1.9" fill="#3F8F2E"></ellipse><ellipse cx="20" cy="25" rx="7" ry="5.5" fill="#6CC24A"></ellipse><circle cx="16.4" cy="19.4" r="2.7" fill="#6CC24A"></circle><circle cx="23.6" cy="19.4" r="2.7" fill="#6CC24A"></circle><circle cx="16.4" cy="19" r="1.3" fill="#2A2017"></circle><circle cx="23.6" cy="19" r="1.3" fill="#2A2017"></circle><path d="M17 25.5 Q20 28 23 25.5" stroke="#2F7A3A" stroke-width="1.1" fill="none" stroke-linecap="round"></path><circle cx="8" cy="31" r="2.2" fill="#F783AC"></circle><circle cx="8" cy="31" r="0.9" fill="#FFF3BF"></circle></svg>` : ''}
+${(m.is.turtle) ? `<svg width="100%" height="100%" viewBox="0 0 40 40" aria-hidden="true"><ellipse cx="11" cy="15.5" rx="4.2" ry="2.2" fill="#69B34C" transform="rotate(35 11 15.5)"></ellipse><ellipse cx="29" cy="15.5" rx="4.2" ry="2.2" fill="#69B34C" transform="rotate(-35 29 15.5)"></ellipse><ellipse cx="12" cy="29" rx="3.6" ry="2" fill="#69B34C" transform="rotate(-35 12 29)"></ellipse><ellipse cx="28" cy="29" rx="3.6" ry="2" fill="#69B34C" transform="rotate(35 28 29)"></ellipse><path d="M19 31 L20 35.5 L21 31 Z" fill="#69B34C"></path><circle cx="20" cy="9.5" r="3.6" fill="#69B34C"></circle><circle cx="18.6" cy="8.6" r="0.75" fill="#2A2017"></circle><circle cx="21.4" cy="8.6" r="0.75" fill="#2A2017"></circle><ellipse cx="20" cy="22" rx="9" ry="10" fill="#2F8A4A"></ellipse><path d="M20 15.5 L24 18.5 L24 25 L20 28 L16 25 L16 18.5 Z" fill="#4CAF63" stroke="#226B37" stroke-width="1"></path><path d="M20 12 V15.5 M24 18.5 L28.3 16.2 M24 25 L28.3 27.4 M20 28 V32 M16 25 L11.7 27.4 M16 18.5 L11.7 16.2" stroke="#226B37" stroke-width="1"></path></svg>` : ''}
+${(m.is.reeds) ? `<svg width="100%" height="100%" viewBox="0 0 40 40" aria-hidden="true"><path d="M8 40 Q6 33 3 29 M33 40 Q35 34 38 31" stroke="#6FA34A" stroke-width="2" fill="none" stroke-linecap="round"></path><path d="M13 40 Q12 27 14 15 M20 40 Q20 25 21 9 M27 40 Q28 29 26.8 17" stroke="#5C8A3A" stroke-width="2" fill="none" stroke-linecap="round"></path><rect x="12" y="13" width="4.4" height="10" rx="2.2" fill="#7A4A26"></rect><rect x="18.8" y="7" width="4.4" height="11" rx="2.2" fill="#7A4A26"></rect><rect x="24.6" y="15" width="4.4" height="10" rx="2.2" fill="#7A4A26"></rect></svg>` : ''}
+${(m.is.lilypad) ? `<svg width="100%" height="100%" viewBox="0 0 40 40" aria-hidden="true"><path d="M4 26 A16 7 0 1 0 36 26 A16 7 0 1 0 4 26 Z" fill="#4CA64F"></path><path d="M20 26 L34 21.5 L35.6 25 Z" fill="${T.waterLight}"></path><path d="M9 26 Q20 30 31 26" stroke="#3F8F2E" stroke-width="1" fill="none"></path><circle cx="13" cy="24" r="3.4" fill="#F783AC"></circle><circle cx="13" cy="24" r="1.4" fill="#FFF3BF"></circle></svg>` : ''}
+${(m.is.fish) ? `<svg width="100%" height="100%" viewBox="0 0 40 40" overflow="visible" style="overflow: visible" aria-hidden="true"><g transform="translate(10 30)"><ellipse cx="0" cy="1" rx="5" ry="1.6" fill="none" stroke="#FFFFFF" stroke-width="1.2" opacity="0"><animate attributeName="opacity" values="0;.9;0;0" keyTimes="0;0.05;0.3;1" dur="3.6s" repeatCount="indefinite"></animate></ellipse><g opacity="0"><animate attributeName="opacity" values="1;1;0;0" keyTimes="0;0.36;0.4;1" dur="3.6s" repeatCount="indefinite"></animate><animateMotion path="M0 0 Q10 -30 20 0" keyPoints="0;1;1" keyTimes="0;0.4;1" calcMode="linear" rotate="auto" dur="3.6s" repeatCount="indefinite"></animateMotion><path d="M-7 0 Q-1 -4.5 6 0 Q-1 4.5 -7 0 Z M-6 0 L-11 -4 L-10.5 4 Z" fill="#F08C00"></path><circle cx="3" cy="-0.8" r="0.9" fill="#2A2017"></circle></g><ellipse cx="20" cy="1" rx="5" ry="1.6" fill="none" stroke="#FFFFFF" stroke-width="1.2" opacity="0"><animate attributeName="opacity" values="0;0;.9;0;0" keyTimes="0;0.38;0.42;0.7;1" dur="3.6s" repeatCount="indefinite"></animate></ellipse></g></svg>` : ''}
+${MARKS[Object.keys(m.is)[0]] ?? ''}
+</div>
+`).join('')}
+${V.overlays}
+${(show.gate) ? `
+<div style="position: absolute; left: ${gate.left}px; top: ${gate.top}px; width: 100px; height: 80px">
+${V.gateSvg}
+</div>
+` : ''}
+<svg width="${V.MW}" height="${H}" viewBox="0 0 ${V.MW} ${H}" style="position: absolute; left: 0; top: 0" aria-hidden="true">
+<path d="${con.back.line}" fill="none" stroke="${T.backS.halo.c}" stroke-width="${T.backS.halo.w}" stroke-opacity="${T.backS.halo.o}" stroke-dasharray="${T.backS.halo.d}" stroke-linecap="round" stroke-linejoin="round"><animate attributeName="stroke-dashoffset" values="${T.backS.halo.a}" dur="1.4s" repeatCount="indefinite"></animate></path>
+<path d="${con.back.line}" fill="none" stroke="${T.backS.base.c}" stroke-width="${T.backS.base.w}" stroke-opacity="${T.backS.base.o}" stroke-dasharray="${T.backS.base.d}" stroke-linecap="round" stroke-linejoin="round"><animate attributeName="stroke-dashoffset" values="${T.backS.base.a}" dur="1.4s" repeatCount="indefinite"></animate></path>
+<path d="${con.back.line}" fill="none" stroke="${T.backS.top.c}" stroke-width="${T.backS.top.w}" stroke-opacity="${T.backS.top.o}" stroke-dasharray="${T.backS.top.d}" stroke-linecap="round" stroke-linejoin="round"><animate attributeName="stroke-dashoffset" values="${T.backS.top.a}" dur="1.4s" repeatCount="indefinite"></animate></path>
+<path d="${con.back.deco}" fill="${T.backS.deco}"></path>
+<path d="${con.back.art}" fill="${T.backS.art}"></path>
+<path d="${con.back.art2}" fill="${T.backS.art2}"></path>
+<path d="${con.back.arrow}" fill="${T.backS.arrow}" stroke="#FFFFFF" stroke-width="1.2" stroke-linejoin="round"></path>
+<path d="${con.go.line}" fill="none" stroke="${T.goS.halo.c}" stroke-width="${T.goS.halo.w}" stroke-opacity="${T.goS.halo.o}" stroke-dasharray="${T.goS.halo.d}" stroke-linecap="round" stroke-linejoin="round"><animate attributeName="stroke-dashoffset" values="${T.goS.halo.a}" dur="1.4s" repeatCount="indefinite"></animate></path>
+<path d="${con.go.line}" fill="none" stroke="${T.goS.base.c}" stroke-width="${T.goS.base.w}" stroke-opacity="${T.goS.base.o}" stroke-dasharray="${T.goS.base.d}" stroke-linecap="round" stroke-linejoin="round"><animate attributeName="stroke-dashoffset" values="${T.goS.base.a}" dur="1.4s" repeatCount="indefinite"></animate></path>
+<path d="${con.go.line}" fill="none" stroke="${T.goS.top.c}" stroke-width="${T.goS.top.w}" stroke-opacity="${T.goS.top.o}" stroke-dasharray="${T.goS.top.d}" stroke-linecap="round" stroke-linejoin="round"><animate attributeName="stroke-dashoffset" values="${T.goS.top.a}" dur="1.4s" repeatCount="indefinite"></animate></path>
+<path d="${con.go.deco}" fill="${T.goS.deco}"></path>
+<path d="${con.go.art}" fill="${T.goS.art}"></path>
+<path d="${con.go.art2}" fill="${T.goS.art2}"></path>
+<path d="${con.go.arrow}" fill="${T.goS.arrow}" stroke="#FFFFFF" stroke-width="1.2" stroke-linejoin="round"></path>
+</svg>
+<div style="position: absolute; left: ${fin.left}px; top: ${fin.top}px; width: 170px; height: 160px">
+${V.finSvg}
+</div>
+${V.extra}
+${(show.party) ? `
+<div style="position: absolute; left: ${party.lineLeft}px; top: ${party.lineTop}px; width: 54px; height: 10px; transform: rotate(${party.lineRot}deg); background: repeating-conic-gradient(#2A2017 0% 25%, #FFFFFF 0% 50%) 0 0 / 10px 10px; box-shadow: 0 1px 2px rgba(0,0,0,.25)"></div>
+${(party.confetti).map((q: any) => `
+<div style="position: absolute; left: ${q.x}px; top: ${q.y}px; width: 1px; height: 1px; pointer-events: none">
+<svg width="12" height="12" viewBox="-6 -6 12 12" overflow="visible" style="position: absolute; left: 0; top: 0; overflow: visible" aria-hidden="true"><g><animateTransform attributeName="transform" type="translate" values="${q.move}" dur="${q.dur}" begin="${q.begin}" repeatCount="indefinite"></animateTransform><path d="M-2.6 -1.4 H2.6 V1.4 H-2.6 Z" fill="${q.c}"><animate attributeName="opacity" values="0;1;1;0" dur="${q.dur}" begin="${q.begin}" repeatCount="indefinite"></animate><animateTransform attributeName="transform" type="rotate" values="${q.spin}" dur="${q.dur}" begin="${q.begin}" repeatCount="indefinite"></animateTransform></path></g></svg>
+</div>
+`).join('')}
+` : ''}
+${(show.clouds) ? `
+<svg width="${V.MW}" height="${H}" viewBox="0 0 ${V.MW} ${H}" style="position: absolute; left: 0; top: 0; pointer-events: none" aria-hidden="true">
+<defs><radialGradient id="tqCloudShade"><stop offset="0" stop-color="#1E2A3A" stop-opacity=".14"></stop><stop offset="1" stop-color="#1E2A3A" stop-opacity="0"></stop></radialGradient></defs>
+<g fill="url(#tqCloudShade)">
+<g><animateTransform attributeName="transform" type="translate" values="-240 760;${V.MW + 170} 760" dur="80s" begin="-30s" repeatCount="indefinite"></animateTransform><ellipse cx="0" cy="0" rx="92" ry="46"></ellipse><ellipse cx="56" cy="-16" rx="68" ry="38"></ellipse><ellipse cx="-58" cy="-6" rx="58" ry="32"></ellipse></g>
+<g><animateTransform attributeName="transform" type="translate" values="${V.MW + 170} 1380;-240 1380" dur="95s" begin="-10s" repeatCount="indefinite"></animateTransform><ellipse cx="0" cy="0" rx="100" ry="48"></ellipse><ellipse cx="-60" cy="-14" rx="64" ry="36"></ellipse><ellipse cx="62" cy="-4" rx="54" ry="30"></ellipse></g>
+<g><animateTransform attributeName="transform" type="translate" values="-240 2020;${V.MW + 170} 2020" dur="85s" begin="-55s" repeatCount="indefinite"></animateTransform><ellipse cx="0" cy="0" rx="88" ry="44"></ellipse><ellipse cx="54" cy="-18" rx="66" ry="36"></ellipse><ellipse cx="-56" cy="-8" rx="52" ry="30"></ellipse></g>
+<g><animateTransform attributeName="transform" type="translate" values="${V.MW + 170} 2640;-240 2640" dur="90s" begin="-40s" repeatCount="indefinite"></animateTransform><ellipse cx="0" cy="0" rx="96" ry="46"></ellipse><ellipse cx="-58" cy="-16" rx="62" ry="34"></ellipse><ellipse cx="60" cy="-6" rx="56" ry="30"></ellipse></g>
+<g><animateTransform attributeName="transform" type="translate" values="-240 3280;${V.MW + 170} 3280" dur="100s" begin="-70s" repeatCount="indefinite"></animateTransform><ellipse cx="0" cy="0" rx="90" ry="44"></ellipse><ellipse cx="56" cy="-14" rx="64" ry="36"></ellipse><ellipse cx="-56" cy="-6" rx="54" ry="30"></ellipse></g>
+</g>
+</svg>
+` : ''}
+${(show.flyers) ? `
+${(flocks).map((v: any) => `
+<div style="position: absolute; left: 0; top: ${v.y}px; width: 1px; height: 1px; pointer-events: none">
+${(v.birds) ? `<svg width="2" height="2" overflow="visible" style="position: absolute; left: 0; top: 0; overflow: visible" aria-hidden="true"><g><animateTransform attributeName="transform" type="translate" values="${v.move}" dur="${v.dur}" begin="${v.begin}" repeatCount="indefinite"></animateTransform><g transform="${v.flip}" fill="none" stroke="${v.c}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M-6 0 Q-3 -4 0 0 Q3 -4 6 0"><animate attributeName="d" values="M-6 0 Q-3 -4 0 0 Q3 -4 6 0;M-6 -1 Q-3 2 0 0 Q3 2 6 -1;M-6 0 Q-3 -4 0 0 Q3 -4 6 0" dur="0.7s" repeatCount="indefinite"></animate></path><path d="M-6 0 Q-3 -4 0 0 Q3 -4 6 0" transform="translate(-14 -8)"><animate attributeName="d" values="M-6 0 Q-3 -4 0 0 Q3 -4 6 0;M-6 -1 Q-3 2 0 0 Q3 2 6 -1;M-6 0 Q-3 -4 0 0 Q3 -4 6 0" dur="0.7s" begin="-0.2s" repeatCount="indefinite"></animate></path><path d="M-6 0 Q-3 -4 0 0 Q3 -4 6 0" transform="translate(-14 8)"><animate attributeName="d" values="M-6 0 Q-3 -4 0 0 Q3 -4 6 0;M-6 -1 Q-3 2 0 0 Q3 2 6 -1;M-6 0 Q-3 -4 0 0 Q3 -4 6 0" dur="0.7s" begin="-0.35s" repeatCount="indefinite"></animate></path><path d="M-6 0 Q-3 -4 0 0 Q3 -4 6 0" transform="translate(-28 -16)"><animate attributeName="d" values="M-6 0 Q-3 -4 0 0 Q3 -4 6 0;M-6 -1 Q-3 2 0 0 Q3 2 6 -1;M-6 0 Q-3 -4 0 0 Q3 -4 6 0" dur="0.7s" begin="-0.5s" repeatCount="indefinite"></animate></path><path d="M-6 0 Q-3 -4 0 0 Q3 -4 6 0" transform="translate(-28 16)"><animate attributeName="d" values="M-6 0 Q-3 -4 0 0 Q3 -4 6 0;M-6 -1 Q-3 2 0 0 Q3 2 6 -1;M-6 0 Q-3 -4 0 0 Q3 -4 6 0" dur="0.7s" begin="-0.1s" repeatCount="indefinite"></animate></path></g></g></svg>` : ''}
+${(v.butterflies) ? `<svg width="2" height="2" overflow="visible" style="position: absolute; left: 0; top: 0; overflow: visible" aria-hidden="true"><g><animateTransform attributeName="transform" type="translate" values="${v.move}" dur="${v.dur}" begin="${v.begin}" repeatCount="indefinite"></animateTransform><g><g><animateTransform attributeName="transform" type="scale" values="1 1;0.2 1;1 1" dur="0.4s" repeatCount="indefinite"></animateTransform><ellipse cx="-3.4" cy="-1.4" rx="3.4" ry="2.8" fill="#F783AC"></ellipse><ellipse cx="3.4" cy="-1.4" rx="3.4" ry="2.8" fill="#F783AC"></ellipse><ellipse cx="-2.4" cy="2.4" rx="2.4" ry="2" fill="#F783AC"></ellipse><ellipse cx="2.4" cy="2.4" rx="2.4" ry="2" fill="#F783AC"></ellipse></g><ellipse cx="0" cy="0.6" rx="0.8" ry="3.4" fill="#5C3D2E"></ellipse></g><g transform="translate(-24 12)"><g><animateTransform attributeName="transform" type="scale" values="1 1;0.2 1;1 1" dur="0.38s" begin="-0.15s" repeatCount="indefinite"></animateTransform><ellipse cx="-3.4" cy="-1.4" rx="3.4" ry="2.8" fill="#FCC419"></ellipse><ellipse cx="3.4" cy="-1.4" rx="3.4" ry="2.8" fill="#FCC419"></ellipse><ellipse cx="-2.4" cy="2.4" rx="2.4" ry="2" fill="#FCC419"></ellipse><ellipse cx="2.4" cy="2.4" rx="2.4" ry="2" fill="#FCC419"></ellipse></g><ellipse cx="0" cy="0.6" rx="0.8" ry="3.4" fill="#5C3D2E"></ellipse></g><g transform="translate(-44 -8)"><g><animateTransform attributeName="transform" type="scale" values="1 1;0.2 1;1 1" dur="0.42s" begin="-0.25s" repeatCount="indefinite"></animateTransform><ellipse cx="-3.4" cy="-1.4" rx="3.4" ry="2.8" fill="#B197FC"></ellipse><ellipse cx="3.4" cy="-1.4" rx="3.4" ry="2.8" fill="#B197FC"></ellipse><ellipse cx="-2.4" cy="2.4" rx="2.4" ry="2" fill="#B197FC"></ellipse><ellipse cx="2.4" cy="2.4" rx="2.4" ry="2" fill="#B197FC"></ellipse></g><ellipse cx="0" cy="0.6" rx="0.8" ry="3.4" fill="#5C3D2E"></ellipse></g></g></svg>` : ''}
+</div>
+`).join('')}
+` : ''}
+${(dusk.on) ? `
+<div style="position: absolute; left: 0; top: 0; width: ${V.MW}px; height: ${H}px; background: ${dusk.tint}; mix-blend-mode: multiply; pointer-events: none"></div>
+<svg width="${V.MW}" height="${H}" viewBox="0 0 ${V.MW} ${H}" style="position: absolute; left: 0; top: 0; pointer-events: none" aria-hidden="true"><path d="${svg.trail}" fill="none" stroke="#FFF4CC" stroke-opacity="${dusk.pathO}" stroke-width="64" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+${(glows).map((w: any) => `
+<div style="position: absolute; left: ${w.left}px; top: ${w.top}px; width: ${w.size}px; height: ${w.size}px; border-radius: 50%; background: ${w.bg}; pointer-events: none"></div>
+`).join('')}
+${(bugs).map((b: any) => `
+<div style="position: absolute; left: ${b.x}px; top: ${b.y}px; width: 1px; height: 1px; pointer-events: none">
+<svg width="24" height="24" viewBox="-12 -12 24 24" style="position: absolute; left: -12px; top: -12px" aria-hidden="true"><g opacity="0"><animate attributeName="opacity" values="0;1;0" dur="${b.dur}" begin="${b.begin}" repeatCount="indefinite"></animate><circle r="7" fill="${b.glow}" opacity=".35"></circle><path d="${b.d}" fill="${b.c}"></path></g></svg>
+</div>
+`).join('')}
+` : ''}
+${(labels).map((l: any) => `
+<div style="position: absolute; left: ${l.left}px; top: ${l.top}px; width: 180px; display: flex; flex-direction: column; align-items: center; font-family: Fredoka, Nunito, sans-serif; font-weight: 600; letter-spacing: .02em">
+${(place.text) ? `<span style="font-size: 15px; line-height: 22px; margin-top: 2px; color: ${T.ink}; text-shadow: ${T.halo}; white-space: nowrap">${l.name}</span>` : ''}
+${(place.signs) ? `<span style="padding: 1px 10px; border-radius: 7px; background: ${T.banner}; border: 2px solid ${T.edgeDark}; box-shadow: 0 2px 0 ${T.edgeDark}; font-size: 14px; line-height: 21px; color: ${T.ink}; white-space: nowrap">${l.name}</span><span style="width: 5px; height: 8px; margin-top: 2px; border-radius: 0 0 2px 2px; background: ${T.edgeDark}"></span>` : ''}
+${(place.ribbons) ? `<span style="padding: 2px 18px; background: ${T.accentInk}; color: #FFFFFF; clip-path: polygon(0 0, 100% 0, calc(100% - 9px) 50%, 100% 100%, 0 100%, 9px 50%); font-size: 14px; line-height: 22px; white-space: nowrap; filter: drop-shadow(0 2px 0 rgba(0,0,0,.18))">${l.name}</span>` : ''}
+</div>
+`).join('')}
+${(pills).map((p: any) => `
+<div style="position: absolute; left: ${p.left}px; top: ${p.top}px; transform: translate(-50%, -50%); display: flex; align-items: center; gap: 4px; padding: 3px 10px 3px 7px; border-radius: 999px; background: #FFFFFF; color: ${p.fg}; font-size: 12px; font-weight: 800; white-space: nowrap; box-shadow: 0 2px 6px rgba(0,0,0,.14)">
+<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${p.icon}"></path></svg>${p.text}
+</div>
+`).join('')}`;
+}
+
+export function prizeHtml(V: any): string {
+  const { T, prize } = V;
+  return `<div style="position: absolute; left: ${prize.left}px; top: ${prize.top}px; width: 320px; box-sizing: border-box; padding: 10px 14px 11px 10px; border-radius: 16px; background: ${T.banner}; border: 2px solid ${T.edge}; box-shadow: 0 3px 0 ${T.edge}; display: flex; gap: 10px; align-items: center">
+<span style="width: 38px; height: 38px; flex-shrink: 0; border-radius: 50%; background: #FFF1C2; color: #9A5B00; display: flex; align-items: center; justify-content: center">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 4h8v5a4 4 0 01-8 0V4zM8 6H5a3 3 0 003 4M16 6h3a3 3 0 01-3 4M12 13v4M8 20h8"></path></svg>
+</span>
+<span style="display: flex; flex-direction: column; gap: 1px; min-width: 0">
+<span style="font-size: 11px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: ${T.accentInk}">${prize.label}</span>
+<span style="font-size: 14px; font-weight: 700; line-height: 1.3; color: ${T.ink}">${prize.text}</span>
+</span>
+</div>`;
+}
+
+export function reachRingsHtml(V: any): string {
+  const { reachRings } = V;
+  return `${(reachRings).map((z: any) => `
+<div style="position: absolute; left: ${z.left}px; top: ${z.top}px; width: ${z.size}px; height: ${z.size}px; pointer-events: none">
+<svg width="${z.size}" height="${z.size}" viewBox="0 0 ${z.size} ${z.size}" aria-hidden="true"><circle cx="${z.c}" cy="${z.c}" r="${z.rr}" fill="#FFFFFF" fill-opacity=".35" stroke="#1971C2" stroke-width="3"><animate attributeName="stroke-opacity" values=".9;.25;.9" dur="1.6s" begin="${z.begin}" repeatCount="indefinite"></animate></circle></svg>
+</div>
+`).join('')}`;
+}
+
+/**
+ * A space as a game piece in the one sun (light.ts): its face brightest near the sun and shaded on the far side, a rim
+ * bevelled the same way, its thickness `t` below, and shadows falling down and to the right (a crisp one where it meets
+ * the ground, a soft one beyond). Stones bring their grain and a softer bevel, so their thin rim stays a clear outline.
+ * `halo`: shadows in place of the ground ones (in the fog, a white glow).
+ */
+function pieceCss(d: { size: number; bg: string; fg: string; bw: number; shadow: string; grain?: string }, t = 3, halo = '') {
+  const s = d.size, stone = !!d.grain, dx = f1(s * SUN.dx * 0.35), dy = f1(t + 1 + s * SUN.dy * 0.35);
+  // The face: a highlight near the sun fading into shade on the far side, over the space's colour
+  const face = `radial-gradient(circle at 32% 26%, ${lit(0.65)}, ${lit(0.15)} 24%, ${lit(0)} 46%, ${shade(0)} 52%, ${shade(stone ? 0.14 : 0.2)}) padding-box, ` +
+    `linear-gradient(${d.bg}, ${d.bg}) padding-box`;
+  // The rim: the border is see-through, so the rim's colour shows under a bevel from light to dark
+  const rim = `linear-gradient(135deg, ${lit(stone ? 0.3 : 0.5)}, ${lit(0)} 42%, ${shade(0)} 58%, ${shade(0.32)}) border-box ${d.fg}`;
+  // The face's edge lit at the upper left and shaded at the lower right, then the piece's thickness
+  const depth = `inset 1.5px 1.5px 0 ${lit(0.55)}, inset -1.5px -1.5px 0 ${shade(stone ? 0.06 : 0.1)}, 0 ${t}px 0 ${d.shadow}`;
+  // On the ground: a crisp shadow right under its edge, and a soft one cast away from the sun (pieces are flat: a
+  // third of what SUN gives something standing)
+  const ground = halo || `${f1(dx * 0.4)}px ${t + 1}px 0.5px ${shade(0.35)}, ${dx}px ${dy}px ${f1(s * 0.12)}px ${shade(0.22)}`;
+  return `background: ${stone ? d.grain + ', ' : ''}${face}, ${rim}; border: ${d.bw}px solid transparent; box-shadow: ${depth}, ${ground}`;
+}
+
+export function discsHtml(V: any): string {
+  const { T, discs, numbers, show } = V;
+  return `${(discs).map((d: any) => `
+<div style="position: absolute; left: ${d.left}px; top: ${d.top}px; width: ${d.size}px; height: ${d.size}px; box-sizing: border-box; border-radius: ${d.radius}; ${pieceCss(d)}; display: flex; align-items: center; justify-content: center; color: ${d.fg}">
+${(d.hasIcon) ? `<svg width="${d.iconSize}" height="${d.iconSize}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${d.icon}"></path></svg>` : ''}
+${(d.hasText) ? `<span style="color: ${d.ink}; font-size: ${d.fs}px; font-weight: 800; line-height: 1; text-shadow: 0 1px 0 ${lit(0.6)}">${d.text}</span>` : ''}
+</div>
+`).join('')}
+${(show.numbers) ? `
+${(numbers).map((n: any) => `
+<span style="position: absolute; left: ${n.x}px; top: ${n.top}px; transform: translateX(-50%); padding: 0 4px; border-radius: 6px; background: ${T.banner}; color: ${T.ink}; font-size: 10px; font-weight: 800; line-height: 13px; box-shadow: inset 0 -1px 0 ${shade(0.1)}, 0.5px 1.5px 1px ${shade(0.3)}">${n.text}</span>
+`).join('')}
+` : ''}`;
+}
+
+export function reachDiceHtml(V: any): string {
+  const { reachDice } = V;
+  return `${(reachDice).map((z: any) => `
+<div style="position: absolute; left: ${z.left}px; top: ${z.top}px; width: 19px; height: 19px; box-sizing: border-box; border-radius: 5px; background: #FFFFFF; border: 2px solid #1971C2; box-shadow: 0 1px 3px rgba(0,0,0,.25); pointer-events: none">
+<svg width="15" height="15" viewBox="0 0 15 15" style="display: block" aria-hidden="true"><path d="${z.pips}" fill="#1971C2"></path></svg>
+</div>
+`).join('')}`;
+}
+
+export function marksHtml(V: any): string {
+  const { T, marks, signs } = V;
+  return `${(marks).map((k: any) => `
+<span style="position: absolute; left: ${k.left}px; top: ${k.top}px; height: 26px; display: flex; align-items: center; padding: 0 11px; border-radius: 999px; background: #C8430E; color: #FFFFFF; font-family: Fredoka, Nunito, sans-serif; font-size: 14px; font-weight: 600; box-shadow: 0 2px 0 #8F2F09">${k.text}</span>
+`).join('')}
+${(signs).map((g: any) => `
+<div style="position: absolute; left: ${g.left}px; top: ${g.top}px; width: 88px; height: 50px; display: flex; flex-direction: column; align-items: center">
+<span style="height: 26px; box-sizing: border-box; display: flex; align-items: center; padding: 0 10px; border-radius: 7px; background: ${T.banner}; border: 2px solid ${T.edgeDark}; color: ${T.ink}; font-family: Fredoka, Nunito, sans-serif; font-size: 14px; font-weight: 600; white-space: nowrap; box-shadow: 0 2px 0 ${T.edgeDark}">${g.text}</span>
+<span style="width: 6px; height: 22px; margin-top: 2px; border-radius: 0 0 3px 3px; background: ${T.edgeDark}"></span>
+</div>
+`).join('')}`;
+}
+
+/** The finish balloons: drawn above the fog, so the finish stays in sight as the goal */
+export function balloonsHtml(V: any): string {
+  const { party, show } = V;
+  return `${(show.party) ? `
+<div style="position: absolute; left: ${party.bx}px; top: ${party.by}px; width: 44px; height: 74px">
+<svg width="44" height="74" viewBox="0 0 44 74" aria-hidden="true"><g><animateTransform attributeName="transform" type="translate" values="0 0;0 -3;0 0" dur="3s" repeatCount="indefinite"></animateTransform><path d="M11 24 Q16 48 22 72 M22 21 Q22 46 22 72 M33 27 Q28 48 22 72" stroke="#6B5A4B" stroke-width="1" fill="none"></path><ellipse cx="11" cy="13" rx="8" ry="10" fill="#FF6B6B"></ellipse><path d="M9.5 22.5 L11 25 L12.5 22.5 Z" fill="#FF6B6B"></path><ellipse cx="33" cy="16" rx="8" ry="10" fill="#4DABF7"></ellipse><path d="M31.5 25.5 L33 28 L34.5 25.5 Z" fill="#4DABF7"></path><ellipse cx="22" cy="10" rx="8" ry="10" fill="#FCC419"></ellipse><path d="M20.5 19.5 L22 22 L23.5 19.5 Z" fill="#FCC419"></path><ellipse cx="8.5" cy="9" rx="2" ry="3" fill="#FFFFFF" opacity=".55"></ellipse><ellipse cx="19.5" cy="6" rx="2" ry="3" fill="#FFFFFF" opacity=".55"></ellipse><ellipse cx="30.5" cy="12" rx="2" ry="3" fill="#FFFFFF" opacity=".55"></ellipse></g></svg>
+</div>
+` : ''}`;
+}
+
+export function fogHtml(V: any): string {
+  const { T, fog } = V;
+  return `${(fog.on) ? `
+<div style="position: absolute; left: 0; top: ${fog.top}px; width: ${V.MW}px; height: ${fog.h}px; background: ${fog.bg}; pointer-events: none"></div>
+${(fog.puffs).map((f: any) => `
+<div style="position: absolute; left: ${f.left}px; top: ${f.top}px; width: ${f.s}px; height: ${f.s}px; border-radius: 50%; background: ${fog.c}; box-shadow: 0 0 ${f.g ?? 28}px ${f.g ? 6 : 12}px ${fog.c}; pointer-events: none"></div>
+`).join('')}
+${(fog.textTop != null) ? `
+<div style="position: absolute; left: 0; top: ${fog.textTop}px; width: ${V.MW}px; display: flex; flex-direction: column; align-items: center; gap: 2px; pointer-events: none">
+<span style="font-family: Fredoka, Nunito, sans-serif; font-size: 20px; font-weight: 600; color: ${T.ink}">${fog.title}</span>
+<span style="font-size: 13px; font-weight: 700; color: ${T.muted}">${fog.sub}</span>
+</div>
+` : ''}
+${(fog.peek).map((d: any) => `
+<div style="position: absolute; left: ${d.left}px; top: ${d.top}px; width: ${d.size}px; height: ${d.size}px; box-sizing: border-box; border-radius: 50%; ${pieceCss(d, 2, '0 0 0 4px rgba(255,255,255,.75), 0 0 16px 8px rgba(255,255,255,.85)')}; display: flex; align-items: center; justify-content: center; color: ${d.fg}; opacity: .9">
+${(d.hasIcon) ? `<svg width="${d.iconSize}" height="${d.iconSize}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${d.icon}"></path></svg>` : ''}
+${(d.hasText) ? `<span style="color: ${d.ink}; font-size: ${d.fs}px; font-weight: 800; line-height: 1; text-shadow: 0 1px 0 ${lit(0.6)}">${d.text}</span>` : ''}
+</div>
+`).join('')}
+` : ''}`;
+}
+
+export function topHtml(V: any): string {
+  const { T, mapKey } = V;
+  return `<div style="position: absolute; left: 16px; top: 22px; width: ${V.keyAt.bannerW}px; box-sizing: border-box; padding: 14px 16px 15px; border-radius: 18px; background: ${T.banner}; border: 2px solid ${T.edge}; box-shadow: 0 4px 0 ${T.edge}">
+<div style="font-size: 12px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: ${T.accentInk}">${T.kicker}</div>
+<div style="font-family: Fredoka, Nunito, sans-serif; font-weight: 600; font-size: ${T.titleSize}px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.1; margin-top: 2px; color: ${T.ink}">${T.title}</div>
+<div style="font-size: 13px; font-weight: 700; margin-top: 6px; color: ${T.muted}">${T.sub}</div>
+</div>
+<div style="position: absolute; left: ${V.keyAt.left}px; top: ${V.keyAt.top}px; width: ${V.keyAt.w}px; box-sizing: border-box; padding: 12px 14px 14px; border-radius: 18px; background: ${T.banner}; border: 2px solid ${T.edge}; box-shadow: 0 4px 0 ${T.edge}">
+<div style="font-size: 12px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: ${T.accentInk}">${T.keyTitle}</div>
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 12px; margin-top: 10px">
+${(mapKey).map((k: any) => `
+<div style="display: flex; align-items: center; gap: 8px; min-width: 0">
+<span style="width: 30px; height: 30px; flex-shrink: 0; box-sizing: border-box; border-radius: 50%; ${pieceCss({ size: 30, bg: k.bg, fg: k.fg, bw: 2.5, shadow: k.dark }, 2)}; color: ${k.fg}; display: flex; align-items: center; justify-content: center">
+${(k.hasIcon) ? `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${k.icon}"></path></svg>` : ''}
+${(k.hasText) ? `<span style="color: #6E4000; font-size: 12px; font-weight: 800; line-height: 1; text-shadow: 0 1px 0 ${lit(0.6)}">${k.text}</span>` : ''}
+</span>
+<span style="display: flex; flex-direction: column; min-width: 0">
+<b style="font-size: 13px; font-weight: 800; line-height: 1.2; color: ${T.ink}">${k.title}</b>
+<span style="font-size: 12px; font-weight: 700; line-height: 1.25; color: ${T.muted}">${k.what}</span>
+</span>
+</div>
+`).join('')}
+</div>
+</div>
+<div style="position: absolute; right: ${V.keyAt.compassRight}px; top: 22px; width: ${V.keyAt.compassSize}px; display: flex; flex-direction: column; align-items: center; gap: 2px" aria-hidden="true">
+<span style="font-family: Fredoka, Nunito, sans-serif; font-weight: 700; font-size: 14px; line-height: 16px; color: ${T.ink}">N</span>
+<svg width="${V.keyAt.compassSize}" height="${V.keyAt.compassSize}" viewBox="0 0 64 64"><circle cx="32" cy="32" r="29" fill="${T.banner}" stroke="${T.edge}" stroke-width="2.5"></circle><circle cx="32" cy="32" r="22" fill="none" stroke="${T.edge}" stroke-width="1" stroke-dasharray="2 4"></circle><g><animateTransform attributeName="transform" type="rotate" values="-10 32 32;10 32 32;-10 32 32" dur="5s" repeatCount="indefinite"></animateTransform><path d="M32 7 L38 32 L26 32 Z" fill="${T.accent}"></path><path d="M32 57 L38 32 L26 32 Z" fill="${T.ink}" opacity=".45"></path></g><path d="M7 32 L32 28 L32 36 Z M57 32 L32 28 L32 36 Z" fill="${T.ink}" opacity=".22"></path><circle cx="32" cy="32" r="3.5" fill="${T.banner}" stroke="${T.ink}" stroke-width="1.5"></circle></svg>
+</div>`;
+}
+
+/**
+ * The map's edges darken a little in the world's own ink (ENH-37): down both sides for the whole length, a band that
+ * keeps the same share of the width on a phone and a desktop, and a narrower one across the very top and bottom.
+ */
+function edges(MW: number, ink: string): string {
+  const fade = (to: string, w: number) => `linear-gradient(${to}, ${ink}24 10px, ${ink}13 ${f(10 + w * 0.3)}px, ${ink}06 ${f(10 + w * 0.65)}px, ${ink}00 ${f(10 + w)}px)`;
+  const f = (v: number) => Math.round(v), w = Math.min(96, Math.max(44, MW * 0.13));
+  return [fade('90deg', w), fade('270deg', w), fade('180deg', 46), fade('0deg', 46)].join(', ');
+}
+
+export function particlesHtml(V: any): string {
+  const { H, T, particles, show } = V;
+  return `${(particles).map((q: any) => `
+<div style="position: absolute; left: ${q.x}px; top: ${q.y}px; width: 1px; height: 1px; pointer-events: none">
+<svg width="${q.size}" height="${q.size}" viewBox="-9 -9 18 18" overflow="visible" style="position: absolute; left: 0; top: 0; overflow: visible" aria-hidden="true">
+<g>
+<animateTransform attributeName="transform" type="translate" values="${q.move}" dur="${q.dur}" begin="${q.begin}" repeatCount="indefinite"></animateTransform>
+<path d="${q.d}" fill="${q.c}" stroke="${q.stroke}" stroke-width="0.8" opacity="0.9">
+<animate attributeName="opacity" values="${q.fade}" dur="${q.dur}" begin="${q.begin}" repeatCount="indefinite"></animate>
+<animateTransform attributeName="transform" type="rotate" values="${q.spin}" dur="${q.dur}" begin="${q.begin}" repeatCount="indefinite"></animateTransform>
+</path>
+</g>
+</svg>
+</div>
+`).join('')}
+${(show.frame) ? `
+<div style="position: absolute; left: 0; top: 0; width: ${V.MW}px; height: ${H}px; pointer-events: none; box-shadow: inset 0 0 0 4px ${T.edgeDark}, inset 0 0 0 8px ${T.banner}, inset 0 0 0 10px ${T.edge}; background: ${edges(V.MW, T.ink)}"></div>
+` : ''}`;
+}

@@ -15,6 +15,7 @@ import { ThemePicker } from '../shared/ThemePicker';
 import { isTheme, type Theme } from '../../utils/themes';
 import { CustomBadgesAdmin } from '../shared/CustomBadgesAdmin';
 import { FeaturesAdmin } from '../shared/FeaturesAdmin';
+import { QuestTrailAdmin } from '../shared/QuestTrailAdmin';
 import { LookAdmin } from '../shared/LookAdmin';
 import { NotificationLog, NotifyScheduleAdmin, PeopleNotifyAdmin } from '../shared/NotifyAdmin';
 import { CsvTransfer } from '../shared/CsvTransfer';
@@ -226,6 +227,8 @@ export function Settings({
   const [vacationEndDate, setVacationEndDate] = useState(vacationConfig?.vacationEndDate ?? null);
   const [registrationEnabled, setRegistrationEnabled] = useState(true);
   const [strictModeEnabled, setStrictModeEnabled] = useState(false);
+  // FIX-37: what a grown-up's Done on a chore anyone can do does
+  const [grownUpDone, setGrownUpDone] = useState<{ value: 'mine' | 'ask'; chosen: boolean } | null>(null);
   const [pendingCompletions, setPendingCompletions] = useState<PendingCompletion[]>([]);
   const [notifMasterEnabled, setNotifMasterEnabled] = useState(false);
   const [telegramEnabled, setTelegramEnabled] = useState(false);
@@ -286,6 +289,7 @@ export function Settings({
 
   useEffect(() => {
     if (!isAdmin) return;
+    api.getGrownUpDone().then(setGrownUpDone).catch(() => {});
     api.getStrictModeConfig()
       .then((cfg) => setStrictModeEnabled(!!cfg.strictMode))
       .catch(() => {});
@@ -707,7 +711,7 @@ export function Settings({
   const indexGroups: SettingsIndexGroup[] = [
     { title: t('settingsGroups.household'), rows: [
       { id: 'general', icon: '⚙️', title: t('settings.general'), summary: t('settingsIndex.generalSum'), onOpen: go('general'),
-        keywords: [t('settings.strictMode'), t('settings.weekStart'), t('settings.hidePrivateRooms'), t('settings.gamificationEnabled'), t('settings.registrationEnabled'), t('settings.version'), t('settings.timeZone')] },
+        keywords: [t('settings.strictMode'), t('doneFor.settingTitle'), t('settings.weekStart'), t('settings.hidePrivateRooms'), t('settings.gamificationEnabled'), t('settings.registrationEnabled'), t('settings.version'), t('settings.timeZone')] },
       ...(isAdmin ? [{ id: 'look', icon: '🎨', title: t('look.title'), summary: t(`look.${lookNow()}`), onOpen: go('look'),
         keywords: [t('look.fresh'), t('look.quest'), t('look.calm'), t('settings.theme')] }] : []),
       ...(hostedAccount?.isParent ? [{ id: 'email', icon: '✉️', title: t('hosted.signInEmailTitle'), summary: t('settingsIndex.emailSum'), onOpen: go('email') }] : []),
@@ -734,6 +738,8 @@ export function Settings({
     ] },
     { title: t('settingsGroups.gameExtras'), rows: !isAdmin ? [] : [
       ...(gamificationEnabled ? [{ id: 'boosts', icon: '⚡', title: t('boosts.title'), summary: t('settingsIndex.boostsSum'), onOpen: go('boosts') }] : []),
+      { id: 'quest', icon: '🎲', title: t('questAdmin.title'), summary: t('questAdmin.indexSum'), onOpen: go('quest'),
+        keywords: [t('questAdmin.prizeTitle'), t('questAdmin.giveTitle'), t('questAdmin.lengthTitle'), t('questAdmin.fog')] },
       { id: 'features', icon: '🧩', title: t('features.title'), summary: t('settingsIndex.featuresSum'), onOpen: go('features') },
       ...(gamificationEnabled ? [{ id: 'badges', icon: '🏅', title: t('badges.adminTitle'), summary: t('settingsIndex.badgesSum'), onOpen: go('badges') }] : []),
     ] },
@@ -1033,6 +1039,30 @@ export function Settings({
                 />
               </div>
             )}
+            {isAdmin && grownUpDone && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '14px 0', borderTop: '1px solid var(--warm-border)', flexWrap: 'wrap' }}>
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                  <circle cx="7" cy="7" r="3" stroke="var(--warm-text-light)" strokeWidth="1.5" />
+                  <path d="M2 17c0-3 2.2-5 5-5s5 2 5 5M12 9l2 2 4-4" stroke="var(--warm-text-light)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+                <div style={{ flex: '1 1 180px', minWidth: 0 }}>
+                  <div id="grown-up-done-label" style={{ fontSize: 14, fontWeight: 700, color: 'var(--warm-text)' }}>{t('doneFor.settingTitle')}</div>
+                  <div style={{ fontSize: 12, color: 'var(--warm-text-light)', fontWeight: 600 }}>
+                    {t('doneFor.settingDesc')}{!grownUpDone.chosen && <> {t('doneFor.auto')}</>}
+                  </div>
+                </div>
+                <select className="tq-input-compact" aria-labelledby="grown-up-done-label" value={grownUpDone.value} style={{ maxWidth: '100%' }}
+                  onChange={(e) => {
+                    const before = grownUpDone;
+                    const value = e.target.value === 'ask' ? 'ask' : 'mine';
+                    setGrownUpDone({ value, chosen: true });
+                    api.setGrownUpDone(value).then(setGrownUpDone).catch(() => setGrownUpDone(before));
+                  }}>
+                  <option value="mine">{t('doneFor.optMine')}</option>
+                  <option value="ask">{t('doneFor.optAsk')}</option>
+                </select>
+              </div>
+            )}
             {isAdmin && (
               <div style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '14px 0', borderTop: '1px solid var(--warm-border)' }}>
                 <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
@@ -1266,6 +1296,12 @@ export function Settings({
             <div className="tq-card tq-card-padded settings-admin-card">
               <h3 className="tq-card-title">🎨 {t('look.title')}</h3>
               <LookAdmin language={user.language} family={family} onChanged={onDataChanged} />
+            </div>
+          )}
+          {cur === 'quest' && isAdmin && (
+            <div className="tq-card tq-card-padded settings-admin-card">
+              <h3 className="tq-card-title">🎲 {t('questAdmin.title')}</h3>
+              <QuestTrailAdmin language={user.language} userId={user.id} onChanged={onDataChanged} />
             </div>
           )}
           {cur === 'features' && isAdmin && (

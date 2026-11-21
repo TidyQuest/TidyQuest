@@ -1,4 +1,5 @@
 import type { Outfit } from '../components/mascot/MascotCard';
+import type { QuestState, QuestTurn } from '../components/quest/types';
 import type { HostedAccount } from '../utils/hosted';
 import { AVATAR_PHOTO, PROOF_PHOTO, shrinkPhoto } from '../utils/photos';
 import { pushOwner, setPushOwner, unsubscribeBrowser } from '../utils/push';
@@ -215,6 +216,8 @@ export interface FeatureFlags {
   webPush: boolean;
   /** "What's new" slides after a big update (NEW-38) */
   whatsNew: boolean;
+  /** Quest Trail, the monthly board game (NEW-40) */
+  questTrail: boolean;
 }
 
 /** Team-ups on a chore in a list: can you start one, and has a team claimed it today? */
@@ -243,6 +246,15 @@ export type Look = 'fresh' | 'quest' | 'calm';
 export interface FeaturesView { features: FeatureFlags; rescueMultiplier: number; holidaysOff: string[]; look?: Look; mascot: { creature: string; name: string; bedtimeFrom: string; bedtimeTo: string }; teamBonus: number; shieldPrice?: number;
   /** Every creature: the active one, resting ones (with their name and stage) and new eggs */
   mascotRoster?: Array<{ creature: string; status: 'active' | 'resting' | 'new'; name: string; stage: string }> }
+
+/** Settings → Quest Trail (server: utils/quest.ts QuestSettings) */
+export interface QuestSettings {
+  length: 'auto' | number; prizeRewardId: number | null; prizeCoins: number; prizeKidsOnly: boolean;
+  finisherCoins: number; coinsPerStar: number; timeOfDay: 'day' | 'sunset' | 'night'; fog: boolean;
+}
+/** The parts of the Quest Trail state the settings card shows */
+export type QuestPlayers = { enabled: false } | { enabled: true; trail: { month: string; length: number };
+  players: Array<{ userId: number; displayName: string; isKid: boolean; position: number; finishedAt: string | null; starsLeft: number }> };
 
 export type NotifyKind = 'taskDue' | 'rewardRequest' | 'achievementUnlocked' | 'choreApproval' | 'coinBoost' | 'rescue' | 'outcome' | 'summary' | 'nudge' | 'reminder' | 'cheer' | 'teamup' | 'openChores';
 
@@ -506,10 +518,17 @@ export const api = {
   resetTask: (id: number) =>
     apiFetch<{ success: boolean; completionsRemoved: number; coinsDeducted: number; lastCompletedAt: string }>(`/tasks/${id}/reset`, { method: 'POST' }),
   /** doneOn: "Done earlier…" for a past day ('YYYY-MM-DD', up to 7 days back) */
-  completeTask: (id: number, onBehalfOfUserId?: number, extra: { note?: string; doneOn?: string } = {}) =>
-    apiFetch<{ coinsEarned: number; health: number; pendingApproval?: boolean; newAchievements?: string[]; newAchievementInfo?: Array<{ id: string; titleKey: string | null; title: string | null; icon: string }>; completionId?: number; late?: boolean }>(`/tasks/${id}/complete`, {
+  /** changeable: a grown-up's one-tap Done on a chore anyone can do, which Change can hand on (FIX-37) */
+  completeTask: (id: number, onBehalfOfUserId?: number, extra: { note?: string; doneOn?: string; changeable?: boolean } = {}) =>
+    apiFetch<{ coinsEarned: number; health: number; pendingApproval?: boolean; newAchievements?: string[]; newAchievementInfo?: Array<{ id: string; titleKey: string | null; title: string | null; icon: string }>; completionId?: number; late?: boolean; changeable?: boolean }>(`/tasks/${id}/complete`, {
       method: 'POST', body: JSON.stringify({ ...(onBehalfOfUserId ? { onBehalfOfUserId } : {}), ...extra }),
     }),
+  /** Change (FIX-37): a grown-up's own Done goes to these people instead */
+  changeCompletion: (completionId: number, userIds: number[]) =>
+    apiFetch<{ changed?: Array<{ userId: number; newAchievements?: string[] }>; unchanged?: boolean }>(`/completions/${completionId}/change`, { method: 'POST', body: JSON.stringify({ userIds }) }),
+  getGrownUpDone: () => apiFetch<{ value: 'mine' | 'ask'; chosen: boolean }>('/users/grown-up-done'),
+  setGrownUpDone: (value: 'mine' | 'ask' | null) =>
+    apiFetch<{ value: 'mine' | 'ask'; chosen: boolean }>('/users/grown-up-done', { method: 'PUT', body: JSON.stringify({ value }) }),
   approveCompletionsBatch: (ids: number[]) =>
     apiFetch<{ approved: number[]; skipped: Array<{ id: number; error: string }> }>('/completions/approve-batch', { method: 'POST', body: JSON.stringify({ ids }) }),
   rejectCompletionsBatch: (ids: number[], reason?: string) =>
@@ -541,6 +560,10 @@ export const api = {
   rescueReroll: () => apiFetch<unknown>('/rescue/reroll', { method: 'POST' }),
   rescueChoose: (taskId: number) => apiFetch<unknown>('/rescue', { method: 'PUT', body: JSON.stringify({ taskId }) }),
   rescueSkip: () => apiFetch<unknown>('/rescue', { method: 'DELETE' }),
+  // Quest Trail (NEW-40): the month's board, a roll (or a star cashed in after the finish), the end-of-month screen seen
+  questState: () => apiFetch<QuestState | { enabled: false }>('/quest'),
+  questRoll: (userId?: number) => apiFetch<QuestTurn>('/quest/roll', { method: 'POST', body: JSON.stringify(userId ? { userId } : {}) }),
+  questEndSeen: () => apiFetch<{ success: boolean }>('/quest/end-seen', { method: 'POST' }),
   // Home: pin to "Your usual", snooze in "Maybe you forgot" (for yourself)
   pinTask: (id: number) => apiFetch<{ pinned: boolean }>(`/tasks/${id}/pin`, { method: 'POST' }),
   unpinTask: (id: number) => apiFetch<{ pinned: boolean }>(`/tasks/${id}/pin`, { method: 'DELETE' }),
@@ -708,6 +731,11 @@ export const api = {
   /** forUserId: a parent shopping for someone else (ENH-16) gets their rewards, prices and coins */
   getRewards: (forUserId?: number) =>
     apiFetch<{ rewards: Array<{ id: number; title: string; description?: string | null; costCoins: number }>; mine: Array<{ id: number; title: string; costCoins: number; redeemedAt: string; status: string; boughtByName?: string | null; rejectNote?: string | null }>; coins?: number }>(forUserId ? `/rewards?for=${forUserId}` : '/rewards'),
+  // Settings → Quest Trail (NEW-40): the parents' settings, and a star given by hand
+  questSettings: () => apiFetch<QuestSettings>('/quest/settings'),
+  saveQuestSettings: (change: Partial<QuestSettings>) => apiFetch<QuestSettings>('/quest/settings', { method: 'PUT', body: JSON.stringify(change) }),
+  questGiveStar: (userId: number) => apiFetch<QuestPlayers>('/quest/stars', { method: 'POST', body: JSON.stringify({ userId }) }),
+  questPlayers: () => apiFetch<QuestPlayers>('/quest'),
   getRewardsAdmin: () =>
     apiFetch<{ rewards: any[]; redemptions: any[]; rotatingPerWeek?: number; rotatingThisWeek?: number[] }>('/rewards/admin'),
   /** note: an optional one-line reason for the kid, with a rejection */

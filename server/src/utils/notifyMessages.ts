@@ -80,15 +80,21 @@ export function notifyPotFull(reward: string, coins: number) {
 }
 
 /** To the person ("You earned …") and the parents ("Alex earned …"). */
-export function notifyBadge(userId: number, badge: { titleKey: string | null; title: string | null }) {
+export function notifyBadge(userId: number, badge: { titleKey: string | null; title: string | null }, options: { notBefore?: Date; dedupeKey?: string } = {}) {
   const name = nameOf(userId);
   const title = (lang: string) => (badge.titleKey ? tr(lang, badge.titleKey) : badge.title ?? '');
   const parents = (db.prepare("SELECT id FROM users WHERE role = 'admin'").all() as Array<{ id: number }>).map((p) => p.id);
   return notifyPeople([userId, ...parents.filter((id) => id !== userId)], 'achievementUnlocked',
-    (lang, p) => (p?.id === userId ? tr(lang, 'notify.badgeYou', { badge: title(lang) }) : tr(lang, 'notify.badgeOther', { name, badge: title(lang) })));
+    (lang, p) => (p?.id === userId ? tr(lang, 'notify.badgeYou', { badge: title(lang) }) : tr(lang, 'notify.badgeOther', { name, badge: title(lang) })), options);
 }
 
 // ---------- Outcomes, to the kid only ----------
+
+/** A grown-up marked a chore done for someone (FIX-37): "Dad marked “Dishes” done for you: +10 coins" */
+export function notifyDoneForYou(userId: number, byId: number, task: TaskLabel) {
+  const by = nameOf(byId);
+  return notifyPeople([userId], 'outcome', (lang) => tr(lang, 'notify.doneForYou', { name: by, task: taskName(lang, task) }));
+}
 
 export function notifyChoreApproved(childId: number, parentId: number, task: TaskLabel, coins: number, extras: { note?: string | null; bonus?: number } = {}) {
   const parent = nameOf(parentId);

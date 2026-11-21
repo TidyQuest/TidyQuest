@@ -2377,3 +2377,168 @@ html[data-look='calm'] .today-tabs button.on { background: var(--warm-card); }
   font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; border-radius: 0 8px 8px 0;
 }
 .guide-topic-subs button:hover { background: var(--warm-bg-subtle); color: var(--warm-text); }
+
+/* ---- Quest Trail (NEW-40): the map page, the Today card and the end-of-month screen ---- */
+/* contain: its 390 px map mustn't make the page wider than a 390 px phone (it shrinks to fit instead). From 600 px
+   the map is drawn as wide as the page, up to 1000 px. */
+.quest-page { max-width: 1000px; margin: -12px auto 0; position: relative; contain: inline-size; }
+.quest-page-loading { min-height: 60vh; }
+.quest-head { position: sticky; top: 0; z-index: 20; background: var(--warm-bg); border-bottom: 1px solid var(--warm-border); }
+.quest-head-row { display: flex; align-items: center; gap: 4px; padding: 6px 10px 6px 4px; }
+.quest-head-title { display: flex; flex-direction: column; flex: 1; min-width: 0; }
+.quest-head-title h1 { margin: 0; font-size: 19px; font-weight: 800; line-height: 1.15; color: var(--warm-text); }
+.quest-head-sub { display: flex; flex-wrap: wrap; column-gap: 5px; font-size: 13px; font-weight: 700; line-height: 1.25; color: var(--warm-text-secondary); min-width: 0; }
+.quest-head-sub > span:first-child { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.quest-head-days { white-space: nowrap; }
+.quest-head-days::before { content: '· '; }
+/* FIX-42: on a phone the days left get their own line, so they're never wrapped or cut off */
+@media (max-width: 520px) {
+  .quest-head-sub { flex-direction: column; }
+  .quest-head-days::before { content: none; }
+}
+.quest-icon-btn { width: 44px; height: 44px; flex-shrink: 0; border: 0; border-radius: 50%; background: transparent; color: var(--warm-text); display: flex; align-items: center; justify-content: center; cursor: pointer; }
+.quest-icon-btn:hover { background: var(--warm-bg-subtle); }
+.quest-coins { display: flex; align-items: center; gap: 6px; flex-shrink: 0; background: var(--warm-card); border-radius: 999px; padding: 6px 12px 6px 8px; font-weight: 800; font-size: 15px; color: var(--warm-text); box-shadow: 0 1px 2px rgba(70,45,20,.08); }
+.quest-coin { width: 18px; height: 18px; border-radius: 50%; background: #F5A524; border: 2px solid #D98A0B; box-sizing: border-box; }
+.quest-chips { display: flex; gap: 6px; padding: 0 10px 8px; overflow-x: auto; scrollbar-width: none; }
+.quest-chip { min-height: 40px; flex-shrink: 0; border: 0; border-radius: 999px; background: var(--warm-card); display: flex; align-items: center; gap: 6px; padding: 4px 10px 4px 4px; font: inherit; font-size: 14px; font-weight: 800; color: var(--warm-text); cursor: pointer; box-shadow: 0 1px 2px rgba(70,45,20,.12); }
+.quest-chip.you { box-shadow: 0 0 0 2px #1971C2; }
+.quest-key { position: absolute; left: max(10px, calc(100% - 430px)); right: 10px; top: calc(100% + 8px); z-index: 25; padding: 12px 12px 14px 14px; box-shadow: 0 6px 24px rgba(42,32,23,.22); animation: quest-rise .32s ease-out; }
+.quest-key-head { display: flex; align-items: center; justify-content: space-between; }
+.quest-key-head h2 { margin: 0; font-size: 18px; font-weight: 800; }
+.quest-key-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.quest-key-item { display: flex; align-items: center; gap: 9px; min-width: 0; }
+.quest-key-item > span:last-child { display: flex; flex-direction: column; min-width: 0; }
+.quest-key-item b { font-size: 14px; line-height: 1.2; }
+.quest-key-item small { font-size: 12px; font-weight: 700; line-height: 1.3; color: var(--warm-text-secondary); }
+.quest-key-disc { width: 34px; height: 34px; flex-shrink: 0; box-sizing: border-box; border-radius: 50%; border: 3px solid; display: flex; align-items: center; justify-content: center; font-size: 13px; }
+.quest-map-col { position: relative; overflow: clip; }
+.quest-map { width: max-content; margin: 0 auto; }
+/* The progress bar: down the map's right edge on a phone, starting a little below the page header so its top dot
+   stays clear of it; on a wide page in its own strip beside the map (FIX-40, RAIL_STRIP in QuestTrail.tsx) */
+.quest-rail-holder { position: sticky; top: 130px; height: 0; z-index: 6; }
+.quest-rail { position: absolute; right: 20px; top: 24px; width: 6px; height: 38vh; }
+.quest-map-col.strip { padding-right: 40px; background-clip: content-box !important; }
+.quest-map-col.strip .quest-rail { right: -23px; }
+.quest-rail-track, .quest-rail-done { position: absolute; left: 0; top: 0; width: 6px; border-radius: 3px; }
+.quest-rail-track { height: 100%; background: rgba(255,255,255,.92); box-shadow: 0 1px 4px rgba(0,0,0,.22); }
+.quest-rail-done { background: #1971C2; }
+.quest-rail-dot { position: absolute; left: 3px; transform: translate(-50%, -50%); width: 44px; height: 30px; border: 0; padding: 0; background: transparent; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+.quest-rail-dot > * { border-radius: 50%; box-shadow: 0 0 0 2px #FFFFFF, 0 1px 3px rgba(0,0,0,.3); background: #FFFFFF; }
+.quest-rail-dot.you { z-index: 1; }
+.quest-rail-dot.you > * { box-shadow: 0 0 0 2px #FFFFFF, 0 0 0 5px rgba(25,113,194,.4); }
+.quest-pulse { position: absolute; left: 50%; top: 50%; width: 40px; height: 40px; margin: -20px 0 0 -20px; border-radius: 50%; background: #1971C2; opacity: .4; animation: quest-pulse 1.6s ease-out infinite; }
+@keyframes quest-pulse { from { transform: scale(1); opacity: .45; } to { transform: scale(1.7); opacity: 0; } }
+.quest-dock { position: sticky; bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom) + 10px); z-index: 15; display: flex; flex-direction: column; gap: 8px; padding: 12px 12px 0; max-width: 464px; margin: 0 auto; box-sizing: border-box; }
+.quest-result { display: flex; gap: 12px; align-items: flex-start; padding: 12px; box-shadow: 0 6px 24px rgba(42,32,23,.22); animation: quest-rise .32s ease-out; }
+.quest-result-tile { width: 44px; height: 44px; flex-shrink: 0; border-radius: 12px; display: flex; align-items: center; justify-content: center; }
+.quest-result-text { display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0; }
+.quest-result-text strong { font-size: 18px; font-weight: 800; color: var(--warm-text); }
+.quest-result-text span { font-size: 14px; line-height: 1.4; color: var(--warm-text-secondary); }
+.quest-diebar { display: flex; align-items: center; gap: 14px; padding: 12px 12px 12px 14px; box-shadow: 0 6px 24px rgba(42,32,23,.22); }
+.quest-die { width: 56px; height: 56px; flex-shrink: 0; box-sizing: border-box; border-radius: 14px; background: #FFFFFF; border: 2px solid #2A2017; padding: 7px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); grid-template-rows: repeat(3, minmax(0, 1fr)); box-shadow: 0 3px 0 #2A2017; }
+.quest-die span { width: 9px; height: 9px; border-radius: 50%; background: #2A2017; justify-self: center; align-self: center; opacity: 0; }
+.quest-die span.on { opacity: 1; }
+.quest-die.busy { animation: quest-tumble .28s linear infinite; }
+@keyframes quest-tumble { 0% { transform: rotate(0); } 25% { transform: rotate(-12deg) translateY(-3px); } 75% { transform: rotate(12deg) translateY(-3px); } 100% { transform: rotate(0); } }
+@keyframes quest-rise { from { transform: translateY(12px); opacity: 0; } to { transform: none; opacity: 1; } }
+.quest-stars { display: flex; flex-direction: column; gap: 1px; flex: 1; min-width: 0; }
+.quest-stars > span { display: flex; align-items: center; gap: 5px; font-size: 15px; font-weight: 700; color: var(--warm-text-secondary); }
+.quest-stars b { font-size: 24px; font-weight: 800; color: var(--warm-text); }
+.quest-stars small { font-size: 12px; font-weight: 700; color: var(--warm-text-secondary); }
+.quest-roll { min-height: 48px; min-width: 92px; border: 0; border-radius: 14px; background: var(--warm-accent); color: #FFFFFF; font: inherit; font-size: 17px; font-weight: 800; padding: 0 16px; cursor: pointer; box-shadow: 0 3px 0 var(--warm-accent-hover); }
+.quest-roll:disabled { background: var(--warm-border); color: var(--warm-text-secondary); box-shadow: none; cursor: default; }
+.quest-watch { font-size: 14px; font-weight: 700; color: var(--warm-text-secondary); }
+/* A parent rolling for someone else: whose die it is, and the way back to your own */
+.quest-for { display: flex; align-items: center; gap: 10px; padding: 4px 4px 4px 12px; box-shadow: 0 6px 24px rgba(42,32,23,.22); }
+.quest-for b { flex: 1; min-width: 0; font-size: 15px; font-weight: 800; color: var(--warm-text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.quest-card { display: flex; flex-direction: column; align-items: stretch; gap: 10px; width: 100%; text-align: left; font: inherit; color: var(--warm-text); cursor: pointer; padding: 14px 16px; border: 0; margin-bottom: 14px; }
+.quest-card-row { display: flex; align-items: center; gap: 12px; }
+.quest-card-icon { width: 44px; height: 44px; flex-shrink: 0; border-radius: 12px; background: #FFF3BF; display: flex; align-items: center; justify-content: center; }
+.quest-card-text { display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0; }
+.quest-card-text b { font-size: 17px; font-weight: 800; }
+.quest-card-text span { font-size: 14px; color: var(--warm-text-secondary); }
+.quest-card-play { min-height: 40px; display: flex; align-items: center; padding: 0 16px; border-radius: 12px; background: var(--warm-accent); color: #FFFFFF; font-weight: 800; font-size: 15px; flex-shrink: 0; }
+.quest-card-rail { position: relative; height: 26px; display: flex; align-items: center; margin: 0 30px 0 12px; }
+.quest-card-track, .quest-card-done { position: absolute; left: 0; height: 6px; border-radius: 3px; }
+.quest-card-track { right: 0; background: var(--warm-border); }
+.quest-card-done { background: #1971C2; }
+.quest-card-dot { position: absolute; top: 50%; transform: translate(-50%, -50%); display: flex; }
+.quest-card-dot > * { border-radius: 50%; background: #FFFFFF; box-shadow: 0 0 0 2px #FFFFFF, 0 1px 3px rgba(0,0,0,.25); }
+.quest-card-dot.you { z-index: 1; }
+/* Past the end of the track, so whoever finished stays in sight */
+.quest-card-finish { position: absolute; right: -28px; font-size: 16px; }
+.quest-card-race { font-size: 13px; font-weight: 700; color: var(--warm-text-secondary); }
+.quest-card-today { display: flex; align-items: center; gap: 10px; padding-top: 10px; border-top: 1px solid var(--warm-border-subtle); font-size: 14px; line-height: 1.4; color: var(--warm-text-secondary); }
+.quest-card-today > span:first-child { flex: 1; min-width: 0; }
+.quest-card-stars { display: flex; gap: 4px; flex-shrink: 0; }
+.quest-card-waiting { display: block; margin-top: 4px; font-weight: 700; color: var(--warm-text-secondary); }
+.quest-kid { cursor: default; }
+.quest-kid-count { display: flex; align-items: center; gap: 4px; font-size: 22px; font-weight: 800; color: var(--warm-text); }
+.quest-kid-today { display: flex; justify-content: center; gap: 12px; }
+.quest-kid-waiting { text-align: center; font-size: 16px; font-weight: 700; color: var(--warm-text-secondary); }
+.quest-kid-result { display: flex; align-items: center; gap: 12px; animation: quest-rise .32s ease-out; }
+.quest-kid-result .quest-result-tile { width: 60px; height: 60px; border-radius: 16px; }
+.quest-kid-result strong { font-size: 22px; font-weight: 800; line-height: 1.2; color: var(--warm-text); min-width: 0; overflow-wrap: anywhere; }
+.quest-kid-face { font-size: 28px; font-weight: 800; }
+.quest-kid-roll { width: 100%; min-height: 60px; font-size: 22px; display: flex; align-items: center; justify-content: center; gap: 10px; }
+.quest-kid-roll .quest-die { width: 36px; height: 36px; padding: 4px; border-radius: 9px; box-shadow: none; }
+.quest-kid-roll .quest-die span { width: 6px; height: 6px; }
+.quest-kid-map { width: 100%; }
+/* Kid mode on the map page: the result is a big picture and its two or three words */
+.quest-result.kid { align-items: center; }
+.quest-result.kid .quest-result-tile { width: 64px; height: 64px; border-radius: 16px; }
+.quest-result.kid .quest-result-text strong { font-size: 24px; }
+
+.quest-end { position: fixed; inset: 0; z-index: 1000; background: var(--warm-bg); overflow-y: auto; }
+.quest-end-inner { max-width: 420px; margin: 0 auto; padding: 20px 16px calc(24px + env(safe-area-inset-bottom)); display: flex; flex-direction: column; gap: 12px; color: var(--warm-text); }
+.quest-end-top { display: flex; flex-direction: column; align-items: center; gap: 6px; text-align: center; }
+.quest-end-top h1 { margin: 0; font-size: 28px; font-weight: 800; line-height: 1.15; }
+.quest-end-top p { margin: 0; font-size: 15px; line-height: 1.4; color: var(--warm-text-secondary); }
+.quest-end-trophy { width: 72px; height: 72px; border-radius: 50%; background: linear-gradient(135deg, #FFE3C8, #FFF3E6); display: flex; align-items: center; justify-content: center; color: #C8430E; }
+.quest-end-kicker { font-size: 14px; font-weight: 800; color: var(--warm-accent); }
+.quest-end-me { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 16px; background: #E7F1FB; color: #1B3A57; }
+.quest-end-me > span { display: flex; flex-direction: column; gap: 2px; }
+.quest-end-me b { font-size: 16px; }
+.quest-end-me small { font-size: 14px; line-height: 1.35; }
+.quest-end-card { padding: 12px 14px; }
+.quest-end-badges-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; }
+.quest-end-badges-head small { font-size: 13px; font-weight: 700; color: var(--warm-text-secondary); }
+.quest-end-badges { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 10px 6px; }
+.quest-badge { position: relative; display: flex; flex-direction: column; align-items: center; gap: 3px; min-width: 0; }
+.quest-badge-tile { width: 100%; max-width: 56px; aspect-ratio: 1 / 1; border-radius: 50%; overflow: hidden; box-sizing: border-box; border: 2.5px solid var(--warm-border); background: var(--warm-bg-subtle); display: flex; align-items: flex-end; justify-content: center; color: #FFFFFF; font-weight: 800; }
+.quest-badge.won .quest-badge-tile { background: #FFF6E3; box-shadow: 0 1px 3px rgba(70,45,20,.18); }
+.quest-badge.this .quest-badge-tile { border-style: dashed; border-color: var(--warm-text-light); }
+.quest-badge-art { display: block; width: 92%; margin-bottom: 4%; }
+.quest-badge-art svg { display: block; width: 100%; height: auto; }
+.quest-badge:not(.won) .quest-badge-art { filter: grayscale(1); opacity: .3; }
+.quest-badge-month { font-size: 11px; font-weight: 800; line-height: 1; color: var(--warm-text-secondary); }
+.quest-badge.won .quest-badge-month { color: var(--warm-text); }
+.quest-badge-crown { position: absolute; top: -7px; right: calc(50% - 32px); font-size: 15px; font-style: normal; line-height: 1; filter: drop-shadow(0 1px 1px rgba(0,0,0,.25)); }
+/* Last winner's crown (ENH-44): over their picture on the Today race strip, beside it on the map's chips */
+.quest-crown { position: absolute; left: 50%; top: -10px; transform: translateX(-50%); font-size: 12px; font-style: normal; line-height: 1; pointer-events: none; filter: drop-shadow(0 1px 1px rgba(0,0,0,.25)); }
+.quest-card-dot > .quest-crown { background: none; box-shadow: none; border-radius: 0; }
+.quest-chip-crown { font-size: 14px; margin-left: -4px; }
+.quest-badges-panel .quest-end-badges { margin-top: 12px; }
+.quest-badges-panel p { margin: 6px 0 0; font-size: 13px; color: var(--warm-text-secondary); }
+.quest-end-rows { padding: 4px 14px; }
+.quest-end-row { display: flex; align-items: center; gap: 12px; min-height: 44px; border-bottom: 1px solid var(--warm-border-subtle); }
+.quest-end-row:last-child { border-bottom: 0; }
+.quest-end-row b { flex: 1; min-width: 0; font-size: 15px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.quest-end-row > span:last-child { font-size: 13px; font-weight: 800; color: var(--warm-text-secondary); }
+.quest-end-row > span.done { color: var(--status-approved-text); }
+.quest-end-place { width: 18px; text-align: center; font-weight: 800; color: var(--warm-text-secondary); }
+.quest-end-note { font-size: 13px; color: var(--warm-text-secondary); text-align: center; }
+.quest-end-next { display: flex; flex-direction: column; gap: 3px; padding: 14px 16px; border-radius: 16px; border: 2px solid; background: var(--warm-card); }
+.quest-end-next small { font-size: 13px; font-weight: 800; color: var(--warm-accent); }
+.quest-end-next b { font-size: 20px; font-weight: 800; }
+.quest-end-next span { font-size: 14px; line-height: 1.4; color: var(--warm-text-secondary); }
+.quest-end-go { min-height: 52px; font-size: 17px; justify-content: center; }
+
+@media (max-width: 768px) {
+  .quest-page { margin: -12px -16px 0; max-width: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .quest-die.busy, .quest-result, .quest-key, .quest-pulse, .quest-kid-result { animation: none; }
+}

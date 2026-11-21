@@ -1,6 +1,8 @@
 import { SparkleIcon, FireIcon, CoinIcon, StarIcon } from '../icons/UIIcons';
 import { useTranslation } from '../../hooks/useTranslation';
 import { LevelStrip } from '../shared/LevelStrip';
+import { TrailBadgeHead, TrailBadgeRow } from '../quest/TrailBadges';
+import type { TrailBadges } from '../quest/types';
 import { localeFor } from '../../utils/locale';
 import { BadgeIcon } from '../shared/BadgeIcon';
 import { badgeDescription, badgeTitle, BUILTIN_ICONS, TIER_COLORS, TIER_KEYS, tierIndex, type BadgeItem, type LevelInfo } from '../../utils/badges';
@@ -74,6 +76,8 @@ interface AchUser {
   achievements: BadgeItem[];
   level?: LevelInfo | null;
   nextBadge?: BadgeItem | null;
+  /** Quest Trail badges this year (ENH-44); null when Quest Trail is off or they haven't played */
+  trailBadges?: TrailBadges | null;
 }
 
 interface Props {
@@ -180,6 +184,13 @@ export function Achievements({ data, language }: Props) {
           </span>
         </div>
         <LevelStrip level={u.level ?? null} nextBadge={u.nextBadge ?? null} language={language} />
+        {u.trailBadges && (
+          <div style={card(u.trailBadges.finished.length > 0)}>
+            <TrailBadgeHead title={t('quest.badgesTitle')} count={u.trailBadges.finished.length} language={language ?? 'en'} />
+            <TrailBadgeRow year={u.trailBadges.year} finished={u.trailBadges.finished} first={u.trailBadges.first} language={language ?? 'en'} />
+            <div style={{ fontSize: 12, color: 'var(--warm-text-muted)', fontWeight: 600, marginTop: 8 }}>{t('quest.badgesHint')}</div>
+          </div>
+        )}
         <div style={grid}>{[...ladders].map(([metric, steps]) => renderLadder(metric, steps))}</div>
         <div style={grid}>{singles.map(renderBadge)}</div>
       </div>

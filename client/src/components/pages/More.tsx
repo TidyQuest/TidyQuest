@@ -6,11 +6,12 @@ import { useTranslation } from '../../hooks/useTranslation';
 import { formatCoins } from '../../utils/format';
 import { navLabelKey, phoneNav } from '../layout/navItems';
 import type { User } from '../../hooks/useAuth';
+import type { FeatureFlags } from '../../hooks/useApi';
 
 /** The phone's More tab: your profile, and the pages that aren't on the bottom bar (ENH-24) */
-export function More({ user, gamificationEnabled = true }: { user: User; gamificationEnabled?: boolean }) {
+export function More({ user, gamificationEnabled = true, features }: { user: User; gamificationEnabled?: boolean; features?: Partial<FeatureFlags> }) {
   const { t } = useTranslation(user.language);
-  const { more } = phoneNav(user, gamificationEnabled);
+  const { more } = phoneNav(user, gamificationEnabled, features);
   const row = { display: 'flex', alignItems: 'center', gap: 12, minHeight: 54, padding: '0 16px', textDecoration: 'none', color: 'var(--warm-text)' } as const;
 
   return (

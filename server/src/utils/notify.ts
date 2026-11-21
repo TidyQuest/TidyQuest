@@ -200,8 +200,10 @@ async function deliver(userId: number | null, kind: string, message: string, ded
   return any;
 }
 
-async function sendOrHold(person: Person | null, kind: NotifyKind, message: string, dedupeKey: string | null, now: Date, lasting: Lasting): Promise<boolean> {
-  const until = holdUntil(person, now);
+async function sendOrHold(person: Person | null, kind: NotifyKind, message: string, dedupeKey: string | null, now: Date, lasting: Lasting & { notBefore?: Date }): Promise<boolean> {
+  // notBefore: a message that waits a little whatever the hour (FIX-37: a grown-up's Done they can still hand on)
+  const quiet = holdUntil(person, now);
+  const until = lasting.notBefore && lasting.notBefore > now && (!quiet || lasting.notBefore > quiet) ? lasting.notBefore : quiet;
   if (until) {
     db.prepare('INSERT INTO notification_queue (userId, kind, message, notBefore, dedupeKey, expiresAt, onlyIf) VALUES (?, ?, ?, ?, ?, ?, ?)')
       .run(person?.id ?? null, kind, message, until.toISOString(), dedupeKey, lasting.expiresAt?.toISOString() ?? null, lasting.onlyIf ? JSON.stringify(lasting.onlyIf) : null);
@@ -258,7 +260,7 @@ function resolve(audience: Audience, people: Person[]): Person[] {
  * dedupeKey, anyone who already got it isn't sent it again. `expiresAt` and `onlyIf` say how long it's
  * worth sending if it has to wait out quiet hours.
  */
-export async function notifyPeople(audience: Audience, kind: NotifyKind, build: Builder, options: { now?: Date; dedupeKey?: string } & Lasting = {}): Promise<void> {
+export async function notifyPeople(audience: Audience, kind: NotifyKind, build: Builder, options: { now?: Date; dedupeKey?: string; notBefore?: Date } & Lasting = {}): Promise<void> {
   if (!notificationsOn(kind)) return;
   const now = options.now ?? new Date();
   const dedupeKey = options.dedupeKey ?? null;

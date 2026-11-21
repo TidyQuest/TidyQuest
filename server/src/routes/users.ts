@@ -26,6 +26,7 @@ import { isHosted } from '../hosted/context';
 import { removeAccount } from '../hosted/accounts';
 import { fileUrl, oneFile, removeFile, uploadDir } from '../hosted/files';
 import { NTFY_ONLY_ERROR, filesFullError, ntfyServerAllowed, overFilesLimit, tooManyPeople } from '../hosted/limits';
+import { grownUpDoneSetting, setGrownUpDone } from '../utils/grownUpDone';
 
 const router = Router();
 router.use(authMiddleware);
@@ -941,6 +942,17 @@ router.put('/time-zone', (req: AuthRequest, res: Response) => {
   const first = weekStartDay();
   for (const userId of realignWeeklyGoals(first, first, new Date(), old, familyZone())) syncPrimaryGoal(userId);
   res.json({ timeZone: familyZone(), timeZoneSet: zone !== null });
+});
+
+// FIX-37: what a grown-up's Done on a chore anyone can do does ('mine' or 'ask'; null = automatic)
+router.get('/grown-up-done', (_req: AuthRequest, res: Response) => res.json(grownUpDoneSetting()));
+
+router.put('/grown-up-done', (req: AuthRequest, res: Response) => {
+  if (!ensureAdmin(req.userId)) return res.status(403).json({ error: 'Admin only' });
+  const { value } = req.body as { value?: unknown };
+  if (value !== null && value !== 'mine' && value !== 'ask') return res.status(400).json({ error: 'invalid_value' });
+  setGrownUpDone(value);
+  res.json(grownUpDoneSetting());
 });
 
 router.get('/strict-mode-config', (req: AuthRequest, res: Response) => {

@@ -35,7 +35,7 @@ router.get('/', (req: AuthRequest, res: Response) => {
   if (q) { where.push("t.name LIKE ? ESCAPE '\\'"); params.push(`%${q.replace(/[\\%_]/g, (c) => `\\${c}`)}%`); }
 
   const rawHistory = db.prepare(`
-    SELECT tc.id, tc.completedAt, tc.coinsEarned, tc.taskId, tc.approvalNote, tc.approvedByUserId, ab.displayName as approvedByName, tc.teamupId, tc.loggedAt, tc.note, tc.photoUrl,
+    SELECT tc.id, tc.completedAt, tc.coinsEarned, tc.taskId, tc.approvalNote, tc.approvedByUserId, ab.displayName as approvedByName, tc.markedByUserId, mb.displayName as markedByName, tc.teamupId, tc.loggedAt, tc.note, tc.photoUrl,
            t.name as taskName, t.translationKey, t.roomId, t.assignmentMode, (t.effort >= ${TREAT_EFFORT}) AS mascotCheers,
            r.name as roomName, r.roomType,
            u.id as userId, u.displayName, u.avatarColor, u.avatarType, u.avatarPreset, u.avatarPhotoUrl
@@ -44,6 +44,7 @@ router.get('/', (req: AuthRequest, res: Response) => {
     JOIN rooms r ON t.roomId = r.id
     JOIN users u ON tc.userId = u.id
     LEFT JOIN users ab ON tc.approvedByUserId = ab.id
+    LEFT JOIN users mb ON tc.markedByUserId = mb.id
     WHERE ${where.join(' AND ')}
     ORDER BY tc.completedAt DESC
   `).all(...params) as any[];
@@ -94,7 +95,11 @@ router.get('/', (req: AuthRequest, res: Response) => {
   // "Approved by": only when someone else approved it (a parent's own chores approve themselves)
   for (const h of filtered) {
     if (!h.approvedByUserId || h.approvedByUserId === h.userId || h.participants?.some((p: any) => p.id === h.approvedByUserId)) h.approvedByName = null;
+    // Marked done for them by a grown-up (FIX-37): that says it all, so no "Approved by" as well
+    if (!h.markedByUserId || h.markedByUserId === h.userId) h.markedByName = null;
+    else if (h.markedByUserId === h.approvedByUserId) h.approvedByName = null;
     delete h.approvedByUserId;
+    delete h.markedByUserId;
   }
 
   // Proof photos and notes: parents see everyone's; others only their own (photos of kids aren't for

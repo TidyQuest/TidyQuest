@@ -9,18 +9,18 @@ export interface HomeLayout { order: string[]; hidden: string[] }
  */
 export const TODAY_BLOCKS = [
   'mascot', 'rescue', 'houseHealth', 'holiday', 'level', 'streak', 'myGoal', 'childrenGoals', 'pendingApprovals',
-  'teamups', 'focus', 'usual', 'todo', 'leaderboard',
+  'teamups', 'focus', 'usual', 'todo', 'leaderboard', 'quest',
 ] as const;
 export type TodayBlockId = typeof TODAY_BLOCKS[number];
 
 /** Kid mode keeps Today to the essentials: kids can hide these (the rest isn't shown to them) */
-export const KID_BLOCKS: ReadonlySet<string> = new Set(['mascot', 'rescue', 'holiday', 'level', 'streak', 'myGoal', 'teamups', 'focus', 'usual', 'todo', 'leaderboard']);
+export const KID_BLOCKS: ReadonlySet<string> = new Set(['mascot', 'rescue', 'holiday', 'level', 'streak', 'myGoal', 'teamups', 'focus', 'usual', 'todo', 'leaderboard', 'quest']);
 
 /**
  * The full-width blocks under the summary, in their default order. Customise can move these (the summary stays on top
  * and the chips stay in one row). 'lists' (Overdue / Today / Any time) can be moved but not hidden.
  */
-export const TODAY_ORDER = ['pendingApprovals', 'teamups', 'focus', 'lists', 'todo', 'leaderboard'] as const;
+export const TODAY_ORDER = ['pendingApprovals', 'quest', 'teamups', 'focus', 'lists', 'todo', 'leaderboard'] as const;
 export type TodayOrderId = typeof TODAY_ORDER[number];
 
 /**

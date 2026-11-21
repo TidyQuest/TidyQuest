@@ -9,6 +9,133 @@ What changed in each release, in plain language, newest first. Releases up to v0
 
 ## Unreleased
 
+### Added
+
+- **Quest Trail, part 1: the game's rules on the server** (NEW-40). Quest Trail is a board game the family plays over
+  a month: each day you do a chore earns a star (and a bonus star for 3 or more chores that day), each star is a roll
+  of the die, and everyone races along a trail to the finish. This part keeps score and plays the game: it makes
+  the month's trail, rolls the die on the server, and handles coin spaces, shortcuts, slides, chore cards, mascot
+  treats, high fives, the finish and the first-place prize, and it rolls any leftover stars when the month ends. It
+  has a switch under Settings → Features (on by default).
+- **Quest Trail, part 2: the map, the Today card and the end of the month** (NEW-40). Tap the new Quest Trail card
+  on Today, or Quest Trail in the menu (under More on a phone), to open the map: the month's world drawn as an adventure map with everyone's piece showing their own avatar, the die and your stars at the
+  bottom, a map key, and a card saying what each roll did. The Today card shows the stars waiting to be rolled, where
+  everyone is on the trail and today's two stars; Customise can hide or move it. The first time someone opens the app
+  in a new month, a screen shows who won last month, everyone's place, their trail badges and the new world.
+  Parents set the prize, trail length, time of day and fog in Settings → Quest Trail (part 3).
+- **A Quest Trail world for every month** (NEW-40): the Snowy Summit (January), the Frozen Lake, the Rainy Meadow,
+  the Blossom Trail, the Kite Hills, Lakeside Camp, Sunny Shores, the Sunflower Prairie, the Apple Orchard, the
+  Treehouse Woods, the Misty Hollow and the Winter Village (December), each with its own scenery, weather, finish,
+  shortcut and slide. The top and bottom of each map blend into the months before and after it: the ground colour,
+  scenery, weather and trail fade from one world into the next, last month's finish shows in the distance behind
+  the start, and an "On to December" sign stands past the finish.
+- **Quest Trail badges you can see all year, and a crown for the winner** (ENH-44). Each month you reach the
+  finish, that month's finish (the barn, the mill, the treehouse…) lights up as a badge, with a crown 👑 on the
+  months you came first. Your trail badges stay on the Achievements page (everyone's, for parents), and a new
+  medal button at the top of the Quest Trail map shows yours. Last month's winner wears a crown on the race strip
+  of the Quest Trail card on Today (kid mode too) and on the map, until someone wins another month.
+- **"Done for someone…"** (FIX-37). A new button in an opened chore lets parents and members pick who did a chore
+  before marking it done, assigned or not. The person gets a notification ("Dad marked … done for you"), and Activity
+  says "Marked done by Dad".
+- **A family setting for a grown-up's Done** (FIX-37): Settings → General → "When a grown-up taps Done on a chore
+  anyone can do", with *Count it as mine (with Change)* or *Always ask who did it*. Until a parent picks one, families
+  with someone who can't log in are always asked, and other families get "Count it as mine".
+- **Quest Trail, part 3: Settings → Quest Trail** (NEW-40). Parents turn the game on or off, give someone a star by
+  hand, pick the first-place prize (a reward, coins or both; "Prize only for kids"), the coins for everyone who
+  finishes and per star after the finish, the trail's length (automatic or fixed), and the map's time of day and fog.
+- **Two Quest Trail alerts** (NEW-40): "3 days left" in the evening two days before the month ends (to everyone still
+  on the way who isn't on vacation), and last month's results with the morning list on the 1st. They come as Nudges
+  and Summaries, so the existing switches and quiet hours apply.
+- **Quest Trail in Kid mode** (NEW-40): the Today card gets a big Roll! button that rolls right there, with See the
+  map underneath; each roll shows a picture and two or three words, and today's two stars are big and fill in. On
+  the map page, results are a big picture and a few words.
+- **Quest Trail in the guide** (Settings → Guide & help → Game extras), with two troubleshooting answers, in all six
+  languages.
+- **Roll for someone who doesn't sign in** (Quest Trail, NEW-40): **🎲 Roll** next to them in Settings → Quest Trail
+  opens the map with their die, and their piece walks while they watch.
+- **Quest Trail shows chores waiting for a parent's OK** (NEW-40): under Strict Mode the Today card (and Kid mode's)
+  says "⏳ 2 waiting for a grown-up's OK", so a kid can see their chores counted.
+
+- **What's new: Quest Trail** (NEW-40). After the update, everyone gets a few slides introducing the Quest Trail
+  the first time they open the app: where to find it, how stars and rolls work, and who wins. Parents get one more
+  slide about Settings → Quest Trail, and kids in Kid mode get a shorter set. They only show while the family has the
+  game switched on. Someone who missed the new-look slides too sees both, one after the other.
+- **The Quest Trail map fills a computer or tablet screen** (NEW-40). On a page wider than a phone the map is drawn
+  as wide as the page (up to 1000 pixels), with the trail zigzagging from side to side in long, gently sloping runs,
+  so about twice as much of the month fits on screen. The streams cross where the trail turns, the title, map key and
+  compass sit in one row along the top, and the die stays a phone-sized bar in the middle. Resizing the window redraws
+  it. Phones keep the map exactly as it was.
+
+### Changed
+
+- **Quest Trail never takes a star back after a roll** (NEW-40): every roll keeps the stars earned so far, so a Done
+  taken back afterwards takes nothing back (before, the next star paid it back). A Done taken back before the next
+  roll still takes its star with it.
+- **Leftover Quest Trail stars at the end of the month are rolled in a random order each round** (NEW-40), so the same
+  person doesn't always reach the finish first.
+- **Each Quest Trail world winds its own way on a computer or tablet** (ENH-35). The wide map used to zigzag the same
+  way every month. Now the trail climbs the Snowy Summit in tight hairpins, sweeps round the Frozen Lake in wide
+  curves, meanders through the Rainy Meadow, leans with the wind on the Kite Hills and runs long and flat along Sunny
+  Shores, and some worlds take a double bend now and then. Streams still cross where the trail turns. Phones keep
+  the map exactly as it was.
+- **The Quest Trail map looks more like a real board game** (ENH-37, ENH-38, ENH-40). One sun lights every world from
+  the top left: trees, rocks, houses, animals, gates and finish buildings have a lit side, a shaded side and a soft
+  shadow, hills look raised and lakes sunk. The ground has a faint texture of its own in each world (snow sparkle, ice
+  glints, wet grass, petals, daisies, pine needles, sand ripples, dry grass, fallen leaves, moss) that fades into the
+  next month's. Coloured spaces are shiny tokens with a thick edge and plain ones are grainy stepping stones, in the
+  fog and the map key too. Nothing on the map moves.
+- **Quest Trail finishing touches** (ENH-45): falling leaves, snow and confetti now fall below the spaces, signs and
+  pieces and never across a name or sign; the chequered finish line goes across the trail between the last space and
+  the trophy on every screen (on a tablet it could cut slantwise across the trophy); and a roll that lands on a plain space shows a pair of
+  footprints on its result card instead of an almost empty white box.
+
+### Fixed
+
+- **The Quest Trail fog covers the whole trail ahead** (NEW-40). It used to lift six or more spaces before the finish,
+  so on a short trail only a band in the middle was hidden. Now it reaches down to the finish line; the finish, its
+  sign and its balloons stay in sight as the goal.
+- **The Quest Trail map no longer scrolls sideways on a 390-pixel phone** (NEW-40): it was 5 pixels too wide.
+- **A reward hidden in the shop can be the Quest Trail prize** (NEW-40): the winner used to get only the coins. Settings
+  marks it "(hidden in the shop)", for a prize kept just for the Quest Trail.
+- **The prize sign at the Quest Trail finish says who won it** (NEW-40) instead of still offering the prize.
+- **Quest Trail pieces point at their own space** (NEW-40): the pin rests on the space, people sharing a space stand
+  close in two rows, everyone on Start stays clear of the map key, and the shortcut and slide names and the next-roll
+  die faces keep off the spaces and their numbers.
+- **The Quest Trail card on Today** keeps whoever finished in sight by the 🏆, puts people on the same space side by
+  side, and says "Cylis has finished" instead of "Cylis is 24 ahead".
+- **The back arrow on the Quest Trail map** goes to Today when the page was opened by itself (it did nothing).
+- **No holiday leaves or snow fall over the Quest Trail map**, which has its own.
+- **Quest Trail shortcut and slide names stay off the spaces** (BUG-59). On a phone a name like "Mud slide to 29" could
+  sit partly under a space or its number, most often on a short trail. It now looks further along and beside its line,
+  and never covers a space, a number or another name.
+- **Quest Trail signposts stay off the spaces' numbers on a phone** (BUG-60): "Halfway!" and "29 to go" no longer cover
+  the small number under a coloured space.
+- **Quest Trail signs no longer stand on top of each other** (FIX-38): a place name and a signpost (like "Moss Hollow"
+  over "Halfway!") could look like one double sign. Signs now keep about a sign's height apart wherever there's room,
+  and stream names have more places to go, so on a phone they're missing less often.
+- **Quest Trail pieces and the roll's die faces no longer cover the map's labels or each other** (FIX-41). A piece
+  standing by a sign, a shortcut name or "Start" now steps a little aside or stands a little taller, its pin still
+  pointing at its own space, and everyone waiting at Start keeps the "Start" label readable. The small die faces beside
+  the next six spaces now also keep clear of the pieces, signs, Start/Finish and the spaces' numbers.
+- **Two people on one Quest Trail space clearly stand on the same space** (BUG-63). They now stand side by side above
+  it with their pins angled onto it (every other one a step higher when their names would touch), instead of one
+  standing behind the other so that its pin seemed to point at the space before. Names are no longer cut short.
+- **A parent ticking off a chore anyone can do for a kid no longer has to keep the coins** (FIX-37). Done still counts
+  as the grown-up's, but a bar now says "… counted as yours" with **Change** for about 10 seconds (longer while
+  you're on it). Change gives the chore to whoever really did it: coins, streak, turn and any badge that Done earned
+  move to them, and nothing is left with the grown-up. The grown-up's badge notification waits a minute, so it doesn't
+  go out for a chore they hand on. A grown-up alone with nobody else to give it to doesn't see the bar.
+- **The Quest Trail's end-of-month screen opens at the top** (BUG-61): it used to start partway down, with the trophy
+  (and on a computer the "… is over" line) out of sight. On a computer its "See the new trail" button now has its
+  label in the middle (BUG-62).
+- **The progress bar beside the Quest Trail map no longer covers the map** (FIX-40). On a computer or tablet it has its
+  own strip beside the map; on a phone the map key and compass sit in from the edge so the bar runs clear of them, and
+  its top dot no longer hides under the page header.
+- **A parent rolling for someone sees that person's progress on the side bar** (BUG-64): the blue part and the bigger
+  dot now follow whoever's turn it is, not the parent.
+- **The days left fit in the Quest Trail header on small phones** (FIX-42): on a phone they get their own line under
+  the month's world, so they're never cut off or split.
+
 ## v0.19.0 (2026-11-17)
 
 ### Added

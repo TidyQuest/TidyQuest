@@ -25,6 +25,7 @@ import { cosmetics, unlocksFor } from '../utils/unlocks';
 import { mascotFor, TREAT_EFFORT } from '../utils/mascot';
 import { dataVersion } from '../utils/changes';
 import { groupTeamPending, teamUpContext, teamUpInfo, teamupsFor } from '../utils/teamups';
+import { grownUpDoneSetting } from '../utils/grownUpDone';
 
 const router = Router();
 router.use(authMiddleware);
@@ -375,6 +376,8 @@ router.get('/', (req: AuthRequest, res: Response) => {
     pendingRewardRequests,
     pendingCompletions: pendingCompletionsGrouped,
     strictMode: isStrictModeEnabled(),
+    // What a grown-up's Done on a chore anyone can do does (FIX-37)
+    grownUpDone: grownUpDoneSetting(),
     // The setup wizard opens by itself for a parent until the family has rooms (NEW-17)
     setupNeeded: user.role === 'admin' && setupNeeded(),
     // Double coins events running now (Home shows a banner and the boosted amounts)
