@@ -58,7 +58,8 @@ export const META: Record<SpaceKind, { bg: string; fg: string; dark: string }> =
   high: { bg: '#E7F1FB', fg: '#1971C2', dark: '#145A9C' },
 };
 export const ICONS: Record<string, string> = {
-  plain: 'M12 9a3 3 0 100 6 3 3 0 100-6z',
+  // A pair of footprints (Lucide's "footprints", ISC): a roll onto a plain space shows them on its result card (ENH-45)
+  plain: 'M4 16v-2.38C4 11.5 2.97 10.5 3 8c.03-2.72 1.49-6 4.5-6C9.37 2 10 3.8 10 5.5c0 3.11-2 5.66-2 8.68V16a2 2 0 11-4 0zM20 20v-2.38c0-2.12 1.03-3.12 1-5.62-.03-2.72-1.49-6-4.5-6C14.63 6 14 7.8 14 9.5c0 3.11 2 5.66 2 8.68V20a2 2 0 104 0zM16 17h4M4 13h4',
   start: 'M5 21V4M5 4h11l-2 4 2 4H5',
   finish: 'M8 4h8v5a4 4 0 01-8 0V4zM8 6H5a3 3 0 003 4M16 6h3a3 3 0 01-3 4M12 13v4M8 20h8',
   coins: 'M12 4a8 8 0 100 16 8 8 0 100-16zM12 8.5a3.5 3.5 0 100 7 3.5 3.5 0 100-7z',
@@ -99,6 +100,8 @@ interface Curve { A: Pt; C1: Pt; C2: Pt; Z: Pt }
 export type Built = Record<string, any> & {
   N: number; H: number; Y1: number; len: number; at: (s: number) => Pt;
   discs: any[]; routes: (Curve & { from: number; to: number })[];
+  /** Every text on the map (banner, key, prize sign, Start/Finish, tags, signs), as boxes */
+  textRects: { x1: number; y1: number; x2: number; y2: number }[];
 };
 const CACHE = new Map<string, Built>();
 
@@ -522,6 +525,9 @@ export function buildTrail(key: WorldKey, N: number, spaces: Record<number, MapS
   // Signs (place names, signposts, "On to …") keep about a sign's height apart, so two never read as one double sign.
   // signRoom: the room to the nearest sign, 1 or more when it's enough (14 px beside it, 26 px above or below).
   const signRects: any[] = [];
+  // Every text on the map (banner, key, prize sign, Start/Finish, tags, signs): the pieces, die faces and falling
+  // particles keep off them (TrailMap.tsx, FIX-41 and ENH-45)
+  const textRects: any[] = [];
   const signRoom = (b: any) => signRects.reduce((m, q) => Math.min(m, Math.max(Math.max(q.x1 - b.x2, b.x1 - q.x2) / 14, Math.max(q.y1 - b.y2, b.y1 - q.y2) / 26)), Infinity);
 
   // The title banner (top left), the compass (top right) and the map key: under the banner on a phone, beside the
@@ -533,14 +539,17 @@ export function buildTrail(key: WorldKey, N: number, spaces: Record<number, MapS
   rects.push({ x1: 8, y1: 12, x2: 298, y2: 136 });
   rects.push({ x1: mapW - 92, y1: 8, x2: mapW, y2: 122 });
   rects.push(row ? { x1: keyAt.left - 8, y1: 12, x2: keyAt.left + 366, y2: 232 } : { x1: 8, y1: 136, x2: 382, y2: 336 });
+  textRects.push(rects[0], rects[2]);
   rects.push({ x1: finX - 88, y1: Y1 + 30, x2: finX + 88, y2: Y1 + 206 });
   const prizeLeft = Math.max(14, Math.min(wide ? mapW - 334 : 56, finX - 160));
   rects.push({ x1: prizeLeft - 4, y1: Y1 + 208, x2: prizeLeft + 324, y2: Y1 + 296 });
+  textRects.push(rects[rects.length - 1]);
   const mark = (i: any, text: any, w: any) => {
     // On a wide map the trail can meet Start or the finish from the side: the tag goes on the side away from it
     const p = sp[i], q = sp[i === 0 ? 1 : i - 1], away = wide && Math.abs(q.x - p.x) > rad[i] ? q.x < p.x : p.x < mid;
     const left = away ? p.x + rad[i] + 24 : p.x - rad[i] - 24 - w;
     rects.push({ x1: left - 2, y1: p.y - 15, x2: left + w + 2, y2: p.y + 15 });
+    textRects.push(rects[rects.length - 1]);
     return { text, left: f1(left), top: f1(p.y - 13) };
   };
   const marks = [mark(0, W.start, W.start.length * 8.4 + 16), mark(N, W.finish, W.finish.length * 8.4 + 16)];
@@ -566,10 +575,27 @@ export function buildTrail(key: WorldKey, N: number, spaces: Record<number, MapS
       if (onward) break;
     }
   }
-  const fp = sp[N], pf = at(len - 34), pf2 = at(len - 30);
+  // The chequered finish line goes across the trail between the last space and the finish space (ENH-45): of the
+  // spots along that stretch whose whole line (54 px, across the trail) keeps off the "Finish" tag, the one with the
+  // most room to both spaces, so a trail coming in from the side or round a bend never lays it over either.
+  const fp = sp[N], lp = sp[N - 1];
+  const finTag = { x1: marks[1].left - 4, y1: marks[1].top - 4, x2: marks[1].left + W.finish.length * 8.4 + 20, y2: marks[1].top + 30 };
+  const lineAt = (s: number) => {
+    const a = at(s - 2), b = at(s + 2), c = at(s);
+    const L = Math.hypot(b.x - a.x, b.y - a.y) || 1, nx = -(b.y - a.y) / L, ny = (b.x - a.x) / L;
+    // the line's nearest point to a space's centre, less that space's size
+    const room = (p: any, r: number) => {
+      const t = Math.max(-27, Math.min(27, (p.x - c.x) * nx + (p.y - c.y) * ny));
+      return Math.hypot(c.x + nx * t - p.x, c.y + ny * t - p.y) - r;
+    };
+    const ex = Math.abs(nx) * 27 + 5, ey = Math.abs(ny) * 27 + 5;
+    const tagFree = c.x - ex >= finTag.x2 || c.x + ex <= finTag.x1 || c.y - ey >= finTag.y2 || c.y + ey <= finTag.y1;
+    return { c, rot: Math.atan2(b.y - a.y, b.x - a.x) * 180 / Math.PI + 90, score: Math.min(room(fp, rad[N]), room(lp, rad[N - 1] + 6)) - (tagFree ? 0 : 1000) };
+  };
+  let fl = lineAt(len - rad[N] - 8);
+  for (let s = len - rad[N] - 8; s > len * (N - 1) / N; s -= 2) { const q = lineAt(s); if (q.score > fl.score) fl = q; }
   const party = {
-    lineLeft: f1((pf.x + pf2.x) / 2 - 27), lineTop: f1((pf.y + pf2.y) / 2 - 5),
-    lineRot: f1(Math.atan2(pf2.y - pf.y, pf2.x - pf.x) * 180 / Math.PI + 90),
+    lineLeft: f1(fl.c.x - 27), lineTop: f1(fl.c.y - 5), lineRot: f1(fl.rot),
     bx: 0, by: 0, confetti: [] as any[]
   };
   const sides = fp.x < mid ? [-77, -96, 31, 50] : [31, 50, -77, -96];
@@ -1007,6 +1033,7 @@ export function buildTrail(key: WorldKey, N: number, spaces: Record<number, MapS
     seed: 'M0 -6L0.5 -0.5L6 0L0.5 0.5L0 6L-0.5 0.5L-6 0L-0.5 -0.5Z M-1.4 0a1.4 1.4 0 1 0 2.8 0a1.4 1.4 0 1 0 -2.8 0Z'
   };
   const particles: any[] = [];
+  textRects.push(...signRects, ...pillRects);
   for (let i = 0, n = wide ? Math.round(60 * kx * 0.8) : 60; i < n; i++) {
     const dx = Math.round((10 + r() * 30) * (r() < 0.5 ? -1 : 1));
     const x = 8 + r() * (mapW - 16), y = 350 + r() * (H - 450), from = worldAt(y);
@@ -1022,6 +1049,19 @@ export function buildTrail(key: WorldKey, N: number, spaces: Record<number, MapS
       begin: '-' + (r() * 9).toFixed(1) + 's'
     });
   }
+  // Leaves, snow and confetti never fall across a text (ENH-45): one whose path would cross one moves a little
+  // sideways (or up or down) to where it doesn't, or is left out when there's no such place nearby. Its box is the
+  // particle (size × size from x, y) swept along its move. Done after they're all made, so the rest stays the same.
+  const clearParticles = particles.flatMap((q) => {
+    const [mx, my] = q.move.split(';')[1].split(' ').map(Number);
+    for (const [ox, oy] of [[0, 0], [40, 0], [-40, 0], [80, 0], [-80, 0], [0, -70], [0, 70], [120, 0], [-120, 0], [40, -70], [-40, 70]]) {
+      const x = q.x + ox, y = q.y + oy;
+      const b = { x1: x + Math.min(0, mx) - 2, y1: y + Math.min(0, my) - 2, x2: x + q.size + Math.max(0, mx) + 2, y2: y + q.size + Math.max(0, my) + 2 };
+      if (x < 4 || x + q.size > mapW - 4 || y < 340 || !textRects.every((t) => t.x1 >= b.x2 || t.x2 <= b.x1 || t.y1 >= b.y2 || t.y2 <= b.y1)) continue;
+      return [ox || oy ? { ...q, x: f1(x), y: f1(y) } : q];
+    }
+    return [];
+  });
 
   // The spaces: plain ones show their number, coin spaces how many coins
   const discs = sp.map((p, i) => {
@@ -1139,7 +1179,7 @@ export function buildTrail(key: WorldKey, N: number, spaces: Record<number, MapS
   ];
 
   const B = {
-    N, H, pts, len, at, discs, pills, marks, labels, lms, signs, patches, particles, scenery: items, trailD, con, mapKey,
+    N, H, pts, len, at, discs, pills, marks, labels, lms, signs, patches, particles: clearParticles, textRects, scenery: items, trailD, con, mapKey,
     routes: routes.map((R) => ({ from: R.from, to: R.to, A: R.A, C1: R.C1, C2: R.C2, Z: R.Z })),
     water1: streams[0].d, water2: streams[1].d, bridge1: streams[0].bridge, bridge2: streams[1].bridge,
     fin: { left: f1(finX - 85), top: Y1 + 40 },

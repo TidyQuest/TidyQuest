@@ -84,6 +84,10 @@ What changed in each release, in plain language, newest first. Releases up to v0
   glints, wet grass, petals, daisies, pine needles, sand ripples, dry grass, fallen leaves, moss) that fades into the
   next month's. Coloured spaces are shiny tokens with a thick edge and plain ones are grainy stepping stones, in the
   fog and the map key too. Nothing on the map moves.
+- **Quest Trail finishing touches** (ENH-45): falling leaves, snow and confetti now fall below the spaces, signs and
+  pieces and never across a name or sign; the chequered finish line goes across the trail between the last space and
+  the trophy on every screen (on a tablet it could cut slantwise across the trophy); and a roll that lands on a plain space shows a pair of
+  footprints on its result card instead of an almost empty white box.
 
 ### Fixed
 
@@ -109,6 +113,13 @@ What changed in each release, in plain language, newest first. Releases up to v0
 - **Quest Trail signs no longer stand on top of each other** (FIX-38): a place name and a signpost (like "Moss Hollow"
   over "Halfway!") could look like one double sign. Signs now keep about a sign's height apart wherever there's room,
   and stream names have more places to go, so on a phone they're missing less often.
+- **Quest Trail pieces and the roll's die faces no longer cover the map's labels or each other** (FIX-41). A piece
+  standing by a sign, a shortcut name or "Start" now steps a little aside or stands a little taller, its pin still
+  pointing at its own space, and everyone waiting at Start keeps the "Start" label readable. The small die faces beside
+  the next six spaces now also keep clear of the pieces, signs, Start/Finish and the spaces' numbers.
+- **Two people on one Quest Trail space clearly stand on the same space** (BUG-63). They now stand side by side above
+  it with their pins angled onto it (every other one a step higher when their names would touch), instead of one
+  standing behind the other so that its pin seemed to point at the space before. Names are no longer cut short.
 - **A parent ticking off a chore anyone can do for a kid no longer has to keep the coins** (FIX-37). Done still counts
   as the grown-up's, but a bar now says "… counted as yours" with **Change** for about 10 seconds (longer while
   you're on it). Change gives the chore to whoever really did it: coins, streak, turn and any badge that Done earned

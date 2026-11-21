@@ -3,12 +3,14 @@ import { UserAvatar } from '../shared/UserAvatar';
 import { buildTrail, circ, ell, f1, monthPlus, pips, rng, THEMES, worldFor, type MapSpace, type MapWords, type WorldKey } from './trailBuild';
 import { FINISHES, GATES } from './worldArt';
 import { balloonsHtml, baseHtml, discsHtml, fogHtml, marksHtml, particlesHtml, prizeHtml, reachDiceHtml, reachRingsHtml, topHtml } from './trailArt';
+import { layoutPieces, placeDice, tokenSize, type Box, type PieceAt } from './pieceLayout';
 import type { QuestPlayer } from './types';
 
 /**
  * The month's adventure map (Quest Trail, NEW-40), as drawn in the mock-ups: 390 px wide on a phone (wider on a
  * bigger screen, `width`) and as tall as the trail needs. The world is built once (trailBuild.ts) and drawn as HTML layers (trailArt.ts); the pieces, footprints,
- * the next-roll glow and the fog are drawn on top from the players' positions.
+ * the next-roll glow and the fog are drawn on top from the players' positions (pieceLayout.ts keeps the pieces and die
+ * faces off the texts and each other). Falling leaves and snow go just above the ground, below every space, sign and piece.
  */
 
 export const MAP_WIDTH = 390;
@@ -103,7 +105,9 @@ function TrailMapImpl({ width, world, month, length, spaces, players, meId, acti
     };
     return {
       T,
-      base: baseHtml(V), discs: discsHtml(V), marks: marksHtml(V), balloons: balloonsHtml(V), top: topHtml(V), particles: particlesHtml(V),
+      base: baseHtml(V), discs: discsHtml(V), marks: marksHtml(V), balloons: balloonsHtml(V), top: topHtml(V),
+      // The particles without the frame (they fall below the spaces, signs and pieces, ENH-45), and the frame alone on top
+      particles: particlesHtml({ ...V, show: { ...V.show, frame: false } }), frame: particlesHtml({ ...V, particles: [] }),
       prize: texts.prize ? prizeHtml(V) : '',
     };
   }, [B, T0, world, timeOfDay, texts]);
@@ -129,27 +133,38 @@ function TrailMapImpl({ width, world, month, length, spaces, players, meId, acti
     return parts.join('');
   }, [B, active, you]);
 
-  // The name tags of the shortcuts and slides and the finish balloons, so the die faces below never cover one
-  const pillBoxes = useMemo(() => [...B.pills.map((q: { left: number | string; top: number | string; text: string }) => {
-    const w = q.text.length * 6.6 + 30, x = Number(q.left), y = Number(q.top);
-    return { x1: x - w / 2, y1: y - 12, x2: x + w / 2, y2: y + 12 };
-  }), { x1: Number(B.party.bx), y1: Number(B.party.by), x2: Number(B.party.bx) + 44, y2: Number(B.party.by) + 74 }], [B]);
+  // Where every piece stands: people on one space side by side with their pins angled onto it, and every piece's tag
+  // and token off the map's texts and the other pieces (pieceLayout.ts). The active piece in mid-jump follows its line.
+  const pieces = useMemo(() => {
+    let fixed: { id: number; x: number; foot: number } | null = null;
+    if (active && jumping && jump) {
+      const R = B.routes.find((q) => q.from === jump.from && q.to === jump.to);
+      if (R) {
+        const t = jump.t, u = 1 - t, a1 = u * u * u, a2 = 3 * u * u * t, a3 = 3 * u * t * t, a4 = t * t * t;
+        fixed = { id: active.userId, x: a1 * R.A.x + a2 * R.C1.x + a3 * R.C2.x + a4 * R.Z.x, foot: a1 * R.A.y + a2 * R.C1.y + a3 * R.C2.y + a4 * R.Z.y };
+      }
+    }
+    const at = layoutPieces(B, players.map((p) => ({
+      id: p.userId, pos: Math.max(0, Math.min(B.N, p.userId === activeId ? you : p.position)), mine: p.userId === meId,
+      label: p.userId === meId ? texts.you : p.displayName, active: p.userId === activeId,
+    })), fixed);
+    return new Map(at.map((a) => [a.id, a]));
+  }, [B, players, activeId, meId, you, jumping, jump, active, texts.you]);
 
-  // The six spaces the next roll can reach, each with its die face (beside the space, wherever no tag is)
+  // The six spaces the next roll can reach, each with its die face beside the space, clear of the texts, numbers,
+  // pieces and the finish balloons
   const reachLayers = useMemo(() => {
     if (!reach || jumping || !active) return null;
-    const rings = [], dice: { left: number | string; top: number | string; pips: string }[] = [];
-    const taken = (x: number, y: number) => [...pillBoxes, ...dice.map((z) => ({ x1: Number(z.left), y1: Number(z.top), x2: Number(z.left) + 19, y2: Number(z.top) + 19 }))]
-      .some((b) => b.x1 < x + 19 && b.x2 > x && b.y1 < y + 19 && b.y2 > y);
+    const rings = [];
     for (let k = 1; k <= 6 && you + k <= B.N; k++) {
       const d = B.discs[you + k], size = d.size + 18;
       rings.push({ left: f1(d.x - size / 2), top: f1(d.y - size / 2), size, c: size / 2, rr: d.r + 6, begin: '-' + (k * 0.2).toFixed(1) + 's' });
-      const spots = [[d.x + d.r * 0.45, d.y - d.r - 12], [d.x - d.r * 0.45 - 19, d.y - d.r - 12], [d.x + d.r + 2, d.y - 10], [d.x - d.r - 21, d.y - 10]];
-      const [x, y] = spots.find(([a, b]) => !taken(a, b)) ?? spots[0];
-      dice.push({ left: f1(x), top: f1(y), pips: pips(k) });
     }
+    const avoid: Box[] = [...B.textRects, { x1: Number(B.party.bx), y1: Number(B.party.by), x2: Number(B.party.bx) + 44, y2: Number(B.party.by) + 74 }];
+    for (const a of pieces.values()) avoid.push(...a.boxes);
+    const dice = placeDice(B, you, avoid).map((z) => ({ left: f1(z.left), top: f1(z.top), pips: pips(z.k) }));
     return { rings: reachRingsHtml({ reachRings: rings }), dice: reachDiceHtml({ reachDice: dice }) };
-  }, [B, reach, jumping, active, you, pillBoxes]);
+  }, [B, reach, jumping, active, you, pieces]);
 
   // Fog over the trail past whoever is furthest ahead, all the way down to the finish line. Special spaces show
   // through, and the finish stays in sight as the goal (its balloons are drawn above the fog).
@@ -177,16 +192,6 @@ function TrailMapImpl({ width, world, month, length, spaces, players, meId, acti
     });
   }, [B, MW, T0, fogOn, lead, spaces, statics.T, texts.fogTitle, texts.fogSub]);
 
-  // People on the same space crowd round it in two rows, close enough that every pin still points at it. Start
-  // and the finish have room for everyone side by side.
-  const placed = players.map((p) => ({ p, pos: p.userId === activeId ? you : p.position }));
-  const groups = new Map<number, number[]>();
-  placed.forEach(({ p, pos }) => groups.set(pos, [...(groups.get(pos) ?? []), p.userId]));
-  const spot = (id: number, pos: number) => {
-    const g = groups.get(pos) ?? [id], i = g.indexOf(id), roomy = pos <= 0 || pos >= B.N, crowd = g.length > 1 && !roomy;
-    return { dx: g.length > 1 ? (i - (g.length - 1) / 2) * (roomy ? 34 : 24) : 0, back: crowd && i % 2 === 1, crowd };
-  };
-
   return (
     <div role="img" aria-label={texts.aria}
       style={{ position: 'relative', width: MW, height: B.H, overflow: 'hidden', background: B.blend.ground, fontFamily: 'Nunito, system-ui, sans-serif', color: T0.ink }}>
@@ -196,6 +201,7 @@ function TrailMapImpl({ width, world, month, length, spaces, players, meId, acti
           <path d={steps} fill="#1971C2" fillOpacity=".5" />
         </svg>
       )}
+      <Html html={statics.particles} w={MW} h={B.H} />
       {statics.prize && <Html html={statics.prize} w={MW} h={B.H} />}
       {reachLayers && <Html html={reachLayers.rings} w={MW} h={B.H} />}
       <Html html={statics.discs} w={MW} h={B.H} />
@@ -203,52 +209,51 @@ function TrailMapImpl({ width, world, month, length, spaces, players, meId, acti
       <Html html={statics.marks} w={MW} h={B.H} />
       {fogHtmlStr && <Html html={fogHtmlStr} w={MW} h={B.H} />}
       <Html html={statics.balloons} w={MW} h={B.H} />
-      {placed.map(({ p, pos }) => {
-        const mine = p.userId === meId;
-        const d = B.discs[Math.min(B.N, pos)], at = spot(p.userId, pos);
-        // The pin's tip rests on the space (a little higher for the back row), kept inside the map
-        let x = Math.max(24, Math.min(MW - 24, d.x + at.dx)), foot = d.y - 4 - (at.back ? 14 : 0);
-        if (p.userId === activeId && jumping && jump) {
-          const R = B.routes.find((q) => q.from === jump.from && q.to === jump.to);
-          if (R) {
-            const t = jump.t, u = 1 - t, a1 = u * u * u, a2 = 3 * u * u * t, a3 = 3 * u * t * t, a4 = t * t * t;
-            x = a1 * R.A.x + a2 * R.C1.x + a3 * R.C2.x + a4 * R.Z.x;
-            foot = a1 * R.A.y + a2 * R.C1.y + a3 * R.C2.y + a4 * R.Z.y;
-          }
-        }
-        return <Piece key={p.userId} player={p} mine={mine} label={mine ? texts.you : p.displayName} x={x} foot={foot} back={at.back} crowd={at.crowd} />;
+      {players.map((p) => {
+        const mine = p.userId === meId, at = pieces.get(p.userId);
+        return at ? <Piece key={p.userId} player={p} mine={mine} label={mine ? texts.you : p.displayName} at={at} /> : null;
       })}
       <Html html={statics.top} w={MW} h={B.H} />
-      <Html html={statics.particles} w={MW} h={B.H} />
+      <Html html={statics.frame} w={MW} h={B.H} />
     </div>
   );
 }
 
 /**
- * A round token with the person's own avatar (and any frame they unlocked), its name tag above and a pin whose tip
- * rests on the space (`foot`). In a crowd the tags stay short and the back row stands behind the front one.
+ * A round token with the person's own avatar (and any frame they unlocked), its name tag above and a pin from the
+ * token to where it points (`at`, pieceLayout.ts): straight down for a piece on its own, angled onto the space when
+ * people share one. Its box (80 px wide, from the top of the tag to the end of a straight pin) glides when it moves.
  */
-function Piece({ player: p, mine, label, x, foot, back, crowd }: { player: QuestPlayer; mine: boolean; label: string; x: number; foot: number; back?: boolean; crowd?: boolean }) {
-  const size = mine ? 34 : 26;
-  // Tag (its line height and gap), the token with its 2 px padding, the pin: the tip ends `foot`
-  const h = (mine ? 15 : 14) + 3 + size + 4 + 9;
+function Piece({ player: p, mine, label, at }: { player: QuestPlayer; mine: boolean; label: string; at: PieceAt }) {
+  const size = tokenSize(mine), s = size + 4, th = mine ? 15 : 14, top = th + 3 + s;
+  // The pin: a slim white triangle from under the token to its tip, in the piece's own coordinates
+  const tx = at.tipX - at.x, ty = Math.max(at.tipY - at.base, 2);
+  const pl = Math.min(-6, tx - 2), pr = Math.max(6, tx + 2);
+  // The tag above the token, or beside it (pieceLayout.ts moves it there when a sign or tag is in the way above)
+  const gap = s / 2 + (mine ? 3 : 2) + 3;
+  const tagAt: React.CSSProperties = at.tag === 'up' ? { left: 40, top: 0, transform: 'translateX(-50%)' }
+    : { top: th + 3 + s / 2, transform: `translate(${at.tag === 'left' ? '-100%' : '0'}, -50%)`, left: 40 + (at.tag === 'left' ? -gap : gap) };
   return (
     <div data-piece={p.userId} style={{
-      position: 'absolute', left: f1(x - 40), top: f1(foot - h), width: 80, height: h, display: 'flex', flexDirection: 'column', alignItems: 'center',
-      transition: 'left .25s ease-out, top .25s ease-out', zIndex: mine ? 4 : back ? 2 : 3, pointerEvents: 'none',
+      position: 'absolute', left: f1(at.x - 40), top: f1(at.base - top), width: 80, height: top + 9,
+      transition: 'left .25s ease-out, top .25s ease-out', zIndex: mine ? 4 : at.raised ? 2 : 3, pointerEvents: 'none',
     }}>
       <span style={{
-        background: mine ? '#1971C2' : p.avatarColor || '#6B5A4B', color: '#FFFFFF', fontSize: mine ? 11 : 10, fontWeight: 800, lineHeight: mine ? '15px' : '14px',
-        borderRadius: 6, padding: '0 6px', marginBottom: 3, whiteSpace: 'nowrap', maxWidth: crowd ? 46 : 80, overflow: 'hidden', textOverflow: 'ellipsis', boxShadow: '0 1px 2px rgba(0,0,0,.2)',
+        position: 'absolute', ...tagAt,
+        background: mine ? '#1971C2' : p.avatarColor || '#6B5A4B', color: '#FFFFFF', fontSize: mine ? 11 : 10, fontWeight: 800, lineHeight: `${th}px`,
+        borderRadius: 6, padding: '0 6px', whiteSpace: 'nowrap', maxWidth: 80, overflow: 'hidden', textOverflow: 'ellipsis', boxShadow: '0 1px 2px rgba(0,0,0,.2)',
       }}>{label}</span>
-      <span style={{ position: 'relative', display: 'flex' }}>
+      <span style={{ position: 'absolute', left: 40 - s / 2, top: th + 3, display: 'flex' }}>
         {mine && <span className="quest-pulse" aria-hidden="true" />}
         <span style={{ position: 'relative', display: 'flex', padding: 2, borderRadius: '50%', background: '#FFFFFF', boxShadow: `0 0 0 ${mine ? 3 : 2}px ${mine ? '#1971C2' : p.avatarColor || '#6B5A4B'}, 0 2px 4px rgba(0,0,0,.3)` }}>
           <UserAvatar userId={p.userId} name={p.displayName} color={p.avatarColor || '#6B5A4B'} size={size}
             avatarType={p.avatarType ?? undefined} avatarPreset={p.avatarPreset} avatarPhotoUrl={p.avatarPhotoUrl} />
         </span>
       </span>
-      <span aria-hidden="true" style={{ width: 0, height: 0, borderLeft: '6px solid transparent', borderRight: '6px solid transparent', borderTop: '8px solid #FFFFFF', marginTop: 1, filter: 'drop-shadow(0 1px 1px rgba(0,0,0,.25))' }} />
+      <svg aria-hidden="true" width={pr - pl} height={ty} viewBox={`${pl} 0 ${pr - pl} ${ty}`}
+        style={{ position: 'absolute', left: 40 + pl, top, overflow: 'visible', filter: 'drop-shadow(0 1px 1px rgba(0,0,0,.25))' }}>
+        <path d={`M-6 1L6 1L${f1(tx)} ${f1(ty)}Z`} fill="#FFFFFF" strokeLinejoin="round" />
+      </svg>
     </div>
   );
 }
