@@ -4,10 +4,11 @@ import de from '../i18n/de.json';
 import es from '../i18n/es.json';
 import it from '../i18n/it.json';
 import nl from '../i18n/nl.json';
+import ptBR from '../i18n/pt-BR.json';
 
 type TranslationData = typeof en;
 
-const translations: Record<string, TranslationData> = { en, fr, de, es, it, nl };
+const translations: Record<string, TranslationData> = { en, fr, de, es, it, nl, 'pt-BR': ptBR };
 
 export function useTranslation(language: string = 'en') {
   const lang = translations[language] || translations.en;

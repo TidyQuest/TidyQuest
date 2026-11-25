@@ -24,7 +24,7 @@ TidyQuest turns boring chores into quests:
 - **🏆 Leaderboard**: Compete with family members for top position
 - **🎖️ Achievements**: Unlock badges for milestones (100 tasks, 30-day streak, etc.)
 - **📅 Calendar View**: See upcoming due dates at a glance
-- **🌍 Multilingual**: English, French, German, Spanish, Italian
+- **🌍 Multilingual**: English, French, German, Spanish, Italian, Dutch and Brazilian Portuguese
 - **📱 Notifications**: Optional reminders as phone notifications from the app itself (web push), or via Telegram, ntfy or Home Assistant
 
 Perfect for families who want to:
@@ -181,7 +181,7 @@ On first launch, the database is empty. Create an admin account via the **Regist
 - **60+ Predefined Tasks**: Common household chores with realistic frequencies
 - **10 Preset Rewards**: Movie night, ice cream, stay up late, game time, etc.
 - **12 Achievements**: Unlocked automatically based on activity
-- **6 Languages**: English, French, German, Spanish, Italian and Dutch
+- **7 Languages**: English, French, German, Spanish, Italian, Dutch and Brazilian Portuguese
 
 ---
 

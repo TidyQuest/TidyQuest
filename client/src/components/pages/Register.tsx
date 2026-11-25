@@ -1,5 +1,7 @@
 import { useState } from 'react';
+import { LANGUAGES } from '../../utils/locale';
 import { SparkleIcon } from '../icons/UIIcons';
+import { authLanguage } from '../../utils/hosted';
 import { useTranslation } from '../../hooks/useTranslation';
 
 interface RegisterProps {
@@ -8,14 +10,8 @@ interface RegisterProps {
 }
 
 export function Register({ onRegister, onSwitchToLogin }: RegisterProps) {
-  const initialLang = (() => {
-    const saved = typeof localStorage !== 'undefined' ? localStorage.getItem('tidyquest_auth_lang') : null;
-    if (saved && ['en', 'fr', 'de', 'es', 'it', 'nl'].includes(saved)) return saved;
-    const browser = typeof navigator !== 'undefined' ? navigator.language.slice(0, 2) : 'en';
-    return ['en', 'fr', 'de', 'es', 'it', 'nl'].includes(browser) ? browser : 'en';
-  })();
-  const [authLanguage, setAuthLanguage] = useState(initialLang);
-  const { t } = useTranslation(authLanguage);
+  const [language, setLanguage] = useState(authLanguage);
+  const { t } = useTranslation(language);
   const [displayName, setDisplayName] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -31,7 +27,7 @@ export function Register({ onRegister, onSwitchToLogin }: RegisterProps) {
     }
     setLoading(true);
     try {
-      await onRegister({ username: username.trim(), password, displayName, language: authLanguage });
+      await onRegister({ username: username.trim(), password, displayName, language });
       window.location.href = '/';
     } catch (err: any) {
       setError(err.message || t('auth.registrationFailed'));
@@ -41,7 +37,7 @@ export function Register({ onRegister, onSwitchToLogin }: RegisterProps) {
   };
 
   return (
-    <div style={{
+    <div lang={language} style={{
       minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center',
       backgroundColor: 'var(--warm-bg)',
     }}>
@@ -58,10 +54,11 @@ export function Register({ onRegister, onSwitchToLogin }: RegisterProps) {
           <h1 style={{ fontSize: 24, fontWeight: 900, color: 'var(--warm-text)', margin: 0 }}>{t('auth.welcome')}</h1>
           <p style={{ fontSize: 12, color: 'var(--warm-text-light)', fontWeight: 600, marginTop: 4 }}>{t('auth.createYourAccount')}</p>
           <select
-            value={authLanguage}
+            aria-label={t('profile.language')}
+            value={language}
             onChange={(e) => {
               const v = e.target.value;
-              setAuthLanguage(v);
+              setLanguage(v);
               localStorage.setItem('tidyquest_auth_lang', v);
             }}
             style={{
@@ -69,12 +66,9 @@ export function Register({ onRegister, onSwitchToLogin }: RegisterProps) {
               fontSize: 12, fontFamily: 'Nunito', fontWeight: 700, color: 'var(--warm-text-secondary)', backgroundColor: 'var(--warm-bg-subtle)',
             }}
           >
-            <option value="en">English</option>
-            <option value="fr">Français</option>
-            <option value="de">Deutsch</option>
-            <option value="es">Español</option>
-            <option value="it">Italiano</option>
-            <option value="nl">Nederlands</option>
+            {LANGUAGES.map(({ value, label, locale }) => (
+              <option key={value} value={value} lang={locale}>{label}</option>
+            ))}
           </select>
         </div>
 

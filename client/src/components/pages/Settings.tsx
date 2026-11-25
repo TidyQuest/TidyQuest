@@ -30,7 +30,7 @@ import type { User } from '../../hooks/useAuth';
 import { api, type FocusModeSetting, type RewardRules } from '../../hooks/useApi';
 import { CosmeticsContext } from '../../utils/unlocks';
 import { useNavigate, useParams } from 'react-router-dom';
-import { localeFor } from '../../utils/locale';
+import { localeFor, LANGUAGES } from '../../utils/locale';
 import { weekdayName } from '../../utils/schedule';
 import { useWeekStart } from '../../utils/week';
 import { TimeZonePicker } from '../shared/TimeZonePicker';
@@ -1647,13 +1647,10 @@ export function Settings({
               {isAdmin && memberEditOpen[u.id] && (
                 <div style={{ marginTop: 10, paddingTop: 10, borderTop: '1px solid var(--warm-border)', display: 'grid', gap: 8 }}>
                   {u.id !== user.id && (<>
-                    <select className="tq-input" value={memberProfile[u.id]?.language || 'en'} onChange={(e) => setMemberProfile((prev) => ({ ...prev, [u.id]: { ...prev[u.id], language: e.target.value } }))} style={{ cursor: 'pointer' }}>
-                      <option value="en">English</option>
-                      <option value="fr">Français</option>
-                      <option value="de">Deutsch</option>
-                      <option value="es">Español</option>
-                      <option value="it">Italiano</option>
-                      <option value="nl">Nederlands</option>
+                    <select className="tq-input" aria-label={t('profile.language')} value={memberProfile[u.id]?.language || 'en'} onChange={(e) => setMemberProfile((prev) => ({ ...prev, [u.id]: { ...prev[u.id], language: e.target.value } }))} style={{ cursor: 'pointer' }}>
+                      {LANGUAGES.map(({ value, label, locale }) => (
+                        <option key={value} value={value} lang={locale}>{label}</option>
+                      ))}
                     </select>
                     <select className="tq-input" value={memberProfile[u.id]?.avatarType || 'letter'} onChange={(e) => setMemberProfile((prev) => ({ ...prev, [u.id]: { ...prev[u.id], avatarType: e.target.value as 'letter' | 'preset' | 'photo' } }))} style={{ cursor: 'pointer' }}>
                       <option value="letter">{t('profile.letterMode')}</option>

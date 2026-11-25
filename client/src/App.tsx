@@ -35,7 +35,7 @@ import { Register } from './components/pages/Register';
 import { SignUp } from './components/pages/SignUp';
 import { ConfirmEmail, ResetPassword, Unsubscribe } from './components/pages/EmailLinks';
 import { AgreeScreen, ConfirmEmailBanner, LockedScreen } from './components/shared/HostedAccount';
-import { isShutOut, limitError, takeFamilyLink, useHosted, type HostedAccount } from './utils/hosted';
+import { authLanguage, isShutOut, limitError, takeFamilyLink, useHosted, type HostedAccount } from './utils/hosted';
 import { Achievements } from './components/pages/Achievements';
 import { Rewards } from './components/pages/Rewards';
 import { useTranslation } from './hooks/useTranslation';
@@ -74,9 +74,11 @@ function AppContent() {
     window.addEventListener(NEW_TOKEN_EVENT, again);
     return () => window.removeEventListener(NEW_TOKEN_EVENT, again);
   }, [user?.id]);
-  const browserLang = typeof navigator !== 'undefined' ? navigator.language.slice(0, 2) : 'en';
-  // Always call useTranslation unconditionally (React hooks rule) — use user's language if known, else browser lang
-  const { t, roomDisplayName } = useTranslation(user?.language ?? browserLang);
+  const language = user?.language ?? authLanguage();
+  const { t, roomDisplayName } = useTranslation(language);
+  useEffect(() => {
+    document.documentElement.lang = localeFor(language);
+  }, [language]);
   const [authView, setAuthView] = useState<'login' | 'register'>('login');
   const [dashboardData, setDashboardData] = useState<any>(null);
   const [rooms, setRooms] = useState<any[]>([]);

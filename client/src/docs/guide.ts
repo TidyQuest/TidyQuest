@@ -1,6 +1,6 @@
 /**
  * The in-app guide (Settings → Guide & help → /guide). English is here; each other language is a GUIDE_<LANG>
- * array in guide.<lang>.ts with the same sections and blocks. A guide change goes into all six
+ * array in guide.<lang>.ts with the same sections and blocks. A guide change goes into all seven
  * (check them with devtools/guide_check.mjs).
  *
  * Text can hold **bold**: the label that opens a list item ("**Every N days:** due again…") and every menu path
@@ -826,6 +826,7 @@ const TRANSLATIONS: Record<string, () => Promise<GuideSection[]>> = {
   es: () => import('./guide.es').then((m) => m.GUIDE_ES),
   it: () => import('./guide.it').then((m) => m.GUIDE_IT),
   nl: () => import('./guide.nl').then((m) => m.GUIDE_NL),
+  'pt-BR': () => import('./guide.pt-BR').then((m) => m.GUIDE_PT_BR),
 };
 const loading: Record<string, Promise<GuideSection[]>> = {};
 

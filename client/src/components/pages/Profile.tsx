@@ -1,4 +1,5 @@
 import { useState, useRef } from 'react';
+import { LANGUAGES } from '../../utils/locale';
 import { UserAvatar } from '../shared/UserAvatar';
 import { AVATAR_PRESETS, AvatarPresetIcon } from '../icons/AvatarPresets';
 import { GlobeIcon } from '../icons/UIIcons';
@@ -259,16 +260,14 @@ export function Profile({ user, theme, onChangeTheme, onUnlocksChanged, onSave, 
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             <GlobeIcon />
             <select
+              aria-label={t('profile.language')}
               value={language}
               onChange={(e) => setLanguage(e.target.value)}
               className="tq-input" style={{ flex: 1, fontWeight: 700, cursor: 'pointer' }}
             >
-              <option value="en">English</option>
-              <option value="fr">Fran{'\u00E7'}ais</option>
-              <option value="de">Deutsch</option>
-              <option value="es">Espa{'\u00F1'}ol</option>
-              <option value="it">Italiano</option>
-              <option value="nl">Nederlands</option>
+              {LANGUAGES.map(({ value, label, locale }) => (
+                <option key={value} value={value} lang={locale}>{label}</option>
+              ))}
             </select>
           </div>
         </div>

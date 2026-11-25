@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { browserLanguage, LANGUAGES } from './locale';
 
 // Hosted mode (tidyquest.org): the server says so in /api/version. Self-hosted installs never show the
 // sign-up page, the family code or the email cards.
@@ -67,12 +68,10 @@ export function takeFamilyLink(): boolean {
 
 /** The language of pages shown before sign-in: the one picked on the login page, else the browser's. */
 export function authLanguage(): string {
-  const languages = ['en', 'fr', 'de', 'es', 'it', 'nl'];
   let saved: string | null = null;
   try { saved = localStorage.getItem('tidyquest_auth_lang'); } catch { /* none saved */ }
-  if (saved && languages.includes(saved)) return saved;
-  const browser = typeof navigator !== 'undefined' ? navigator.language.slice(0, 2) : 'en';
-  return languages.includes(browser) ? browser : 'en';
+  if (saved && LANGUAGES.some(({ value }) => value === saved)) return saved;
+  return browserLanguage();
 }
 
 export interface HostedAccount {
