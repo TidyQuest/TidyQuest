@@ -7,9 +7,9 @@ import path from 'path';
  * From server/src/utils and server/dist/utils alike, ../../../ is the app root.
  */
 const I18N_DIR = path.join(__dirname, '..', '..', '..', 'client', 'src', 'i18n');
-export const LANGUAGES = ['en', 'fr', 'de', 'es', 'it', 'nl'];
+export const LANGUAGES = ['en', 'fr', 'de', 'es', 'it', 'nl', 'pt-BR'];
 /** Each language's locale, for dates and times. */
-export const LOCALES: Record<string, string> = { en: 'en-US', fr: 'fr-FR', de: 'de-DE', es: 'es-ES', it: 'it-IT', nl: 'nl-NL' };
+export const LOCALES: Record<string, string> = { en: 'en-US', fr: 'fr-FR', de: 'de-DE', es: 'es-ES', it: 'it-IT', nl: 'nl-NL', 'pt-BR': 'pt-BR' };
 
 type Sections = Record<string, Record<string, string>>;
 /** A language file: the app's texts ("ui") and the names of the starter and room-default chores ("tasks") */

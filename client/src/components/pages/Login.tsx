@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { LANGUAGES } from '../../utils/locale';
 import { SparkleIcon } from '../icons/UIIcons';
 import { useTranslation } from '../../hooks/useTranslation';
 import { api, type LoginDetails } from '../../hooks/useApi';
@@ -90,7 +91,7 @@ export function Login({ onLogin, onSwitchToRegister, hosted = false, onSignUp }:
   };
 
   return (
-    <div style={{
+    <div lang={language} style={{
       minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center',
       backgroundColor: 'var(--warm-bg)',
     }}>
@@ -107,6 +108,7 @@ export function Login({ onLogin, onSwitchToRegister, hosted = false, onSignUp }:
           <h1 style={{ fontSize: 24, fontWeight: 900, color: 'var(--warm-text)', margin: 0 }}>TidyQuest</h1>
           <p style={{ fontSize: 12, color: 'var(--warm-text-light)', fontWeight: 600, marginTop: 4 }}>{t('auth.welcomeBack')}</p>
           <select
+            aria-label={t('profile.language')}
             value={language}
             onChange={(e) => {
               const v = e.target.value;
@@ -118,12 +120,9 @@ export function Login({ onLogin, onSwitchToRegister, hosted = false, onSignUp }:
               fontSize: 12, fontFamily: 'Nunito', fontWeight: 700, color: 'var(--warm-text-secondary)', backgroundColor: 'var(--warm-bg-subtle)',
             }}
           >
-            <option value="en">English</option>
-            <option value="fr">Français</option>
-            <option value="de">Deutsch</option>
-            <option value="es">Español</option>
-            <option value="it">Italiano</option>
-            <option value="nl">Nederlands</option>
+            {LANGUAGES.map(({ value, label, locale }) => (
+              <option key={value} value={value} lang={locale}>{label}</option>
+            ))}
           </select>
         </div>
 

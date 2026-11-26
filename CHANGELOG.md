@@ -9,6 +9,10 @@ What changed in each release, in plain language, newest first. Releases up to v0
 
 ## Unreleased
 
+### Added
+
+- Added Brazilian Portuguese as a language option.
+
 ## v0.19.0 (2026-11-17)
 
 ### Added
